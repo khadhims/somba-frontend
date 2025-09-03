@@ -1,6 +1,9 @@
 <template>
   <!--begin::Wrapper-->
   <div class="w-lg-500px p-10">
+    <div class="text-center mb-8">
+      <img src="/logo-somba-2.png" alt="Somba Logo" style="width:100px;max-width:100%;margin-bottom:16px;" />
+    </div>
     <!--begin::Form-->
     <VForm
       class="form w-100"
@@ -26,14 +29,6 @@
         <!--end::Link-->
       </div>
       <!--begin::Heading-->
-
-      <div class="mb-10 bg-light-info p-8 rounded">
-        <div class="text-info">
-          Use account <strong>admin@demo.com</strong> and password
-          <strong>demo</strong> to continue.
-        </div>
-      </div>
-
       <!--begin::Input group-->
       <div class="fv-row mb-10">
         <!--begin::Label-->
@@ -121,7 +116,7 @@
           class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5"
         >
           <img
-            alt="Logo"
+            alt="Somba Logo"
             :src="getAssetPath('media/svg/brand-logos/google-icon.svg')"
             class="h-20px me-3"
           />
@@ -135,7 +130,7 @@
           class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5"
         >
           <img
-            alt="Logo"
+            alt="Somba Logo"
             :src="getAssetPath('media/svg/brand-logos/facebook-4.svg')"
             class="h-20px me-3"
           />
@@ -146,7 +141,7 @@
         <!--begin::Google link-->
         <a href="#" class="btn btn-flex flex-center btn-light btn-lg w-100">
           <img
-            alt="Logo"
+            alt="Somba Logo"
             :src="getAssetPath('media/svg/brand-logos/apple-black.svg')"
             class="h-20px me-3"
           />

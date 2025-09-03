@@ -168,7 +168,7 @@
             <img
               class="w-15px h-15px rounded-1 ms-2"
               :src="currentLangugeLocale.flag"
-              alt="metronic"
+              alt="somba"
             />
           </span>
         </span>
@@ -188,7 +188,7 @@
               <img
                 class="rounded-1"
                 :src="getAssetPath('media/flags/united-states.svg')"
-                alt="metronic"
+                alt="somba"
               />
             </span>
             English
@@ -208,7 +208,7 @@
               <img
                 class="rounded-1"
                 :src="getAssetPath('media/flags/spain.svg')"
-                alt="metronic"
+                alt="somba"
               />
             </span>
             Spanish
@@ -228,7 +228,7 @@
               <img
                 class="rounded-1"
                 :src="getAssetPath('media/flags/germany.svg')"
-                alt="metronic"
+                alt="somba"
               />
             </span>
             German
@@ -248,7 +248,7 @@
               <img
                 class="rounded-1"
                 :src="getAssetPath('media/flags/japan.svg')"
-                alt="metronic"
+                alt="somba"
               />
             </span>
             Japanese
@@ -268,7 +268,7 @@
               <img
                 class="rounded-1"
                 :src="getAssetPath('media/flags/france.svg')"
-                alt="metronic"
+                alt="somba"
               />
             </span>
             French

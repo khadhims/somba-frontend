@@ -69,8 +69,8 @@
       created-at="4 days ago"
     ></KTFile>
 
-    <KTFile
-      file-title="Metronic Logo"
+        <KTFile
+          file-title="Somba Logo"
       file-type="ai"
       created-at="5 days ago"
     ></KTFile>
