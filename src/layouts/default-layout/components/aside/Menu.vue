@@ -150,34 +150,7 @@
           </div>
         </template>
       </template>
-      <div class="menu-item">
-        <div class="menu-content">
-          <div class="separator mx-1 my-4"></div>
-        </div>
-      </div>
-      <!-- Panah scroll bawah -->
-      <span v-if="isScrollActive && !isAtBottom" class="scroll-arrow scroll-arrow-down"></span>
-      <div class="menu-item">
-        <a
-          class="menu-link"
-          href="https://preview.keenthemes.com/metronic8/vue/docs/getting-started/changelog"
-        >
-          <span class="menu-icon">
-            <i
-              v-if="asideMenuIcons === 'bootstrap'"
-              class="bi bi-card-text fs-3"
-            ></i>
-            <KTIcon
-              v-else-if="asideMenuIcons === 'keenthemes'"
-              icon-name="document"
-              icon-class="fs-2"
-            />
-          </span>
-          <span class="menu-title"
-            >{{ translate("changelog") }} v{{ version }}</span
-          >
-        </a>
-      </div>
+ 
     </div>
     <!--end::Menu-->
   </div>

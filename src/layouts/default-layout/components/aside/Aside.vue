@@ -26,7 +26,7 @@
     <!--end::Aside menu-->
 
     <!--begin::Footer-->
-    <div class="aside-footer flex-column-auto py-5" id="kt_aside_footer">
+    <!-- <div class="aside-footer flex-column-auto py-5" id="kt_aside_footer">
       <a
         href="https://preview.keenthemes.com/metronic8/vue/docs/index"
         class="btn btn-custom btn-primary w-100"
@@ -34,7 +34,7 @@
         <span class="btn-label">{{ t("docsAndComponents") }}</span>
         <KTIcon icon-name="document" icon-class="btn-icon fs-2" />
       </a>
-    </div>
+    </div> -->
     <!--end::Footer-->
   </div>
   <!--end::Aside-->
