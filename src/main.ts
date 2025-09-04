@@ -21,7 +21,9 @@ import "@/core/plugins/prismjs";
 
 const app = createApp(App);
 
-app.use(createPinia());
+// create pinia instance so we can call stores before mount
+const pinia = createPinia();
+app.use(pinia);
 app.use(router);
 app.use(ElementPlus);
 
@@ -38,3 +40,18 @@ app.directive("tooltip", (el) => {
 });
 
 app.mount("#app");
+
+// Verify auth on startup and redirect to sign-in on failure
+import { useAuthStore } from "@/stores/auth";
+(async () => {
+  try {
+    const store = useAuthStore();
+    await store.verifyAuth();
+    // verified or refreshed successfully
+  } catch (e) {
+    // couldn't verify or refresh, redirect to sign-in
+    // allow router to be ready
+    const { default: router } = await import("./router");
+    router.push({ name: "sign-in" }).catch(() => {});
+  }
+})();

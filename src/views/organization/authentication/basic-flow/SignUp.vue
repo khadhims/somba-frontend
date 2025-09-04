@@ -96,11 +96,12 @@
           name="email"
           autocomplete="off"
         />
-        <div class="fv-plugins-message-container">
-          <div class="fv-help-block">
-            <ErrorMessage name="email" />
-          </div>
-        </div>
+              <div class="fv-plugins-message-container">
+                <div class="fv-help-block">
+                  <ErrorMessage name="email" />
+                  <div v-if="serverError" class="text-danger mt-1">{{ serverError }}</div>
+                </div>
+              </div>
       </div>
       <!--end::Input group-->
 
@@ -236,8 +237,10 @@ export default defineComponent({
     ErrorMessage,
   },
   setup() {
-    const store = useAuthStore();
+  const store = useAuthStore();
     const router = useRouter();
+
+  const serverError = ref('')
 
     const submitButton = ref<HTMLButtonElement | null>(null);
 
@@ -262,7 +265,9 @@ export default defineComponent({
       values = values as User;
 
       // Clear existing errors
-      store.logout();
+  serverError.value = ''
+  // keep auth cleared
+  store.logout();
 
       // eslint-disable-next-line
       submitButton.value!.disabled = true;
@@ -288,9 +293,23 @@ export default defineComponent({
           router.push({ name: "sign-in" });
         });
       } catch (error) {
-        const errorMessages = Object.values(store.errors);
-        const errorText = errorMessages.length > 0 ? errorMessages[0] as string : "Registration failed. Please try again.";
-        
+        // Normalize and show server error inline if present
+        const errObj = store.errors as any
+        let errorText = 'Registration failed. Please try again.'
+        if (errObj) {
+          if (typeof errObj === 'string') {
+            errorText = errObj
+          } else if (errObj.error) {
+            errorText = errObj.error
+          } else {
+            // try first property
+            const vals = Object.values(errObj)
+            if (vals.length > 0) errorText = String(vals[0])
+          }
+        }
+
+        serverError.value = errorText
+
         Swal.fire({
           text: errorText,
           icon: "error",
@@ -313,6 +332,7 @@ export default defineComponent({
       onSubmitRegister,
       submitButton,
       getAssetPath,
+      serverError,
     };
   },
 });

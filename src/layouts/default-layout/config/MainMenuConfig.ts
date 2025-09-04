@@ -33,7 +33,7 @@ const MainMenuConfig: Array<MenuItem> = [
         ],
       },
       {
-        sectionTitle: "Team",
+  sectionTitle: "Team",
         route: "/team",
         keenthemesIcon: "profile-circle",
         bootstrapIcon: "bi-person",
@@ -88,8 +88,7 @@ const MainMenuConfig: Array<MenuItem> = [
       },
       {
         sectionTitle: "pages",
-        route: "/pages",
-        keenthemesIcon: "element-plus",
+        keenthemesIcon: "plus",
         bootstrapIcon: "bi-archive",
         sub: [
           {

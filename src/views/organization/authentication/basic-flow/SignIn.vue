@@ -197,43 +197,48 @@ export default defineComponent({
         submitButton.value.setAttribute("data-kt-indicator", "on");
       }
 
-      // Send login request
-      await store.login(values);
-      const error = Object.values(store.errors);
+      try {
+        // Send login request
+        await store.login(values);
+      } catch (e) {
+        // store.login throws on failure; errors are normalized in the store
+      } finally {
+        const error = Object.values(store.errors);
 
-      if (error.length === 0) {
-        Swal.fire({
-          text: "You have successfully logged in!",
-          icon: "success",
-          buttonsStyling: false,
-          confirmButtonText: "Ok, got it!",
-          heightAuto: false,
-          customClass: {
-            confirmButton: "btn fw-semibold btn-light-primary",
-          },
-        }).then(() => {
-          // Go to page after successfully login
-          router.push({ name: "dashboard" });
-        });
-      } else {
-        Swal.fire({
-          text: error[0] as string,
-          icon: "error",
-          buttonsStyling: false,
-          confirmButtonText: "Try again!",
-          heightAuto: false,
-          customClass: {
-            confirmButton: "btn fw-semibold btn-light-danger",
-          },
-        }).then(() => {
-          store.errors = {};
-        });
-      }
+        if (error.length === 0) {
+          Swal.fire({
+            text: "You have successfully logged in!",
+            icon: "success",
+            buttonsStyling: false,
+            confirmButtonText: "Ok, got it!",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn fw-semibold btn-light-primary",
+            },
+          }).then(() => {
+            // Go to page after successfully login
+            router.push({ name: "dashboard" });
+          });
+        } else {
+          Swal.fire({
+            text: error[0] as string,
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Try again!",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn fw-semibold btn-light-danger",
+            },
+          }).then(() => {
+            store.errors = {};
+          });
+        }
 
-      //Deactivate indicator
-      submitButton.value?.removeAttribute("data-kt-indicator");
-      // eslint-disable-next-line
+        //Deactivate indicator
+        submitButton.value?.removeAttribute("data-kt-indicator");
+        // eslint-disable-next-line
         submitButton.value!.disabled = false;
+      }
     };
 
     return {
