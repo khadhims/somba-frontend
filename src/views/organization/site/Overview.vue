@@ -75,13 +75,13 @@
         </div>
         <!--end::Search-->
         
-        <router-link
-          to="/organization/site/settings"
+        <button
+          @click="showAddSiteModal"
           class="btn btn-sm btn-light-primary"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
           Add Site
-        </router-link>
+        </button>
       </div>
       <!--end::Card toolbar-->
     </div>
@@ -151,7 +151,7 @@
             </router-link>
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm"
-              @click="viewSiteDetails(row)"
+              @click="editSiteDetails(row)"
               title="Edit Site"
             >
               <i class="ki-duotone ki-pencil fs-2">
@@ -166,12 +166,20 @@
     <!--end::Card body-->
   </div>
   <!--end::Sites List-->
+
+  <!-- Add Site Modal -->
+  <AddSiteModal ref="addSiteModalRef" @site-added="onSiteAdded" />
+  
+  <!-- Edit Site Modal -->
+  <EditSiteModal ref="editSiteModalRef" @site-updated="onSiteUpdated" />
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import Widget1 from '@/components/dashboard-default-widgets/Widget1.vue'
 import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
+import AddSiteModal from '@/components/modals/forms/AddSiteModal.vue'
+import EditSiteModal from '@/components/modals/forms/EditSiteModal.vue'
 
 // Interface definitions
 interface Site {
@@ -192,6 +200,8 @@ const loading = ref(false)
 const searchQuery = ref('')
 const sortLabel = ref('')
 const sortOrder = ref<'asc' | 'desc'>('asc')
+const addSiteModalRef = ref()
+const editSiteModalRef = ref()
 
 // Table header configuration
 const tableHeader = ref([
@@ -305,6 +315,27 @@ const filteredAndSortedSites = computed(() => {
 const handleSort = (sort: { label: string; order: 'asc' | 'desc' }) => {
   sortLabel.value = sort.label
   sortOrder.value = sort.order
+}
+
+const showAddSiteModal = () => {
+  addSiteModalRef.value?.showModal()
+}
+
+const onSiteAdded = (newSite: Site) => {
+  sites.value.unshift(newSite) // Add to beginning of array
+  console.log('New site added:', newSite)
+}
+
+const editSiteDetails = (site: Site) => {
+  editSiteModalRef.value?.showModal(site)
+}
+
+const onSiteUpdated = (updatedSite: Site) => {
+  const index = sites.value.findIndex(site => site.id === updatedSite.id)
+  if (index !== -1) {
+    sites.value[index] = { ...updatedSite }
+    console.log('Site updated:', updatedSite)
+  }
 }
 
 const viewSiteDetails = (site: Site) => {

@@ -215,6 +215,9 @@ export default defineComponent({
       version,
       translate,
       scrollElRef,
+  isScrollActive,
+  isAtTop,
+  isAtBottom,
       getAssetPath,
     };
   },
