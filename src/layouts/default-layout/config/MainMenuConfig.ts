@@ -33,6 +33,50 @@ const MainMenuConfig: Array<MenuItem> = [
         ],
       },
       {
+        sectionTitle: "Team",
+        route: "/team",
+        keenthemesIcon: "profile-circle",
+        bootstrapIcon: "bi-person",
+        sub: [
+          {
+            heading: "Overview",
+            route: "/organization/team/overview",
+          },
+          {
+            heading: "Settings",
+            route: "/organization/team/settings",
+          },
+        ],
+      },
+      {
+        sectionTitle: "Site",
+        route: "/site",
+        keenthemesIcon: "profile-circle",
+        bootstrapIcon: "bi-person",
+        sub: [
+          {
+            heading: "Overview",
+            route: "/organization/site/overview",
+          },
+          {
+            heading: "Room",
+            route: "/organization/site/room",
+          },
+          {
+            heading: "NVR",
+            route: "/organization/site/nvr",
+          },
+          {
+            heading: "Camera",
+            route: "/organization/site/camera",
+          },
+          {
+            heading: "Settings",
+            route: "/organization/site/settings",
+          },
+        ],
+      },
+      {
         sectionTitle: "pages",
         route: "/pages",
         keenthemesIcon: "element-plus",
