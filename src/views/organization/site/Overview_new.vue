@@ -60,21 +60,6 @@
 
       <!--begin::Card toolbar-->
       <div class="card-toolbar">
-        <!--begin::Search-->
-        <div class="d-flex align-items-center position-relative my-1 me-5">
-          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          <input
-            type="text"
-            v-model="searchQuery"
-            class="form-control form-control-solid w-250px ps-12"
-            placeholder="Search sites..."
-          />
-        </div>
-        <!--end::Search-->
-        
         <router-link
           to="/organization/site/settings"
           class="btn btn-sm btn-light-primary"
@@ -90,15 +75,11 @@
     <!--begin::Card body-->
     <div class="card-body py-3">
       <KTDataTable
-        :data="filteredAndSortedSites"
+        :data="sites"
         :header="tableHeader"
         :checkbox-enabled="false"
-        :enable-items-per-page-dropdown="true"
         :items-per-page="10"
         :loading="loading"
-        :sort-label="sortLabel"
-        :sort-order="sortOrder"
-        @on-sort="handleSort"
         empty-table-text="No sites found"
       >
         <template v-slot:name="{ row }">
@@ -189,19 +170,16 @@ interface Site {
 // Reactive data
 const sites = ref<Site[]>([])
 const loading = ref(false)
-const searchQuery = ref('')
-const sortLabel = ref('')
-const sortOrder = ref<'asc' | 'desc'>('asc')
 
 // Table header configuration
 const tableHeader = ref([
-  { columnName: 'Site Name', columnLabel: 'name', sortEnabled: true, searchable: true },
-  { columnName: 'Location', columnLabel: 'location', sortEnabled: true, searchable: true },
-  { columnName: 'Rooms', columnLabel: 'roomCount', sortEnabled: true, searchable: false },
-  { columnName: 'NVRs', columnLabel: 'nvrCount', sortEnabled: true, searchable: false },
-  { columnName: 'Cameras', columnLabel: 'cameraCount', sortEnabled: true, searchable: false },
-  { columnName: 'Status', columnLabel: 'status', sortEnabled: true, searchable: true },
-  { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false, searchable: false }
+  { columnName: 'Site Name', columnLabel: 'name', sortEnabled: true },
+  { columnName: 'Location', columnLabel: 'location', sortEnabled: true },
+  { columnName: 'Rooms', columnLabel: 'roomCount', sortEnabled: true },
+  { columnName: 'NVRs', columnLabel: 'nvrCount', sortEnabled: true },
+  { columnName: 'Cameras', columnLabel: 'cameraCount', sortEnabled: true },
+  { columnName: 'Status', columnLabel: 'status', sortEnabled: true },
+  { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false }
 ])
 
 // Mock data - replace with actual API calls
@@ -266,47 +244,7 @@ const onlineNVRsPercentage = computed(() => totalNVRs.value > 0 ? Math.round((on
 const activeCameras = computed(() => sites.value.filter(site => site.status === 'Active').reduce((sum, site) => sum + site.cameraCount, 0))
 const activeCamerasPercentage = computed(() => totalCameras.value > 0 ? Math.round((activeCameras.value / totalCameras.value) * 100) : 0)
 
-// Search and Sort functionality
-const filteredAndSortedSites = computed(() => {
-  let filtered = sites.value
-
-  // Filter by search query
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(site => 
-      site.name.toLowerCase().includes(query) ||
-      site.description.toLowerCase().includes(query) ||
-      site.location.toLowerCase().includes(query) ||
-      site.status.toLowerCase().includes(query)
-    )
-  }
-
-  // Sort data
-  if (sortLabel.value) {
-    filtered = [...filtered].sort((a, b) => {
-      const aValue = a[sortLabel.value as keyof Site]
-      const bValue = b[sortLabel.value as keyof Site]
-      
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        const comparison = aValue.localeCompare(bValue)
-        return sortOrder.value === 'asc' ? comparison : -comparison
-      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
-        const comparison = aValue - bValue
-        return sortOrder.value === 'asc' ? comparison : -comparison
-      }
-      return 0
-    })
-  }
-
-  return filtered
-})
-
 // Methods
-const handleSort = (sort: { label: string; order: 'asc' | 'desc' }) => {
-  sortLabel.value = sort.label
-  sortOrder.value = sort.order
-}
-
 const viewSiteDetails = (site: Site) => {
   console.log('Viewing site details for:', site)
   // Navigate to site details or open modal

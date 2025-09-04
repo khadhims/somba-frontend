@@ -1,6 +1,6 @@
 <template>
   <!--begin::Site Overview-->
-  <div class="row g-5 g-xl-8 mb-8">
+  <div class="row g-5 g-xl-8">
     <!--begin::Summary Cards-->
     <div class="col-xl-3">
       <Widget1
@@ -46,7 +46,6 @@
       />
     </div>
   </div>
-  <!--end::Summary Cards-->
 
   <!--begin::Sites List-->
   <div class="card">
@@ -60,21 +59,6 @@
 
       <!--begin::Card toolbar-->
       <div class="card-toolbar">
-        <!--begin::Search-->
-        <div class="d-flex align-items-center position-relative my-1 me-5">
-          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          <input
-            type="text"
-            v-model="searchQuery"
-            class="form-control form-control-solid w-250px ps-12"
-            placeholder="Search sites..."
-          />
-        </div>
-        <!--end::Search-->
-        
         <router-link
           to="/organization/site/settings"
           class="btn btn-sm btn-light-primary"
@@ -90,15 +74,11 @@
     <!--begin::Card body-->
     <div class="card-body py-3">
       <KTDataTable
-        :data="filteredAndSortedSites"
+        :data="sites"
         :header="tableHeader"
         :checkbox-enabled="false"
-        :enable-items-per-page-dropdown="true"
         :items-per-page="10"
         :loading="loading"
-        :sort-label="sortLabel"
-        :sort-order="sortOrder"
-        @on-sort="handleSort"
         empty-table-text="No sites found"
       >
         <template v-slot:name="{ row }">
@@ -166,6 +146,139 @@
     <!--end::Card body-->
   </div>
   <!--end::Sites List-->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3">
+      <div class="card card-flush h-md-50 mb-5 mb-xl-10">
+        <div class="card-header pt-5">
+          <div class="card-title d-flex flex-column">
+            <span class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2">{{ totalCameras }}</span>
+            <span class="text-gray-400 pt-1 fw-semibold fs-6">Total Cameras</span>
+          </div>
+        </div>
+        <div class="card-body d-flex flex-column justify-content-end pe-0">
+          <span class="fs-6 fw-bolder text-gray-800 d-block mb-2">Active Cameras</span>
+          <div class="progress h-6px bg-light-warning">
+            <div class="progress-bar bg-warning" role="progressbar" :style="`width: ${activeCamerasPercentage}%`"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--begin::Sites List-->
+  <div class="card">
+    <!--begin::Card header-->
+    <div class="card-header border-0 pt-5">
+      <!--begin::Card title-->
+      <div class="card-title">
+        <h3 class="fw-bold m-0">Sites Overview</h3>
+      </div>
+      <!--end::Card title-->
+
+      <!--begin::Card toolbar-->
+      <div class="card-toolbar">
+        <router-link
+          to="/organization/site/settings"
+          class="btn btn-sm btn-light-primary"
+        >
+          <i class="ki-duotone ki-plus fs-2"></i>
+          Add Site
+        </router-link>
+      </div>
+      <!--end::Card toolbar-->
+    </div>
+    <!--begin::Card header-->
+
+    <!--begin::Card body-->
+    <div class="card-body py-3">
+      <!--begin::Table container-->
+      <div class="table-responsive">
+        <!--begin::Table-->
+        <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
+          <!--begin::Table head-->
+          <thead>
+            <tr class="fw-bold text-muted">
+              <th class="min-w-150px">Site Name</th>
+              <th class="min-w-120px">Location</th>
+              <th class="min-w-100px">Rooms</th>
+              <th class="min-w-100px">NVRs</th>
+              <th class="min-w-100px">Cameras</th>
+              <th class="min-w-120px">Status</th>
+              <th class="min-w-100px text-end">Actions</th>
+            </tr>
+          </thead>
+          <!--end::Table head-->
+
+          <!--begin::Table body-->
+          <tbody>
+            <tr v-for="site in sites" :key="site.id">
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="symbol symbol-45px me-5">
+                    <span class="symbol-label bg-light-primary text-primary fw-bold">
+                      {{ site.name.charAt(0).toUpperCase() }}
+                    </span>
+                  </div>
+                  <div class="d-flex justify-content-start flex-column">
+                    <span class="text-dark fw-bold text-hover-primary fs-6">{{ site.name }}</span>
+                    <span class="text-muted fw-semibold text-muted d-block fs-7">{{ site.description }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="text-dark fw-bold d-block fs-6">{{ site.location }}</span>
+              </td>
+              <td>
+                <span class="badge badge-light-info fs-7 fw-bold">{{ site.roomCount }}</span>
+              </td>
+              <td>
+                <span class="badge badge-light-primary fs-7 fw-bold">{{ site.nvrCount }}</span>
+              </td>
+              <td>
+                <span class="badge badge-light-warning fs-7 fw-bold">{{ site.cameraCount }}</span>
+              </td>
+              <td>
+                <span :class="`badge badge-light-${site.status === 'Active' ? 'success' : 'danger'} fs-7 fw-bold`">
+                  {{ site.status }}
+                </span>
+              </td>
+              <td>
+                <div class="d-flex justify-content-end flex-shrink-0">
+                  <router-link
+                    :to="`/organization/site/room?siteId=${site.id}`"
+                    class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
+                  >
+                    <i class="ki-duotone ki-switch fs-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                  </router-link>
+                  <button
+                    class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm"
+                    @click="viewSiteDetails(site)"
+                  >
+                    <i class="ki-duotone ki-pencil fs-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <!--end::Table body-->
+        </table>
+        <!--end::Table-->
+      </div>
+      <!--end::Table container-->
+    </div>
+    <!--end::Card body-->
+  </div>
+  <!--end::Sites List-->
 </template>
 
 <script setup lang="ts">
@@ -189,19 +302,16 @@ interface Site {
 // Reactive data
 const sites = ref<Site[]>([])
 const loading = ref(false)
-const searchQuery = ref('')
-const sortLabel = ref('')
-const sortOrder = ref<'asc' | 'desc'>('asc')
 
 // Table header configuration
 const tableHeader = ref([
-  { columnName: 'Site Name', columnLabel: 'name', sortEnabled: true, searchable: true },
-  { columnName: 'Location', columnLabel: 'location', sortEnabled: true, searchable: true },
-  { columnName: 'Rooms', columnLabel: 'roomCount', sortEnabled: true, searchable: false },
-  { columnName: 'NVRs', columnLabel: 'nvrCount', sortEnabled: true, searchable: false },
-  { columnName: 'Cameras', columnLabel: 'cameraCount', sortEnabled: true, searchable: false },
-  { columnName: 'Status', columnLabel: 'status', sortEnabled: true, searchable: true },
-  { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false, searchable: false }
+  { columnName: 'Site Name', columnLabel: 'name', sortEnabled: true },
+  { columnName: 'Location', columnLabel: 'location', sortEnabled: true },
+  { columnName: 'Rooms', columnLabel: 'roomCount', sortEnabled: true },
+  { columnName: 'NVRs', columnLabel: 'nvrCount', sortEnabled: true },
+  { columnName: 'Cameras', columnLabel: 'cameraCount', sortEnabled: true },
+  { columnName: 'Status', columnLabel: 'status', sortEnabled: true },
+  { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false }
 ])
 
 // Mock data - replace with actual API calls
@@ -266,47 +376,7 @@ const onlineNVRsPercentage = computed(() => totalNVRs.value > 0 ? Math.round((on
 const activeCameras = computed(() => sites.value.filter(site => site.status === 'Active').reduce((sum, site) => sum + site.cameraCount, 0))
 const activeCamerasPercentage = computed(() => totalCameras.value > 0 ? Math.round((activeCameras.value / totalCameras.value) * 100) : 0)
 
-// Search and Sort functionality
-const filteredAndSortedSites = computed(() => {
-  let filtered = sites.value
-
-  // Filter by search query
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(site => 
-      site.name.toLowerCase().includes(query) ||
-      site.description.toLowerCase().includes(query) ||
-      site.location.toLowerCase().includes(query) ||
-      site.status.toLowerCase().includes(query)
-    )
-  }
-
-  // Sort data
-  if (sortLabel.value) {
-    filtered = [...filtered].sort((a, b) => {
-      const aValue = a[sortLabel.value as keyof Site]
-      const bValue = b[sortLabel.value as keyof Site]
-      
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        const comparison = aValue.localeCompare(bValue)
-        return sortOrder.value === 'asc' ? comparison : -comparison
-      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
-        const comparison = aValue - bValue
-        return sortOrder.value === 'asc' ? comparison : -comparison
-      }
-      return 0
-    })
-  }
-
-  return filtered
-})
-
 // Methods
-const handleSort = (sort: { label: string; order: 'asc' | 'desc' }) => {
-  sortLabel.value = sort.label
-  sortOrder.value = sort.order
-}
-
 const viewSiteDetails = (site: Site) => {
   console.log('Viewing site details for:', site)
   // Navigate to site details or open modal
