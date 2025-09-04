@@ -4,11 +4,14 @@ import ApiService from "@/core/services/ApiService";
 import JwtService from "@/core/services/JwtService";
 
 export interface User {
-  name: string;
-  surname: string;
+  first_name?: string;
+  last_name?: string;
+  name?: string;
+  surname?: string;
   email: string;
   password: string;
-  api_token: string;
+  password_confirmation?: string;
+  api_token?: string;
 }
 
 export const useAuthStore = defineStore("auth", () => {
@@ -20,7 +23,9 @@ export const useAuthStore = defineStore("auth", () => {
     isAuthenticated.value = true;
     user.value = authUser;
     errors.value = {};
-    JwtService.saveToken(user.value.api_token);
+    if (authUser.api_token) {
+      JwtService.saveToken(authUser.api_token);
+    }
   }
 
   function setError(error: any) {
@@ -49,12 +54,14 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   function register(credentials: User) {
-    return ApiService.post("register", credentials)
+    return ApiService.post("auth/signup", credentials)
       .then(({ data }) => {
         setAuth(data);
+        return data;
       })
       .catch(({ response }) => {
         setError(response.data.errors);
+        throw response;
       });
   }
 

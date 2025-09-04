@@ -270,14 +270,12 @@ export default defineComponent({
       // Activate indicator
       submitButton.value?.setAttribute("data-kt-indicator", "on");
 
-      // Send login request
-      await store.register(values);
+      try {
+        // Send signup request
+        await store.register(values);
 
-      const error = Object.values(store.errors);
-
-      if (!error) {
         Swal.fire({
-          text: "You have successfully logged in!",
+          text: "You have successfully signed up! Please sign in to continue.",
           icon: "success",
           buttonsStyling: false,
           confirmButtonText: "Ok, got it!",
@@ -286,12 +284,15 @@ export default defineComponent({
             confirmButton: "btn fw-semibold btn-light-primary",
           },
         }).then(function () {
-          // Go to page after successfully login
-          router.push({ name: "dashboard" });
+          // Redirect to login page after successful signup
+          router.push({ name: "sign-in" });
         });
-      } else {
+      } catch (error) {
+        const errorMessages = Object.values(store.errors);
+        const errorText = errorMessages.length > 0 ? errorMessages[0] as string : "Registration failed. Please try again.";
+        
         Swal.fire({
-          text: error[0] as string,
+          text: errorText,
           icon: "error",
           buttonsStyling: false,
           confirmButtonText: "Try again!",
