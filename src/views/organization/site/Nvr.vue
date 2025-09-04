@@ -6,27 +6,25 @@
       <!--begin::Card title-->
       <div class="card-title">
         <h3 class="fw-bold m-0">NVR Management</h3>
-        <div class="d-flex align-items-center position-relative my-1">
-          <i class="ki-duotone ki-magnifier fs-1 position-absolute ms-4">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          <input
-            type="text"
-            v-model="searchText"
-            class="form-control form-control-solid w-250px ps-15"
-            placeholder="Search NVRs..."
-          />
-        </div>
       </div>
       <!--end::Card title-->
 
       <!--begin::Card toolbar-->
       <div class="card-toolbar">
-        <button
-          class="btn btn-sm btn-light-primary"
-          @click="showNvrForm = true"
-        >
+        <div class="d-flex align-items-center position-relative my-1 me-5">
+          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          <input
+            type="text"
+            v-model="searchQuery"
+            class="form-control form-control-solid w-250px ps-12"
+            placeholder="Search NVRs..."
+          />
+        </div>
+
+        <button class="btn btn-sm btn-light-primary" @click="showNvrForm = true">
           <i class="ki-duotone ki-plus fs-2"></i>
           Add NVR
         </button>
@@ -279,11 +277,15 @@
 
       <!--begin::Table-->
       <KTDataTable
-        :data="filteredNvrs"
+        :data="filteredAndSortedNvrs"
         :header="tableHeader"
         :checkbox-enabled="false"
+        :enable-items-per-page-dropdown="true"
         :items-per-page="10"
         :loading="isLoading"
+        :sort-label="sortLabel"
+        :sort-order="sortOrder"
+        @on-sort="handleSort"
         empty-table-text="No NVRs found"
       >
         <template v-slot:name="{ row }">
@@ -423,7 +425,9 @@ const route = useRoute()
 const isLoading = ref(false)
 const showNvrForm = ref(false)
 const isEdit = ref(false)
-const searchText = ref('')
+const searchQuery = ref('')
+const sortLabel = ref('')
+const sortOrder = ref<'asc' | 'desc'>('asc')
 
 const sites = ref<Site[]>([])
 const rooms = ref<Room[]>([])
@@ -444,12 +448,12 @@ const nvrForm = ref<NvrForm>({
 
 // Table header configuration
 const tableHeader = ref([
-  { columnName: 'NVR Name', columnLabel: 'name', sortEnabled: true },
-  { columnName: 'Location', columnLabel: 'location', sortEnabled: true },
-  { columnName: 'Brand', columnLabel: 'brand', sortEnabled: true },
-  { columnName: 'Channels', columnLabel: 'channels', sortEnabled: true },
-  { columnName: 'Status', columnLabel: 'status', sortEnabled: true },
-  { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false }
+  { columnName: 'NVR Name', columnLabel: 'name', sortEnabled: true, searchable: true },
+  { columnName: 'Location', columnLabel: 'location', sortEnabled: true, searchable: true },
+  { columnName: 'Brand', columnLabel: 'brand', sortEnabled: true, searchable: true },
+  { columnName: 'Channels', columnLabel: 'channels', sortEnabled: true, searchable: false },
+  { columnName: 'Status', columnLabel: 'status', sortEnabled: true, searchable: true },
+  { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false, searchable: false }
 ])
 
 // Computed
@@ -458,17 +462,48 @@ const availableRooms = computed(() => {
   return rooms.value.filter(room => room.siteId === Number(nvrForm.value.siteId))
 })
 
-const filteredNvrs = computed(() => {
-  if (!searchText.value) return nvrs.value
-  
-  return nvrs.value.filter(nvr =>
-    nvr.name.toLowerCase().includes(searchText.value.toLowerCase()) ||
-    nvr.ipAddress.includes(searchText.value) ||
-    nvr.brand.toLowerCase().includes(searchText.value.toLowerCase()) ||
-    getSiteName(nvr.siteId).toLowerCase().includes(searchText.value.toLowerCase()) ||
-    getRoomName(nvr.roomId).toLowerCase().includes(searchText.value.toLowerCase())
-  )
+const filteredAndSortedNvrs = computed(() => {
+  let filtered = nvrs.value
+
+  if (searchQuery.value.trim()) {
+    const q = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(nvr =>
+      nvr.name.toLowerCase().includes(q) ||
+      nvr.ipAddress.includes(q) ||
+      nvr.brand.toLowerCase().includes(q) ||
+      getSiteName(nvr.siteId).toLowerCase().includes(q) ||
+      getRoomName(nvr.roomId).toLowerCase().includes(q)
+    )
+  }
+
+  if (sortLabel.value) {
+    filtered = [...filtered].sort((a, b) => {
+      const getValue = (item: Nvr, label: string) => {
+        if (label === 'location') return getSiteName(item.siteId)
+        return (item as any)[label]
+      }
+
+      const aVal = getValue(a, sortLabel.value)
+      const bVal = getValue(b, sortLabel.value)
+
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        const cmp = aVal.localeCompare(bVal)
+        return sortOrder.value === 'asc' ? cmp : -cmp
+      } else if (typeof aVal === 'number' && typeof bVal === 'number') {
+        const cmp = aVal - bVal
+        return sortOrder.value === 'asc' ? cmp : -cmp
+      }
+      return 0
+    })
+  }
+
+  return filtered
 })
+
+const handleSort = (sort: { label: string; order: 'asc' | 'desc' }) => {
+  sortLabel.value = sort.label
+  sortOrder.value = sort.order
+}
 
 // Methods
 const getSiteName = (siteId: number): string => {

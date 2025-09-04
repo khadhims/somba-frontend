@@ -6,27 +6,25 @@
       <!--begin::Card title-->
       <div class="card-title">
         <h3 class="fw-bold m-0">Camera Management</h3>
-        <div class="d-flex align-items-center position-relative my-1">
-          <i class="ki-duotone ki-magnifier fs-1 position-absolute ms-4">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          <input
-            type="text"
-            v-model="searchText"
-            class="form-control form-control-solid w-250px ps-15"
-            placeholder="Search cameras..."
-          />
-        </div>
       </div>
       <!--end::Card title-->
 
       <!--begin::Card toolbar-->
       <div class="card-toolbar">
-        <button
-          class="btn btn-sm btn-light-primary"
-          @click="showCameraForm = true"
-        >
+        <div class="d-flex align-items-center position-relative my-1 me-5">
+          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          <input
+            type="text"
+            v-model="searchQuery"
+            class="form-control form-control-solid w-250px ps-12"
+            placeholder="Search cameras..."
+          />
+        </div>
+
+        <button class="btn btn-sm btn-light-primary" @click="showCameraForm = true">
           <i class="ki-duotone ki-plus fs-2"></i>
           Add Camera
         </button>
@@ -314,11 +312,15 @@
 
       <!--begin::Table-->
       <KTDataTable
-        :data="filteredCameras"
+        :data="filteredAndSortedCameras"
         :header="tableHeader"
         :checkbox-enabled="false"
+        :enable-items-per-page-dropdown="true"
         :items-per-page="10"
         :loading="isLoading"
+        :sort-label="sortLabel"
+        :sort-order="sortOrder"
+        @on-sort="handleSort"
         empty-table-text="No cameras found"
       >
         <template v-slot:name="{ row }">
@@ -477,7 +479,9 @@ const route = useRoute()
 const isLoading = ref(false)
 const showCameraForm = ref(false)
 const isEdit = ref(false)
-const searchText = ref('')
+const searchQuery = ref('')
+const sortLabel = ref('')
+const sortOrder = ref<'asc' | 'desc'>('asc')
 
 const sites = ref<Site[]>([])
 const rooms = ref<Room[]>([])
@@ -501,12 +505,12 @@ const cameraForm = ref<CameraForm>({
 
 // Table header configuration
 const tableHeader = ref([
-  { columnName: 'Camera Name', columnLabel: 'name', sortEnabled: true },
-  { columnName: 'Location', columnLabel: 'location', sortEnabled: true },
-  { columnName: 'Specifications', columnLabel: 'specs', sortEnabled: false },
-  { columnName: 'NVR', columnLabel: 'nvr', sortEnabled: true },
-  { columnName: 'Status', columnLabel: 'status', sortEnabled: true },
-  { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false }
+  { columnName: 'Camera Name', columnLabel: 'name', sortEnabled: true, searchable: true },
+  { columnName: 'Location', columnLabel: 'location', sortEnabled: true, searchable: true },
+  { columnName: 'Specifications', columnLabel: 'specs', sortEnabled: false, searchable: true },
+  { columnName: 'NVR', columnLabel: 'nvr', sortEnabled: true, searchable: true },
+  { columnName: 'Status', columnLabel: 'status', sortEnabled: true, searchable: true },
+  { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false, searchable: false }
 ])
 
 // Computed
@@ -520,18 +524,50 @@ const availableNvrs = computed(() => {
   return nvrs.value.filter(nvr => nvr.roomId === Number(cameraForm.value.roomId))
 })
 
-const filteredCameras = computed(() => {
-  if (!searchText.value) return cameras.value
-  
-  return cameras.value.filter(camera =>
-    camera.name.toLowerCase().includes(searchText.value.toLowerCase()) ||
-    camera.ipAddress.includes(searchText.value) ||
-    camera.brand.toLowerCase().includes(searchText.value.toLowerCase()) ||
-    camera.type.toLowerCase().includes(searchText.value.toLowerCase()) ||
-    getSiteName(camera.siteId).toLowerCase().includes(searchText.value.toLowerCase()) ||
-    getRoomName(camera.roomId).toLowerCase().includes(searchText.value.toLowerCase())
-  )
+const filteredAndSortedCameras = computed(() => {
+  let filtered = cameras.value
+
+  if (searchQuery.value.trim()) {
+    const q = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(camera =>
+      camera.name.toLowerCase().includes(q) ||
+      camera.ipAddress.includes(q) ||
+      camera.brand.toLowerCase().includes(q) ||
+      camera.type.toLowerCase().includes(q) ||
+      getSiteName(camera.siteId).toLowerCase().includes(q) ||
+      getRoomName(camera.roomId).toLowerCase().includes(q)
+    )
+  }
+
+  if (sortLabel.value) {
+    filtered = [...filtered].sort((a, b) => {
+      const getValue = (item: Camera, label: string) => {
+        if (label === 'location') return getSiteName(item.siteId)
+        if (label === 'nvr') return getNvrName(item.nvrId)
+        return (item as any)[label]
+      }
+
+      const aVal = getValue(a, sortLabel.value)
+      const bVal = getValue(b, sortLabel.value)
+
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        const cmp = aVal.localeCompare(bVal)
+        return sortOrder.value === 'asc' ? cmp : -cmp
+      } else if (typeof aVal === 'number' && typeof bVal === 'number') {
+        const cmp = aVal - bVal
+        return sortOrder.value === 'asc' ? cmp : -cmp
+      }
+      return 0
+    })
+  }
+
+  return filtered
 })
+
+const handleSort = (sort: { label: string; order: 'asc' | 'desc' }) => {
+  sortLabel.value = sort.label
+  sortOrder.value = sort.order
+}
 
 // Methods
 const getSiteName = (siteId: number): string => {
