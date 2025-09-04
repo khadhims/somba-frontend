@@ -33,6 +33,60 @@ const MainMenuConfig: Array<MenuItem> = [
         ],
       },
       {
+        sectionTitle: "Team",
+        route: "/team",
+        keenthemesIcon: "profile-circle",
+        bootstrapIcon: "bi-person",
+        sub: [
+          {
+            heading: "Overview",
+            route: "/organization/team/overview",
+          },
+          {
+            heading: "Settings",
+            route: "/organization/team/settings",
+          },
+        ],
+      },
+      {
+        sectionTitle: "Site Management",
+        route: "/site",
+        keenthemesIcon: "home-2",
+        bootstrapIcon: "bi-building",
+        sub: [
+          {
+            heading: "Overview",
+            route: "/organization/site/overview",
+            keenthemesIcon: "chart-simple",
+            bootstrapIcon: "bi-graph-up",
+          },
+          {
+            heading: "Site Configuration",
+            route: "/organization/site/settings",
+            keenthemesIcon: "setting-2",
+            bootstrapIcon: "bi-gear",
+          },
+          {
+            heading: "Room Management",
+            route: "/organization/site/room",
+            keenthemesIcon: "home-3",
+            bootstrapIcon: "bi-door-open",
+          },
+          {
+            heading: "NVR Systems",
+            route: "/organization/site/nvr",
+            keenthemesIcon: "router",
+            bootstrapIcon: "bi-hdd-network",
+          },
+          {
+            heading: "Camera Management",
+            route: "/organization/site/camera",
+            keenthemesIcon: "security-user",
+            bootstrapIcon: "bi-camera-video",
+          },
+        ],
+      },
+      {
         sectionTitle: "pages",
         route: "/pages",
         keenthemesIcon: "element-plus",

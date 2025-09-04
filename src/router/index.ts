@@ -144,6 +144,82 @@ const routes: Array<RouteRecordRaw> = [
         ],
       },
       {
+        path: "/organization/team",
+        name: "team",
+        component: () => import("@/views/organization/team/Team.vue"),
+        meta: {
+          breadcrumbs: ["Team"],
+        },
+        children: [
+          {
+            path: "overview",
+            name: "team-overview",
+            component: () => import("@/views/organization/team/Overview.vue"),
+            meta: {
+              pageTitle: "Overview",
+            },
+          },
+          {
+            path: "settings",
+            name: "team-settings",
+            component: () => import("@/views/organization/team/Settings.vue"),
+            meta: {
+              pageTitle: "Settings",
+            },
+          },
+        ],
+      },
+      {
+        path: "/organization/site",
+        name: "site",
+        component: () => import("@/views/organization/site/Site.vue"),
+        meta: {
+          breadcrumbs: ["Site"],
+        },
+        children: [
+          {
+            path: "overview",
+            name: "site-overview",
+            component: () => import("@/views/organization/site/Overview.vue"),
+            meta: {
+              pageTitle: "Overview",
+            },
+          },
+           {
+            path: "room",
+            name: "site-room",
+            component: () => import("@/views/organization/site/Room.vue"),
+            meta: {
+              pageTitle: "Room",
+            },
+          },
+          {
+            path: "nvr",
+            name: "site-nvr",
+            component: () => import("@/views/organization/site/Nvr.vue"),
+            meta: {
+              pageTitle: "NVR",
+            },
+          },
+          {
+            path: "camera",
+            name: "site-camera",
+            component: () => import("@/views/organization/site/Camera.vue"),
+            meta: {
+              pageTitle: "Camera",
+            },
+          },
+          {
+            path: "settings",
+            name: "site-settings",
+            component: () => import("@/views/organization/site/Settings.vue"),
+            meta: {
+              pageTitle: "Settings",
+            },
+          },
+        ],
+      },
+      {
         path: "/apps/customers/getting-started",
         name: "apps-customers-getting-started",
         component: () => import("@/views/apps/customers/GettingStarted.vue"),
