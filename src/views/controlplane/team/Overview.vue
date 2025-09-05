@@ -1,230 +1,699 @@
 <template>
-  <!--begin::details View-->
-  <div class="card mb-5 mb-xl-10" id="kt_profile_details_view">
+  <!--begin::Team Overview-->
+  <!--begin::Organization & Account Switcher-->
+  <div class="card mb-5">
+    <div class="card-body py-4">
+      <div class="row align-items-center">
+        <div class="col-md-4">
+          <h4 class="card-title mb-0">Team Management</h4>
+          <p class="text-muted mb-0">
+            Manage teams {{ currentAccount ? `for ${currentAccount.name}` : 'for your account' }}
+          </p>
+        </div>
+        <div class="col-md-8">
+          <div class="d-flex justify-content-end gap-3">
+            <div class="d-flex align-items-center">
+              <label class="form-label me-3 mb-0 fw-semibold">Organization:</label>
+              <select
+                v-model="selectedOrganizationId"
+                @change="switchOrganization"
+                class="form-select form-select-solid w-200px"
+                :disabled="loadingOrganizations"
+              >
+                <option
+                  v-for="org in organizations"
+                  :key="org.uid"
+                  :value="org.uid"
+                >
+                  {{ org.name }}
+                </option>
+              </select>
+            </div>
+            <div class="d-flex align-items-center" v-if="accounts.length > 0">
+              <label class="form-label me-3 mb-0 fw-semibold">Account:</label>
+              <select
+                v-model="selectedAccountId"
+                @change="switchAccount"
+                class="form-select form-select-solid w-200px"
+                :disabled="loadingAccounts"
+              >
+                <option
+                  v-for="account in accounts"
+                  :key="account.uid"
+                  :value="account.uid"
+                >
+                  {{ account.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end::Organization & Account Switcher-->
+
+  <div class="row g-5 g-xl-8 mb-8">
+    <!--begin::Summary Cards-->
+    <div class="col-xl-3">
+      <Widget1
+        :description="'Total Teams'"
+        :value="totalTeams"
+        :progress-text="`${activeTeams} Active`"
+        :progress-value="activeTeamsPercentage"
+        bg-color="#1B84FF"
+        text-color="white"
+      />
+    </div>
+
+    <div class="col-xl-3">
+      <Widget1
+        :description="'Total Members'"
+        :value="totalMembers"
+        :progress-text="`${activeMembers} Active`"
+        :progress-value="activeMembersPercentage"
+        bg-color="#17C653"
+        text-color="white"
+      />
+    </div>
+
+    <div class="col-xl-3">
+      <Widget1
+        :description="'Active Projects'"
+        :value="totalProjects"
+        :progress-text="`${activeProjects} Ongoing`"
+        :progress-value="activeProjectsPercentage"
+        bg-color="#3699FF"
+        text-color="white"
+      />
+    </div>
+
+    <div class="col-xl-3">
+      <Widget1
+        :description="'Team Performance'"
+        :value="teamPerformance"
+        :progress-text="'This Month'"
+        :progress-value="performanceGrowth"
+        bg-color="#FFA800"
+        text-color="white"
+      />
+    </div>
+  </div>
+  <!--end::Summary Cards-->
+
+  <!--begin::Teams List-->
+  <div class="card">
     <!--begin::Card header-->
-    <div class="card-header cursor-pointer">
+    <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
-      <div class="card-title m-0">
-        <h3 class="fw-bold m-0">Profile Details</h3>
+      <div class="card-title">
+        <h3 class="fw-bold m-0">Teams Overview</h3>
       </div>
       <!--end::Card title-->
 
-      <!--begin::Action-->
-      <router-link
-        to="/account/settings"
-        class="btn btn-primary align-self-center"
-        >Edit Profile</router-link
-      >
-      <!--end::Action-->
+      <!--begin::Card toolbar-->
+      <div class="card-toolbar">
+        <!--begin::Search-->
+        <div class="d-flex align-items-center position-relative my-1 me-5">
+          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          <input
+            type="text"
+            v-model="searchQuery"
+            class="form-control form-control-solid w-250px ps-12"
+            placeholder="Search teams..."
+          />
+        </div>
+        <!--end::Search-->
+
+        <button
+          @click="showAddTeamModal"
+          class="btn btn-sm btn-light-primary"
+          :disabled="!selectedAccountId"
+        >
+          <i class="ki-duotone ki-plus fs-2"></i>
+          Add Team
+        </button>
+      </div>
+      <!--end::Card toolbar-->
     </div>
-    <!--begin::Card header-->
+    <!--end::Card header-->
 
     <!--begin::Card body-->
-    <div class="card-body p-9">
-      <!--begin::Row-->
-      <div class="row mb-7">
-        <!--begin::Label-->
-        <label class="col-lg-4 fw-semibold text-muted">Full Name</label>
-        <!--end::Label-->
-
-        <!--begin::Col-->
-        <div class="col-lg-8">
-          <span class="fw-bold fs-6 text-gray-900">Max Smith</span>
-        </div>
-        <!--end::Col-->
-      </div>
-      <!--end::Row-->
-
-      <!--begin::Input group-->
-      <div class="row mb-7">
-        <!--begin::Label-->
-        <label class="col-lg-4 fw-semibold text-muted">Company</label>
-        <!--end::Label-->
-
-        <!--begin::Col-->
-        <div class="col-lg-8 fv-row">
-          <span class="fw-semibold fs-6">Keenthemes</span>
-        </div>
-        <!--end::Col-->
-      </div>
-      <!--end::Input group-->
-
-      <!--begin::Input group-->
-      <div class="row mb-7">
-        <!--begin::Label-->
-        <label class="col-lg-4 fw-semibold text-muted">
-          Contact Phone
-          <i
-            class="fas fa-exclamation-circle ms-1 fs-7"
-            v-tooltip
-            title="Phone number must be active"
-          ></i>
-        </label>
-        <!--end::Label-->
-
-        <!--begin::Col-->
-        <div class="col-lg-8 d-flex align-items-center">
-          <span class="fw-bold fs-6 me-2">044 3276 454 935</span>
-
-          <span class="badge badge-success">Verified</span>
-        </div>
-        <!--end::Col-->
-      </div>
-      <!--end::Input group-->
-
-      <!--begin::Input group-->
-      <div class="row mb-7">
-        <!--begin::Label-->
-        <label class="col-lg-4 fw-semibold text-muted">Company Site</label>
-        <!--end::Label-->
-
-        <!--begin::Col-->
-        <div class="col-lg-8">
-          <a href="#" class="fw-semobold fs-6 text-gray-900 text-hover-primary"
-            >keenthemes.com</a
-          >
-        </div>
-        <!--end::Col-->
-      </div>
-      <!--end::Input group-->
-
-      <!--begin::Input group-->
-      <div class="row mb-7">
-        <!--begin::Label-->
-        <label class="col-lg-4 fw-semibold text-muted">
-          Country
-          <i
-            class="fas fa-exclamation-circle ms-1 fs-7"
-            v-tooltip
-            title="Country of origination"
-          ></i>
-        </label>
-        <!--end::Label-->
-
-        <!--begin::Col-->
-        <div class="col-lg-8">
-          <span class="fw-bold fs-6 text-gray-900">Germany</span>
-        </div>
-        <!--end::Col-->
-      </div>
-      <!--end::Input group-->
-
-      <!--begin::Input group-->
-      <div class="row mb-7">
-        <!--begin::Label-->
-        <label class="col-lg-4 fw-semibold text-muted">Communication</label>
-        <!--end::Label-->
-
-        <!--begin::Col-->
-        <div class="col-lg-8">
-          <span class="fw-bold fs-6 text-gray-900">Email, Phone</span>
-        </div>
-        <!--end::Col-->
-      </div>
-      <!--end::Input group-->
-
-      <!--begin::Input group-->
-      <div class="row mb-10">
-        <!--begin::Label-->
-        <label class="col-lg-4 fw-semibold text-muted">Allow Changes</label>
-        <!--begin::Label-->
-
-        <!--begin::Label-->
-        <div class="col-lg-8">
-          <span class="fw-semibold fs-6">Yes</span>
-        </div>
-        <!--begin::Label-->
-      </div>
-      <!--end::Input group-->
-
-      <div
-        class="notice d-flex bg-light-warning rounded border-warning border border-dashed p-6"
+    <div class="card-body py-3">
+      <KTDataTable
+        :data="filteredAndSortedTeams"
+        :header="tableHeader"
+        :checkbox-enabled="false"
+        :enable-items-per-page-dropdown="true"
+        :items-per-page="10"
+        :loading="loading"
+        :sort-label="sortLabel"
+        :sort-order="sortOrder"
+        @on-sort="handleSort"
+        empty-table-text="No teams found"
       >
-        <KTIcon
-          icon-name="information-5"
-          icon-class="fs-2tx text-warning me-4"
-        />
-        <!--begin::Wrapper-->
-        <div class="d-flex flex-stack flex-grow-1">
-          <!--begin::Content-->
-          <div class="fw-semibold">
-            <h4 class="text-gray-800 fw-bold">We need your attention!</h4>
-
-            <div class="fs-6 text-gray-600">
-              Your payment was declined. To start using tools, please
-              <a class="fw-bold" href="#">Add Payment Method</a>.
+        <template v-slot:name="{ row }">
+          <div class="d-flex align-items-center">
+            <div class="symbol symbol-45px me-5">
+              <span class="symbol-label bg-light-primary text-primary fw-bold">
+                {{ row.name.charAt(0).toUpperCase() }}
+              </span>
+            </div>
+            <div class="d-flex justify-content-start flex-column">
+              <span class="text-dark fw-bold text-hover-primary fs-6">{{ row.name }}</span>
             </div>
           </div>
-          <!--end::Content-->
-        </div>
-        <!--end::Wrapper-->
-      </div>
+        </template>
+
+        <template v-slot:created_by="{ row }">
+          <span class="text-dark fw-bold d-block fs-6">
+            {{ row.created_by?.username || 'Unknown' }}
+          </span>
+          <span class="text-muted fw-semibold text-muted d-block fs-7">
+            {{ row.created_by?.email || '' }}
+          </span>
+        </template>
+
+        <template v-slot:created_at="{ row }">
+          <span class="text-dark fw-bold d-block fs-6">{{
+            formatDate(row.created_at)
+          }}</span>
+        </template>
+
+        <template v-slot:actions="{ row }">
+          <div class="d-flex justify-content-end flex-shrink-0">
+            <router-link
+              :to="{ name: 'team-settings', params: { id: row.uid } }"
+              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
+              title="Edit Team"
+            >
+              <i class="ki-duotone ki-pencil fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </router-link>
+            <button
+              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
+              @click="viewTeamDetails(row)"
+              title="View Details"
+            >
+              <i class="ki-duotone ki-eye fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </button>
+            <button
+              class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
+              @click="deleteTeam(row)"
+              title="Delete Team"
+            >
+              <i class="ki-duotone ki-trash fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </button>
+          </div>
+        </template>
+      </KTDataTable>
     </div>
     <!--end::Card body-->
   </div>
-  <!--end::details View-->
+  <!--end::Teams List-->
 
-  <!--begin::Row-->
-  <div class="row gy-10 gx-xl-10">
-    <!--begin::Col-->
-    <div class="col-xl-6">
-      <KTChartWidget1
-        widget-classes="card-xxl-stretch mb-5 mb-xl-10"
-      ></KTChartWidget1>
+  <!-- Add Team Modal -->
+  <div class="modal fade" id="addTeamModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Team</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form @submit.prevent="createTeam">
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label class="form-label">Team Name *</label>
+                <input type="text" class="form-control" v-model="newTeam.name" required>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" :disabled="creating">
+              <span v-if="creating" class="spinner-border spinner-border-sm me-2"></span>
+              Create Team
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-    <!--end::Col-->
-
-    <!--begin::Col-->
-    <div class="col-xl-6">
-      <KTListWidget1
-        widget-classes="card-xxl-stretch mb-5 mb-xl-10'"
-      ></KTListWidget1>
-    </div>
-    <!--end::Col-->
   </div>
-  <!--end::Row-->
 
-  <!--begin::Row-->
-  <div class="row gy-10 gx-xl-10">
-    <!--begin::Col-->
-    <div class="col-xl-6">
-      <KTListWidget5
-        widget-classes="card-xxl-stretch mb-5 mb-xl-10"
-      ></KTListWidget5>
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteTeamModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete Team</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete team <strong>{{ teamToDelete?.name }}</strong>?</p>
+          <p class="text-muted">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" @click="confirmDelete" :disabled="deleting">
+            <span v-if="deleting" class="spinner-border spinner-border-sm me-2"></span>
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
-    <!--end::Col-->
-
-    <!--begin::Col-->
-    <div class="col-xl-6">
-      <KTTableWidget5
-        widget-classes="card-xxl-stretch mb-5 mb-xl-10"
-      ></KTTableWidget5>
-    </div>
-    <!--end::Col-->
   </div>
-  <!--end::Row-->
 </template>
 
-<script lang="ts">
-import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent } from "vue";
-import KTChartWidget1 from "@/components/widgets/charts/Widget1.vue";
-import KTListWidget5 from "@/components/widgets/lists/Widget5.vue";
-import KTTableWidget5 from "@/components/widgets/tables/Widget5.vue";
-import KTListWidget1 from "@/components/widgets/lists/Widget1.vue";
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { Modal } from 'bootstrap'
+import Widget1 from '@/components/dashboard-default-widgets/Widget1.vue'
+import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
+import ApiService from '@/core/services/ApiService'
 
-export default defineComponent({
-  name: "team-overview",
-  components: {
-    KTChartWidget1,
-    KTListWidget5,
-    KTTableWidget5,
-    KTListWidget1,
-  },
-  setup() {
-    return {
-      getAssetPath,
-    };
-  },
-});
+// Interface definitions
+interface Team {
+  uid: string
+  name: string
+  account_uid?: string
+  created_by?: {
+    username: string
+    email: string
+  }
+  created_at: string
+  updated_at: string
+}
+
+interface Account {
+  uid: string
+  name: string
+  organization_uid?: string
+  created_by?: {
+    username: string
+    email: string
+  }
+  created_at: string
+  updated_at: string
+}
+
+interface Organization {
+  uid: string
+  name: string
+  legalName?: string
+  email?: string
+  phone?: string
+  website?: string
+  address?: string
+  country?: string
+  status?: 'active' | 'inactive'
+  created_at: string
+  updated_at?: string
+  created_by?: {
+    username: string
+    email: string
+  }
+  description?: string
+}
+const teams = ref<Team[]>([])
+const loading = ref(false)
+const error = ref<string | null>(null)
+const searchQuery = ref('')
+const sortLabel = ref('')
+const sortOrder = ref<'asc' | 'desc'>('asc')
+
+// Organization-related reactive data
+const organizations = ref<Organization[]>([])
+const loadingOrganizations = ref(false)
+const selectedOrganizationId = ref('')
+const currentOrganization = ref<Organization | null>(null)
+
+// Account-related reactive data
+const accounts = ref<Account[]>([])
+const loadingAccounts = ref(false)
+const selectedAccountId = ref('')
+const currentAccount = ref<Account | null>(null)
+
+// Modal states
+const creating = ref(false)
+const deleting = ref(false)
+const newTeam = ref<Partial<Team>>({
+  name: '',
+})
+const teamToDelete = ref<Team | null>(null)
+
+// Table header configuration
+const tableHeader = ref([
+  { columnName: 'Team Name', columnLabel: 'name', sortEnabled: true, searchable: true },
+  { columnName: 'Created By', columnLabel: 'created_by', sortEnabled: false, searchable: false },
+  { columnName: 'Created', columnLabel: 'created_at', sortEnabled: true, searchable: false },
+  { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false, searchable: false }
+])
+
+// Get route instance to read query parameters
+const route = useRoute()
+
+// Organization-related functions
+const saveLastSelectedOrganization = (orgId: string) => {
+  localStorage.setItem('lastSelectedOrganization', orgId)
+}
+
+const loadLastSelectedOrganization = (): string | null => {
+  return localStorage.getItem('lastSelectedOrganization')
+}
+
+// Account-related functions
+const saveLastSelectedAccount = (accountId: string) => {
+  localStorage.setItem('lastSelectedAccount', accountId)
+}
+
+const loadLastSelectedAccount = (): string | null => {
+  return localStorage.getItem('lastSelectedAccount')
+}
+
+// Fetch organizations from API
+const fetchOrganizations = async () => {
+  loadingOrganizations.value = true
+  try {
+    const resp = await ApiService.query("organizations", {})
+    if (resp && resp.data) {
+      organizations.value = resp.data
+      
+      // Check if orgId is provided in URL query parameters
+      const orgIdFromUrl = route.query.orgId as string
+      
+      if (orgIdFromUrl) {
+        // Find the organization by the provided orgId
+        const orgFromUrl = organizations.value.find(o => o.uid === orgIdFromUrl)
+        if (orgFromUrl) {
+          selectedOrganizationId.value = orgFromUrl.uid
+          currentOrganization.value = orgFromUrl
+          // Save this as the last selected organization
+          saveLastSelectedOrganization(orgFromUrl.uid)
+          // Fetch accounts for the selected organization
+          fetchAccounts()
+        } else {
+          // If orgId not found, try to use last selected organization
+          const lastSelectedOrgId = loadLastSelectedOrganization()
+          if (lastSelectedOrgId) {
+            const lastOrg = organizations.value.find(o => o.uid === lastSelectedOrgId)
+            if (lastOrg) {
+              selectedOrganizationId.value = lastOrg.uid
+              currentOrganization.value = lastOrg
+              fetchAccounts()
+            } else {
+              // If last selected not found, use first organization
+              selectedOrganizationId.value = organizations.value[0]?.uid || ''
+              currentOrganization.value = organizations.value[0] || null
+              if (organizations.value[0]) {
+                saveLastSelectedOrganization(organizations.value[0].uid)
+                fetchAccounts()
+              }
+            }
+          } else {
+            // No last selected, use first organization
+            selectedOrganizationId.value = organizations.value[0]?.uid || ''
+            currentOrganization.value = organizations.value[0] || null
+            if (organizations.value[0]) {
+              saveLastSelectedOrganization(organizations.value[0].uid)
+              fetchAccounts()
+            }
+          }
+        }
+      } else if (!selectedOrganizationId.value && organizations.value.length > 0) {
+        // Try to use last selected organization first
+        const lastSelectedOrgId = loadLastSelectedOrganization()
+        if (lastSelectedOrgId) {
+          const lastOrg = organizations.value.find(o => o.uid === lastSelectedOrgId)
+          if (lastOrg) {
+            selectedOrganizationId.value = lastOrg.uid
+            currentOrganization.value = lastOrg
+          } else {
+            // Last selected not found, use first organization
+            selectedOrganizationId.value = organizations.value[0].uid
+            currentOrganization.value = organizations.value[0]
+            saveLastSelectedOrganization(organizations.value[0].uid)
+          }
+        } else {
+          // No last selected, use first organization
+          selectedOrganizationId.value = organizations.value[0].uid
+          currentOrganization.value = organizations.value[0]
+          saveLastSelectedOrganization(organizations.value[0].uid)
+        }
+        fetchAccounts()
+      }
+    }
+  } catch (e: any) {
+    console.error('Failed to load organizations:', e)
+  } finally {
+    loadingOrganizations.value = false
+  }
+}
+
+// Fetch accounts from API
+const fetchAccounts = async () => {
+  if (!selectedOrganizationId.value) return
+
+  loadingAccounts.value = true
+  try {
+    const resp = await ApiService.query(`organizations/${selectedOrganizationId.value}/accounts`, {})
+    if (resp && resp.data) {
+      accounts.value = resp.data
+      
+      // Try to use last selected account or first account
+      const lastSelectedAccountId = loadLastSelectedAccount()
+      if (lastSelectedAccountId) {
+        const lastAccount = accounts.value.find(a => a.uid === lastSelectedAccountId)
+        if (lastAccount) {
+          selectedAccountId.value = lastAccount.uid
+          currentAccount.value = lastAccount
+        } else {
+          // Last selected not found, use first account
+          selectedAccountId.value = accounts.value[0]?.uid || ''
+          currentAccount.value = accounts.value[0] || null
+          if (accounts.value[0]) {
+            saveLastSelectedAccount(accounts.value[0].uid)
+          }
+        }
+      } else {
+        // No last selected, use first account
+        selectedAccountId.value = accounts.value[0]?.uid || ''
+        currentAccount.value = accounts.value[0] || null
+        if (accounts.value[0]) {
+          saveLastSelectedAccount(accounts.value[0].uid)
+        }
+      }
+      
+      // Fetch teams for the selected account
+      fetchTeams()
+    }
+  } catch (e: any) {
+    console.error('Failed to load accounts:', e)
+  } finally {
+    loadingAccounts.value = false
+  }
+}
+
+// Fetch teams from API
+const fetchTeams = async () => {
+  if (!selectedAccountId.value) return
+
+  loading.value = true
+  error.value = null
+  try {
+    const resp = await ApiService.query(`accounts/${selectedAccountId.value}/teams`, {})
+    if (resp && resp.data) {
+      teams.value = resp.data
+      // Format created_at for each team
+      teams.value.forEach(team => {
+        if (team.created_at && typeof team.created_at === 'string') {
+          team.created_at = new Date(team.created_at).toLocaleDateString()
+        }
+      })
+    }
+  } catch (e: any) {
+    error.value = e?.response?.data?.message || e.message || "Failed to load teams"
+  } finally {
+    loading.value = false
+  }
+}
+
+// Methods
+const handleSort = (sort: { label: string; order: 'asc' | 'desc' }) => {
+  sortLabel.value = sort.label
+  sortOrder.value = sort.order
+}
+
+const switchOrganization = () => {
+  const org = organizations.value.find(o => o.uid === selectedOrganizationId.value)
+  currentOrganization.value = org || null
+  // Save the selected organization to localStorage
+  if (selectedOrganizationId.value) {
+    saveLastSelectedOrganization(selectedOrganizationId.value)
+  }
+  // Clear accounts and teams when organization changes
+  accounts.value = []
+  teams.value = []
+  selectedAccountId.value = ''
+  currentAccount.value = null
+  // Fetch accounts for the new organization
+  fetchAccounts()
+}
+
+const switchAccount = () => {
+  const account = accounts.value.find(a => a.uid === selectedAccountId.value)
+  currentAccount.value = account || null
+  // Save the selected account to localStorage
+  if (selectedAccountId.value) {
+    saveLastSelectedAccount(selectedAccountId.value)
+  }
+  // Fetch teams for the selected account
+  fetchTeams()
+}
+
+const showAddTeamModal = () => {
+  // Reset form
+  newTeam.value = {
+    name: '',
+  }
+  // Show modal using Bootstrap
+  const modal = document.getElementById('addTeamModal')
+  if (modal) {
+    const bsModal = new Modal(modal)
+    bsModal.show()
+  }
+}
+
+const createTeam = async () => {
+  if (!newTeam.value.name || !selectedAccountId.value) return
+
+  // Include account context
+  const teamData = {
+    ...newTeam.value,
+  }
+
+  creating.value = true
+  try {
+    const resp = await ApiService.post(`accounts/${selectedAccountId.value}/teams`, teamData)
+    if (resp && resp.data) {
+      teams.value.unshift(resp.data)
+      // Hide modal
+      const modal = document.getElementById('addTeamModal')
+      if (modal) {
+        const bsModal = Modal.getInstance(modal)
+        bsModal?.hide()
+      }
+    }
+  } catch (e: any) {
+    error.value = e?.response?.data?.message || e.message || "Failed to create team"
+  } finally {
+    creating.value = false
+  }
+}
+
+const deleteTeam = (team: Team) => {
+  teamToDelete.value = team
+  // Show delete confirmation modal
+  const modal = document.getElementById('deleteTeamModal')
+  if (modal) {
+    const bsModal = new Modal(modal)
+    bsModal.show()
+  }
+}
+
+const confirmDelete = async () => {
+  if (!teamToDelete.value) return
+
+  deleting.value = true
+  try {
+    await ApiService.delete(`teams/${teamToDelete.value.uid}`)
+    teams.value = teams.value.filter(team => team.uid !== teamToDelete.value!.uid)
+    // Hide modal
+    const modal = document.getElementById('deleteTeamModal')
+    if (modal) {
+      const bsModal = Modal.getInstance(modal)
+      bsModal?.hide()
+    }
+    teamToDelete.value = null
+  } catch (e: any) {
+    error.value = e?.response?.data?.message || e.message || "Failed to delete team"
+  } finally {
+    deleting.value = false
+  }
+}
+
+const viewTeamDetails = (team: Team) => {
+  console.log('Viewing team details for:', team.name)
+  // TODO: Navigate to details view or show modal
+}
+
+const formatDate = (date: string) => {
+  return date ? new Date(date).toLocaleDateString() : '-'
+}
+
+// Computed properties for summary statistics
+const totalTeams = computed(() => teams.value.length)
+const activeTeams = computed(() => teams.value.length) // All teams are considered active for now
+const activeTeamsPercentage = computed(() => 100) // All teams are active
+
+// Mock data for other stats (replace with actual API calls)
+const totalMembers = computed(() => teams.value.reduce((sum, team) => sum + Math.floor(Math.random() * 20) + 5, 0))
+const activeMembers = computed(() => Math.floor(totalMembers.value * 0.9))
+const activeMembersPercentage = computed(() => totalMembers.value > 0 ? Math.round((activeMembers.value / totalMembers.value) * 100) : 0)
+
+const totalProjects = computed(() => teams.value.reduce((sum, team) => sum + Math.floor(Math.random() * 10) + 2, 0))
+const activeProjects = computed(() => Math.floor(totalProjects.value * 0.8))
+const activeProjectsPercentage = computed(() => totalProjects.value > 0 ? Math.round((activeProjects.value / totalProjects.value) * 100) : 0)
+
+const teamPerformance = computed(() => `${Math.floor(Math.random() * 30) + 70}%`)
+const performanceGrowth = computed(() => Math.floor(Math.random() * 20) + 5)
+
+// Search and Sort functionality
+const filteredAndSortedTeams = computed(() => {
+  let filtered = teams.value
+
+  // Filter by search query
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(team =>
+      team.name.toLowerCase().includes(query)
+    )
+  }
+
+  // Sort data
+  if (sortLabel.value) {
+    filtered = [...filtered].sort((a, b) => {
+      const aValue = a[sortLabel.value as keyof Team]
+      const bValue = b[sortLabel.value as keyof Team]
+
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        const comparison = aValue.localeCompare(bValue)
+        return sortOrder.value === 'asc' ? comparison : -comparison
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        const comparison = aValue - bValue
+        return sortOrder.value === 'asc' ? comparison : -comparison
+      }
+      return 0
+    })
+  }
+
+  return filtered
+})
+
+// Initialize
+onMounted(() => {
+  fetchOrganizations()
+})
 </script>

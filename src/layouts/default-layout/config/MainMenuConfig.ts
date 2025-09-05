@@ -28,20 +28,10 @@ const MainMenuConfig: Array<MenuItem> = [
         bootstrapIcon: "bi-person",
       },
       {
-        sectionTitle: "Team",
-        route: "/team",
-        keenthemesIcon: "profile-circle",
-        bootstrapIcon: "bi-person",
-        sub: [
-          {
-            heading: "Overview",
-            route: "/controlplane/team/overview",
-          },
-          {
-            heading: "Settings",
-            route: "/controlplane/team/settings",
-          },
-        ],
+        heading: "team",
+        route: "/controlplane/team/overview",
+        keenthemesIcon: "users",
+        bootstrapIcon: "bi-people",
       },
       {
         sectionTitle: "Site Management",

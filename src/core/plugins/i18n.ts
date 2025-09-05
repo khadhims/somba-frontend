@@ -17,6 +17,7 @@ const messages = {
     vertical: "Vertical",
     account: "Account",
     organization: "Organization",
+    team: "Team",
     accountOverview: "Overview",
     organizationOverview: "Overview",
     settings: "Settings",
