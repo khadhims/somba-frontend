@@ -17,18 +17,18 @@ const MainMenuConfig: Array<MenuItem> = [
     route: "/controlplane",
     pages: [
        {
-        sectionTitle: "oragnization",
-        route: "/oragnization",
+        sectionTitle: "organization",
+        route: "/organization",
         keenthemesIcon: "profile-circle",
         bootstrapIcon: "bi-person",
         sub: [
           {
-            heading: "oragnizationOverview",
-            route: "/controlplane/oragnization/overview",
+            heading: "organizationOverview",
+            route: "/controlplane/organization/overview",
           },
           {
             heading: "settings",
-            route: "/controlplane/oragnization/settings",
+            route: "/controlplane/organization/settings",
           },
         ],
       },

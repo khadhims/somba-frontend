@@ -148,7 +148,7 @@ const routes: Array<RouteRecordRaw> = [
         name: "account",
         component: () => import("@/views/controlplane/account/Account.vue"),
         meta: {
-          breadcrumbs: ["Crafted", "Account"],
+          breadcrumbs: [ "Account"],
         },
         children: [
           {

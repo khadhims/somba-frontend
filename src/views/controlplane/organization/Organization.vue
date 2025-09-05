@@ -232,7 +232,7 @@
           <!--begin::Nav item-->
           <li class="nav-item">
             <router-link
-              to="/controlplane/account/overview"
+              to="/controlplane/organization/overview"
               class="nav-link text-active-primary me-6"
               active-class="active"
             >
@@ -243,7 +243,7 @@
           <!--begin::Nav item-->
           <li class="nav-item">
             <router-link
-              to="/controlplane/account/settings"
+              to="/controlplane/organization/settings"
               class="nav-link text-active-primary me-6"
               active-class="active"
             >
@@ -266,7 +266,7 @@ import { defineComponent } from "vue";
 import Dropdown3 from "@/components/dropdown/Dropdown3.vue";
 
 export default defineComponent({
-  name: "kt-account",
+  name: "organization",
   components: {
     Dropdown3,
   },
