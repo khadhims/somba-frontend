@@ -11,12 +11,12 @@
     >
       <!--begin::Copyright-->
       <div class="text-gray-900 order-2 order-md-1">
-        <span class="text-muted fw-semibold me-1">2021&copy;</span>
+        <span class="text-muted fw-semibold me-1">2025&copy;</span>
         <a
-          href="https://keenthemes.com/"
+          href="https://somba.kresibinar.id/"
           target="_blank"
           class="text-gray-800 text-hover-primary"
-          >Keenthemes</a
+          >Somba</a
         >
       </div>
       <!--end::Copyright-->
@@ -32,7 +32,7 @@
         </li>
 
         <li class="menu-item">
-          <a href="#" target="_blank" class="menu-link px-2">Purchase</a>
+          <a href="#" target="_blank" class="menu-link px-2">Pricing</a>
         </li>
       </ul>
       <!--end::Menu-->
