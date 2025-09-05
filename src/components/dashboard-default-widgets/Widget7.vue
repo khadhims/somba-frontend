@@ -113,7 +113,7 @@
 
                           <div class="d-flex justify-content-start flex-column">
                             <router-link
-                              to="/organization/pages/profile/overview"
+                              to="/controlplane/pages/profile/overview"
                               class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6"
                               >{{ row.agent.name }}</router-link
                             >

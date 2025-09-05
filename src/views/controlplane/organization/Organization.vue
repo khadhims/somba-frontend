@@ -232,7 +232,7 @@
           <!--begin::Nav item-->
           <li class="nav-item">
             <router-link
-              to="/organization/account/overview"
+              to="/controlplane/account/overview"
               class="nav-link text-active-primary me-6"
               active-class="active"
             >
@@ -243,7 +243,7 @@
           <!--begin::Nav item-->
           <li class="nav-item">
             <router-link
-              to="/organization/account/settings"
+              to="/controlplane/account/settings"
               class="nav-link text-active-primary me-6"
               active-class="active"
             >

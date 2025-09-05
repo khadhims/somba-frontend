@@ -64,7 +64,7 @@
                       >Manager</span
                     >
                     <router-link
-                      to="/organization/pages/profile/overview"
+                      to="/controlplane/pages/profile/overview"
                       class="fw-bold text-gray-800 text-hover-primary fs-7"
                       >Robert Fox</router-link
                     >

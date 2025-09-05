@@ -13,9 +13,25 @@ const MainMenuConfig: Array<MenuItem> = [
     ],
   },
   {
-    heading: "organization",
-    route: "/organization",
+    heading: "control plane",
+    route: "/controlplane",
     pages: [
+       {
+        sectionTitle: "oragnization",
+        route: "/oragnization",
+        keenthemesIcon: "profile-circle",
+        bootstrapIcon: "bi-person",
+        sub: [
+          {
+            heading: "oragnizationOverview",
+            route: "/controlplane/oragnization/overview",
+          },
+          {
+            heading: "settings",
+            route: "/controlplane/oragnization/settings",
+          },
+        ],
+      },
       {
         sectionTitle: "account",
         route: "/account",
@@ -24,29 +40,29 @@ const MainMenuConfig: Array<MenuItem> = [
         sub: [
           {
             heading: "accountOverview",
-            route: "/organization/account/overview",
+            route: "/controlplane/account/overview",
           },
           {
             heading: "settings",
-            route: "/organization/account/settings",
+            route: "/controlplane/account/settings",
           },
         ],
       },
       {
-  sectionTitle: "Team",
-        route: "/team",
-        keenthemesIcon: "profile-circle",
-        bootstrapIcon: "bi-person",
-        sub: [
-          {
-            heading: "Overview",
-            route: "/organization/team/overview",
-          },
-          {
-            heading: "Settings",
-            route: "/organization/team/settings",
-          },
-        ],
+        sectionTitle: "Team",
+              route: "/team",
+              keenthemesIcon: "profile-circle",
+              bootstrapIcon: "bi-person",
+              sub: [
+                {
+                  heading: "Overview",
+                  route: "/controlplane/team/overview",
+                },
+                {
+                  heading: "Settings",
+                  route: "/controlplane/team/settings",
+                },
+              ],
       },
       {
         sectionTitle: "Site Management",
@@ -56,31 +72,31 @@ const MainMenuConfig: Array<MenuItem> = [
         sub: [
           {
             heading: "Overview",
-            route: "/organization/site/overview",
+            route: "/controlplane/site/overview",
             keenthemesIcon: "chart-simple",
             bootstrapIcon: "bi-graph-up",
           },
           {
             heading: "Site Configuration",
-            route: "/organization/site/settings",
+            route: "/controlplane/site/settings",
             keenthemesIcon: "setting-2",
             bootstrapIcon: "bi-gear",
           },
           {
             heading: "Room Management",
-            route: "/organization/site/room",
+            route: "/controlplane/site/room",
             keenthemesIcon: "home-3",
             bootstrapIcon: "bi-door-open",
           },
           {
             heading: "NVR Systems",
-            route: "/organization/site/nvr",
+            route: "/controlplane/site/nvr",
             keenthemesIcon: "router",
             bootstrapIcon: "bi-hdd-network",
           },
           {
             heading: "Camera Management",
-            route: "/organization/site/camera",
+            route: "/controlplane/site/camera",
             keenthemesIcon: "security-user",
             bootstrapIcon: "bi-camera-video",
           },
@@ -97,27 +113,27 @@ const MainMenuConfig: Array<MenuItem> = [
             sub: [
               {
                 heading: "profileOverview",
-                route: "/organization/pages/profile/overview",
+                route: "/controlplane/pages/profile/overview",
               },
               {
                 heading: "projects",
-                route: "/organization/pages/profile/projects",
+                route: "/controlplane/pages/profile/projects",
               },
               {
                 heading: "campaigns",
-                route: "/organization/pages/profile/campaigns",
+                route: "/controlplane/pages/profile/campaigns",
               },
               {
                 heading: "documents",
-                route: "/organization/pages/profile/documents",
+                route: "/controlplane/pages/profile/documents",
               },
               {
                 heading: "connections",
-                route: "/organization/pages/profile/connections",
+                route: "/controlplane/pages/profile/connections",
               },
               {
                 heading: "activity",
-                route: "/organization/pages/profile/activity",
+                route: "/controlplane/pages/profile/activity",
               },
             ],
           },
@@ -127,11 +143,11 @@ const MainMenuConfig: Array<MenuItem> = [
             sub: [
               {
                 heading: "horizontal",
-                route: "/organization/pages/wizards/horizontal",
+                route: "/controlplane/pages/wizards/horizontal",
               },
               {
                 heading: "vertical",
-                route: "/organization/pages/wizards/vertical",
+                route: "/controlplane/pages/wizards/vertical",
               },
             ],
           },
@@ -185,19 +201,19 @@ const MainMenuConfig: Array<MenuItem> = [
             sub: [
               {
                 heading: "inviteFriends",
-                route: "/organization/modals/general/invite-friends",
+                route: "/controlplane/modals/general/invite-friends",
               },
               {
                 heading: "viewUsers",
-                route: "/organization/modals/general/view-user",
+                route: "/controlplane/modals/general/view-user",
               },
               {
                 heading: "upgradePlan",
-                route: "/organization/modals/general/upgrade-plan",
+                route: "/controlplane/modals/general/upgrade-plan",
               },
               {
                 heading: "shareAndEarn",
-                route: "/organization/modals/general/share-and-earn",
+                route: "/controlplane/modals/general/share-and-earn",
               },
             ],
           },
@@ -207,19 +223,19 @@ const MainMenuConfig: Array<MenuItem> = [
             sub: [
               {
                 heading: "newTarget",
-                route: "/organization/modals/forms/new-target",
+                route: "/controlplane/modals/forms/new-target",
               },
               {
                 heading: "newCard",
-                route: "/organization/modals/forms/new-card",
+                route: "/controlplane/modals/forms/new-card",
               },
               {
                 heading: "newAddress",
-                route: "/organization/modals/forms/new-address",
+                route: "/controlplane/modals/forms/new-address",
               },
               {
                 heading: "createAPIKey",
-                route: "/organization/modals/forms/create-api-key",
+                route: "/controlplane/modals/forms/create-api-key",
               },
             ],
           },
@@ -229,15 +245,15 @@ const MainMenuConfig: Array<MenuItem> = [
             sub: [
               {
                 heading: "twoFactorAuth",
-                route: "/organization/modals/wizards/two-factor-auth",
+                route: "/controlplane/modals/wizards/two-factor-auth",
               },
               {
                 heading: "createApp",
-                route: "/organization/modals/wizards/create-app",
+                route: "/controlplane/modals/wizards/create-app",
               },
               {
                 heading: "createAccount",
-                route: "/organization/modals/wizards/create-account",
+                route: "/controlplane/modals/wizards/create-account",
               },
             ],
           },
@@ -251,27 +267,27 @@ const MainMenuConfig: Array<MenuItem> = [
         sub: [
           {
             heading: "widgetsLists",
-            route: "/organization/widgets/lists",
+            route: "/controlplane/widgets/lists",
           },
           {
             heading: "widgetsStatistics",
-            route: "/organization/widgets/statistics",
+            route: "/controlplane/widgets/statistics",
           },
           {
             heading: "widgetsCharts",
-            route: "/organization/widgets/charts",
+            route: "/controlplane/widgets/charts",
           },
           {
             heading: "widgetsMixed",
-            route: "/organization/widgets/mixed",
+            route: "/controlplane/widgets/mixed",
           },
           {
             heading: "widgetsTables",
-            route: "/organization/widgets/tables",
+            route: "/controlplane/widgets/tables",
           },
           {
             heading: "widgetsFeeds",
-            route: "/organization/widgets/feeds",
+            route: "/controlplane/widgets/feeds",
           },
         ],
       },

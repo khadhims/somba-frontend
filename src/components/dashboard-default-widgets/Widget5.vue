@@ -17,7 +17,7 @@
             <br />
             <span class="position-relative d-inline-block text-danger">
               <router-link
-                to="/organization/account/overview"
+                to="/controlplane/account/overview"
                 class="text-danger opacity-75-hover"
                 >Pro Plan</router-link
               >

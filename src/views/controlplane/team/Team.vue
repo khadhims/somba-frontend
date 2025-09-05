@@ -1,6 +1,6 @@
 <template>
   <!--begin::Navbar-->
-  <div class="card mb-5 mb-xxl-8">
+  <div class="card mb-5 mb-xl-10">
     <div class="card-body pt-9 pb-0">
       <!--begin::Details-->
       <div class="d-flex flex-wrap flex-sm-nowrap mb-3">
@@ -35,6 +35,14 @@
                 <a href="#">
                   <KTIcon icon-name="verify" icon-class="fs-1 text-primary" />
                 </a>
+
+                <a
+                  href="#"
+                  class="btn btn-sm btn-light-success fw-bold ms-2 fs-8 py-1 px-3"
+                  data-bs-toggle="modal"
+                  data-bs-target="#kt_modal_upgrade_plan"
+                  >Upgrade to Pro</a
+                >
               </div>
               <!--end::Name-->
 
@@ -119,14 +127,7 @@
                       icon-name="arrow-up"
                       icon-class="fs-3 text-success me-2"
                     />
-                    <div
-                      class="fs-2 fw-bold"
-                      data-kt-countup="true"
-                      data-kt-countup-value="4500"
-                      data-kt-countup-prefix="$"
-                    >
-                      4,500$
-                    </div>
+                    <div class="fs-2 fw-bold">4500$</div>
                   </div>
                   <!--end::Number-->
 
@@ -231,7 +232,7 @@
           <!--begin::Nav item-->
           <li class="nav-item">
             <router-link
-              to="/controlplane/pages/profile/overview"
+              to="/controlplane/account/overview"
               class="nav-link text-active-primary me-6"
               active-class="active"
             >
@@ -242,55 +243,11 @@
           <!--begin::Nav item-->
           <li class="nav-item">
             <router-link
+              to="/controlplane/account/settings"
               class="nav-link text-active-primary me-6"
-              to="/controlplane/pages/profile/projects"
               active-class="active"
             >
-              Projects
-            </router-link>
-          </li>
-          <!--end::Nav item-->
-          <!--begin::Nav item-->
-          <li class="nav-item">
-            <router-link
-              class="nav-link text-active-primary me-6"
-              to="/controlplane/pages/profile/campaigns"
-              active-class="active"
-            >
-              Campaigns
-            </router-link>
-          </li>
-          <!--end::Nav item-->
-          <!--begin::Nav item-->
-          <li class="nav-item">
-            <router-link
-              class="nav-link text-active-primary me-6"
-              to="/controlplane/pages/profile/documents"
-              active-class="active"
-            >
-              Documents
-            </router-link>
-          </li>
-          <!--end::Nav item-->
-          <!--begin::Nav item-->
-          <li class="nav-item">
-            <router-link
-              class="nav-link text-active-primary me-6"
-              to="/controlplane/pages/profile/connections"
-              active-class="active"
-            >
-              Connections
-            </router-link>
-          </li>
-          <!--end::Nav item-->
-          <!--begin::Nav item-->
-          <li class="nav-item">
-            <router-link
-              class="nav-link text-active-primary me-6"
-              to="/controlplane/pages/profile/activity"
-              active-class="active"
-            >
-              Activity
+              Settings
             </router-link>
           </li>
           <!--end::Nav item-->
@@ -309,7 +266,7 @@ import { defineComponent } from "vue";
 import Dropdown3 from "@/components/dropdown/Dropdown3.vue";
 
 export default defineComponent({
-  name: "profile-page-layout",
+  name: "kt-account",
   components: {
     Dropdown3,
   },
