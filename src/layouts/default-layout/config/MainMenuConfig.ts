@@ -16,20 +16,10 @@ const MainMenuConfig: Array<MenuItem> = [
     route: "/controlplane",
     pages: [
       {
-        sectionTitle: "organization",
-        route: "/organization",
+        heading: "organization",
+        route: "/controlplane/organization/overview",
         keenthemesIcon: "building",
         bootstrapIcon: "bi-building",
-        sub: [
-          {
-            heading: "organizationOverview",
-            route: "/controlplane/organization/overview",
-          },
-          {
-            heading: "settings",
-            route: "/controlplane/organization/settings",
-          },
-        ],
       },
       {
         sectionTitle: "account",
