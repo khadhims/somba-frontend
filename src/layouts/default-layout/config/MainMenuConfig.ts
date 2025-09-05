@@ -336,6 +336,60 @@ const MainMenuConfig: Array<MenuItem> = [
           },
         ],
       },
+      {
+        heading: "liveView",
+        route: "/apps/live-view",
+        keenthemesIcon: "screen",
+        bootstrapIcon: "bi-camera-video",
+      },
+      {
+        sectionTitle: "events & alerts",
+        route: "/events-alerts",
+        keenthemesIcon: "notification-bing",
+        bootstrapIcon: "bi-bell",
+        sub: [
+          {
+            heading: "overview",
+            route: "/apps/events-alerts/overview",
+          },
+          {
+            heading: "settings",
+            route: "/apps/events-alerts/settings",
+          },
+        ],
+      },
+      {
+        sectionTitle: "recording & playback",
+        route: "/recording-playback",
+        keenthemesIcon: "video",
+        bootstrapIcon: "bi-play-circle",
+        sub: [
+          {
+            heading: "overview",
+            route: "/apps/recording-playback/overview",
+          },
+          {
+            heading: "settings",
+            route: "/apps/recording-playback/settings",
+          },
+        ],
+      },
+      {
+        sectionTitle: "monitoring center",
+        route: "/monitoring-center",
+        keenthemesIcon: "monitor-mobbile",
+        bootstrapIcon: "bi-display",
+        sub: [
+          {
+            heading: "overview",
+            route: "/apps/monitoring-center/overview",
+          },
+          {
+            heading: "settings",
+            route: "/apps/monitoring-center/settings",
+          },
+        ],
+      },
     ],
   },
 ];

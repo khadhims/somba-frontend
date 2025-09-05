@@ -354,6 +354,69 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: "/apps/live-view",
+        name: "apps-live-view",
+        component: () => import("@/views/apps/LiveView.vue"),
+        meta: {
+          pageTitle: "Live View",
+          breadcrumbs: ["Apps"],
+        },
+      },
+      {
+        path: "/apps/events-alerts/overview",
+        name: "apps-events-alerts-overview",
+        component: () => import("@/views/apps/events-alerts/Overview.vue"),
+        meta: {
+          pageTitle: "Events & Alerts Overview",
+          breadcrumbs: ["Apps", "Events & Alerts"],
+        },
+      },
+      {
+        path: "/apps/events-alerts/settings",
+        name: "apps-events-alerts-settings",
+        component: () => import("@/views/apps/events-alerts/Settings.vue"),
+        meta: {
+          pageTitle: "Events & Alerts Settings",
+          breadcrumbs: ["Apps", "Events & Alerts"],
+        },
+      },
+      {
+        path: "/apps/recording-playback/overview",
+        name: "apps-recording-playback-overview",
+        component: () => import("@/views/apps/recording-playback/Overview.vue"),
+        meta: {
+          pageTitle: "Recording & Playback Overview",
+          breadcrumbs: ["Apps", "Recording & Playback"],
+        },
+      },
+      {
+        path: "/apps/recording-playback/settings",
+        name: "apps-recording-playback-settings",
+        component: () => import("@/views/apps/recording-playback/Settings.vue"),
+        meta: {
+          pageTitle: "Recording & Playback Settings",
+          breadcrumbs: ["Apps", "Recording & Playback"],
+        },
+      },
+      {
+        path: "/apps/monitoring-center/overview",
+        name: "apps-monitoring-center-overview",
+        component: () => import("@/views/apps/monitoring-center/Overview.vue"),
+        meta: {
+          pageTitle: "Monitoring Center Overview",
+          breadcrumbs: ["Apps", "Monitoring Center"],
+        },
+      },
+      {
+        path: "/apps/monitoring-center/settings",
+        name: "apps-monitoring-center-settings",
+        component: () => import("@/views/apps/monitoring-center/Settings.vue"),
+        meta: {
+          pageTitle: "Monitoring Center Settings",
+          breadcrumbs: ["Apps", "Monitoring Center"],
+        },
+      },
+      {
         path: "/controlplane/modals/general/invite-friends",
         name: "modals-general-invite-friends",
         component: () =>
