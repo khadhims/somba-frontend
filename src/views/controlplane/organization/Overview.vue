@@ -143,9 +143,9 @@
           </span>
         </template>
 
-        <template v-slot:createdAt="{ row }">
+        <template v-slot:created_at="{ row }">
           <span class="text-dark fw-bold d-block fs-6">{{
-            formatDate(row.createdAt)
+            formatDate(row.created_at)
           }}</span>
         </template>
 
@@ -464,16 +464,21 @@ import ApiService from "@/core/services/ApiService";
 
 // Interface definitions
 interface Organization {
-  id: number;
+  uid: string;
   name: string;
   legalName?: string;
-  email: string;
+  email?: string;
   phone?: string;
   website?: string;
   address?: string;
   country?: string;
-  status: "active" | "inactive";
-  createdAt: string;
+  status?: "active" | "inactive";
+  created_at: string;
+  updated_at?: string;
+  created_by?: {
+    username: string;
+    email: string;
+  };
   description?: string;
 }
 
@@ -536,7 +541,7 @@ const tableHeader = ref([
   },
   {
     columnName: "Created",
-    columnLabel: "createdAt",
+    columnLabel: "created_at",
     sortEnabled: true,
     searchable: false,
   },
@@ -556,10 +561,10 @@ const fetchOrganizations = async () => {
     const resp = await ApiService.query("organizations", {});
     if (resp && resp.data) {
       organizations.value = resp.data;
-      // Format createdAt for each organization
+      // Format created_at for each organization
       organizations.value.forEach((org) => {
-        if (org.createdAt && typeof org.createdAt === "string") {
-          org.createdAt = new Date(org.createdAt).toLocaleDateString();
+        if (org.created_at && typeof org.created_at === "string") {
+          org.created_at = new Date(org.created_at).toLocaleDateString();
         }
       });
     }
@@ -624,9 +629,9 @@ const filteredAndSortedOrganizations = computed(() => {
     filtered = filtered.filter(
       (org) =>
         org.name.toLowerCase().includes(query) ||
-        org.email.toLowerCase().includes(query) ||
-        org.country?.toLowerCase().includes(query) ||
-        org.status.toLowerCase().includes(query)
+        (org.email && org.email.toLowerCase().includes(query)) ||
+        (org.country && org.country.toLowerCase().includes(query)) ||
+        (org.status && org.status.toLowerCase().includes(query))
     );
   }
 
@@ -701,9 +706,19 @@ const createOrganization = async () => {
   }
 };
 
+const openEditModal = (org: Organization) => {
+  editOrganization.value = { ...org };
+  // Show modal
+  const modal = document.getElementById("editOrganizationModal");
+  if (modal) {
+    const bsModal = new Modal(modal);
+    bsModal.show();
+  }
+};
+
 const updateOrganization = async () => {
   if (
-    !editOrganization.value.id ||
+    !editOrganization.value.uid ||
     !editOrganization.value.name ||
     !editOrganization.value.email
   )
@@ -712,12 +727,12 @@ const updateOrganization = async () => {
   updating.value = true;
   try {
     const resp = await ApiService.put(
-      `organizations/${editOrganization.value.id}`,
+      `organizations/${editOrganization.value.uid}`,
       editOrganization.value
     );
     if (resp && resp.data) {
       const index = organizations.value.findIndex(
-        (org) => org.id === editOrganization.value.id
+        (org) => org.uid === editOrganization.value.uid
       );
       if (index !== -1) {
         organizations.value[index] = resp.data;
@@ -739,16 +754,6 @@ const updateOrganization = async () => {
   }
 };
 
-const openEditModal = (org: Organization) => {
-  editOrganization.value = { ...org };
-  // Show modal
-  const modal = document.getElementById("editOrganizationModal");
-  if (modal) {
-    const bsModal = new Modal(modal);
-    bsModal.show();
-  }
-};
-
 const deleteOrganization = (org: Organization) => {
   organizationToDelete.value = org;
   // Show delete confirmation modal
@@ -764,9 +769,9 @@ const confirmDelete = async () => {
 
   deleting.value = true;
   try {
-    await ApiService.delete(`organizations/${organizationToDelete.value.id}`);
+    await ApiService.delete(`organizations/${organizationToDelete.value.uid}`);
     organizations.value = organizations.value.filter(
-      (org) => org.id !== organizationToDelete.value!.id
+      (org) => org.uid !== organizationToDelete.value!.uid
     );
     // Hide modal
     const modal = document.getElementById("deleteOrganizationModal");
