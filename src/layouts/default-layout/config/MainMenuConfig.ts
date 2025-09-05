@@ -22,20 +22,10 @@ const MainMenuConfig: Array<MenuItem> = [
         bootstrapIcon: "bi-building",
       },
       {
-        sectionTitle: "account",
-        route: "/account",
+        heading: "account",
+        route: "/controlplane/account/overview",
         keenthemesIcon: "profile-circle",
         bootstrapIcon: "bi-person",
-        sub: [
-          {
-            heading: "accountOverview",
-            route: "/controlplane/account/overview",
-          },
-          {
-            heading: "settings",
-            route: "/controlplane/account/settings",
-          },
-        ],
       },
       {
         sectionTitle: "Team",
