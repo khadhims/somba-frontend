@@ -33,8 +33,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/sign-in",
         name: "sign-in",
-          component: () =>
-            import("@/views/controlplane/authentication/basic-flow/SignIn.vue"),
+        component: () =>
+          import("@/views/controlplane/authentication/basic-flow/SignIn.vue"),
         meta: {
           pageTitle: "Sign In",
         },
@@ -42,8 +42,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/sign-up",
         name: "sign-up",
-          component: () =>
-            import("@/views/controlplane/authentication/basic-flow/SignUp.vue"),
+        component: () =>
+          import("@/views/controlplane/authentication/basic-flow/SignUp.vue"),
         meta: {
           pageTitle: "Sign Up",
         },
@@ -51,8 +51,10 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/password-reset",
         name: "password-reset",
-          component: () =>
-            import("@/views/controlplane/authentication/basic-flow/PasswordReset.vue"),
+        component: () =>
+          import(
+            "@/views/controlplane/authentication/basic-flow/PasswordReset.vue"
+          ),
         meta: {
           pageTitle: "Password reset",
         },
@@ -67,7 +69,8 @@ const routes: Array<RouteRecordRaw> = [
         // the 404 route, when none of the above matches
         path: "/404",
         name: "404",
-    component: () => import("@/views/controlplane/authentication/Error404.vue"),
+        component: () =>
+          import("@/views/controlplane/authentication/Error404.vue"),
         meta: {
           pageTitle: "Error 404",
         },
@@ -75,7 +78,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/500",
         name: "500",
-    component: () => import("@/views/controlplane/authentication/Error500.vue"),
+        component: () =>
+          import("@/views/controlplane/authentication/Error500.vue"),
         meta: {
           pageTitle: "Error 500",
         },

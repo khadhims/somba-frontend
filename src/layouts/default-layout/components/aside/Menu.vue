@@ -11,7 +11,10 @@
     data-kt-scroll-offset="5px"
   >
     <!-- Panah scroll atas -->
-    <span v-if="isScrollActive && !isAtTop" class="scroll-arrow scroll-arrow-up"></span>
+    <span
+      v-if="isScrollActive && !isAtTop"
+      class="scroll-arrow scroll-arrow-up"
+    ></span>
     <!--begin::Menu-->
     <div
       id="#kt_aside_menu"
@@ -23,7 +26,7 @@
           <div class="menu-content pt-8 pb-2">
             <span class="menu-section text-muted text-uppercase fs-8 ls-1">
               <!-- {{ translate(item.heading) }} -->
-                {{ item.heading.toUpperCase().replace(/_/g, ' ') }}
+              {{ item.heading.toUpperCase().replace(/_/g, " ") }}
             </span>
           </div>
         </div>
@@ -150,7 +153,6 @@
           </div>
         </template>
       </template>
- 
     </div>
     <!--end::Menu-->
   </div>
@@ -191,8 +193,8 @@ export default defineComponent({
       if (el) {
         el.scrollTop = 0;
         checkScroll();
-        el.addEventListener('scroll', checkScroll);
-        window.addEventListener('resize', checkScroll);
+        el.addEventListener("scroll", checkScroll);
+        window.addEventListener("resize", checkScroll);
       }
     });
 
@@ -215,9 +217,9 @@ export default defineComponent({
       version,
       translate,
       scrollElRef,
-  isScrollActive,
-  isAtTop,
-  isAtBottom,
+      isScrollActive,
+      isAtTop,
+      isAtBottom,
       getAssetPath,
     };
   },

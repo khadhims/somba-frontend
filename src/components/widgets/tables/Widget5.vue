@@ -158,9 +158,7 @@
                       >Awesome Users</span
                     >
                   </td>
-                  <td class="text-end text-muted fw-semibold">
-                    Laravel,Somba
-                  </td>
+                  <td class="text-end text-muted fw-semibold">Laravel,Somba</td>
                   <td class="text-end">
                     <span class="badge badge-light-primary">Success</span>
                   </td>

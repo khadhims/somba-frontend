@@ -24,7 +24,10 @@
           />
         </div>
 
-        <button class="btn btn-sm btn-light-primary" @click="showNvrForm = true">
+        <button
+          class="btn btn-sm btn-light-primary"
+          @click="showNvrForm = true"
+        >
           <i class="ki-duotone ki-plus fs-2"></i>
           Add NVR
         </button>
@@ -39,7 +42,7 @@
       <div v-if="showNvrForm" class="mb-10">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">{{ isEdit ? 'Edit NVR' : 'Add NVR' }}</h3>
+            <h3 class="card-title">{{ isEdit ? "Edit NVR" : "Add NVR" }}</h3>
             <div class="card-toolbar">
               <button
                 type="button"
@@ -63,9 +66,18 @@
                   <label class="required fw-semibold fs-6 mb-2">Site</label>
                   <!--end::Label-->
                   <!--begin::Select-->
-                  <select v-model="nvrForm.siteId" @change="onSiteChange" class="form-select form-select-solid" required>
+                  <select
+                    v-model="nvrForm.siteId"
+                    @change="onSiteChange"
+                    class="form-select form-select-solid"
+                    required
+                  >
                     <option value="">Select Site</option>
-                    <option v-for="site in sites" :key="site.id" :value="site.id">
+                    <option
+                      v-for="site in sites"
+                      :key="site.id"
+                      :value="site.id"
+                    >
                       {{ site.name }}
                     </option>
                   </select>
@@ -79,9 +91,17 @@
                   <label class="required fw-semibold fs-6 mb-2">Room</label>
                   <!--end::Label-->
                   <!--begin::Select-->
-                  <select v-model="nvrForm.roomId" class="form-select form-select-solid" required>
+                  <select
+                    v-model="nvrForm.roomId"
+                    class="form-select form-select-solid"
+                    required
+                  >
                     <option value="">Select Room</option>
-                    <option v-for="room in availableRooms" :key="room.id" :value="room.id">
+                    <option
+                      v-for="room in availableRooms"
+                      :key="room.id"
+                      :value="room.id"
+                    >
                       {{ room.name }}
                     </option>
                   </select>
@@ -113,7 +133,9 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">IP Address</label>
+                  <label class="required fw-semibold fs-6 mb-2"
+                    >IP Address</label
+                  >
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
@@ -137,7 +159,11 @@
                   <label class="required fw-semibold fs-6 mb-2">Brand</label>
                   <!--end::Label-->
                   <!--begin::Select-->
-                  <select v-model="nvrForm.brand" class="form-select form-select-solid" required>
+                  <select
+                    v-model="nvrForm.brand"
+                    class="form-select form-select-solid"
+                    required
+                  >
                     <option value="">Select Brand</option>
                     <option value="Hikvision">Hikvision</option>
                     <option value="Dahua">Dahua</option>
@@ -261,10 +287,12 @@
                 >
                   <span v-if="isLoading" class="indicator-progress">
                     Please wait...
-                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    <span
+                      class="spinner-border spinner-border-sm align-middle ms-2"
+                    ></span>
                   </span>
                   <span v-else class="indicator-label">
-                    {{ isEdit ? 'Update NVR' : 'Save NVR' }}
+                    {{ isEdit ? "Update NVR" : "Save NVR" }}
                   </span>
                 </button>
               </div>
@@ -299,21 +327,31 @@
               </span>
             </div>
             <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">{{ row.name }}</span>
-              <span class="text-muted fw-semibold text-muted d-block fs-7">{{ row.ipAddress }}</span>
+              <span class="text-dark fw-bold text-hover-primary fs-6">{{
+                row.name
+              }}</span>
+              <span class="text-muted fw-semibold text-muted d-block fs-7">{{
+                row.ipAddress
+              }}</span>
             </div>
           </div>
         </template>
 
         <template v-slot:location="{ row }">
           <div>
-            <span class="text-dark fw-bold d-block fs-6">{{ getSiteName(row.siteId) }}</span>
-            <span class="text-muted fw-semibold d-block fs-7">{{ getRoomName(row.roomId) }}</span>
+            <span class="text-dark fw-bold d-block fs-6">{{
+              getSiteName(row.siteId)
+            }}</span>
+            <span class="text-muted fw-semibold d-block fs-7">{{
+              getRoomName(row.roomId)
+            }}</span>
           </div>
         </template>
 
         <template v-slot:brand="{ row }">
-          <span class="badge badge-light-info fs-7 fw-bold">{{ row.brand }}</span>
+          <span class="badge badge-light-info fs-7 fw-bold">{{
+            row.brand
+          }}</span>
         </template>
 
         <template v-slot:channels="{ row }">
@@ -321,7 +359,11 @@
         </template>
 
         <template v-slot:status="{ row }">
-          <span :class="`badge badge-light-${row.status === 'Online' ? 'success' : 'danger'} fs-7 fw-bold`">
+          <span
+            :class="`badge badge-light-${
+              row.status === 'Online' ? 'success' : 'danger'
+            } fs-7 fw-bold`"
+          >
             {{ row.status }}
           </span>
         </template>
@@ -372,236 +414,269 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
+import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 
 // Interfaces
 interface Site {
-  id: number
-  name: string
+  id: number;
+  name: string;
 }
 
 interface Room {
-  id: number
-  siteId: number
-  name: string
+  id: number;
+  siteId: number;
+  name: string;
 }
 
 interface Nvr {
-  id: number
-  siteId: number
-  roomId: number
-  name: string
-  ipAddress: string
-  brand: string
-  model?: string
-  username: string
-  password: string
-  port: number
-  channels: number
-  status: 'Online' | 'Offline'
-  createdAt: string
+  id: number;
+  siteId: number;
+  roomId: number;
+  name: string;
+  ipAddress: string;
+  brand: string;
+  model?: string;
+  username: string;
+  password: string;
+  port: number;
+  channels: number;
+  status: "Online" | "Offline";
+  createdAt: string;
 }
 
 interface NvrForm {
-  id?: number
-  siteId: number | string
-  roomId: number | string
-  name: string
-  ipAddress: string
-  brand: string
-  model?: string
-  username: string
-  password: string
-  port: number
-  channels: number
+  id?: number;
+  siteId: number | string;
+  roomId: number | string;
+  name: string;
+  ipAddress: string;
+  brand: string;
+  model?: string;
+  username: string;
+  password: string;
+  port: number;
+  channels: number;
 }
 
 // Router
-const route = useRoute()
+const route = useRoute();
 
 // Reactive data
-const isLoading = ref(false)
-const showNvrForm = ref(false)
-const isEdit = ref(false)
-const searchQuery = ref('')
-const sortLabel = ref('')
-const sortOrder = ref<'asc' | 'desc'>('asc')
+const isLoading = ref(false);
+const showNvrForm = ref(false);
+const isEdit = ref(false);
+const searchQuery = ref("");
+const sortLabel = ref("");
+const sortOrder = ref<"asc" | "desc">("asc");
 
-const sites = ref<Site[]>([])
-const rooms = ref<Room[]>([])
-const nvrs = ref<Nvr[]>([])
+const sites = ref<Site[]>([]);
+const rooms = ref<Room[]>([]);
+const nvrs = ref<Nvr[]>([]);
 
 const nvrForm = ref<NvrForm>({
-  siteId: '',
-  roomId: '',
-  name: '',
-  ipAddress: '',
-  brand: '',
-  model: '',
-  username: 'admin',
-  password: '',
+  siteId: "",
+  roomId: "",
+  name: "",
+  ipAddress: "",
+  brand: "",
+  model: "",
+  username: "admin",
+  password: "",
   port: 8000,
-  channels: 16
-})
+  channels: 16,
+});
 
 // Table header configuration
 const tableHeader = ref([
-  { columnName: 'NVR Name', columnLabel: 'name', sortEnabled: true, searchable: true },
-  { columnName: 'Location', columnLabel: 'location', sortEnabled: true, searchable: true },
-  { columnName: 'Brand', columnLabel: 'brand', sortEnabled: true, searchable: true },
-  { columnName: 'Channels', columnLabel: 'channels', sortEnabled: true, searchable: false },
-  { columnName: 'Status', columnLabel: 'status', sortEnabled: true, searchable: true },
-  { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false, searchable: false }
-])
+  {
+    columnName: "NVR Name",
+    columnLabel: "name",
+    sortEnabled: true,
+    searchable: true,
+  },
+  {
+    columnName: "Location",
+    columnLabel: "location",
+    sortEnabled: true,
+    searchable: true,
+  },
+  {
+    columnName: "Brand",
+    columnLabel: "brand",
+    sortEnabled: true,
+    searchable: true,
+  },
+  {
+    columnName: "Channels",
+    columnLabel: "channels",
+    sortEnabled: true,
+    searchable: false,
+  },
+  {
+    columnName: "Status",
+    columnLabel: "status",
+    sortEnabled: true,
+    searchable: true,
+  },
+  {
+    columnName: "Actions",
+    columnLabel: "actions",
+    sortEnabled: false,
+    searchable: false,
+  },
+]);
 
 // Computed
 const availableRooms = computed(() => {
-  if (!nvrForm.value.siteId) return []
-  return rooms.value.filter(room => room.siteId === Number(nvrForm.value.siteId))
-})
+  if (!nvrForm.value.siteId) return [];
+  return rooms.value.filter(
+    (room) => room.siteId === Number(nvrForm.value.siteId)
+  );
+});
 
 const filteredAndSortedNvrs = computed(() => {
-  let filtered = nvrs.value
+  let filtered = nvrs.value;
 
   if (searchQuery.value.trim()) {
-    const q = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(nvr =>
-      nvr.name.toLowerCase().includes(q) ||
-      nvr.ipAddress.includes(q) ||
-      nvr.brand.toLowerCase().includes(q) ||
-      getSiteName(nvr.siteId).toLowerCase().includes(q) ||
-      getRoomName(nvr.roomId).toLowerCase().includes(q)
-    )
+    const q = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(
+      (nvr) =>
+        nvr.name.toLowerCase().includes(q) ||
+        nvr.ipAddress.includes(q) ||
+        nvr.brand.toLowerCase().includes(q) ||
+        getSiteName(nvr.siteId).toLowerCase().includes(q) ||
+        getRoomName(nvr.roomId).toLowerCase().includes(q)
+    );
   }
 
   if (sortLabel.value) {
     filtered = [...filtered].sort((a, b) => {
       const getValue = (item: Nvr, label: string) => {
-        if (label === 'location') return getSiteName(item.siteId)
-        return (item as any)[label]
-      }
+        if (label === "location") return getSiteName(item.siteId);
+        return (item as any)[label];
+      };
 
-      const aVal = getValue(a, sortLabel.value)
-      const bVal = getValue(b, sortLabel.value)
+      const aVal = getValue(a, sortLabel.value);
+      const bVal = getValue(b, sortLabel.value);
 
-      if (typeof aVal === 'string' && typeof bVal === 'string') {
-        const cmp = aVal.localeCompare(bVal)
-        return sortOrder.value === 'asc' ? cmp : -cmp
-      } else if (typeof aVal === 'number' && typeof bVal === 'number') {
-        const cmp = aVal - bVal
-        return sortOrder.value === 'asc' ? cmp : -cmp
+      if (typeof aVal === "string" && typeof bVal === "string") {
+        const cmp = aVal.localeCompare(bVal);
+        return sortOrder.value === "asc" ? cmp : -cmp;
+      } else if (typeof aVal === "number" && typeof bVal === "number") {
+        const cmp = aVal - bVal;
+        return sortOrder.value === "asc" ? cmp : -cmp;
       }
-      return 0
-    })
+      return 0;
+    });
   }
 
-  return filtered
-})
+  return filtered;
+});
 
-const handleSort = (sort: { label: string; order: 'asc' | 'desc' }) => {
-  sortLabel.value = sort.label
-  sortOrder.value = sort.order
-}
+const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
+  sortLabel.value = sort.label;
+  sortOrder.value = sort.order;
+};
 
 // Methods
 const getSiteName = (siteId: number): string => {
-  const site = sites.value.find(s => s.id === siteId)
-  return site ? site.name : 'Unknown Site'
-}
+  const site = sites.value.find((s) => s.id === siteId);
+  return site ? site.name : "Unknown Site";
+};
 
 const getRoomName = (roomId: number): string => {
-  const room = rooms.value.find(r => r.id === roomId)
-  return room ? room.name : 'Unknown Room'
-}
+  const room = rooms.value.find((r) => r.id === roomId);
+  return room ? room.name : "Unknown Room";
+};
 
 const onSiteChange = () => {
-  nvrForm.value.roomId = ''
-}
+  nvrForm.value.roomId = "";
+};
 
 const loadSites = async () => {
   // Mock data
   sites.value = [
-    { id: 1, name: 'Main Office' },
-    { id: 2, name: 'Branch Office' },
-    { id: 3, name: 'Warehouse A' }
-  ]
-}
+    { id: 1, name: "Main Office" },
+    { id: 2, name: "Branch Office" },
+    { id: 3, name: "Warehouse A" },
+  ];
+};
 
 const loadRooms = async () => {
   // Mock data
   rooms.value = [
-    { id: 1, siteId: 1, name: 'Reception' },
-    { id: 2, siteId: 1, name: 'Conference Room A' },
-    { id: 3, siteId: 2, name: 'Storage Area' }
-  ]
-}
+    { id: 1, siteId: 1, name: "Reception" },
+    { id: 2, siteId: 1, name: "Conference Room A" },
+    { id: 3, siteId: 2, name: "Storage Area" },
+  ];
+};
 
 const loadNvrs = async () => {
-  isLoading.value = true
-  
+  isLoading.value = true;
+
   try {
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     // Mock data
     nvrs.value = [
       {
         id: 1,
         siteId: 1,
         roomId: 1,
-        name: 'NVR-Reception-01',
-        ipAddress: '192.168.1.100',
-        brand: 'Hikvision',
-        model: 'DS-7616NI-K2',
-        username: 'admin',
-        password: 'admin123',
+        name: "NVR-Reception-01",
+        ipAddress: "192.168.1.100",
+        brand: "Hikvision",
+        model: "DS-7616NI-K2",
+        username: "admin",
+        password: "admin123",
         port: 8000,
         channels: 16,
-        status: 'Online',
-        createdAt: '2024-01-15'
+        status: "Online",
+        createdAt: "2024-01-15",
       },
       {
         id: 2,
         siteId: 1,
         roomId: 2,
-        name: 'NVR-Conference-01',
-        ipAddress: '192.168.1.101',
-        brand: 'Dahua',
-        model: 'NVR4216-16P-4KS2',
-        username: 'admin',
-        password: 'admin456',
+        name: "NVR-Conference-01",
+        ipAddress: "192.168.1.101",
+        brand: "Dahua",
+        model: "NVR4216-16P-4KS2",
+        username: "admin",
+        password: "admin456",
         port: 37777,
         channels: 16,
-        status: 'Online',
-        createdAt: '2024-01-16'
-      }
-    ]
+        status: "Online",
+        createdAt: "2024-01-16",
+      },
+    ];
   } catch (error) {
-    console.error('Error loading NVRs:', error)
+    console.error("Error loading NVRs:", error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 const saveNvr = async () => {
-  isLoading.value = true
-  
+  isLoading.value = true;
+
   try {
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     if (isEdit.value) {
       // Update existing NVR
-      const index = nvrs.value.findIndex(n => n.id === nvrForm.value.id)
+      const index = nvrs.value.findIndex((n) => n.id === nvrForm.value.id);
       if (index !== -1) {
         nvrs.value[index] = {
           ...nvrs.value[index],
           ...nvrForm.value,
           siteId: Number(nvrForm.value.siteId),
-          roomId: Number(nvrForm.value.roomId)
-        }
+          roomId: Number(nvrForm.value.roomId),
+        };
       }
     } else {
       // Add new NVR
@@ -617,19 +692,19 @@ const saveNvr = async () => {
         password: nvrForm.value.password,
         port: nvrForm.value.port,
         channels: nvrForm.value.channels,
-        status: 'Online',
-        createdAt: new Date().toISOString().split('T')[0]
-      }
-      nvrs.value.unshift(newNvr)
+        status: "Online",
+        createdAt: new Date().toISOString().split("T")[0],
+      };
+      nvrs.value.unshift(newNvr);
     }
-    
-    closeForm()
+
+    closeForm();
   } catch (error) {
-    console.error('Error saving NVR:', error)
+    console.error("Error saving NVR:", error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 const editNvr = (nvr: Nvr) => {
   nvrForm.value = {
@@ -643,60 +718,60 @@ const editNvr = (nvr: Nvr) => {
     username: nvr.username,
     password: nvr.password,
     port: nvr.port,
-    channels: nvr.channels
-  }
-  isEdit.value = true
-  showNvrForm.value = true
-}
+    channels: nvr.channels,
+  };
+  isEdit.value = true;
+  showNvrForm.value = true;
+};
 
 const deleteNvr = async (nvrId: number) => {
-  if (!confirm('Are you sure you want to delete this NVR?')) return
-  
-  isLoading.value = true
-  
+  if (!confirm("Are you sure you want to delete this NVR?")) return;
+
+  isLoading.value = true;
+
   try {
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    nvrs.value = nvrs.value.filter(n => n.id !== nvrId)
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    nvrs.value = nvrs.value.filter((n) => n.id !== nvrId);
   } catch (error) {
-    console.error('Error deleting NVR:', error)
+    console.error("Error deleting NVR:", error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 const closeForm = () => {
-  showNvrForm.value = false
-  isEdit.value = false
+  showNvrForm.value = false;
+  isEdit.value = false;
   nvrForm.value = {
-    siteId: '',
-    roomId: '',
-    name: '',
-    ipAddress: '',
-    brand: '',
-    model: '',
-    username: 'admin',
-    password: '',
+    siteId: "",
+    roomId: "",
+    name: "",
+    ipAddress: "",
+    brand: "",
+    model: "",
+    username: "admin",
+    password: "",
     port: 8000,
-    channels: 16
-  }
-}
+    channels: 16,
+  };
+};
 
 // Lifecycle
 onMounted(() => {
-  loadSites()
-  loadRooms()
-  loadNvrs()
-  
+  loadSites();
+  loadRooms();
+  loadNvrs();
+
   // Pre-select room if coming from room overview
   if (route.query.roomId) {
-    const roomId = Number(route.query.roomId)
-    const room = rooms.value.find(r => r.id === roomId)
+    const roomId = Number(route.query.roomId);
+    const room = rooms.value.find((r) => r.id === roomId);
     if (room) {
-      nvrForm.value.siteId = room.siteId
-      nvrForm.value.roomId = roomId
+      nvrForm.value.siteId = room.siteId;
+      nvrForm.value.roomId = roomId;
     }
   }
-})
+});
 </script>

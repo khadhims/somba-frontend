@@ -50,7 +50,9 @@
       <div class="row fv-row mb-7">
         <!--begin::Col-->
         <div class="col-xl-6">
-          <label class="form-label fw-bold text-gray-900 fs-6">First Name</label>
+          <label class="form-label fw-bold text-gray-900 fs-6"
+            >First Name</label
+          >
           <Field
             class="form-control form-control-lg form-control-solid"
             type="text"
@@ -96,12 +98,14 @@
           name="email"
           autocomplete="off"
         />
-              <div class="fv-plugins-message-container">
-                <div class="fv-help-block">
-                  <ErrorMessage name="email" />
-                  <div v-if="serverError" class="text-danger mt-1">{{ serverError }}</div>
-                </div>
-              </div>
+        <div class="fv-plugins-message-container">
+          <div class="fv-help-block">
+            <ErrorMessage name="email" />
+            <div v-if="serverError" class="text-danger mt-1">
+              {{ serverError }}
+            </div>
+          </div>
+        </div>
       </div>
       <!--end::Input group-->
 
@@ -110,7 +114,9 @@
         <!--begin::Wrapper-->
         <div class="mb-1">
           <!--begin::Label-->
-          <label class="form-label fw-bold text-gray-900 fs-6"> Password </label>
+          <label class="form-label fw-bold text-gray-900 fs-6">
+            Password
+          </label>
           <!--end::Label-->
 
           <!--begin::Input wrapper-->
@@ -237,10 +243,10 @@ export default defineComponent({
     ErrorMessage,
   },
   setup() {
-  const store = useAuthStore();
+    const store = useAuthStore();
     const router = useRouter();
 
-  const serverError = ref('')
+    const serverError = ref("");
 
     const submitButton = ref<HTMLButtonElement | null>(null);
 
@@ -265,9 +271,9 @@ export default defineComponent({
       values = values as User;
 
       // Clear existing errors
-  serverError.value = ''
-  // keep auth cleared
-  store.logout();
+      serverError.value = "";
+      // keep auth cleared
+      store.logout();
 
       // eslint-disable-next-line
       submitButton.value!.disabled = true;
@@ -294,21 +300,21 @@ export default defineComponent({
         });
       } catch (error) {
         // Normalize and show server error inline if present
-        const errObj = store.errors as any
-        let errorText = 'Registration failed. Please try again.'
+        const errObj = store.errors as any;
+        let errorText = "Registration failed. Please try again.";
         if (errObj) {
-          if (typeof errObj === 'string') {
-            errorText = errObj
+          if (typeof errObj === "string") {
+            errorText = errObj;
           } else if (errObj.error) {
-            errorText = errObj.error
+            errorText = errObj.error;
           } else {
             // try first property
-            const vals = Object.values(errObj)
-            if (vals.length > 0) errorText = String(vals[0])
+            const vals = Object.values(errObj);
+            if (vals.length > 0) errorText = String(vals[0]);
           }
         }
 
-        serverError.value = errorText
+        serverError.value = errorText;
 
         Swal.fire({
           text: errorText,

@@ -38,9 +38,9 @@ export default defineComponent({
       nextTick(() => {
         initializeComponents();
 
-  bodyStore.removeBodyClassName("page-loading");
-  const splash = document.getElementById("splash-screen");
-  if (splash) splash.style.display = "none";
+        bodyStore.removeBodyClassName("page-loading");
+        const splash = document.getElementById("splash-screen");
+        if (splash) splash.style.display = "none";
       });
     });
   },

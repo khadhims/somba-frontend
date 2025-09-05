@@ -23,7 +23,7 @@ export const useAuthStore = defineStore("auth", () => {
   const isAuthenticated = ref(!!JwtService.getToken());
 
   function setAuth(authUser: any) {
-    console.debug('[auth] setAuth called with:', authUser);
+    console.debug("[auth] setAuth called with:", authUser);
     isAuthenticated.value = true;
 
     // backend may return { access_token, refresh_token, user? }
@@ -84,22 +84,38 @@ export const useAuthStore = defineStore("auth", () => {
 
     return ApiService.post("auth/login", payload)
       .then((response: any) => {
-        console.debug('[auth] login raw response:', response);
+        console.debug("[auth] login raw response:", response);
         const data = response.data ?? response;
-        console.debug('[auth] login data:', data);
+        console.debug("[auth] login data:", data);
 
         // Normalize nested response shapes (e.g., { data: { access_token: ... } })
         let resolved = data;
         // Unwrap a single nesting level if tokens are inside
-        if (resolved && resolved.data && typeof resolved.data === 'object' && (resolved.data.access_token || resolved.data.refresh_token || resolved.data.api_token || resolved.data.user)) {
+        if (
+          resolved &&
+          resolved.data &&
+          typeof resolved.data === "object" &&
+          (resolved.data.access_token ||
+            resolved.data.refresh_token ||
+            resolved.data.api_token ||
+            resolved.data.user)
+        ) {
           resolved = resolved.data;
         }
         // Another safe unwrap if necessary
-        if (resolved && resolved.data && typeof resolved.data === 'object' && (resolved.data.access_token || resolved.data.refresh_token || resolved.data.api_token || resolved.data.user)) {
+        if (
+          resolved &&
+          resolved.data &&
+          typeof resolved.data === "object" &&
+          (resolved.data.access_token ||
+            resolved.data.refresh_token ||
+            resolved.data.api_token ||
+            resolved.data.user)
+        ) {
           resolved = resolved.data;
         }
 
-        console.debug('[auth] login resolved payload:', resolved);
+        console.debug("[auth] login resolved payload:", resolved);
         setAuth(resolved);
         return resolved;
       })
@@ -122,7 +138,9 @@ export const useAuthStore = defineStore("auth", () => {
       })
       .catch(({ response }) => {
         const payload = response?.data ?? { error: "Registration failed" };
-        setError(payload.errors ?? (payload.error ? { error: payload.error } : payload));
+        setError(
+          payload.errors ?? (payload.error ? { error: payload.error } : payload)
+        );
         throw response;
       });
   }
@@ -148,8 +166,9 @@ export const useAuthStore = defineStore("auth", () => {
       .then(({ data }: any) => {
         // normalize nested responses
         let resolved = data;
-        if (resolved && resolved.data && typeof resolved.data === 'object') resolved = resolved.data;
-        console.debug('[auth] refresh resolved payload:', resolved);
+        if (resolved && resolved.data && typeof resolved.data === "object")
+          resolved = resolved.data;
+        console.debug("[auth] refresh resolved payload:", resolved);
         setAuth(resolved);
         return resolved;
       })
@@ -171,7 +190,7 @@ export const useAuthStore = defineStore("auth", () => {
 
     // Try a lightweight local JWT expiry check. If token is valid, keep session.
     try {
-      const parts = token.split('.');
+      const parts = token.split(".");
       if (parts.length === 3) {
         const payload = JSON.parse(atob(parts[1]));
         if (!payload.exp || payload.exp * 1000 > Date.now()) {

@@ -120,15 +120,17 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/controlplane/organization",
         name: "organization",
-        component: () => import("@/views/controlplane/organization/Organization.vue"),
+        component: () =>
+          import("@/views/controlplane/organization/Organization.vue"),
         meta: {
-          breadcrumbs: [ "Organization"],
+          breadcrumbs: ["Organization"],
         },
         children: [
           {
             path: "overview",
             name: "organization-overview",
-            component: () => import("@/views/controlplane/organization/Overview.vue"),
+            component: () =>
+              import("@/views/controlplane/organization/Overview.vue"),
             meta: {
               pageTitle: "Overview",
             },
@@ -136,7 +138,8 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: "settings",
             name: "organization-settings",
-            component: () => import("@/views/controlplane/organization/Settings.vue"),
+            component: () =>
+              import("@/views/controlplane/organization/Settings.vue"),
             meta: {
               pageTitle: "Settings",
             },
@@ -148,13 +151,14 @@ const routes: Array<RouteRecordRaw> = [
         name: "account",
         component: () => import("@/views/controlplane/account/Account.vue"),
         meta: {
-          breadcrumbs: [ "Account"],
+          breadcrumbs: ["Account"],
         },
         children: [
           {
             path: "overview",
             name: "account-overview",
-            component: () => import("@/views/controlplane/account/Overview.vue"),
+            component: () =>
+              import("@/views/controlplane/account/Overview.vue"),
             meta: {
               pageTitle: "Overview",
             },
@@ -162,7 +166,8 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: "settings",
             name: "account-settings",
-            component: () => import("@/views/controlplane/account/Settings.vue"),
+            component: () =>
+              import("@/views/controlplane/account/Settings.vue"),
             meta: {
               pageTitle: "Settings",
             },
@@ -211,7 +216,7 @@ const routes: Array<RouteRecordRaw> = [
               pageTitle: "Overview",
             },
           },
-           {
+          {
             path: "room",
             name: "site-room",
             component: () => import("@/views/controlplane/site/Room.vue"),
@@ -361,7 +366,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/controlplane/modals/general/view-user",
         name: "modals-general-view-user",
-        component: () => import("@/views/controlplane/modals/general/ViewUsers.vue"),
+        component: () =>
+          import("@/views/controlplane/modals/general/ViewUsers.vue"),
         meta: {
           pageTitle: "View User",
           breadcrumbs: ["Crafted", "Modals", "General"],
@@ -390,7 +396,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/controlplane/modals/forms/new-target",
         name: "modals-forms-new-target",
-        component: () => import("@/views/controlplane/modals/forms/NewTarget.vue"),
+        component: () =>
+          import("@/views/controlplane/modals/forms/NewTarget.vue"),
         meta: {
           pageTitle: "New Target",
           breadcrumbs: ["Crafted", "Modals", "Forms"],
@@ -399,7 +406,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/controlplane/modals/forms/new-card",
         name: "modals-forms-new-card",
-        component: () => import("@/views/controlplane/modals/forms/NewCard.vue"),
+        component: () =>
+          import("@/views/controlplane/modals/forms/NewCard.vue"),
         meta: {
           pageTitle: "New Card",
           breadcrumbs: ["Crafted", "Modals", "Forms"],
@@ -408,7 +416,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/controlplane/modals/forms/new-address",
         name: "modals-forms-new-address",
-        component: () => import("@/views/controlplane/modals/forms/NewAddress.vue"),
+        component: () =>
+          import("@/views/controlplane/modals/forms/NewAddress.vue"),
         meta: {
           pageTitle: "New Address",
           breadcrumbs: ["Crafted", "Modals", "Forms"],
@@ -437,7 +446,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/controlplane/modals/wizards/create-app",
         name: "modals-wizards-create-app",
-        component: () => import("@/views/controlplane/modals/wizards/CreateApp.vue"),
+        component: () =>
+          import("@/views/controlplane/modals/wizards/CreateApp.vue"),
         meta: {
           pageTitle: "Create App",
           breadcrumbs: ["Crafted", "Modals", "Wizards"],
@@ -535,7 +545,9 @@ const routes: Array<RouteRecordRaw> = [
         path: "/password-reset",
         name: "password-reset",
         component: () =>
-          import("@/views/controlplane/authentication/basic-flow/PasswordReset.vue"),
+          import(
+            "@/views/controlplane/authentication/basic-flow/PasswordReset.vue"
+          ),
         meta: {
           pageTitle: "Password reset",
         },
@@ -550,7 +562,8 @@ const routes: Array<RouteRecordRaw> = [
         // the 404 route, when none of the above matches
         path: "/404",
         name: "404",
-        component: () => import("@/views/controlplane/authentication/Error404.vue"),
+        component: () =>
+          import("@/views/controlplane/authentication/Error404.vue"),
         meta: {
           pageTitle: "Error 404",
         },
@@ -558,7 +571,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/500",
         name: "500",
-        component: () => import("@/views/controlplane/authentication/Error500.vue"),
+        component: () =>
+          import("@/views/controlplane/authentication/Error500.vue"),
         meta: {
           pageTitle: "Error 500",
         },

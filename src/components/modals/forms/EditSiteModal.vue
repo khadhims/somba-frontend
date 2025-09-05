@@ -119,7 +119,9 @@
 
               <div class="row g-9 mb-7">
                 <div class="col-md-6 fv-row">
-                  <label class="required fs-6 fw-semibold mb-2">Site Code</label>
+                  <label class="required fs-6 fw-semibold mb-2"
+                    >Site Code</label
+                  >
                   <input
                     type="text"
                     class="form-control form-control-solid"
@@ -131,7 +133,11 @@
                 </div>
                 <div class="col-md-6 fv-row">
                   <label class="fw-semibold fs-6 mb-2">Status</label>
-                  <select class="form-select form-select-solid" v-model="formData.status" name="status">
+                  <select
+                    class="form-select form-select-solid"
+                    v-model="formData.status"
+                    name="status"
+                  >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                   </select>
@@ -141,17 +147,32 @@
               <div class="row mb-7">
                 <div class="col-md-6">
                   <label class="fw-semibold fs-6 mb-2">Contact Person</label>
-                  <input type="text" class="form-control form-control-solid" v-model="formData.contactPerson" name="contactPerson" placeholder="Enter contact person name" />
+                  <input
+                    type="text"
+                    class="form-control form-control-solid"
+                    v-model="formData.contactPerson"
+                    name="contactPerson"
+                    placeholder="Enter contact person name"
+                  />
                 </div>
                 <div class="col-md-6">
                   <label class="fw-semibold fs-6 mb-2">Contact Phone</label>
-                  <input type="tel" class="form-control form-control-solid" v-model="formData.contactPhone" name="contactPhone" placeholder="Contact phone number" />
+                  <input
+                    type="tel"
+                    class="form-control form-control-solid"
+                    v-model="formData.contactPhone"
+                    name="contactPhone"
+                    placeholder="Contact phone number"
+                  />
                 </div>
               </div>
 
               <div class="fv-row mb-7">
                 <label class="fw-semibold fs-6 mb-2">Time Zone</label>
-                <select v-model="formData.timeZone" class="form-select form-select-solid">
+                <select
+                  v-model="formData.timeZone"
+                  class="form-select form-select-solid"
+                >
                   <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
                   <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
                   <option value="Asia/Jayapura">Asia/Jayapura (WIT)</option>
@@ -175,15 +196,13 @@
             <!--end::Button-->
 
             <!--begin::Button-->
-            <button
-              type="submit"
-              class="btn btn-primary"
-              :disabled="loading"
-            >
+            <button type="submit" class="btn btn-primary" :disabled="loading">
               <span v-if="!loading" class="indicator-label">Update Site</span>
               <span v-if="loading" class="indicator-progress">
                 Please wait...
-                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                <span
+                  class="spinner-border spinner-border-sm align-middle ms-2"
+                ></span>
               </span>
             </button>
             <!--end::Button-->
@@ -199,152 +218,154 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { Modal } from 'bootstrap'
+import { ref, reactive } from "vue";
+import { Modal } from "bootstrap";
 
 interface SiteFormData {
-  id: number
-  name: string
-  description: string
-  address: string
-  location: string
-  latitude?: number
-  longitude?: number
-  code: string
-  status: 'Active' | 'Inactive'
-  contactPerson: string
-  contactPhone: string
-  email: string
-  createdAt: string
-  roomCount: number
-  nvrCount: number
-  cameraCount: number
-  timeZone?: string
+  id: number;
+  name: string;
+  description: string;
+  address: string;
+  location: string;
+  latitude?: number;
+  longitude?: number;
+  code: string;
+  status: "Active" | "Inactive";
+  contactPerson: string;
+  contactPhone: string;
+  email: string;
+  createdAt: string;
+  roomCount: number;
+  nvrCount: number;
+  cameraCount: number;
+  timeZone?: string;
 }
 
 // Props and Emits
 const emit = defineEmits<{
-  'site-updated': [site: SiteFormData]
-}>()
+  "site-updated": [site: SiteFormData];
+}>();
 
 // Reactive data
-const editSiteModalRef = ref<HTMLElement>()
-const loading = ref(false)
+const editSiteModalRef = ref<HTMLElement>();
+const loading = ref(false);
 
 const formData = reactive<SiteFormData>({
   id: 0,
-  name: '',
-  description: '',
-  address: '',
-  location: '',
+  name: "",
+  description: "",
+  address: "",
+  location: "",
   latitude: undefined,
   longitude: undefined,
-  code: '',
-  status: 'Active',
-  contactPerson: '',
-  contactPhone: '',
-  email: '',
-  createdAt: '',
+  code: "",
+  status: "Active",
+  contactPerson: "",
+  contactPhone: "",
+  email: "",
+  createdAt: "",
   roomCount: 0,
   nvrCount: 0,
   cameraCount: 0,
-  timeZone: 'Asia/Jakarta'
-})
+  timeZone: "Asia/Jakarta",
+});
 
 const errors = reactive({
-  name: '',
-  address: '',
-  status: ''
-})
+  name: "",
+  address: "",
+  status: "",
+});
 
 // Validation
 const validateForm = (): boolean => {
   // Reset errors
-  errors.name = ''
-  errors.address = ''
-  errors.status = ''
+  errors.name = "";
+  errors.address = "";
+  errors.status = "";
 
-  let isValid = true
+  let isValid = true;
 
   if (!formData.name.trim()) {
-    errors.name = 'Site name is required'
-    isValid = false
+    errors.name = "Site name is required";
+    isValid = false;
   }
 
   if (!formData.address.trim()) {
-    errors.address = 'Address is required'
-    isValid = false
+    errors.address = "Address is required";
+    isValid = false;
   }
 
   if (!formData.status) {
-    errors.status = 'Status is required'
-    isValid = false
+    errors.status = "Status is required";
+    isValid = false;
   }
 
-  return isValid
-}
+  return isValid;
+};
 
 // Submit form
 const submitForm = async () => {
   if (!validateForm()) {
-    return
+    return;
   }
 
-  loading.value = true
+  loading.value = true;
 
   try {
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     // Emit event to parent component (map address -> location for backward compatibility)
-  // keep location in sync for compatibility
-  formData.location = formData.address
-  emit('site-updated', { ...formData })
+    // keep location in sync for compatibility
+    formData.location = formData.address;
+    emit("site-updated", { ...formData });
 
     // Close modal
-    const modal = Modal.getInstance(editSiteModalRef.value!)
-    modal?.hide()
-
+    const modal = Modal.getInstance(editSiteModalRef.value!);
+    modal?.hide();
   } catch (error) {
-    console.error('Error updating site:', error)
+    console.error("Error updating site:", error);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // Show modal method with site data
 const showModal = (siteData: any) => {
   // Populate form with site data, map incoming 'location' to 'address' if present
-  formData.id = siteData.id ?? 0
-  formData.name = siteData.name ?? ''
-  formData.description = siteData.description ?? ''
-  formData.address = siteData.address ?? siteData.location ?? ''
-  formData.location = siteData.location ?? formData.address
-  formData.latitude = siteData.latitude
-  formData.longitude = siteData.longitude
-  formData.code = siteData.code ?? ''
-  formData.status = siteData.status ?? 'Active'
-  formData.contactPerson = siteData.contactPerson ?? ''
-  formData.contactPhone = siteData.contactPhone ?? siteData.phone ?? ''
-  formData.email = siteData.email ?? ''
-  formData.createdAt = siteData.createdAt ?? ''
-  formData.roomCount = siteData.roomCount ?? 0
-  formData.nvrCount = siteData.nvrCount ?? 0
-  formData.cameraCount = siteData.cameraCount ?? 0
-  formData.timeZone = siteData.timeZone ?? 'Asia/Jakarta'
+  formData.id = siteData.id ?? 0;
+  formData.name = siteData.name ?? "";
+  formData.description = siteData.description ?? "";
+  formData.address = siteData.address ?? siteData.location ?? "";
+  formData.location = siteData.location ?? formData.address;
+  formData.latitude = siteData.latitude;
+  formData.longitude = siteData.longitude;
+  formData.code = siteData.code ?? "";
+  formData.status = siteData.status ?? "Active";
+  formData.contactPerson = siteData.contactPerson ?? "";
+  formData.contactPhone = siteData.contactPhone ?? siteData.phone ?? "";
+  formData.email = siteData.email ?? "";
+  formData.createdAt = siteData.createdAt ?? "";
+  formData.roomCount = siteData.roomCount ?? 0;
+  formData.nvrCount = siteData.nvrCount ?? 0;
+  formData.cameraCount = siteData.cameraCount ?? 0;
+  formData.timeZone = siteData.timeZone ?? "Asia/Jakarta";
 
   // Reset errors
-  errors.name = ''
-  errors.address = ''
-  errors.status = ''
+  errors.name = "";
+  errors.address = "";
+  errors.status = "";
 
   // Show modal (static backdrop, disable keyboard/ESC)
-  const modal = new Modal(editSiteModalRef.value!, { backdrop: 'static', keyboard: false })
-  modal.show()
-}
+  const modal = new Modal(editSiteModalRef.value!, {
+    backdrop: "static",
+    keyboard: false,
+  });
+  modal.show();
+};
 
 // Expose methods to parent
 defineExpose({
-  showModal
-})
+  showModal,
+});
 </script>

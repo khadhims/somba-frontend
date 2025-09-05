@@ -2,7 +2,11 @@
   <!--begin::Wrapper-->
   <div class="w-lg-500px p-10">
     <div class="text-center mb-8">
-      <img src="/logo-somba-2.png" alt="Somba Logo" style="width:100px;max-width:100%;margin-bottom:16px;" />
+      <img
+        src="/logo-somba-2.png"
+        alt="Somba Logo"
+        style="width: 100px; max-width: 100%; margin-bottom: 16px"
+      />
     </div>
     <!--begin::Form-->
     <VForm
@@ -57,7 +61,9 @@
         <!--begin::Wrapper-->
         <div class="d-flex flex-stack mb-2">
           <!--begin::Label-->
-          <label class="form-label fw-bold text-gray-900 fs-6 mb-0">Password</label>
+          <label class="form-label fw-bold text-gray-900 fs-6 mb-0"
+            >Password</label
+          >
           <!--end::Label-->
 
           <!--begin::Link-->

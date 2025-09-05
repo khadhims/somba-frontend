@@ -127,7 +127,9 @@
               <!--begin::Row-->
               <div class="row g-9 mb-7">
                 <div class="col-md-6 fv-row">
-                  <label class="required fs-6 fw-semibold mb-2">Site Code</label>
+                  <label class="required fs-6 fw-semibold mb-2"
+                    >Site Code</label
+                  >
                   <input
                     type="text"
                     class="form-control form-control-solid"
@@ -176,7 +178,10 @@
 
               <div class="fv-row mb-7">
                 <label class="fw-semibold fs-6 mb-2">Time Zone</label>
-                <select v-model="formData.timeZone" class="form-select form-select-solid">
+                <select
+                  v-model="formData.timeZone"
+                  class="form-select form-select-solid"
+                >
                   <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
                   <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
                   <option value="Asia/Jayapura">Asia/Jayapura (WIT)</option>
@@ -201,15 +206,13 @@
             <!--end::Button-->
 
             <!--begin::Button-->
-            <button
-              type="submit"
-              class="btn btn-primary"
-              :disabled="loading"
-            >
+            <button type="submit" class="btn btn-primary" :disabled="loading">
               <span v-if="!loading" class="indicator-label">Add Site</span>
               <span v-if="loading" class="indicator-progress">
                 Please wait...
-                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                <span
+                  class="spinner-border spinner-border-sm align-middle ms-2"
+                ></span>
               </span>
             </button>
             <!--end::Button-->
@@ -225,99 +228,107 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
-import { Modal } from 'bootstrap'
+import { ref, reactive, watch } from "vue";
+import { Modal } from "bootstrap";
 
 interface SiteFormData {
-  name: string
-  description: string
-  address: string
-  latitude?: number
-  longitude?: number
-  code: string
-  status: 'Active' | 'Inactive'
-  contactPerson: string
-  contactPhone: string
-  email: string
-  timeZone?: string
+  name: string;
+  description: string;
+  address: string;
+  latitude?: number;
+  longitude?: number;
+  code: string;
+  status: "Active" | "Inactive";
+  contactPerson: string;
+  contactPhone: string;
+  email: string;
+  timeZone?: string;
 }
 
 // Props and Emits
 const emit = defineEmits<{
-  'site-added': [site: any]
-}>()
+  "site-added": [site: any];
+}>();
 
 // Reactive data
-const addSiteModalRef = ref<HTMLElement>()
-const loading = ref(false)
+const addSiteModalRef = ref<HTMLElement>();
+const loading = ref(false);
 
 const formData = reactive<SiteFormData>({
-  name: '',
-  description: '',
-  address: '',
+  name: "",
+  description: "",
+  address: "",
   latitude: undefined,
   longitude: undefined,
-  code: '',
-  status: 'Active',
-  contactPerson: '',
-  contactPhone: '',
-  email: '',
-  timeZone: 'Asia/Jakarta'
-})
+  code: "",
+  status: "Active",
+  contactPerson: "",
+  contactPhone: "",
+  email: "",
+  timeZone: "Asia/Jakarta",
+});
 
 const errors = reactive({
-  name: '',
-  address: '',
-  status: ''
-})
+  name: "",
+  address: "",
+  status: "",
+});
 
 // Auto-generate site code based on name
-watch(() => formData.name, (newName) => {
-  if (newName) {
-    formData.code = 'SITE-' + newName.toUpperCase().replace(/\s+/g, '-').replace(/[^A-Z0-9-]/g, '')
-  } else {
-    formData.code = ''
+watch(
+  () => formData.name,
+  (newName) => {
+    if (newName) {
+      formData.code =
+        "SITE-" +
+        newName
+          .toUpperCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^A-Z0-9-]/g, "");
+    } else {
+      formData.code = "";
+    }
   }
-})
+);
 
 // Validation
 const validateForm = (): boolean => {
   // Reset errors
-  errors.name = ''
-  errors.address = ''
-  errors.status = ''
+  errors.name = "";
+  errors.address = "";
+  errors.status = "";
 
-  let isValid = true
+  let isValid = true;
 
   if (!formData.name.trim()) {
-    errors.name = 'Site name is required'
-    isValid = false
+    errors.name = "Site name is required";
+    isValid = false;
   }
 
   if (!formData.address.trim()) {
-    errors.address = 'Address is required'
-    isValid = false
+    errors.address = "Address is required";
+    isValid = false;
   }
 
   if (!formData.status) {
-    errors.status = 'Status is required'
-    isValid = false
+    errors.status = "Status is required";
+    isValid = false;
   }
 
-  return isValid
-}
+  return isValid;
+};
 
 // Submit form
 const submitForm = async () => {
   if (!validateForm()) {
-    return
+    return;
   }
 
-  loading.value = true
+  loading.value = true;
 
   try {
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     // Create new site object
     const newSite = {
@@ -336,55 +347,57 @@ const submitForm = async () => {
       contactPhone: formData.contactPhone,
       email: formData.email,
       timeZone: formData.timeZone,
-      createdAt: new Date().toISOString().split('T')[0]
-    }
+      createdAt: new Date().toISOString().split("T")[0],
+    };
 
     // Emit event to parent component
-    emit('site-added', newSite)
+    emit("site-added", newSite);
 
     // Reset form
-    resetForm()
+    resetForm();
 
     // Close modal
-    const modal = Modal.getInstance(addSiteModalRef.value!)
-    modal?.hide()
-
+    const modal = Modal.getInstance(addSiteModalRef.value!);
+    modal?.hide();
   } catch (error) {
-    console.error('Error adding site:', error)
+    console.error("Error adding site:", error);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // Reset form
 const resetForm = () => {
-  formData.name = ''
-  formData.description = ''
-  formData.address = ''
-  formData.latitude = undefined
-  formData.longitude = undefined
-  formData.code = ''
-  formData.status = 'Active'
-  formData.contactPerson = ''
-  formData.contactPhone = ''
-  formData.email = ''
-  formData.timeZone = 'Asia/Jakarta'
+  formData.name = "";
+  formData.description = "";
+  formData.address = "";
+  formData.latitude = undefined;
+  formData.longitude = undefined;
+  formData.code = "";
+  formData.status = "Active";
+  formData.contactPerson = "";
+  formData.contactPhone = "";
+  formData.email = "";
+  formData.timeZone = "Asia/Jakarta";
 
-  errors.name = ''
-  errors.address = ''
-  errors.status = ''
-}
+  errors.name = "";
+  errors.address = "";
+  errors.status = "";
+};
 
 // Show modal method (exposed for parent component)
 const showModal = () => {
-  resetForm()
+  resetForm();
   // initialize modal with backdrop static and keyboard disabled so click outside / ESC won't close
-  const modal = new Modal(addSiteModalRef.value!, { backdrop: 'static', keyboard: false })
-  modal.show()
-}
+  const modal = new Modal(addSiteModalRef.value!, {
+    backdrop: "static",
+    keyboard: false,
+  });
+  modal.show();
+};
 
 // Expose methods to parent
 defineExpose({
-  showModal
-})
+  showModal,
+});
 </script>

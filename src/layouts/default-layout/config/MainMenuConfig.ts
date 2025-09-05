@@ -8,15 +8,14 @@ const MainMenuConfig: Array<MenuItem> = [
         route: "/dashboard",
         keenthemesIcon: "element-11",
         bootstrapIcon: "bi-app-indicator",
-      }
-   
+      },
     ],
   },
   {
     heading: "control plane",
     route: "/controlplane",
     pages: [
-       {
+      {
         sectionTitle: "organization",
         route: "/organization",
         keenthemesIcon: "profile-circle",
@@ -50,19 +49,19 @@ const MainMenuConfig: Array<MenuItem> = [
       },
       {
         sectionTitle: "Team",
-              route: "/team",
-              keenthemesIcon: "profile-circle",
-              bootstrapIcon: "bi-person",
-              sub: [
-                {
-                  heading: "Overview",
-                  route: "/controlplane/team/overview",
-                },
-                {
-                  heading: "Settings",
-                  route: "/controlplane/team/settings",
-                },
-              ],
+        route: "/team",
+        keenthemesIcon: "profile-circle",
+        bootstrapIcon: "bi-person",
+        sub: [
+          {
+            heading: "Overview",
+            route: "/controlplane/team/overview",
+          },
+          {
+            heading: "Settings",
+            route: "/controlplane/team/settings",
+          },
+        ],
       },
       {
         sectionTitle: "Site Management",

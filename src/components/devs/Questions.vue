@@ -180,7 +180,7 @@ export default defineComponent({
   setup() {
     const questions = ref<Array<IQuestion>>([
       {
-  title: "How to use Somba with Django Framework ?",
+        title: "How to use Somba with Django Framework ?",
         summary:
           "I’ve been doing some ajax request, to populate a inside drawer, the content of that drawer has a sub menu, that you are using in list and all card toolbar.",
         author: "James Hunt",
@@ -200,7 +200,7 @@ export default defineComponent({
             tooltip: "User replied",
           },
         ],
-  tags: ["Somba"],
+        tags: ["Somba"],
       },
       {
         title: "When to expect new version of Laravel ?",
@@ -257,7 +257,7 @@ export default defineComponent({
         tags: ["React", "Demo 1"],
       },
       {
-  title: "How to integrate Somba with Blazor Server Side ?",
+        title: "How to integrate Somba with Blazor Server Side ?",
         summary:
           "could not get demo7 working from latest Somba version. Had a lot of issues installing, I had to downgrade my npm to 6.14.4 as someone else recommended here in the comments, this goot it to compile but when I ran it, the browser showed errors TypeErr..",
         author: "Tim Nilson",
@@ -275,7 +275,7 @@ export default defineComponent({
         tags: ["Blazor"],
       },
       {
-  title: "Using Somba with .NET multi tenant application",
+        title: "Using Somba with .NET multi tenant application",
         summary:
           "When approx. is the next update for the Laravel version planned? Waiting for the CRUD, 2nd factor etc. features before starting my project. Also can we expect the Laravel + Vue version in the next update ?",
         author: "Ana Quil",

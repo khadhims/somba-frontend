@@ -106,7 +106,7 @@ class ApiService {
             JwtService.destroyRefreshToken();
             // notify app that refresh failed so it can logout/redirect
             try {
-              window.dispatchEvent(new CustomEvent('auth:refresh_failed'));
+              window.dispatchEvent(new CustomEvent("auth:refresh_failed"));
             } catch (evErr) {
               // ignore
             }

@@ -24,7 +24,10 @@
           />
         </div>
 
-        <button class="btn btn-sm btn-light-primary" @click="showCameraForm = true">
+        <button
+          class="btn btn-sm btn-light-primary"
+          @click="showCameraForm = true"
+        >
           <i class="ki-duotone ki-plus fs-2"></i>
           Add Camera
         </button>
@@ -39,7 +42,9 @@
       <div v-if="showCameraForm" class="mb-10">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">{{ isEdit ? 'Edit Camera' : 'Add Camera' }}</h3>
+            <h3 class="card-title">
+              {{ isEdit ? "Edit Camera" : "Add Camera" }}
+            </h3>
             <div class="card-toolbar">
               <button
                 type="button"
@@ -63,9 +68,18 @@
                   <label class="required fw-semibold fs-6 mb-2">Site</label>
                   <!--end::Label-->
                   <!--begin::Select-->
-                  <select v-model="cameraForm.siteId" @change="onSiteChange" class="form-select form-select-solid" required>
+                  <select
+                    v-model="cameraForm.siteId"
+                    @change="onSiteChange"
+                    class="form-select form-select-solid"
+                    required
+                  >
                     <option value="">Select Site</option>
-                    <option v-for="site in sites" :key="site.id" :value="site.id">
+                    <option
+                      v-for="site in sites"
+                      :key="site.id"
+                      :value="site.id"
+                    >
                       {{ site.name }}
                     </option>
                   </select>
@@ -79,9 +93,18 @@
                   <label class="required fw-semibold fs-6 mb-2">Room</label>
                   <!--end::Label-->
                   <!--begin::Select-->
-                  <select v-model="cameraForm.roomId" @change="onRoomChange" class="form-select form-select-solid" required>
+                  <select
+                    v-model="cameraForm.roomId"
+                    @change="onRoomChange"
+                    class="form-select form-select-solid"
+                    required
+                  >
                     <option value="">Select Room</option>
-                    <option v-for="room in availableRooms" :key="room.id" :value="room.id">
+                    <option
+                      v-for="room in availableRooms"
+                      :key="room.id"
+                      :value="room.id"
+                    >
                       {{ room.name }}
                     </option>
                   </select>
@@ -95,9 +118,17 @@
                   <label class="required fw-semibold fs-6 mb-2">NVR</label>
                   <!--end::Label-->
                   <!--begin::Select-->
-                  <select v-model="cameraForm.nvrId" class="form-select form-select-solid" required>
+                  <select
+                    v-model="cameraForm.nvrId"
+                    class="form-select form-select-solid"
+                    required
+                  >
                     <option value="">Select NVR</option>
-                    <option v-for="nvr in availableNvrs" :key="nvr.id" :value="nvr.id">
+                    <option
+                      v-for="nvr in availableNvrs"
+                      :key="nvr.id"
+                      :value="nvr.id"
+                    >
                       {{ nvr.name }}
                     </option>
                   </select>
@@ -112,7 +143,9 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">Camera Name</label>
+                  <label class="required fw-semibold fs-6 mb-2"
+                    >Camera Name</label
+                  >
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
@@ -129,7 +162,9 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">IP Address</label>
+                  <label class="required fw-semibold fs-6 mb-2"
+                    >IP Address</label
+                  >
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
@@ -153,7 +188,11 @@
                   <label class="required fw-semibold fs-6 mb-2">Brand</label>
                   <!--end::Label-->
                   <!--begin::Select-->
-                  <select v-model="cameraForm.brand" class="form-select form-select-solid" required>
+                  <select
+                    v-model="cameraForm.brand"
+                    class="form-select form-select-solid"
+                    required
+                  >
                     <option value="">Select Brand</option>
                     <option value="Hikvision">Hikvision</option>
                     <option value="Dahua">Dahua</option>
@@ -189,10 +228,16 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">Camera Type</label>
+                  <label class="required fw-semibold fs-6 mb-2"
+                    >Camera Type</label
+                  >
                   <!--end::Label-->
                   <!--begin::Select-->
-                  <select v-model="cameraForm.type" class="form-select form-select-solid" required>
+                  <select
+                    v-model="cameraForm.type"
+                    class="form-select form-select-solid"
+                    required
+                  >
                     <option value="Dome">Dome</option>
                     <option value="Bullet">Bullet</option>
                     <option value="PTZ">PTZ</option>
@@ -206,10 +251,16 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">Resolution</label>
+                  <label class="required fw-semibold fs-6 mb-2"
+                    >Resolution</label
+                  >
                   <!--end::Label-->
                   <!--begin::Select-->
-                  <select v-model="cameraForm.resolution" class="form-select form-select-solid" required>
+                  <select
+                    v-model="cameraForm.resolution"
+                    class="form-select form-select-solid"
+                    required
+                  >
                     <option value="1080P">1080P (2MP)</option>
                     <option value="4MP">4MP</option>
                     <option value="5MP">5MP</option>
@@ -296,10 +347,12 @@
                 >
                   <span v-if="isLoading" class="indicator-progress">
                     Please wait...
-                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    <span
+                      class="spinner-border spinner-border-sm align-middle ms-2"
+                    ></span>
                   </span>
                   <span v-else class="indicator-label">
-                    {{ isEdit ? 'Update Camera' : 'Save Camera' }}
+                    {{ isEdit ? "Update Camera" : "Save Camera" }}
                   </span>
                 </button>
               </div>
@@ -334,36 +387,59 @@
               </span>
             </div>
             <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">{{ row.name }}</span>
-              <span class="text-muted fw-semibold text-muted d-block fs-7">{{ row.ipAddress }}</span>
+              <span class="text-dark fw-bold text-hover-primary fs-6">{{
+                row.name
+              }}</span>
+              <span class="text-muted fw-semibold text-muted d-block fs-7">{{
+                row.ipAddress
+              }}</span>
             </div>
           </div>
         </template>
 
         <template v-slot:location="{ row }">
           <div>
-            <span class="text-dark fw-bold d-block fs-6">{{ getSiteName(row.siteId) }}</span>
-            <span class="text-muted fw-semibold d-block fs-7">{{ getRoomName(row.roomId) }}</span>
-            <span class="text-muted fw-semibold d-block fs-8">{{ row.location }}</span>
+            <span class="text-dark fw-bold d-block fs-6">{{
+              getSiteName(row.siteId)
+            }}</span>
+            <span class="text-muted fw-semibold d-block fs-7">{{
+              getRoomName(row.roomId)
+            }}</span>
+            <span class="text-muted fw-semibold d-block fs-8">{{
+              row.location
+            }}</span>
           </div>
         </template>
 
         <template v-slot:specs="{ row }">
           <div>
-            <span class="badge badge-light-info fs-7 fw-bold mb-1">{{ row.brand }}</span><br>
-            <span class="badge badge-light-warning fs-7 fw-bold">{{ row.resolution }}</span>
+            <span class="badge badge-light-info fs-7 fw-bold mb-1">{{
+              row.brand
+            }}</span
+            ><br />
+            <span class="badge badge-light-warning fs-7 fw-bold">{{
+              row.resolution
+            }}</span>
           </div>
         </template>
 
         <template v-slot:nvr="{ row }">
           <div>
-            <span class="text-dark fw-bold d-block fs-6">{{ getNvrName(row.nvrId) }}</span>
-            <span class="text-muted fw-semibold d-block fs-7">Ch. {{ row.channel }}</span>
+            <span class="text-dark fw-bold d-block fs-6">{{
+              getNvrName(row.nvrId)
+            }}</span>
+            <span class="text-muted fw-semibold d-block fs-7"
+              >Ch. {{ row.channel }}</span
+            >
           </div>
         </template>
 
         <template v-slot:status="{ row }">
-          <span :class="`badge badge-light-${row.status === 'Online' ? 'success' : 'danger'} fs-7 fw-bold`">
+          <span
+            :class="`badge badge-light-${
+              row.status === 'Online' ? 'success' : 'danger'
+            } fs-7 fw-bold`"
+          >
             {{ row.status }}
           </span>
         </template>
@@ -415,218 +491,253 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
+import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 
 // Interfaces
 interface Site {
-  id: number
-  name: string
+  id: number;
+  name: string;
 }
 
 interface Room {
-  id: number
-  siteId: number
-  name: string
+  id: number;
+  siteId: number;
+  name: string;
 }
 
 interface Nvr {
-  id: number
-  siteId: number
-  roomId: number
-  name: string
+  id: number;
+  siteId: number;
+  roomId: number;
+  name: string;
 }
 
 interface Camera {
-  id: number
-  siteId: number
-  roomId: number
-  nvrId: number
-  name: string
-  ipAddress: string
-  brand: string
-  model?: string
-  type: string
-  resolution: string
-  channel: number
-  location?: string
-  description?: string
-  status: 'Online' | 'Offline'
-  createdAt: string
+  id: number;
+  siteId: number;
+  roomId: number;
+  nvrId: number;
+  name: string;
+  ipAddress: string;
+  brand: string;
+  model?: string;
+  type: string;
+  resolution: string;
+  channel: number;
+  location?: string;
+  description?: string;
+  status: "Online" | "Offline";
+  createdAt: string;
 }
 
 interface CameraForm {
-  id?: number
-  siteId: number | string
-  roomId: number | string
-  nvrId: number | string
-  name: string
-  ipAddress: string
-  brand: string
-  model?: string
-  type: string
-  resolution: string
-  channel: number
-  location?: string
-  description?: string
+  id?: number;
+  siteId: number | string;
+  roomId: number | string;
+  nvrId: number | string;
+  name: string;
+  ipAddress: string;
+  brand: string;
+  model?: string;
+  type: string;
+  resolution: string;
+  channel: number;
+  location?: string;
+  description?: string;
 }
 
 // Router
-const route = useRoute()
+const route = useRoute();
 
 // Reactive data
-const isLoading = ref(false)
-const showCameraForm = ref(false)
-const isEdit = ref(false)
-const searchQuery = ref('')
-const sortLabel = ref('')
-const sortOrder = ref<'asc' | 'desc'>('asc')
+const isLoading = ref(false);
+const showCameraForm = ref(false);
+const isEdit = ref(false);
+const searchQuery = ref("");
+const sortLabel = ref("");
+const sortOrder = ref<"asc" | "desc">("asc");
 
-const sites = ref<Site[]>([])
-const rooms = ref<Room[]>([])
-const nvrs = ref<Nvr[]>([])
-const cameras = ref<Camera[]>([])
+const sites = ref<Site[]>([]);
+const rooms = ref<Room[]>([]);
+const nvrs = ref<Nvr[]>([]);
+const cameras = ref<Camera[]>([]);
 
 const cameraForm = ref<CameraForm>({
-  siteId: '',
-  roomId: '',
-  nvrId: '',
-  name: '',
-  ipAddress: '',
-  brand: '',
-  model: '',
-  type: 'Dome',
-  resolution: '1080P',
+  siteId: "",
+  roomId: "",
+  nvrId: "",
+  name: "",
+  ipAddress: "",
+  brand: "",
+  model: "",
+  type: "Dome",
+  resolution: "1080P",
   channel: 1,
-  location: '',
-  description: ''
-})
+  location: "",
+  description: "",
+});
 
 // Table header configuration
 const tableHeader = ref([
-  { columnName: 'Camera Name', columnLabel: 'name', sortEnabled: true, searchable: true },
-  { columnName: 'Location', columnLabel: 'location', sortEnabled: true, searchable: true },
-  { columnName: 'Specifications', columnLabel: 'specs', sortEnabled: false, searchable: true },
-  { columnName: 'NVR', columnLabel: 'nvr', sortEnabled: true, searchable: true },
-  { columnName: 'Status', columnLabel: 'status', sortEnabled: true, searchable: true },
-  { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false, searchable: false }
-])
+  {
+    columnName: "Camera Name",
+    columnLabel: "name",
+    sortEnabled: true,
+    searchable: true,
+  },
+  {
+    columnName: "Location",
+    columnLabel: "location",
+    sortEnabled: true,
+    searchable: true,
+  },
+  {
+    columnName: "Specifications",
+    columnLabel: "specs",
+    sortEnabled: false,
+    searchable: true,
+  },
+  {
+    columnName: "NVR",
+    columnLabel: "nvr",
+    sortEnabled: true,
+    searchable: true,
+  },
+  {
+    columnName: "Status",
+    columnLabel: "status",
+    sortEnabled: true,
+    searchable: true,
+  },
+  {
+    columnName: "Actions",
+    columnLabel: "actions",
+    sortEnabled: false,
+    searchable: false,
+  },
+]);
 
 // Computed
 const availableRooms = computed(() => {
-  if (!cameraForm.value.siteId) return []
-  return rooms.value.filter(room => room.siteId === Number(cameraForm.value.siteId))
-})
+  if (!cameraForm.value.siteId) return [];
+  return rooms.value.filter(
+    (room) => room.siteId === Number(cameraForm.value.siteId)
+  );
+});
 
 const availableNvrs = computed(() => {
-  if (!cameraForm.value.roomId) return []
-  return nvrs.value.filter(nvr => nvr.roomId === Number(cameraForm.value.roomId))
-})
+  if (!cameraForm.value.roomId) return [];
+  return nvrs.value.filter(
+    (nvr) => nvr.roomId === Number(cameraForm.value.roomId)
+  );
+});
 
 const filteredAndSortedCameras = computed(() => {
-  let filtered = cameras.value
+  let filtered = cameras.value;
 
   if (searchQuery.value.trim()) {
-    const q = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(camera =>
-      camera.name.toLowerCase().includes(q) ||
-      camera.ipAddress.includes(q) ||
-      camera.brand.toLowerCase().includes(q) ||
-      camera.type.toLowerCase().includes(q) ||
-      getSiteName(camera.siteId).toLowerCase().includes(q) ||
-      getRoomName(camera.roomId).toLowerCase().includes(q)
-    )
+    const q = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(
+      (camera) =>
+        camera.name.toLowerCase().includes(q) ||
+        camera.ipAddress.includes(q) ||
+        camera.brand.toLowerCase().includes(q) ||
+        camera.type.toLowerCase().includes(q) ||
+        getSiteName(camera.siteId).toLowerCase().includes(q) ||
+        getRoomName(camera.roomId).toLowerCase().includes(q)
+    );
   }
 
   if (sortLabel.value) {
     filtered = [...filtered].sort((a, b) => {
       const getValue = (item: Camera, label: string) => {
-        if (label === 'location') return getSiteName(item.siteId)
-        if (label === 'nvr') return getNvrName(item.nvrId)
-        return (item as any)[label]
-      }
+        if (label === "location") return getSiteName(item.siteId);
+        if (label === "nvr") return getNvrName(item.nvrId);
+        return (item as any)[label];
+      };
 
-      const aVal = getValue(a, sortLabel.value)
-      const bVal = getValue(b, sortLabel.value)
+      const aVal = getValue(a, sortLabel.value);
+      const bVal = getValue(b, sortLabel.value);
 
-      if (typeof aVal === 'string' && typeof bVal === 'string') {
-        const cmp = aVal.localeCompare(bVal)
-        return sortOrder.value === 'asc' ? cmp : -cmp
-      } else if (typeof aVal === 'number' && typeof bVal === 'number') {
-        const cmp = aVal - bVal
-        return sortOrder.value === 'asc' ? cmp : -cmp
+      if (typeof aVal === "string" && typeof bVal === "string") {
+        const cmp = aVal.localeCompare(bVal);
+        return sortOrder.value === "asc" ? cmp : -cmp;
+      } else if (typeof aVal === "number" && typeof bVal === "number") {
+        const cmp = aVal - bVal;
+        return sortOrder.value === "asc" ? cmp : -cmp;
       }
-      return 0
-    })
+      return 0;
+    });
   }
 
-  return filtered
-})
+  return filtered;
+});
 
-const handleSort = (sort: { label: string; order: 'asc' | 'desc' }) => {
-  sortLabel.value = sort.label
-  sortOrder.value = sort.order
-}
+const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
+  sortLabel.value = sort.label;
+  sortOrder.value = sort.order;
+};
 
 // Methods
 const getSiteName = (siteId: number): string => {
-  const site = sites.value.find(s => s.id === siteId)
-  return site ? site.name : 'Unknown Site'
-}
+  const site = sites.value.find((s) => s.id === siteId);
+  return site ? site.name : "Unknown Site";
+};
 
 const getRoomName = (roomId: number): string => {
-  const room = rooms.value.find(r => r.id === roomId)
-  return room ? room.name : 'Unknown Room'
-}
+  const room = rooms.value.find((r) => r.id === roomId);
+  return room ? room.name : "Unknown Room";
+};
 
 const getNvrName = (nvrId: number): string => {
-  const nvr = nvrs.value.find(n => n.id === nvrId)
-  return nvr ? nvr.name : 'Unknown NVR'
-}
+  const nvr = nvrs.value.find((n) => n.id === nvrId);
+  return nvr ? nvr.name : "Unknown NVR";
+};
 
 const onSiteChange = () => {
-  cameraForm.value.roomId = ''
-  cameraForm.value.nvrId = ''
-}
+  cameraForm.value.roomId = "";
+  cameraForm.value.nvrId = "";
+};
 
 const onRoomChange = () => {
-  cameraForm.value.nvrId = ''
-}
+  cameraForm.value.nvrId = "";
+};
 
 const loadSites = async () => {
   // Mock data
   sites.value = [
-    { id: 1, name: 'Main Office' },
-    { id: 2, name: 'Branch Office' },
-    { id: 3, name: 'Warehouse A' }
-  ]
-}
+    { id: 1, name: "Main Office" },
+    { id: 2, name: "Branch Office" },
+    { id: 3, name: "Warehouse A" },
+  ];
+};
 
 const loadRooms = async () => {
   // Mock data
   rooms.value = [
-    { id: 1, siteId: 1, name: 'Reception' },
-    { id: 2, siteId: 1, name: 'Conference Room A' },
-    { id: 3, siteId: 2, name: 'Storage Area' }
-  ]
-}
+    { id: 1, siteId: 1, name: "Reception" },
+    { id: 2, siteId: 1, name: "Conference Room A" },
+    { id: 3, siteId: 2, name: "Storage Area" },
+  ];
+};
 
 const loadNvrs = async () => {
   // Mock data
   nvrs.value = [
-    { id: 1, siteId: 1, roomId: 1, name: 'NVR-Reception-01' },
-    { id: 2, siteId: 1, roomId: 2, name: 'NVR-Conference-01' }
-  ]
-}
+    { id: 1, siteId: 1, roomId: 1, name: "NVR-Reception-01" },
+    { id: 2, siteId: 1, roomId: 2, name: "NVR-Conference-01" },
+  ];
+};
 
 const loadCameras = async () => {
-  isLoading.value = true
-  
+  isLoading.value = true;
+
   try {
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     // Mock data
     cameras.value = [
       {
@@ -634,61 +745,63 @@ const loadCameras = async () => {
         siteId: 1,
         roomId: 1,
         nvrId: 1,
-        name: 'CAM-Reception-01',
-        ipAddress: '192.168.1.200',
-        brand: 'Hikvision',
-        model: 'DS-2CD2385FWD-I',
-        type: 'Dome',
-        resolution: '4K',
+        name: "CAM-Reception-01",
+        ipAddress: "192.168.1.200",
+        brand: "Hikvision",
+        model: "DS-2CD2385FWD-I",
+        type: "Dome",
+        resolution: "4K",
         channel: 1,
-        location: 'Main entrance',
-        description: 'Front desk monitoring',
-        status: 'Online',
-        createdAt: '2024-01-15'
+        location: "Main entrance",
+        description: "Front desk monitoring",
+        status: "Online",
+        createdAt: "2024-01-15",
       },
       {
         id: 2,
         siteId: 1,
         roomId: 1,
         nvrId: 1,
-        name: 'CAM-Reception-02',
-        ipAddress: '192.168.1.201',
-        brand: 'Dahua',
-        model: 'IPC-HDW2431T-AS-S2',
-        type: 'Turret',
-        resolution: '4MP',
+        name: "CAM-Reception-02",
+        ipAddress: "192.168.1.201",
+        brand: "Dahua",
+        model: "IPC-HDW2431T-AS-S2",
+        type: "Turret",
+        resolution: "4MP",
         channel: 2,
-        location: 'Waiting area',
-        description: 'Customer area monitoring',
-        status: 'Online',
-        createdAt: '2024-01-16'
-      }
-    ]
+        location: "Waiting area",
+        description: "Customer area monitoring",
+        status: "Online",
+        createdAt: "2024-01-16",
+      },
+    ];
   } catch (error) {
-    console.error('Error loading cameras:', error)
+    console.error("Error loading cameras:", error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 const saveCamera = async () => {
-  isLoading.value = true
-  
+  isLoading.value = true;
+
   try {
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     if (isEdit.value) {
       // Update existing camera
-      const index = cameras.value.findIndex(c => c.id === cameraForm.value.id)
+      const index = cameras.value.findIndex(
+        (c) => c.id === cameraForm.value.id
+      );
       if (index !== -1) {
         cameras.value[index] = {
           ...cameras.value[index],
           ...cameraForm.value,
           siteId: Number(cameraForm.value.siteId),
           roomId: Number(cameraForm.value.roomId),
-          nvrId: Number(cameraForm.value.nvrId)
-        }
+          nvrId: Number(cameraForm.value.nvrId),
+        };
       }
     } else {
       // Add new camera
@@ -706,19 +819,19 @@ const saveCamera = async () => {
         channel: cameraForm.value.channel,
         location: cameraForm.value.location,
         description: cameraForm.value.description,
-        status: 'Online',
-        createdAt: new Date().toISOString().split('T')[0]
-      }
-      cameras.value.unshift(newCamera)
+        status: "Online",
+        createdAt: new Date().toISOString().split("T")[0],
+      };
+      cameras.value.unshift(newCamera);
     }
-    
-    closeForm()
+
+    closeForm();
   } catch (error) {
-    console.error('Error saving camera:', error)
+    console.error("Error saving camera:", error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 const editCamera = (camera: Camera) => {
   cameraForm.value = {
@@ -734,70 +847,70 @@ const editCamera = (camera: Camera) => {
     resolution: camera.resolution,
     channel: camera.channel,
     location: camera.location,
-    description: camera.description
-  }
-  isEdit.value = true
-  showCameraForm.value = true
-}
+    description: camera.description,
+  };
+  isEdit.value = true;
+  showCameraForm.value = true;
+};
 
 const deleteCamera = async (cameraId: number) => {
-  if (!confirm('Are you sure you want to delete this camera?')) return
-  
-  isLoading.value = true
-  
+  if (!confirm("Are you sure you want to delete this camera?")) return;
+
+  isLoading.value = true;
+
   try {
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    cameras.value = cameras.value.filter(c => c.id !== cameraId)
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    cameras.value = cameras.value.filter((c) => c.id !== cameraId);
   } catch (error) {
-    console.error('Error deleting camera:', error)
+    console.error("Error deleting camera:", error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 const viewCamera = (camera: Camera) => {
-  console.log('Opening live stream for camera:', camera.name)
+  console.log("Opening live stream for camera:", camera.name);
   // TODO: Implement live stream viewer
-  alert(`Live stream for ${camera.name} would open here`)
-}
+  alert(`Live stream for ${camera.name} would open here`);
+};
 
 const closeForm = () => {
-  showCameraForm.value = false
-  isEdit.value = false
+  showCameraForm.value = false;
+  isEdit.value = false;
   cameraForm.value = {
-    siteId: '',
-    roomId: '',
-    nvrId: '',
-    name: '',
-    ipAddress: '',
-    brand: '',
-    model: '',
-    type: 'Dome',
-    resolution: '1080P',
+    siteId: "",
+    roomId: "",
+    nvrId: "",
+    name: "",
+    ipAddress: "",
+    brand: "",
+    model: "",
+    type: "Dome",
+    resolution: "1080P",
     channel: 1,
-    location: '',
-    description: ''
-  }
-}
+    location: "",
+    description: "",
+  };
+};
 
 // Lifecycle
 onMounted(() => {
-  loadSites()
-  loadRooms()
-  loadNvrs()
-  loadCameras()
-  
+  loadSites();
+  loadRooms();
+  loadNvrs();
+  loadCameras();
+
   // Pre-select NVR if coming from NVR overview
   if (route.query.nvrId) {
-    const nvrId = Number(route.query.nvrId)
-    const nvr = nvrs.value.find(n => n.id === nvrId)
+    const nvrId = Number(route.query.nvrId);
+    const nvr = nvrs.value.find((n) => n.id === nvrId);
     if (nvr) {
-      cameraForm.value.siteId = nvr.siteId
-      cameraForm.value.roomId = nvr.roomId
-      cameraForm.value.nvrId = nvrId
+      cameraForm.value.siteId = nvr.siteId;
+      cameraForm.value.roomId = nvr.roomId;
+      cameraForm.value.nvrId = nvrId;
     }
   }
-})
+});
 </script>

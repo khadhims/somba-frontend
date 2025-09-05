@@ -176,7 +176,10 @@
             <label class="fw-semibold fs-6 mb-2">Status</label>
             <!--end::Label-->
             <!--begin::Select-->
-            <select v-model="siteForm.status" class="form-select form-select-solid">
+            <select
+              v-model="siteForm.status"
+              class="form-select form-select-solid"
+            >
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
@@ -190,7 +193,10 @@
             <label class="fw-semibold fs-6 mb-2">Time Zone</label>
             <!--end::Label-->
             <!--begin::Select-->
-            <select v-model="siteForm.timeZone" class="form-select form-select-solid">
+            <select
+              v-model="siteForm.timeZone"
+              class="form-select form-select-solid"
+            >
               <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
               <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
               <option value="Asia/Jayapura">Asia/Jayapura (WIT)</option>
@@ -203,24 +209,18 @@
 
         <!--begin::Actions-->
         <div class="text-center pt-10">
-          <button
-            type="button"
-            class="btn btn-light me-3"
-            @click="resetForm"
-          >
+          <button type="button" class="btn btn-light me-3" @click="resetForm">
             Reset
           </button>
-          <button
-            type="submit"
-            class="btn btn-primary"
-            :disabled="isLoading"
-          >
+          <button type="submit" class="btn btn-primary" :disabled="isLoading">
             <span v-if="isLoading" class="indicator-progress">
               Please wait...
-              <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+              <span
+                class="spinner-border spinner-border-sm align-middle ms-2"
+              ></span>
             </span>
             <span v-else class="indicator-label">
-              {{ isEdit ? 'Update Site' : 'Create Site' }}
+              {{ isEdit ? "Update Site" : "Create Site" }}
             </span>
           </button>
         </div>
@@ -234,129 +234,136 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, computed, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 // Interface
 interface SiteForm {
-  id?: number
-  name: string
-  code: string
-  description: string
-  address: string
-  latitude?: number
-  longitude?: number
-  contactPerson: string
-  contactPhone: string
-  status: 'Active' | 'Inactive'
-  timeZone: string
+  id?: number;
+  name: string;
+  code: string;
+  description: string;
+  address: string;
+  latitude?: number;
+  longitude?: number;
+  contactPerson: string;
+  contactPhone: string;
+  status: "Active" | "Inactive";
+  timeZone: string;
 }
 
 // Router
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
 // Reactive data
-const isLoading = ref(false)
+const isLoading = ref(false);
 const siteForm = ref<SiteForm>({
-  name: '',
-  code: '',
-  description: '',
-  address: '',
+  name: "",
+  code: "",
+  description: "",
+  address: "",
   latitude: undefined,
   longitude: undefined,
-  contactPerson: '',
-  contactPhone: '',
-  status: 'Active',
-  timeZone: 'Asia/Jakarta'
-})
+  contactPerson: "",
+  contactPhone: "",
+  status: "Active",
+  timeZone: "Asia/Jakarta",
+});
 
 // Computed
-const isEdit = computed(() => !!route.query.id)
+const isEdit = computed(() => !!route.query.id);
 
 // Methods
 const generateSiteCode = (name: string) => {
-  return name.toUpperCase().replace(/\s+/g, '').substring(0, 6) + '_' + Date.now().toString().slice(-4)
-}
+  return (
+    name.toUpperCase().replace(/\s+/g, "").substring(0, 6) +
+    "_" +
+    Date.now().toString().slice(-4)
+  );
+};
 
 const saveSite = async () => {
-  isLoading.value = true
-  
+  isLoading.value = true;
+
   try {
     // Generate code if new site
     if (!isEdit.value && !siteForm.value.code) {
-      siteForm.value.code = generateSiteCode(siteForm.value.name)
+      siteForm.value.code = generateSiteCode(siteForm.value.name);
     }
 
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    console.log('Site saved:', siteForm.value)
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    console.log("Site saved:", siteForm.value);
+
     // Redirect to overview
-    router.push('/controlplane/site')
+    router.push("/controlplane/site");
   } catch (error) {
-    console.error('Error saving site:', error)
+    console.error("Error saving site:", error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 const resetForm = () => {
   siteForm.value = {
-    name: '',
-    code: '',
-    description: '',
-    address: '',
+    name: "",
+    code: "",
+    description: "",
+    address: "",
     latitude: undefined,
     longitude: undefined,
-    contactPerson: '',
-    contactPhone: '',
-    status: 'Active',
-    timeZone: 'Asia/Jakarta'
-  }
-}
+    contactPerson: "",
+    contactPhone: "",
+    status: "Active",
+    timeZone: "Asia/Jakarta",
+  };
+};
 
 const loadSite = async (id: string) => {
-  isLoading.value = true
-  
+  isLoading.value = true;
+
   try {
     // Simulate API call to load site data
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     // Mock data
     siteForm.value = {
       id: parseInt(id),
-      name: 'Main Office',
-      code: 'MAIN_2024',
-      description: 'Primary office building',
-      address: 'Jl. Sudirman No. 123, Jakarta Selatan, DKI Jakarta 12190',
+      name: "Main Office",
+      code: "MAIN_2024",
+      description: "Primary office building",
+      address: "Jl. Sudirman No. 123, Jakarta Selatan, DKI Jakarta 12190",
       latitude: -6.2088,
       longitude: 106.8456,
-      contactPerson: 'John Doe',
-      contactPhone: '+62-21-1234567',
-      status: 'Active',
-      timeZone: 'Asia/Jakarta'
-    }
+      contactPerson: "John Doe",
+      contactPhone: "+62-21-1234567",
+      status: "Active",
+      timeZone: "Asia/Jakarta",
+    };
   } catch (error) {
-    console.error('Error loading site:', error)
+    console.error("Error loading site:", error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 // Lifecycle
 onMounted(() => {
   if (isEdit.value && route.query.id) {
-    loadSite(route.query.id as string)
+    loadSite(route.query.id as string);
   }
-})
+});
 
 // Watch for name changes to auto-generate code
-import { watch } from 'vue'
-watch(() => siteForm.value.name, (newName) => {
-  if (!isEdit.value && newName) {
-    siteForm.value.code = generateSiteCode(newName)
+import { watch } from "vue";
+watch(
+  () => siteForm.value.name,
+  (newName) => {
+    if (!isEdit.value && newName) {
+      siteForm.value.code = generateSiteCode(newName);
+    }
   }
-})
+);
 </script>

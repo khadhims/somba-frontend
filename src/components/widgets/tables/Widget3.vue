@@ -131,7 +131,7 @@ export default defineComponent({
         color: "info",
         title: "New Users",
         description: "Communication/Group.svg",
-  technologies: "Laravel, Somba",
+        technologies: "Laravel, Somba",
         users: "890 Users",
         size: "1.5MB",
       },
