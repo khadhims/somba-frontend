@@ -5,9 +5,9 @@
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col-md-6">
-          <h4 class="card-title mb-0">Account Management</h4>
+          <h4 class="card-title mb-0">Payment Account Management</h4>
           <p class="text-muted mb-0">
-            Manage accounts {{ currentOrganization ? `for ${currentOrganization.name}` : 'for your organization' }}
+            Manage payment accounts {{ currentOrganization ? `for ${currentOrganization.name}` : 'for your organization' }}
           </p>
         </div>
         <div class="col-md-6">
@@ -41,7 +41,7 @@
     <!--begin::Summary Cards-->
     <div class="col-xl-3">
       <Widget1
-        :description="'Total Accounts'"
+        :description="'Total Payment Accounts'"
         :value="totalAccounts"
         :progress-text="`${activeAccounts} Active`"
         :progress-value="activeAccountsPercentage"
@@ -52,10 +52,10 @@
 
     <div class="col-xl-3">
       <Widget1
-        :description="'Total Users'"
-        :value="totalUsers"
-        :progress-text="`${activeUsers} Active`"
-        :progress-value="activeUsersPercentage"
+        :description="'Total Revenue'"
+        :value="totalRevenue"
+        :progress-text="'This Month'"
+        :progress-value="revenueGrowth"
         bg-color="#17C653"
         text-color="white"
       />
@@ -63,9 +63,9 @@
 
     <div class="col-xl-3">
       <Widget1
-        :description="'Total Projects'"
+        :description="'Active Subscriptions'"
         :value="totalProjects"
-        :progress-text="`${activeProjects} Ongoing`"
+        :progress-text="`${activeProjects} Renewing`"
         :progress-value="activeProjectsPercentage"
         bg-color="#3699FF"
         text-color="white"
@@ -74,10 +74,10 @@
 
     <div class="col-xl-3">
       <Widget1
-        :description="'Revenue'"
-        :value="totalRevenue"
-        :progress-text="'This Month'"
-        :progress-value="revenueGrowth"
+        :description="'Payment Methods'"
+        :value="totalUsers"
+        :progress-text="`${activeUsers} Verified`"
+        :progress-value="activeUsersPercentage"
         bg-color="#FFA800"
         text-color="white"
       />
@@ -91,7 +91,7 @@
     <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
       <div class="card-title">
-        <h3 class="fw-bold m-0">Accounts Overview</h3>
+        <h3 class="fw-bold m-0">Payment Accounts Overview</h3>
       </div>
       <!--end::Card title-->
 
@@ -107,7 +107,7 @@
             type="text"
             v-model="searchQuery"
             class="form-control form-control-solid w-250px ps-12"
-            placeholder="Search accounts..."
+            placeholder="Search payment accounts..."
           />
         </div>
         <!--end::Search-->
@@ -117,7 +117,7 @@
           class="btn btn-sm btn-light-primary"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
-          Add Account
+          Add Payment Account
         </button>
       </div>
       <!--end::Card toolbar-->
@@ -136,7 +136,7 @@
         :sort-label="sortLabel"
         :sort-order="sortOrder"
         @on-sort="handleSort"
-        empty-table-text="No accounts found"
+        empty-table-text="No payment accounts found"
       >
         <template v-slot:name="{ row }">
           <div class="d-flex align-items-center">
@@ -147,26 +147,16 @@
             </div>
             <div class="d-flex justify-content-start flex-column">
               <span class="text-dark fw-bold text-hover-primary fs-6">{{ row.name }}</span>
-              <span class="text-muted fw-semibold text-muted d-block fs-7">{{ row.email }}</span>
             </div>
           </div>
         </template>
 
-        <template v-slot:email="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{ row.email }}</span>
-        </template>
-
-        <template v-slot:phone="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{ row.phone || '-' }}</span>
-        </template>
-
-        <template v-slot:role="{ row }">
-          <span class="badge badge-light-info fs-7 fw-bold">{{ row.role || 'User' }}</span>
-        </template>
-
-        <template v-slot:status="{ row }">
-          <span :class="`badge badge-light-${row.status === 'active' ? 'success' : 'danger'} fs-7 fw-bold`">
-            {{ row.status || 'active' }}
+        <template v-slot:created_by="{ row }">
+          <span class="text-dark fw-bold d-block fs-6">
+            {{ row.created_by?.username || 'Unknown' }}
+          </span>
+          <span class="text-muted fw-semibold text-muted d-block fs-7">
+            {{ row.created_by?.email || '' }}
           </span>
         </template>
 
@@ -221,41 +211,16 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Add Account</h5>
+          <h5 class="modal-title">Add Payment Account</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <form @submit.prevent="createAccount">
           <div class="modal-body">
             <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Name *</label>
+              <div class="col-md-12 mb-3">
+                <label class="form-label">Account Name *</label>
                 <input type="text" class="form-control" v-model="newAccount.name" required>
               </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Email *</label>
-                <input type="email" class="form-control" v-model="newAccount.email" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Phone</label>
-                <input type="tel" class="form-control" v-model="newAccount.phone">
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Role</label>
-                <select class="form-select" v-model="newAccount.role">
-                  <option value="admin">Admin</option>
-                  <option value="user">User</option>
-                  <option value="manager">Manager</option>
-                </select>
-              </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Status</label>
-              <select class="form-select" v-model="newAccount.status">
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
             </div>
           </div>
           <div class="modal-footer">
@@ -275,11 +240,11 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Delete Account</h5>
+          <h5 class="modal-title">Delete Payment Account</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>Are you sure you want to delete <strong>{{ accountToDelete?.name }}</strong>?</p>
+          <p>Are you sure you want to delete payment account <strong>{{ accountToDelete?.name }}</strong>?</p>
           <p class="text-muted">This action cannot be undone.</p>
         </div>
         <div class="modal-footer">
@@ -305,16 +270,13 @@ import ApiService from '@/core/services/ApiService'
 interface Account {
   uid: string
   name: string
-  email: string
-  phone?: string
-  role?: 'admin' | 'user' | 'manager'
-  status?: 'active' | 'inactive'
-  created_at: string
-  updated_at?: string
+  organization_uid?: string
   created_by?: {
     username: string
     email: string
   }
+  created_at: string
+  updated_at: string
 }
 
 interface Organization {
@@ -355,30 +317,25 @@ const creating = ref(false)
 const deleting = ref(false)
 const newAccount = ref<Partial<Account>>({
   name: '',
-  email: '',
-  phone: '',
-  role: 'user',
-  status: 'active'
 })
 const accountToDelete = ref<Account | null>(null)
 
 // Table header configuration
 const tableHeader = ref([
   { columnName: 'Account Name', columnLabel: 'name', sortEnabled: true, searchable: true },
-  { columnName: 'Email', columnLabel: 'email', sortEnabled: true, searchable: true },
-  { columnName: 'Phone', columnLabel: 'phone', sortEnabled: true, searchable: true },
-  { columnName: 'Role', columnLabel: 'role', sortEnabled: true, searchable: true },
-  { columnName: 'Status', columnLabel: 'status', sortEnabled: true, searchable: true },
+  { columnName: 'Created By', columnLabel: 'created_by', sortEnabled: false, searchable: false },
   { columnName: 'Created', columnLabel: 'created_at', sortEnabled: true, searchable: false },
   { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false, searchable: false }
 ])
 
 // Fetch accounts from API
 const fetchAccounts = async () => {
+  if (!selectedOrganizationId.value) return
+
   loading.value = true
   error.value = null
   try {
-    const resp = await ApiService.query("accounts", {})
+    const resp = await ApiService.query(`organizations/${selectedOrganizationId.value}/accounts`, {})
     if (resp && resp.data) {
       accounts.value = resp.data
       // Format created_at for each account
@@ -397,8 +354,8 @@ const fetchAccounts = async () => {
 
 // Computed properties for summary statistics
 const totalAccounts = computed(() => accounts.value.length)
-const activeAccounts = computed(() => accounts.value.filter(account => account.status === 'active').length)
-const activeAccountsPercentage = computed(() => totalAccounts.value > 0 ? Math.round((activeAccounts.value / totalAccounts.value) * 100) : 0)
+const activeAccounts = computed(() => accounts.value.length) // All accounts are considered active for now
+const activeAccountsPercentage = computed(() => 100) // All accounts are active
 
 // Mock data for other stats (replace with actual API calls)
 const totalUsers = computed(() => accounts.value.reduce((sum, account) => sum + Math.floor(Math.random() * 50) + 10, 0))
@@ -420,10 +377,7 @@ const filteredAndSortedAccounts = computed(() => {
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(account =>
-      account.name.toLowerCase().includes(query) ||
-      (account.email && account.email.toLowerCase().includes(query)) ||
-      (account.role && account.role.toLowerCase().includes(query)) ||
-      (account.status && account.status.toLowerCase().includes(query))
+      account.name.toLowerCase().includes(query)
     )
   }
 
@@ -457,10 +411,6 @@ const showAddAccountModal = () => {
   // Reset form
   newAccount.value = {
     name: '',
-    email: '',
-    phone: '',
-    role: 'user',
-    status: 'active'
   }
   // Show modal using Bootstrap
   const modal = document.getElementById('addAccountModal')
@@ -471,17 +421,16 @@ const showAddAccountModal = () => {
 }
 
 const createAccount = async () => {
-  if (!newAccount.value.name || !newAccount.value.email) return
+  if (!newAccount.value.name) return
 
   // Include organization context if selected
   const accountData = {
     ...newAccount.value,
-    organization_id: selectedOrganizationId.value || undefined
   }
 
   creating.value = true
   try {
-    const resp = await ApiService.post("accounts", accountData)
+    const resp = await ApiService.post(`organizations/${selectedOrganizationId.value}/accounts`, accountData)
     if (resp && resp.data) {
       accounts.value.unshift(resp.data)
       // Hide modal
@@ -561,8 +510,8 @@ const fetchOrganizations = async () => {
 const switchOrganization = () => {
   const org = organizations.value.find(o => o.uid === selectedOrganizationId.value)
   currentOrganization.value = org || null
-  // Here you could add logic to refresh accounts based on selected organization
-  // For now, we'll just update the current organization context
+  // Refresh accounts for the selected organization
+  fetchAccounts()
   console.log('Switched to organization:', org?.name)
 }
 
