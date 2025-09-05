@@ -185,22 +185,22 @@
 
         <template v-slot:actions="{ row }">
           <div class="d-flex justify-content-end flex-shrink-0">
-            <router-link
-              :to="{ name: 'team-settings', params: { id: row.uid } }"
+            <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              title="Edit Team"
+              @click="addTeamMember(row)"
+              title="Add Team Member"
             >
-              <i class="ki-duotone ki-pencil fs-2">
+              <i class="ki-duotone ki-plus fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-            </router-link>
+            </button>
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              @click="viewTeamDetails(row)"
-              title="View Details"
+              @click="editTeam(row)"
+              title="Edit Team Name"
             >
-              <i class="ki-duotone ki-eye fs-2">
+              <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
@@ -245,6 +245,35 @@
             <button type="submit" class="btn btn-primary" :disabled="creating">
               <span v-if="creating" class="spinner-border spinner-border-sm me-2"></span>
               Create Team
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Team Modal -->
+  <div class="modal fade" id="editTeamModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Team</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="teamToEdit = null"></button>
+        </div>
+        <form @submit.prevent="updateTeam" v-if="teamToEdit">
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label class="form-label">Team Name *</label>
+                <input type="text" class="form-control" v-model="teamToEdit.name" required>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal" @click="teamToEdit = null">Cancel</button>
+            <button type="submit" class="btn btn-primary" :disabled="editing">
+              <span v-if="editing" class="spinner-border spinner-border-sm me-2"></span>
+              Update Team
             </button>
           </div>
         </form>
@@ -349,9 +378,11 @@ const currentAccount = ref<Account | null>(null)
 // Modal states
 const creating = ref(false)
 const deleting = ref(false)
+const editing = ref(false)
 const newTeam = ref<Partial<Team>>({
   name: '',
 })
+const teamToEdit = ref<Team | null>(null)
 const teamToDelete = ref<Team | null>(null)
 
 // Table header configuration
@@ -472,7 +503,24 @@ const fetchAccounts = async () => {
     if (resp && resp.data) {
       accounts.value = resp.data
       
-      // Try to use last selected account or first account
+      // Check if accountId is provided in URL query parameters
+      const accountIdFromUrl = route.query.accountId as string
+      
+      if (accountIdFromUrl) {
+        // Find the account by the provided accountId
+        const accountFromUrl = accounts.value.find(a => a.uid === accountIdFromUrl)
+        if (accountFromUrl) {
+          selectedAccountId.value = accountFromUrl.uid
+          currentAccount.value = accountFromUrl
+          // Save this as the last selected account
+          saveLastSelectedAccount(accountFromUrl.uid)
+          // Fetch teams for the selected account
+          fetchTeams()
+          return
+        }
+      }
+      
+      // If no accountId from URL or not found, try to use last selected account
       const lastSelectedAccountId = loadLastSelectedAccount()
       if (lastSelectedAccountId) {
         const lastAccount = accounts.value.find(a => a.uid === lastSelectedAccountId)
@@ -634,9 +682,48 @@ const confirmDelete = async () => {
   }
 }
 
-const viewTeamDetails = (team: Team) => {
-  console.log('Viewing team details for:', team.name)
-  // TODO: Navigate to details view or show modal
+const addTeamMember = (team: Team) => {
+  console.log('Adding member to team:', team.name)
+  // TODO: Navigate to add member view or show modal
+}
+
+const editTeam = (team: Team) => {
+  teamToEdit.value = { ...team } // Create a copy to avoid direct mutation
+  // Show edit modal using Bootstrap
+  const modal = document.getElementById('editTeamModal')
+  if (modal) {
+    const bsModal = new Modal(modal)
+    bsModal.show()
+  }
+}
+
+const updateTeam = async () => {
+  if (!teamToEdit.value || !teamToEdit.value.name?.trim()) return
+
+  editing.value = true
+  try {
+    const resp = await ApiService.patch(`teams/${teamToEdit.value.uid}`, {
+      name: teamToEdit.value.name
+    })
+    if (resp && resp.data) {
+      // Update the team in the list
+      const index = teams.value.findIndex(team => team.uid === teamToEdit.value!.uid)
+      if (index !== -1) {
+        teams.value[index] = resp.data
+      }
+      // Hide modal
+      const modal = document.getElementById('editTeamModal')
+      if (modal) {
+        const bsModal = Modal.getInstance(modal)
+        bsModal?.hide()
+      }
+      teamToEdit.value = null
+    }
+  } catch (e: any) {
+    error.value = e?.response?.data?.message || e.message || "Failed to update team"
+  } finally {
+    editing.value = false
+  }
 }
 
 const formatDate = (date: string) => {

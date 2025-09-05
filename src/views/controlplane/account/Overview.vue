@@ -168,21 +168,21 @@
         <template v-slot:actions="{ row }">
           <div class="d-flex justify-content-end flex-shrink-0">
             <router-link
-              :to="{ name: 'account-settings', params: { id: row.uid } }"
+              :to="{ name: 'team-overview', query: { orgId: selectedOrganizationId, accountId: row.uid } }"
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              title="Edit Account"
+              title="Add Team"
             >
-              <i class="ki-duotone ki-pencil fs-2">
+              <i class="ki-duotone ki-people fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
             </router-link>
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              @click="viewAccountDetails(row)"
-              title="View Details"
+              @click="editAccount(row)"
+              title="Edit Account"
             >
-              <i class="ki-duotone ki-eye fs-2">
+              <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
@@ -256,6 +256,35 @@
       </div>
     </div>
   </div>
+
+  <!-- Edit Account Modal -->
+  <div class="modal fade" id="editAccountModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Payment Account</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="accountToEdit = null"></button>
+        </div>
+        <form @submit.prevent="updateAccount" v-if="accountToEdit">
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label class="form-label">Account Name *</label>
+                <input type="text" class="form-control" v-model="accountToEdit.name" required>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal" @click="accountToEdit = null">Cancel</button>
+            <button type="submit" class="btn btn-primary" :disabled="editing">
+              <span v-if="editing" class="spinner-border spinner-border-sm me-2"></span>
+              Update Account
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -315,9 +344,11 @@ const currentOrganization = ref<Organization | null>(null)
 // Modal states
 const creating = ref(false)
 const deleting = ref(false)
+const editing = ref(false)
 const newAccount = ref<Partial<Account>>({
   name: '',
 })
+const accountToEdit = ref<Account | null>(null)
 const accountToDelete = ref<Account | null>(null)
 
 // Table header configuration
@@ -478,9 +509,43 @@ const confirmDelete = async () => {
   }
 }
 
-const viewAccountDetails = (account: Account) => {
-  console.log('Viewing account details for:', account.name)
-  // TODO: Navigate to details view or show modal
+const editAccount = (account: Account) => {
+  accountToEdit.value = { ...account } // Create a copy to avoid direct mutation
+  // Show edit modal using Bootstrap
+  const modal = document.getElementById('editAccountModal')
+  if (modal) {
+    const bsModal = new Modal(modal)
+    bsModal.show()
+  }
+}
+
+const updateAccount = async () => {
+  if (!accountToEdit.value || !accountToEdit.value.name?.trim()) return
+
+  editing.value = true
+  try {
+    const resp = await ApiService.patch(`accounts/${accountToEdit.value.uid}`, {
+      name: accountToEdit.value.name
+    })
+    if (resp && resp.data) {
+      // Update the account in the list
+      const index = accounts.value.findIndex(account => account.uid === accountToEdit.value!.uid)
+      if (index !== -1) {
+        accounts.value[index] = resp.data
+      }
+      // Hide modal
+      const modal = document.getElementById('editAccountModal')
+      if (modal) {
+        const bsModal = Modal.getInstance(modal)
+        bsModal?.hide()
+      }
+      accountToEdit.value = null
+    }
+  } catch (e: any) {
+    error.value = e?.response?.data?.message || e.message || "Failed to update account"
+  } finally {
+    editing.value = false
+  }
 }
 
 const formatDate = (date: string) => {
