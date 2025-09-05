@@ -152,7 +152,7 @@
         <template v-slot:actions="{ row }">
           <div class="d-flex justify-content-end flex-shrink-0">
             <router-link
-              :to="`/controlplane/organization/account?orgId=${row.uid}`"
+              :to="{ name: 'account-overview', query: { orgId: row.uid } }"
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               title="Manage Accounts"
             >

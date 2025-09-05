@@ -261,6 +261,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { Modal } from 'bootstrap'
 import Widget1 from '@/components/dashboard-default-widgets/Widget1.vue'
 import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
@@ -487,6 +488,9 @@ const formatDate = (date: string) => {
   return date ? new Date(date).toLocaleDateString() : '-'
 }
 
+// Get route instance to read query parameters
+const route = useRoute()
+
 // Organization-related functions
 const fetchOrganizations = async () => {
   loadingOrganizations.value = true
@@ -494,8 +498,23 @@ const fetchOrganizations = async () => {
     const resp = await ApiService.query("organizations", {})
     if (resp && resp.data) {
       organizations.value = resp.data
-      // Set default organization if none selected
-      if (!selectedOrganizationId.value && organizations.value.length > 0) {
+      
+      // Check if orgId is provided in URL query parameters
+      const orgIdFromUrl = route.query.orgId as string
+      
+      if (orgIdFromUrl) {
+        // Find the organization by the provided orgId
+        const orgFromUrl = organizations.value.find(o => o.uid === orgIdFromUrl)
+        if (orgFromUrl) {
+          selectedOrganizationId.value = orgFromUrl.uid
+          currentOrganization.value = orgFromUrl
+        } else {
+          // If orgId not found, fall back to first organization
+          selectedOrganizationId.value = organizations.value[0]?.uid || ''
+          currentOrganization.value = organizations.value[0] || null
+        }
+      } else if (!selectedOrganizationId.value && organizations.value.length > 0) {
+        // Set default organization if none selected and no orgId in URL
         selectedOrganizationId.value = organizations.value[0].uid
         currentOrganization.value = organizations.value[0]
       }
