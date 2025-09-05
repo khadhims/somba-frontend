@@ -151,22 +151,22 @@
 
         <template v-slot:actions="{ row }">
           <div class="d-flex justify-content-end flex-shrink-0">
+            <router-link
+              :to="`/controlplane/organization/account?orgId=${row.uid}`"
+              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
+              title="Manage Accounts"
+            >
+              <i class="ki-duotone ki-switch fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </router-link>
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="openEditModal(row)"
               title="Edit Organization"
             >
               <i class="ki-duotone ki-pencil fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-            </button>
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              @click="viewOrganizationDetails(row)"
-              title="View Details"
-            >
-              <i class="ki-duotone ki-eye fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
@@ -726,7 +726,7 @@ const updateOrganization = async () => {
 
   updating.value = true;
   try {
-    const resp = await ApiService.put(
+    const resp = await ApiService.patch(
       `organizations/${editOrganization.value.uid}`,
       editOrganization.value
     );
@@ -788,11 +788,6 @@ const confirmDelete = async () => {
   } finally {
     deleting.value = false;
   }
-};
-
-const viewOrganizationDetails = (org: Organization) => {
-  console.log("Viewing organization details for:", org.name);
-  // TODO: Navigate to details view or show modal
 };
 
 const formatDate = (date: string) => {

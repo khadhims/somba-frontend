@@ -18,8 +18,8 @@ const MainMenuConfig: Array<MenuItem> = [
       {
         sectionTitle: "organization",
         route: "/organization",
-        keenthemesIcon: "profile-circle",
-        bootstrapIcon: "bi-person",
+        keenthemesIcon: "building",
+        bootstrapIcon: "bi-building",
         sub: [
           {
             heading: "organizationOverview",
