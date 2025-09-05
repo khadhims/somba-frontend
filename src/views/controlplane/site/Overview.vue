@@ -1,5 +1,41 @@
 <template>
   <!--begin::Site Overview-->
+  <!--begin::Account & Team Switcher-->
+  <div class="card mb-5">
+    <div class="card-body py-4">
+      <div class="row align-items-center">
+        <div class="col-md-4">
+          <h4 class="card-title mb-0">Site Management</h4>
+          <p class="text-muted mb-0">
+            Manage sites {{ currentTeam ? `for ${currentTeam.name}` : 'for your team' }}
+          </p>
+        </div>
+        <div class="col-md-8">
+          <div class="d-flex justify-content-end gap-3">
+            <div class="d-flex align-items-center" v-if="teams.length > 0">
+              <label class="form-label me-3 mb-0 fw-semibold">Team:</label>
+              <select
+                v-model="selectedTeamIdFilter"
+                @change="switchTeam"
+                class="form-select form-select-solid w-200px"
+                :disabled="loadingTeams"
+              >
+                <option
+                  v-for="team in teams"
+                  :key="team.uid"
+                  :value="team.uid"
+                >
+                  {{ team.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end::Account & Team Switcher-->
+
   <div class="row g-5 g-xl-8 mb-8">
     <!--begin::Summary Cards-->
     <div class="col-xl-3">
@@ -116,50 +152,39 @@
           </div>
         </template>
 
-        <template v-slot:location="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{ row.location }}</span>
-        </template>
-
-        <template v-slot:roomCount="{ row }">
-          <span class="badge badge-light-info fs-7 fw-bold">{{
-            row.roomCount
+        <template v-slot:description="{ row }">
+          <span class="text-dark fw-bold d-block fs-6">{{
+            row.description || 'No description'
           }}</span>
         </template>
 
-        <template v-slot:nvrCount="{ row }">
-          <span class="badge badge-light-primary fs-7 fw-bold">{{
-            row.nvrCount
-          }}</span>
-        </template>
-
-        <template v-slot:cameraCount="{ row }">
-          <span class="badge badge-light-warning fs-7 fw-bold">{{
-            row.cameraCount
-          }}</span>
-        </template>
-
-        <template v-slot:status="{ row }">
-          <span
-            :class="`badge badge-light-${
-              row.status === 'Active' ? 'success' : 'danger'
-            } fs-7 fw-bold`"
-          >
-            {{ row.status }}
+        <template v-slot:created_by="{ row }">
+          <span class="text-dark fw-bold d-block fs-6">
+            {{ row.created_by?.username || 'Unknown' }}
           </span>
+          <span class="text-muted fw-semibold text-muted d-block fs-7">
+            {{ row.created_by?.email || '' }}
+          </span>
+        </template>
+
+        <template v-slot:created_at="{ row }">
+          <span class="text-dark fw-bold d-block fs-6">{{
+            new Date(row.created_at).toLocaleDateString()
+          }}</span>
         </template>
 
         <template v-slot:actions="{ row }">
           <div class="d-flex justify-content-end flex-shrink-0">
-            <router-link
-              :to="`/controlplane/site/room?siteId=${row.id}`"
+            <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              title="Manage Rooms"
+              @click="viewSiteDetails(row)"
+              title="View Site Details"
             >
-              <i class="ki-duotone ki-switch fs-2">
+              <i class="ki-duotone ki-eye fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-            </router-link>
+            </button>
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm"
               @click="editSiteDetails(row)"
@@ -187,23 +212,40 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import AddSiteModal from "@/components/modals/forms/AddSiteModal.vue";
 import EditSiteModal from "@/components/modals/forms/EditSiteModal.vue";
+import ApiService from "@/core/services/ApiService";
 
 // Interface definitions
 interface Site {
-  id: number;
+  uid: string;
   name: string;
-  description: string;
-  location: string;
-  roomCount: number;
-  nvrCount: number;
-  cameraCount: number;
-  status: "Active" | "Inactive";
-  createdAt: string;
+  description?: string;
+  team_uid?: string;
+  created_by?: {
+    username: string;
+    email: string;
+  };
+  created_at: string;
+  updated_at?: string;
 }
+
+interface Account {
+  uid: string;
+  name: string;
+}
+
+interface Team {
+  uid: string;
+  name: string;
+  account_uid?: string;
+}
+
+// Get route instance to read query parameters
+const route = useRoute();
 
 // Reactive data
 const sites = ref<Site[]>([]);
@@ -211,8 +253,21 @@ const loading = ref(false);
 const searchQuery = ref("");
 const sortLabel = ref("");
 const sortOrder = ref<"asc" | "desc">("asc");
+const selectedTeamId = ref("");
 const addSiteModalRef = ref();
 const editSiteModalRef = ref();
+
+// Account-related reactive data
+const accounts = ref<Account[]>([]);
+const loadingAccounts = ref(false);
+const selectedAccountId = ref('');
+const currentAccount = ref<Account | null>(null);
+
+// Team-related reactive data
+const teams = ref<Team[]>([]);
+const loadingTeams = ref(false);
+const selectedTeamIdFilter = ref('');
+const currentTeam = ref<Team | null>(null);
 
 // Table header configuration
 const tableHeader = ref([
@@ -223,34 +278,22 @@ const tableHeader = ref([
     searchable: true,
   },
   {
-    columnName: "Location",
-    columnLabel: "location",
+    columnName: "Description",
+    columnLabel: "description",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Rooms",
-    columnLabel: "roomCount",
-    sortEnabled: true,
-    searchable: false,
-  },
-  {
-    columnName: "NVRs",
-    columnLabel: "nvrCount",
-    sortEnabled: true,
-    searchable: false,
-  },
-  {
-    columnName: "Cameras",
-    columnLabel: "cameraCount",
-    sortEnabled: true,
-    searchable: false,
-  },
-  {
-    columnName: "Status",
-    columnLabel: "status",
+    columnName: "Created By",
+    columnLabel: "created_by",
     sortEnabled: true,
     searchable: true,
+  },
+  {
+    columnName: "Created At",
+    columnLabel: "created_at",
+    sortEnabled: true,
+    searchable: false,
   },
   {
     columnName: "Actions",
@@ -260,100 +303,234 @@ const tableHeader = ref([
   },
 ]);
 
-// Mock data - replace with actual API calls
-onMounted(() => {
+// Fetch sites from API
+const fetchSites = async () => {
   loading.value = true;
-  // Simulate API call
-  setTimeout(() => {
-    sites.value = [
-      {
-        id: 1,
-        name: "Main Office",
-        description: "Primary office building",
-        location: "Jakarta, Indonesia",
-        roomCount: 25,
-        nvrCount: 5,
-        cameraCount: 48,
-        status: "Active",
-        createdAt: "2024-01-15",
-      },
-      {
-        id: 2,
-        name: "Branch Office",
-        description: "Secondary office location",
-        location: "Surabaya, Indonesia",
-        roomCount: 15,
-        nvrCount: 3,
-        cameraCount: 28,
-        status: "Active",
-        createdAt: "2024-02-20",
-      },
-      {
-        id: 3,
-        name: "Warehouse A",
-        description: "Storage facility",
-        location: "Bandung, Indonesia",
-        roomCount: 8,
-        nvrCount: 2,
-        cameraCount: 16,
-        status: "Inactive",
-        createdAt: "2024-03-10",
-      },
-    ];
+  try {
+    // Get teamId from filter or query parameters
+    const teamId = selectedTeamIdFilter.value || (route.query.teamId as string) || "";
+    selectedTeamId.value = teamId;
+
+    // Build API URL with optional team filtering
+    let apiUrl = "/sites";
+    if (teamId) {
+      apiUrl += `?team_uid=${teamId}`;
+    }
+
+    const response = await ApiService.get(apiUrl);
+    sites.value = response.data.data || response.data;
+  } catch (error) {
+    console.error("Error fetching sites:", error);
+    // Fallback to empty array if API fails
+    sites.value = [];
+  } finally {
     loading.value = false;
-  }, 1000);
+  }
+};
+
+// Fetch accounts (or, if accountId provided via route, fetch teams for that account)
+const fetchAccounts = async () => {
+  loadingAccounts.value = true;
+  try {
+    const accountFromRoute = (route.query.accountId as string) || '';
+    console.log('Account from route:', accountFromRoute);
+    // If previous page provided accountId, fetch teams for that account directly
+    if (accountFromRoute) {
+      try {
+        // use the account-specific teams endpoint
+        const resp = await ApiService.query(`accounts/${accountFromRoute}/teams`, {});
+        teams.value = resp.data.data || resp.data;
+
+        // remember selected account and team
+        selectedAccountId.value = accountFromRoute;
+        saveLastSelectedAccount(accountFromRoute);
+
+        if (teams.value.length > 0) {
+          const lastTeamId = loadLastSelectedTeam();
+          const teamFromUrl = route.query.teamId as string;
+
+          if (teamFromUrl && teams.value.find(t => t.uid === teamFromUrl)) {
+            selectedTeamIdFilter.value = teamFromUrl;
+            saveLastSelectedTeam(teamFromUrl);
+          } else if (lastTeamId && teams.value.find(t => t.uid === lastTeamId)) {
+            selectedTeamIdFilter.value = lastTeamId;
+          } else {
+            selectedTeamIdFilter.value = teams.value[0].uid;
+            saveLastSelectedTeam(teams.value[0].uid);
+          }
+
+          const team = teams.value.find(t => t.uid === selectedTeamIdFilter.value);
+          currentTeam.value = team || null;
+
+          // fetch sites for selected team
+          fetchSites();
+        }
+      } catch (err) {
+        console.error('Error fetching teams for account from route:', err);
+        teams.value = [];
+      } finally {
+        loadingAccounts.value = false;
+      }
+
+      return;
+    }
+
+    // If no account provided via route, ensure we have the accounts list so we can
+    // auto-select one and then fetch its teams. Previously accounts.value could be
+    // empty and teams would never populate.
+    try {
+      const accountsResp = await ApiService.query('accounts', {});
+      accounts.value = accountsResp.data.data || accountsResp.data;
+    } catch (err) {
+      console.error('Error fetching accounts list:', err);
+      accounts.value = [];
+    }
+ 
+
+    // Auto-select account
+    if (accounts.value.length > 0) {
+      const lastAccountId = loadLastSelectedAccount();
+      const accountFromUrl = route.query.accountId as string;
+
+      if (accountFromUrl && accounts.value.find(a => a.uid === accountFromUrl)) {
+        selectedAccountId.value = accountFromUrl;
+        saveLastSelectedAccount(accountFromUrl);
+      } else if (lastAccountId && accounts.value.find(a => a.uid === lastAccountId)) {
+        selectedAccountId.value = lastAccountId;
+      } else {
+        selectedAccountId.value = accounts.value[0].uid;
+        saveLastSelectedAccount(accounts.value[0].uid);
+      }
+
+      // Set current account
+      const account = accounts.value.find(a => a.uid === selectedAccountId.value);
+      currentAccount.value = account || null;
+
+      // Fetch teams for the selected account
+      fetchTeams();
+    }
+  } catch (error) {
+    console.error('Error fetching accounts:', error);
+    accounts.value = [];
+  } finally {
+    loadingAccounts.value = false;
+  }
+};
+
+// Fetch teams for selected account
+const fetchTeams = async () => {
+  if (!selectedAccountId.value) return;
+
+  loadingTeams.value = true;
+  try {
+    const response = await ApiService.query(`accounts/${selectedAccountId.value}/teams`, {});
+    teams.value = response.data.data || response.data;
+
+    // Auto-select team
+    if (teams.value.length > 0) {
+      const lastTeamId = loadLastSelectedTeam();
+      const teamFromUrl = route.query.teamId as string;
+
+      if (teamFromUrl && teams.value.find(t => t.uid === teamFromUrl)) {
+        selectedTeamIdFilter.value = teamFromUrl;
+        saveLastSelectedTeam(teamFromUrl);
+      } else if (lastTeamId && teams.value.find(t => t.uid === lastTeamId)) {
+        selectedTeamIdFilter.value = lastTeamId;
+      } else {
+        selectedTeamIdFilter.value = teams.value[0].uid;
+        saveLastSelectedTeam(teams.value[0].uid);
+      }
+
+      // Set current team
+      const team = teams.value.find(t => t.uid === selectedTeamIdFilter.value);
+      currentTeam.value = team || null;
+
+      // Fetch sites for the selected team
+      fetchSites();
+    }
+  } catch (error) {
+    console.error('Error fetching teams:', error);
+    teams.value = [];
+  } finally {
+    loadingTeams.value = false;
+  }
+};
+
+// Switch account
+const switchAccount = () => {
+  const account = accounts.value.find(a => a.uid === selectedAccountId.value);
+  currentAccount.value = account || null;
+  // Save the selected account to localStorage
+  if (selectedAccountId.value) {
+    saveLastSelectedAccount(selectedAccountId.value);
+  }
+  // Clear teams and sites when account changes
+  teams.value = [];
+  sites.value = [];
+  selectedTeamIdFilter.value = '';
+  currentTeam.value = null;
+  // Fetch teams for the selected account
+  fetchTeams();
+};
+
+// Switch team
+const switchTeam = () => {
+  const team = teams.value.find(t => t.uid === selectedTeamIdFilter.value);
+  currentTeam.value = team || null;
+  // Save the selected team to localStorage
+  if (selectedTeamIdFilter.value) {
+    saveLastSelectedTeam(selectedTeamIdFilter.value);
+  }
+  // Fetch sites for the selected team
+  fetchSites();
+};
+
+// LocalStorage helper functions
+const saveLastSelectedAccount = (accountId: string) => {
+  localStorage.setItem('siteLastSelectedAccount', accountId);
+};
+
+const loadLastSelectedAccount = (): string | null => {
+  return localStorage.getItem('siteLastSelectedAccount');
+};
+
+const saveLastSelectedTeam = (teamId: string) => {
+  localStorage.setItem('siteLastSelectedTeam', teamId);
+};
+
+const loadLastSelectedTeam = (): string | null => {
+  return localStorage.getItem('siteLastSelectedTeam');
+};
+
+// Initialize data on component mount
+onMounted(() => {
+  fetchAccounts();
 });
 
 // Computed properties for summary statistics
 const totalSites = computed(() => sites.value.length);
-const totalRooms = computed(() =>
-  sites.value.reduce((sum, site) => sum + site.roomCount, 0)
-);
-const totalNVRs = computed(() =>
-  sites.value.reduce((sum, site) => sum + site.nvrCount, 0)
-);
-const totalCameras = computed(() =>
-  sites.value.reduce((sum, site) => sum + site.cameraCount, 0)
-);
+const totalRooms = computed(() => sites.value.length); // Placeholder - API doesn't provide room count
+const totalNVRs = computed(() => sites.value.length); // Placeholder - API doesn't provide NVR count
+const totalCameras = computed(() => sites.value.length); // Placeholder - API doesn't provide camera count
 
-const activeSites = computed(
-  () => sites.value.filter((site) => site.status === "Active").length
-);
+const activeSites = computed(() => sites.value.length); // All sites are considered active
 const activeSitesPercentage = computed(() =>
-  totalSites.value > 0
-    ? Math.round((activeSites.value / totalSites.value) * 100)
-    : 0
+  totalSites.value > 0 ? 100 : 0
 );
 
-const roomsWithCameras = computed(
-  () => sites.value.filter((site) => site.cameraCount > 0).length
-);
+const roomsWithCameras = computed(() => sites.value.length); // Placeholder
 const roomsWithCamerasPercentage = computed(() =>
-  totalSites.value > 0
-    ? Math.round((roomsWithCameras.value / totalSites.value) * 100)
-    : 0
+  totalSites.value > 0 ? 100 : 0
 );
 
-const onlineNVRs = computed(() =>
-  sites.value
-    .filter((site) => site.status === "Active")
-    .reduce((sum, site) => sum + site.nvrCount, 0)
-);
+const onlineNVRs = computed(() => sites.value.length); // Placeholder
 const onlineNVRsPercentage = computed(() =>
-  totalNVRs.value > 0
-    ? Math.round((onlineNVRs.value / totalNVRs.value) * 100)
-    : 0
+  totalSites.value > 0 ? 100 : 0
 );
 
-const activeCameras = computed(() =>
-  sites.value
-    .filter((site) => site.status === "Active")
-    .reduce((sum, site) => sum + site.cameraCount, 0)
-);
+const activeCameras = computed(() => sites.value.length); // Placeholder
 const activeCamerasPercentage = computed(() =>
-  totalCameras.value > 0
-    ? Math.round((activeCameras.value / totalCameras.value) * 100)
-    : 0
+  totalSites.value > 0 ? 100 : 0
 );
 
 // Search and Sort functionality
@@ -366,17 +543,22 @@ const filteredAndSortedSites = computed(() => {
     filtered = filtered.filter(
       (site) =>
         site.name.toLowerCase().includes(query) ||
-        site.description.toLowerCase().includes(query) ||
-        site.location.toLowerCase().includes(query) ||
-        site.status.toLowerCase().includes(query)
+        (site.description && site.description.toLowerCase().includes(query)) ||
+        site.uid.toLowerCase().includes(query)
     );
   }
 
   // Sort data
   if (sortLabel.value) {
     filtered = [...filtered].sort((a, b) => {
-      const aValue = a[sortLabel.value as keyof Site];
-      const bValue = b[sortLabel.value as keyof Site];
+      let aValue = a[sortLabel.value as keyof Site];
+      let bValue = b[sortLabel.value as keyof Site];
+
+      // Handle created_by object
+      if (sortLabel.value === 'created_by') {
+        aValue = a.created_by?.username || '';
+        bValue = b.created_by?.username || '';
+      }
 
       if (typeof aValue === "string" && typeof bValue === "string") {
         const comparison = aValue.localeCompare(bValue);
@@ -412,7 +594,7 @@ const editSiteDetails = (site: Site) => {
 };
 
 const onSiteUpdated = (updatedSite: Site) => {
-  const index = sites.value.findIndex((site) => site.id === updatedSite.id);
+  const index = sites.value.findIndex((site) => site.uid === updatedSite.uid);
   if (index !== -1) {
     sites.value[index] = { ...updatedSite };
     console.log("Site updated:", updatedSite);

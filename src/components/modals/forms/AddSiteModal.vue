@@ -74,120 +74,6 @@
                 <!--end::Input-->
               </div>
               <!--end::Input group-->
-
-              <!--begin::Input group-->
-              <div class="fv-row mb-7">
-                <!--begin::Label-->
-                <label class="required fw-semibold fs-6 mb-2">Address</label>
-                <!--end::Label-->
-                <!--begin::Input-->
-                <textarea
-                  class="form-control form-control-solid"
-                  rows="3"
-                  placeholder="Complete address"
-                  v-model="formData.address"
-                  name="address"
-                ></textarea>
-                <!--end::Input-->
-                <div v-if="errors.address" class="fv-plugins-message-container">
-                  <div class="fv-help-block">
-                    <span role="alert">{{ errors.address }}</span>
-                  </div>
-                </div>
-              </div>
-              <!--end::Input group-->
-
-              <!--begin::Row-->
-              <div class="row mb-7">
-                <div class="col-md-6">
-                  <label class="fw-semibold fs-6 mb-2">Latitude</label>
-                  <input
-                    type="number"
-                    step="any"
-                    class="form-control form-control-solid"
-                    v-model.number="formData.latitude"
-                    name="latitude"
-                    placeholder="Latitude coordinate"
-                  />
-                </div>
-                <div class="col-md-6">
-                  <label class="fw-semibold fs-6 mb-2">Longitude</label>
-                  <input
-                    type="number"
-                    step="any"
-                    class="form-control form-control-solid"
-                    v-model.number="formData.longitude"
-                    name="longitude"
-                    placeholder="Longitude coordinate"
-                  />
-                </div>
-              </div>
-              <!--end::Row-->
-
-              <!--begin::Row-->
-              <div class="row g-9 mb-7">
-                <div class="col-md-6 fv-row">
-                  <label class="required fs-6 fw-semibold mb-2"
-                    >Site Code</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control form-control-solid"
-                    placeholder="Auto-generated"
-                    v-model="formData.code"
-                    name="code"
-                    :readonly="true"
-                  />
-                </div>
-                <div class="col-md-6 fv-row">
-                  <label class="fw-semibold fs-6 mb-2">Status</label>
-                  <select
-                    class="form-select form-select-solid"
-                    v-model="formData.status"
-                    name="status"
-                  >
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
-                </div>
-              </div>
-              <!--end::Row-->
-
-              <div class="row mb-7">
-                <div class="col-md-6">
-                  <label class="fw-semibold fs-6 mb-2">Contact Person</label>
-                  <input
-                    type="text"
-                    class="form-control form-control-solid"
-                    placeholder="Enter contact person name"
-                    v-model="formData.contactPerson"
-                    name="contactPerson"
-                  />
-                </div>
-                <div class="col-md-6">
-                  <label class="fw-semibold fs-6 mb-2">Contact Phone</label>
-                  <input
-                    type="tel"
-                    class="form-control form-control-solid"
-                    placeholder="Contact phone number"
-                    v-model="formData.contactPhone"
-                    name="contactPhone"
-                  />
-                </div>
-              </div>
-
-              <div class="fv-row mb-7">
-                <label class="fw-semibold fs-6 mb-2">Time Zone</label>
-                <select
-                  v-model="formData.timeZone"
-                  class="form-select form-select-solid"
-                >
-                  <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
-                  <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
-                  <option value="Asia/Jayapura">Asia/Jayapura (WIT)</option>
-                </select>
-              </div>
-              <!--end::Input group-->
             </div>
             <!--end::Scroll-->
           </div>
@@ -228,27 +114,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from "vue";
+import { ref, reactive } from "vue";
 import { Modal } from "bootstrap";
+import { useRoute } from "vue-router";
 
 interface SiteFormData {
   name: string;
-  description: string;
-  address: string;
-  latitude?: number;
-  longitude?: number;
-  code: string;
-  status: "Active" | "Inactive";
-  contactPerson: string;
-  contactPhone: string;
-  email: string;
-  timeZone?: string;
+  description?: string;
+  team_uid: string;
 }
 
 // Props and Emits
 const emit = defineEmits<{
   "site-added": [site: any];
 }>();
+
+// Get route instance to read query parameters
+const route = useRoute();
 
 // Reactive data
 const addSiteModalRef = ref<HTMLElement>();
@@ -257,61 +139,24 @@ const loading = ref(false);
 const formData = reactive<SiteFormData>({
   name: "",
   description: "",
-  address: "",
-  latitude: undefined,
-  longitude: undefined,
-  code: "",
-  status: "Active",
-  contactPerson: "",
-  contactPhone: "",
-  email: "",
-  timeZone: "Asia/Jakarta",
+  team_uid: "",
 });
 
 const errors = reactive({
   name: "",
-  address: "",
-  status: "",
+  description: "",
 });
-
-// Auto-generate site code based on name
-watch(
-  () => formData.name,
-  (newName) => {
-    if (newName) {
-      formData.code =
-        "SITE-" +
-        newName
-          .toUpperCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^A-Z0-9-]/g, "");
-    } else {
-      formData.code = "";
-    }
-  }
-);
 
 // Validation
 const validateForm = (): boolean => {
   // Reset errors
   errors.name = "";
-  errors.address = "";
-  errors.status = "";
+  errors.description = "";
 
   let isValid = true;
 
   if (!formData.name.trim()) {
     errors.name = "Site name is required";
-    isValid = false;
-  }
-
-  if (!formData.address.trim()) {
-    errors.address = "Address is required";
-    isValid = false;
-  }
-
-  if (!formData.status) {
-    errors.status = "Status is required";
     isValid = false;
   }
 
@@ -332,22 +177,9 @@ const submitForm = async () => {
 
     // Create new site object
     const newSite = {
-      id: Date.now(), // Generate temporary ID
       name: formData.name,
       description: formData.description,
-      location: formData.address,
-      latitude: formData.latitude,
-      longitude: formData.longitude,
-      code: formData.code,
-      roomCount: 0,
-      nvrCount: 0,
-      cameraCount: 0,
-      status: formData.status,
-      contactPerson: formData.contactPerson,
-      contactPhone: formData.contactPhone,
-      email: formData.email,
-      timeZone: formData.timeZone,
-      createdAt: new Date().toISOString().split("T")[0],
+      team_uid: formData.team_uid,
     };
 
     // Emit event to parent component
@@ -370,24 +202,20 @@ const submitForm = async () => {
 const resetForm = () => {
   formData.name = "";
   formData.description = "";
-  formData.address = "";
-  formData.latitude = undefined;
-  formData.longitude = undefined;
-  formData.code = "";
-  formData.status = "Active";
-  formData.contactPerson = "";
-  formData.contactPhone = "";
-  formData.email = "";
-  formData.timeZone = "Asia/Jakarta";
+  formData.team_uid = "";
 
   errors.name = "";
-  errors.address = "";
-  errors.status = "";
+  errors.description = "";
 };
 
 // Show modal method (exposed for parent component)
 const showModal = () => {
   resetForm();
+  // Set team_uid from route query parameter
+  const teamId = route.query.teamId as string;
+  if (teamId) {
+    formData.team_uid = teamId;
+  }
   // initialize modal with backdrop static and keyboard disabled so click outside / ESC won't close
   const modal = new Modal(addSiteModalRef.value!, {
     backdrop: "static",

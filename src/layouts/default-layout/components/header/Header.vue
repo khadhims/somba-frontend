@@ -5,8 +5,8 @@
       <router-link to="/dashboard">
         <img
           alt="Logo"
-          :src="getAssetPath('media/logos/default-dark.svg')"
-          class="h-25px h-lg-25px"
+          :src="getAssetPath('logo-somba-3.png')"
+          style="height: 44px;"
         />
       </router-link>
       <!--end::Logo-->

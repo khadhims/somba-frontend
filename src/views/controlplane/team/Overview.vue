@@ -195,6 +195,16 @@
                 <span class="path2"></span>
               </i>
             </button>
+            <router-link
+              :to="{ name: 'site-overview', query: { account_id: selectedAccountId } }"
+              class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
+              title="Add Site"
+            >
+              <i class="ki-duotone ki-home fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </router-link>
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="editTeam(row)"
