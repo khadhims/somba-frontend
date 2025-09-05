@@ -20,7 +20,6 @@
                 class="form-select form-select-solid w-200px"
                 :disabled="loadingOrganizations"
               >
-                <option value="">Select Organization</option>
                 <option
                   v-for="org in organizations"
                   :key="org.uid"
@@ -492,6 +491,14 @@ const formatDate = (date: string) => {
 const route = useRoute()
 
 // Organization-related functions
+const saveLastSelectedOrganization = (orgId: string) => {
+  localStorage.setItem('lastSelectedOrganization', orgId)
+}
+
+const loadLastSelectedOrganization = (): string | null => {
+  return localStorage.getItem('lastSelectedOrganization')
+}
+
 const fetchOrganizations = async () => {
   loadingOrganizations.value = true
   try {
@@ -508,15 +515,59 @@ const fetchOrganizations = async () => {
         if (orgFromUrl) {
           selectedOrganizationId.value = orgFromUrl.uid
           currentOrganization.value = orgFromUrl
+          // Save this as the last selected organization
+          saveLastSelectedOrganization(orgFromUrl.uid)
+          // Fetch accounts for the selected organization
+          fetchAccounts()
         } else {
-          // If orgId not found, fall back to first organization
-          selectedOrganizationId.value = organizations.value[0]?.uid || ''
-          currentOrganization.value = organizations.value[0] || null
+          // If orgId not found, try to use last selected organization
+          const lastSelectedOrgId = loadLastSelectedOrganization()
+          if (lastSelectedOrgId) {
+            const lastOrg = organizations.value.find(o => o.uid === lastSelectedOrgId)
+            if (lastOrg) {
+              selectedOrganizationId.value = lastOrg.uid
+              currentOrganization.value = lastOrg
+              fetchAccounts()
+            } else {
+              // If last selected not found, use first organization
+              selectedOrganizationId.value = organizations.value[0]?.uid || ''
+              currentOrganization.value = organizations.value[0] || null
+              if (organizations.value[0]) {
+                saveLastSelectedOrganization(organizations.value[0].uid)
+                fetchAccounts()
+              }
+            }
+          } else {
+            // No last selected, use first organization
+            selectedOrganizationId.value = organizations.value[0]?.uid || ''
+            currentOrganization.value = organizations.value[0] || null
+            if (organizations.value[0]) {
+              saveLastSelectedOrganization(organizations.value[0].uid)
+              fetchAccounts()
+            }
+          }
         }
       } else if (!selectedOrganizationId.value && organizations.value.length > 0) {
-        // Set default organization if none selected and no orgId in URL
-        selectedOrganizationId.value = organizations.value[0].uid
-        currentOrganization.value = organizations.value[0]
+        // Try to use last selected organization first
+        const lastSelectedOrgId = loadLastSelectedOrganization()
+        if (lastSelectedOrgId) {
+          const lastOrg = organizations.value.find(o => o.uid === lastSelectedOrgId)
+          if (lastOrg) {
+            selectedOrganizationId.value = lastOrg.uid
+            currentOrganization.value = lastOrg
+          } else {
+            // Last selected not found, use first organization
+            selectedOrganizationId.value = organizations.value[0].uid
+            currentOrganization.value = organizations.value[0]
+            saveLastSelectedOrganization(organizations.value[0].uid)
+          }
+        } else {
+          // No last selected, use first organization
+          selectedOrganizationId.value = organizations.value[0].uid
+          currentOrganization.value = organizations.value[0]
+          saveLastSelectedOrganization(organizations.value[0].uid)
+        }
+        fetchAccounts()
       }
     }
   } catch (e: any) {
@@ -529,6 +580,10 @@ const fetchOrganizations = async () => {
 const switchOrganization = () => {
   const org = organizations.value.find(o => o.uid === selectedOrganizationId.value)
   currentOrganization.value = org || null
+  // Save the selected organization to localStorage
+  if (selectedOrganizationId.value) {
+    saveLastSelectedOrganization(selectedOrganizationId.value)
+  }
   // Refresh accounts for the selected organization
   fetchAccounts()
   console.log('Switched to organization:', org?.name)
@@ -536,7 +591,6 @@ const switchOrganization = () => {
 
 // Initialize
 onMounted(() => {
-  fetchAccounts()
   fetchOrganizations()
 })
 </script>
