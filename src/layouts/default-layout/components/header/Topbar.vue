@@ -1,188 +1,278 @@
 <template>
-  <!--begin::Action group-->
-  <div class="d-flex align-items-stretch overflow-auto pt-3 pt-lg-0">
-    <!--begin::Action wrapper-->
+  <!--begin::VMS Control Panel-->
+  <div class="d-flex align-items-center justify-content-between overflow-auto pt-3 pt-lg-0">
+    <!--begin::System Status-->
+    <!-- <div class="d-flex align-items-center">
+      <div class="d-flex align-items-center me-5">
+        <div class="symbol symbol-30px me-3">
+          <KTIcon icon-name="video" icon-class="fs-2 text-success" />
+        </div>
+        <div class="d-flex flex-column">
+          <span class="fs-8 text-gray-500 fw-semibold">Cameras</span>
+          <span class="fs-6 fw-bold text-success">{{ connectedCameras }}/{{ totalCameras }}</span>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center me-5">
+        <div class="symbol symbol-30px me-3">
+          <KTIcon icon-name="record-circle" icon-class="fs-2 text-danger" />
+        </div>
+        <div class="d-flex flex-column">
+          <span class="fs-8 text-gray-500 fw-semibold">Recording</span>
+          <span class="fs-6 fw-bold text-gray-900">{{ recordingCount }}</span>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center me-5">
+        <div class="symbol symbol-30px me-3">
+          <KTIcon icon-name="folder" icon-class="fs-2" :class="getStorageColor()" />
+        </div>
+        <div class="d-flex flex-column">
+          <span class="fs-8 text-gray-500 fw-semibold">Storage</span>
+          <span class="fs-6 fw-bold text-gray-900">{{ storageUsed }}%</span>
+        </div>
+      </div>
+
+      <div class="separator-vertical h-30px mx-4"></div>
+    </div> -->
+    <!--end::System Status-->
+
+    <!--begin::Real-time Info-->
+    <!-- <div class="d-flex align-items-center flex-fill">
+      <div class="d-flex align-items-center me-6">
+        <div class="symbol symbol-30px me-3">
+          <KTIcon icon-name="time" icon-class="fs-2 text-primary" />
+        </div>
+        <div class="d-flex flex-column">
+          <span class="fs-8 text-gray-500 fw-semibold">Current Time</span>
+          <span class="fs-6 fw-bold text-gray-900">{{ currentTime }}</span>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center me-6 d-none d-xl-flex">
+        <div class="symbol symbol-30px me-3">
+          <KTIcon icon-name="chart-line-up" icon-class="fs-2 text-info" />
+        </div>
+        <div class="d-flex flex-column">
+          <span class="fs-8 text-gray-500 fw-semibold">Uptime</span>
+          <span class="fs-6 fw-bold text-gray-900">{{ systemUptime }}</span>
+        </div>
+      </div>
+    </div> -->
+    <!--end::Real-time Info-->
+
+    <!--begin::Actions-->
     <div class="d-flex align-items-center">
-      <!--begin::Label-->
-      <span
-        class="fs-7 fw-bold text-gray-700 pe-4 text-nowrap d-none d-xxl-block"
-        >Sort By:</span
-      >
-      <!--end::Label-->
+      <!--begin::Notifications-->
+      <div class="d-flex align-items-center me-4">
+        <div 
+          class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px position-relative"
+          data-kt-menu-trigger="{default: 'click'}"
+          data-kt-menu-attach="parent"
+          data-kt-menu-placement="bottom-end"
+          id="kt_menu_notifications"
+        >
+          <KTIcon icon-name="notification-bing" icon-class="fs-2" />
+ 
+        </div>
+        <NotificationsMenu />
+      </div>
+      <!--end::Notifications-->
 
-      <!--begin::Select-->
-      <select
-        class="form-select form-select-sm form-select-solid w-100px w-xxl-125px"
-      >
-        <option value="1" selected>Latest</option>
-        <option value="2">In Progress</option>
-        <option value="3">Done</option>
-      </select>
-      <!--end::Select-->
-    </div>
-    <!--end::Action wrapper-->
-
-    <!--begin::Action wrapper-->
-    <div class="d-flex align-items-center">
-      <!--begin::Separartor-->
-      <div class="bullet bg-secondary h-35px w-1px mx-5"></div>
-      <!--end::Separartor-->
-
-      <!--begin::Label-->
-      <span class="fs-7 text-gray-700 fw-bold d-none d-sm-block"
-        >Impact <span class="d-none d-xxl-inline">Level</span>:</span
-      >
-      <!--end::Label-->
-
-      <!--begin::NoUiSlider-->
-      <div class="d-flex align-items-center ps-4" id="kt_toolbar">
+      <!--begin::Theme mode-->
+      <div class="d-flex align-items-center me-4">
         <div
-          id="kt_toolbar_slider"
-          class="noUi-target noUi-target-primary w-75px w-xxl-150px noUi-sm"
-        ></div>
-
-        <span
-          id="kt_toolbar_slider_value"
-          class="d-flex flex-center bg-light-primary rounded-circle w-35px h-35px ms-4 fs-7 fw-bold text-primary"
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title="Set impact level"
+          class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px"
+          data-kt-menu-trigger="{default:'click', lg: 'hover'}"
+          data-kt-menu-attach="parent"
+          data-kt-menu-placement="bottom-end"
+          id="kt_menu_theme"
         >
-        </span>
+          <KTIcon icon-name="night-day" icon-class="theme-light-show fs-2" />
+          <KTIcon icon-name="moon" icon-class="theme-dark-show fs-2" />
+        </div>
+        <KTThemeModeSwitcher />
       </div>
-      <!--end::NoUiSlider-->
+      <!--end::Theme mode-->
 
-      <!--begin::Separartor-->
-      <div class="bullet bg-secondary h-35px w-1px mx-5"></div>
-      <!--end::Separartor-->
-    </div>
-    <!--end::Action wrapper-->
-
-    <!--begin::Action wrapper-->
-    <div class="d-flex align-items-center">
-      <!--begin::Label-->
-      <span class="fs-7 text-gray-700 fw-bold pe-3 d-none d-xxl-block"
-        >Quick Tools:</span
-      >
-      <!--end::Label-->
-
-      <!--begin::Actions-->
-      <div class="d-flex">
-        <!--begin::Action-->
-        <a
-          href="#"
-          class="btn btn-sm btn-icon btn-icon-muted btn-active-icon-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#kt_modal_invite_friends"
+      <!--begin::User Profile-->
+      <div class="d-flex align-items-center">
+        <div 
+          class="cursor-pointer symbol symbol-35px symbol-md-40px"
+          data-kt-menu-trigger="click"
+          data-kt-menu-attach="parent"
+          data-kt-menu-placement="bottom-end"
+          id="kt_menu_user"
         >
-          <KTIcon icon-name="delete-files" icon-class="fs-2" />
-        </a>
-        <!--end::Action-->
-
-        <!--begin::Notifications-->
-        <div class="d-flex align-items-center">
-          <!--begin::Menu- wrapper-->
-          <router-link
-            to="/apps/subscriptions/add-subscription"
-            class="btn btn-sm btn-icon btn-icon-muted btn-active-icon-primary"
-          >
-            <KTIcon icon-name="add-files" icon-class="fs-2" />
-          </router-link>
-          <!--end::Menu wrapper-->
+          <img src="/media/avatars/300-1.jpg" alt="user" />
         </div>
-        <!--end::Notifications-->
-
-        <!--begin::Quick links-->
-        <div class="d-flex align-items-center">
-          <!--begin::Menu wrapper-->
-          <a
-            href="#"
-            class="btn btn-sm btn-icon btn-icon-muted btn-active-icon-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#kt_modal_create_app"
-          >
-            <KTIcon icon-name="file-up" icon-class="fs-2" />
-          </a>
-          <!--end::Menu wrapper-->
+        
+        <!--begin::User account menu-->
+        <div 
+          class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px" 
+          data-kt-menu="true"
+        >
+          <!--begin::Menu item-->
+          <div class="menu-item px-3">
+            <div class="menu-content d-flex align-items-center px-3">
+              <!--begin::Avatar-->
+              <div class="symbol symbol-50px me-5">
+                <img alt="Avatar" src="/media/avatars/300-1.jpg" />
+              </div>
+              <!--end::Avatar-->
+              
+              <!--begin::Username-->
+              <div class="d-flex flex-column">
+                <div class="fw-bold d-flex align-items-center fs-5">
+                  {{ userName }}
+                </div>
+                <span class="fw-semibold text-muted fs-7">{{ userRole }}</span>
+              </div>
+              <!--end::Username-->
+            </div>
+          </div>
+          <!--end::Menu item-->
+          
+          <!--begin::Menu separator-->
+          <div class="separator my-2"></div>
+          <!--end::Menu separator-->
+          
+          <!--begin::Menu item-->
+          <div class="menu-item px-5">
+            <router-link to="/controlplane/account/overview" class="menu-link px-5">
+              My Profile
+            </router-link>
+          </div>
+          <!--end::Menu item-->
+          
+          <!--begin::Menu item-->
+          <div class="menu-item px-5">
+            <router-link to="/controlplane/account/settings" class="menu-link px-5">
+              Account Settings
+            </router-link>
+          </div>
+          <!--end::Menu item-->
+          
+          <!--begin::Menu separator-->
+          <div class="separator my-2"></div>
+          <!--end::Menu separator-->
+          
+          <!--begin::Menu item-->
+          <div class="menu-item px-5">
+            <a href="#" class="menu-link px-5" @click.prevent="logout">
+              Sign Out
+            </a>
+          </div>
+          <!--end::Menu item-->
         </div>
-        <!--end::Quick links-->
+        <!--end::User account menu-->
       </div>
-      <!--end::Actions-->
+      <!--end::User Profile-->
     </div>
-    <!--end::Action wrapper-->
-
-    <!--begin::Theme mode-->
-    <div class="d-flex align-items-center">
-      <!--begin::Menu toggle-->
-      <a
-        href="#"
-        class="btn btn-sm btn-icon btn-icon-muted btn-active-icon-primary"
-        data-kt-menu-trigger="{default:'click', lg: 'hover'}"
-        data-kt-menu-attach="parent"
-        data-kt-menu-placement="bottom-end"
-      >
-        <KTIcon icon-name="night-day" icon-class="theme-light-show fs-2" />
-        <KTIcon icon-name="moon" icon-class="theme-dark-show fs-2" />
-      </a>
-      <!--begin::Menu toggle-->
-      <KTThemeModeSwitcher></KTThemeModeSwitcher>
-    </div>
-    <!--end::Theme mode-->
+    <!--end::Actions-->
   </div>
-  <!--end::Action group-->
+  <!--end::VMS Control Panel-->
 </template>
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onMounted } from "vue";
-import noUiSlider, { type target } from "nouislider";
+import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 import KTThemeModeSwitcher from "@/layouts/default-layout/components/theme-mode/ThemeModeSwitcher.vue";
+import NotificationsMenu from "@/layouts/default-layout/components/menus/NotificationsMenu.vue";
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "layout-topbar",
   components: {
     KTThemeModeSwitcher,
+    NotificationsMenu,
   },
   setup() {
-    const initSlider = (): void => {
-      const slider: target = document.querySelector(
-        "#kt_toolbar_slider"
-      ) as target;
-      const rangeSliderValueElement: Element | null = document.querySelector(
-        "#kt_toolbar_slider_value"
-      );
+    const authStore = useAuthStore();
+    const router = useRouter();
 
-      if (!slider) {
-        return;
-      }
+    // Reactive data for VMS
+    const currentTime = ref(new Date().toLocaleString());
+    const alertCount = ref(3);
+    const connectedCameras = ref(24);
+    const totalCameras = ref(28);
+    const recordingCount = ref(18);
+    const storageUsed = ref(68);
+    const systemUptime = ref('72h 15m');
+    const userName = ref('Admin User');
+    const userRole = ref('Security Administrator');
 
-      slider.innerHTML = "";
+    // Timer for real-time updates
+    let timeInterval: number;
 
-      noUiSlider.create(slider, {
-        start: [5],
-        connect: [true, false],
-        step: 1,
-        range: {
-          min: [1],
-          max: [10],
-        },
-      });
-
-      slider.noUiSlider?.on("update", function (values: any, handle: any) {
-        if (!rangeSliderValueElement) {
-          return;
-        }
-
-        rangeSliderValueElement.innerHTML = parseInt(values[handle]).toFixed(1);
+    // Methods
+    const updateTime = () => {
+      currentTime.value = new Date().toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
       });
     };
 
+    const getStorageColor = () => {
+      if (storageUsed.value >= 90) return 'text-danger';
+      if (storageUsed.value >= 75) return 'text-warning';
+      return 'text-success';
+    };
+
+    const logout = async () => {
+      try {
+        if (confirm('Are you sure you want to sign out?')) {
+          // Clear authentication state
+          await authStore.logout();
+          
+          // Redirect to sign-in page
+          router.push({ name: 'sign-in' });
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+        // Fallback: force logout
+        localStorage.clear();
+        sessionStorage.clear();
+        router.push({ name: 'sign-in' });
+      }
+    };
+
+    // Lifecycle hooks
     onMounted(() => {
-      initSlider();
+      // Update time every second
+      timeInterval = setInterval(updateTime, 1000);
+      updateTime(); // Initial call
+      
+      // In real implementation, you would:
+      // - Connect to WebSocket for real-time updates
+      // - Fetch initial system status from API
+      // - Subscribe to camera status updates
+      // - Subscribe to alert notifications
+    });
+
+    onUnmounted(() => {
+      if (timeInterval) {
+        clearInterval(timeInterval);
+      }
+      // Cleanup WebSocket connections
     });
 
     return {
       getAssetPath,
+      currentTime,
+      alertCount,
+      connectedCameras,
+      totalCameras,
+      recordingCount,
+      storageUsed,
+      systemUptime,
+      userName,
+      userRole,
+      getStorageColor,
+      logout,
     };
   },
 });
