@@ -190,9 +190,11 @@
               @click="addTeamMember(row)"
               title="Add Team Member"
             >
-              <i class="ki-duotone ki-plus fs-2">
+              <i class="ki-duotone ki-profile-user fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
               </i>
             </button>
             <router-link

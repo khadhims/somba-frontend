@@ -37,7 +37,7 @@ const MainMenuConfig: Array<MenuItem> = [
         sectionTitle: "siteManagement",
         route: "/site",
         keenthemesIcon: "home-2",
-        bootstrapIcon: "bi-building",
+        bootstrapIcon: "bi-map",
         sub: [
           {
             heading: "overview",

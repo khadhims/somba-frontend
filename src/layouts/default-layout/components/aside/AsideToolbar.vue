@@ -22,16 +22,11 @@
           <!--end::Username-->
 
           <!--begin::Description-->
-          <span class="text-gray-600 fw-semibold d-block fs-8 mb-1"
-            >Python Dev</span
-          >
-          <!--end::Description-->
-
-          <!--begin::Label-->
-          <div class="d-flex align-items-center text-success fs-9">
-            <span class="bullet bullet-dot bg-success me-1"></span>online
+          <div class="d-flex align-items-center mb-2">
+            <span class="text-gray-600 fw-semibold fs-8 me-2">Free Plan</span>
+            <span class="badge badge-light-warning badge-sm">Limited</span>
           </div>
-          <!--end::Label-->
+          <!--end::Description-->
         </div>
         <!--end::Info-->
 

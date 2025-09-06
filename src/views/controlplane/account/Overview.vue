@@ -172,7 +172,7 @@
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               title="Add Team"
             >
-              <i class="ki-duotone ki-people fs-2">
+              <i class="ki-duotone ki-profile-user fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>

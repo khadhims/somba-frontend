@@ -1,119 +1,35 @@
 <template>
-  <!--begin::Live View-->
-  <div class="card mb-5">
-    <div class="card-body py-4">
-      <div class="row align-items-center">
-        <div class="col-md-4">
-          <h4 class="card-title mb-0">Live View</h4>
-          <p class="text-muted mb-0">
-            Real-time camera monitoring and surveillance
-          </p>
-        </div>
-        <div class="col-md-8">
-          <div class="d-flex justify-content-end gap-3">
-            <div class="d-flex align-items-center" v-if="sites.length > 0">
-              <label class="form-label me-3 mb-0 fw-semibold">Site:</label>
-              <select
-                v-model="selectedSiteId"
-                @change="switchSite"
-                class="form-select form-select-solid w-200px"
-                :disabled="loadingSites"
-              >
-                <option
-                  v-for="site in sites"
-                  :key="site.uid"
-                  :value="site.uid"
-                >
-                  {{ site.name }}
-                </option>
-              </select>
-            </div>
-          </div>
+  <!-- Live Camera Feed header -->
+  <div class="card mb-4">
+    <div class="card-body d-flex align-items-center justify-content-between">
+      <div>
+        <h4 class="card-title mb-0">Live Camera Feed</h4>
+        <div class="small text-muted">
+          <span class="text-success me-2">●</span>{{ activeCameras }} cameras online
         </div>
       </div>
-    </div>
-  </div>
 
-  <div class="row g-5 g-xl-8 mb-8">
-    <!--begin::Summary Cards-->
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Active Cameras'"
-        :value="activeCameras"
-        :progress-text="`${onlineCameras} Online`"
-        :progress-value="onlineCamerasPercentage"
-        bg-color="#1B84FF"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Recording Status'"
-        :value="recordingCameras"
-        :progress-text="`${totalCameras} Total`"
-        :progress-value="recordingPercentage"
-        bg-color="#17C653"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Motion Events'"
-        :value="motionEvents"
-        :progress-text="`Last 24h`"
-        :progress-value="100"
-        bg-color="#3699FF"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Alerts'"
-        :value="activeAlerts"
-        :progress-text="`${resolvedAlerts} Resolved`"
-        :progress-value="alertsResolvedPercentage"
-        bg-color="#FFA800"
-        text-color="white"
-      />
-    </div>
-  </div>
-  <!--end::Summary Cards-->
-
-  <!--begin::Camera Grid-->
-  <div class="card">
-    <!--begin::Card header-->
-    <div class="card-header border-0 pt-5">
-      <!--begin::Card title-->
-      <div class="card-title">
-        <h3 class="fw-bold m-0">Camera Feeds</h3>
-      </div>
-      <!--end::Card title-->
-
-      <!--begin::Card toolbar-->
-      <div class="card-toolbar">
-        <!--begin::Search-->
-        <div class="d-flex align-items-center position-relative my-1 me-5">
-          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          <input
-            type="text"
-            v-model="searchQuery"
-            class="form-control form-control-solid w-250px ps-12"
-            placeholder="Search cameras..."
-          />
+      <div class="d-flex align-items-center gap-2">
+        <div v-if="sites.length > 0" class="d-flex align-items-center">
+          <label class="form-label me-2 mb-0 fw-semibold">Site:</label>
+          <select
+            v-model="selectedSiteId"
+            @change="switchSite"
+            class="form-select form-select-solid w-200px"
+            :disabled="loadingSites"
+          >
+            <option v-for="site in sites" :key="site.uid" :value="site.uid">{{ site.name }}</option>
+          </select>
         </div>
-        <!--end::Search-->
 
         <div class="btn-group" role="group">
+          <button type="button" class="btn btn-sm" :class="{ 'btn-light': true }">
+            <i class="bi-grid-fill"></i>
+          </button>
           <button
             type="button"
             class="btn btn-sm"
-            :class="{ 'btn-primary': gridView === '2x2', 'btn-light': gridView !== '2x2' }"
+            :class="gridView === '2x2' ? 'btn-primary' : 'btn-light'"
             @click="setGridView('2x2')"
           >
             2x2
@@ -121,7 +37,7 @@
           <button
             type="button"
             class="btn btn-sm"
-            :class="{ 'btn-primary': gridView === '3x3', 'btn-light': gridView !== '3x3' }"
+            :class="gridView === '3x3' ? 'btn-primary' : 'btn-light'"
             @click="setGridView('3x3')"
           >
             3x3
@@ -129,77 +45,91 @@
           <button
             type="button"
             class="btn btn-sm"
-            :class="{ 'btn-primary': gridView === '4x4', 'btn-light': gridView !== '4x4' }"
+            :class="gridView === '4x4' ? 'btn-primary' : 'btn-light'"
             @click="setGridView('4x4')"
           >
             4x4
           </button>
         </div>
       </div>
-      <!--end::Card toolbar-->
     </div>
-    <!--begin::Card header-->
+  </div>
 
-    <!--begin::Card body-->
-    <div class="card-body py-3">
-      <div class="row g-3" :class="gridClasses">
-        <div
-          v-for="camera in filteredCameras"
-          :key="camera.uid"
-          :class="cameraColClass"
-        >
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="card-title mb-0">{{ camera.name }}</h6>
-                <span
-                  class="badge"
-                  :class="camera.status === 'online' ? 'badge-light-success' : 'badge-light-danger'"
-                >
-                  {{ camera.status }}
-                </span>
-              </div>
-              <div class="camera-feed-container bg-gray-300 rounded" style="height: 200px; position: relative;">
-                <div class="d-flex align-items-center justify-content-center h-100">
-                  <i class="ki-duotone ki-security-user fs-3x text-gray-500">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                  </i>
-                </div>
-                <div class="position-absolute bottom-0 start-0 p-2">
-                  <small class="text-white bg-dark bg-opacity-75 px-2 py-1 rounded">
-                    {{ camera.room }}
-                  </small>
-                </div>
-              </div>
-              <div class="mt-2">
-                <div class="d-flex justify-content-between">
-                  <button class="btn btn-sm btn-light-primary" @click="viewFullscreen(camera)">
-                    <i class="ki-duotone ki-maximize fs-6"></i>
-                    Fullscreen
-                  </button>
-                  <button class="btn btn-sm btn-light-info" @click="viewRecordings(camera)">
-                    <i class="ki-duotone ki-video fs-6"></i>
-                    Recordings
-                  </button>
+  <!-- Main layout: left = camera grid, right = camera list -->
+  <div class="row g-4">
+    <div class="col-xl-9">
+      <div class="card">
+        <div class="card-body py-3">
+          <div class="row g-3" :class="gridClasses">
+            <div v-for="camera in filteredCameras" :key="camera.uid" :class="cameraColClass">
+              <div class="card">
+                <div class="card-body p-3">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="card-title mb-0">{{ camera.room }}</h6>
+                    <span class="badge" :class="camera.status === 'online' ? 'badge-light-success' : 'badge-light-danger'">{{ camera.status }}</span>
+                  </div>
+
+                  <div class="camera-feed-container bg-gray-300 rounded" style="height: 160px; position: relative;">
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                      <i class="ki-duotone ki-security-user fs-3x text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+                    </div>
+                    <div class="position-absolute bottom-0 start-0 p-2">
+                      <small class="text-white bg-dark bg-opacity-75 px-2 py-1 rounded">{{ camera.name }}</small>
+                    </div>
+                  </div>
+
+                  <div class="mt-2">
+                    <div class="d-flex justify-content-between">
+                      <button class="btn btn-sm btn-light-primary" @click="viewFullscreen(camera)">
+                        <i class="ki-duotone ki-maximize fs-6"></i>
+                        Fullscreen
+                      </button>
+                      <button class="btn btn-sm btn-light-info" @click="viewRecordings(camera)">
+                        <i class="ki-duotone ki-video fs-6"></i>
+                        Recordings
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
+          <div v-if="filteredCameras.length === 0" class="text-center py-5">
+            <i class="ki-duotone ki-security-user fs-3x text-gray-400 mb-3"><span class="path1"></span><span class="path2"></span></i>
+            <p class="text-gray-500">No cameras found</p>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div v-if="filteredCameras.length === 0" class="text-center py-5">
-        <i class="ki-duotone ki-security-user fs-3x text-gray-400 mb-3">
-          <span class="path1"></span>
-          <span class="path2"></span>
-        </i>
-        <p class="text-gray-500">No cameras found</p>
+    <div class="col-xl-3">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <h3 class="fw-bold m-0">{{ selectedSiteName }}</h3>
+            <div class="small text-muted">{{ totalCameras }} cameras</div>
+          </div>
+          <div class="btn btn-sm btn-light">
+            <i class="bi-list"></i>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush">
+            <li v-for="cam in siteCameras" :key="cam.uid" class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <div class="fw-semibold">{{ cam.room }}</div>
+                <div class="text-muted small">{{ cam.name }}</div>
+              </div>
+              <div>
+                <span :class="['badge', cam.status === 'online' ? 'bg-success' : 'bg-secondary']" style="width:10px; height:10px; border-radius:50%; display:inline-block;"></span>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
-    <!--end::Card body-->
   </div>
-  <!--end::Camera Grid-->
 </template>
 
 <script setup lang="ts">
@@ -350,6 +280,16 @@ const alertsResolvedPercentage = computed(() =>
     ? Math.round((resolvedAlerts.value / (activeAlerts.value + resolvedAlerts.value)) * 100) 
     : 0
 );
+
+// Sidebar helpers
+const selectedSiteName = computed(() => {
+  const site = sites.value.find(s => s.uid === selectedSiteId.value);
+  return site ? site.name : (sites.value[0] ? sites.value[0].name : '');
+});
+
+const siteCameras = computed(() => {
+  return cameras.value.filter(c => !selectedSiteId.value || c.site_uid === selectedSiteId.value);
+});
 
 // Methods
 const viewFullscreen = (camera: Camera) => {
