@@ -1,95 +1,152 @@
 <template>
-  <!--begin::Dashboard-->
-  <div class="row g-5 g-xl-8">
-    <div class="col-xl-4">
+  <!--begin::VMS Security Dashboard-->
+  
+  <!--begin::System Status Cards-->
+  <div class="row g-5 g-xl-8 mb-5 mb-xl-8">
+    <div class="col-xl-3">
       <StatisticsWidget5
         widget-classes="card-xl-stretch mb-xl-8"
-        icon-name="basket"
-        color="body-white"
-        icon-color="primary"
-        title="Shopping Cart"
-        description="Lands, Houses, Ranchos, Farms"
-      />
-    </div>
-
-    <div class="col-xl-4">
-      <StatisticsWidget5
-        widget-classes="card-xl-stretch mb-xl-8"
-        icon-name="element-11"
-        color="primary"
+        icon-name="video"
+        color="success"
         icon-color="white"
-        title="Appartments"
-        description="Flats, Shared Rooms, Duplex"
+        :title="connectedCameras.toString()"
+        description="Active Cameras Online"
       />
     </div>
 
-    <div class="col-xl-4">
+    <div class="col-xl-3">
       <StatisticsWidget5
         widget-classes="card-xl-stretch mb-xl-8"
-        icon-name="plus"
-        color="dark"
-        icon-color="gray-100"
-        title="Sales Stats"
-        description="50% Increased for FY20"
+        icon-name="record-circle"
+        color="danger"
+        icon-color="white"
+        :title="recordingCameras.toString()"
+        description="Currently Recording"
+      />
+    </div>
+
+    <div class="col-xl-3">
+      <StatisticsWidget5
+        widget-classes="card-xl-stretch mb-xl-8"
+        icon-name="notification-bing"
+        color="warning"
+        icon-color="white"
+        :title="activeAlerts.toString()"
+        description="Active Security Alerts"
+      />
+    </div>
+
+    <div class="col-xl-3">
+      <StatisticsWidget5
+        widget-classes="card-xl-stretch mb-xl-8"
+        icon-name="folder"
+        color="info"
+        icon-color="white"
+        :title="storageUsage + '%'"
+        description="Storage Utilization"
       />
     </div>
   </div>
+  <!--end::System Status Cards-->
 
-  <div class="row g-5 g-xl-8">
-    <div class="col-xl-4">
-      <ListsWidget1 widget-classes="card-xl-stretch mb-xl-8" />
+  <!--begin::Main Monitoring Section-->
+  <div class="row g-5 g-xl-8 mb-5 mb-xl-8">
+    <div class="col-xl-8">
+      <SecurityEventsWidget widget-classes="card-xl-stretch mb-5 mb-xl-8" />
     </div>
 
-    <div class="col-xl-8">
-      <TablesWidget5 widget-classes="card-xl-stretch mb-5 mb-xl-8" />
+    <div class="col-xl-4">
+      <CameraStatusWidget widget-classes="card-xl-stretch mb-xl-8" />
     </div>
   </div>
+  <!--end::Main Monitoring Section-->
 
-  <div class="row g-5 g-xl-8">
-    <div class="col-xl-4">
-      <ListsWidget3 widget-classes="card-xl-stretch mb-xl-8" />
-    </div>
-
+  <!--begin::Analytics Section-->
+  <div class="row g-5 g-xl-8 mb-5 mb-xl-8">
     <div class="col-xl-8">
       <ChartsWidget1
         widget-classes="card-xl-stretch mb-5 mb-xl-8"
         :height="400"
       />
     </div>
-  </div>
 
+    <div class="col-xl-4">
+      <SystemHealthWidget widget-classes="card-xl-stretch mb-xl-8" />
+    </div>
+  </div>
+  <!--end::Analytics Section-->
+
+  <!--begin::Activity & Recording Section-->
   <div class="row g-5 g-xl-8">
     <div class="col-xl-6">
-      <ListsWidget7 widget-classes="card-xl-stretch mb-xl-8" />
+      <RecentActivityWidget widget-classes="card-xl-stretch mb-xl-8" />
     </div>
 
     <div class="col-xl-6">
-      <ListsWidget6 widget-classes="card-xl-stretch mb-5 mb-xl-8" />
+      <RecordingStatusWidget widget-classes="card-xl-stretch mb-5 mb-xl-8" />
     </div>
   </div>
-  <!--end::Dashboard-->
+  <!--end::Activity & Recording Section-->
+  
+  <!--end::VMS Security Dashboard-->
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, onMounted, onUnmounted } from "vue";
 import StatisticsWidget5 from "@/components/widgets/statsistics/Widget5.vue";
-import ListsWidget1 from "@/components/widgets/lists/Widget1.vue";
-import TablesWidget5 from "@/components/widgets/tables/Widget5.vue";
-import ListsWidget3 from "@/components/widgets/lists/Widget3.vue";
 import ChartsWidget1 from "@/components/widgets/charts/Widget1.vue";
-import ListsWidget7 from "@/components/widgets/lists/Widget7.vue";
-import ListsWidget6 from "@/components/widgets/lists/Widget6.vue";
+import SecurityEventsWidget from "@/components/widgets/security/SecurityEventsWidget.vue";
+import CameraStatusWidget from "@/components/widgets/security/CameraStatusWidget.vue";
+import SystemHealthWidget from "@/components/widgets/security/SystemHealthWidget.vue";
+import RecentActivityWidget from "@/components/widgets/security/RecentActivityWidget.vue";
+import RecordingStatusWidget from "@/components/widgets/security/RecordingStatusWidget.vue";
 
 export default defineComponent({
   name: "dashboard-main",
   components: {
     StatisticsWidget5,
-    ListsWidget1,
-    TablesWidget5,
-    ListsWidget3,
     ChartsWidget1,
-    ListsWidget7,
-    ListsWidget6,
+    SecurityEventsWidget,
+    CameraStatusWidget,
+    SystemHealthWidget,
+    RecentActivityWidget,
+    RecordingStatusWidget,
+  },
+  setup() {
+    // VMS Dashboard Statistics
+    const connectedCameras = ref(42);
+    const recordingCameras = ref(18);
+    const activeAlerts = ref(3);
+    const storageUsage = ref(67);
+
+    // Real-time data simulation
+    let updateInterval: number | null = null;
+
+    const updateVMSData = () => {
+      // Simulate real-time fluctuations for VMS data
+      connectedCameras.value = 42 + Math.floor(Math.random() * 3) - 1; // 41-44 range
+      recordingCameras.value = 18 + Math.floor(Math.random() * 4) - 2; // 16-21 range
+      activeAlerts.value = Math.max(0, 3 + Math.floor(Math.random() * 3) - 1); // 2-5 range
+      storageUsage.value = Math.min(100, 67 + Math.floor(Math.random() * 6) - 3); // 64-72 range
+    };
+
+    onMounted(() => {
+      // Update VMS data every 30 seconds for realistic simulation
+      updateInterval = window.setInterval(updateVMSData, 30000);
+    });
+
+    onUnmounted(() => {
+      if (updateInterval) {
+        clearInterval(updateInterval);
+      }
+    });
+
+    return {
+      connectedCameras,
+      recordingCameras,
+      activeAlerts,
+      storageUsage,
+    };
   },
 });
 </script>
