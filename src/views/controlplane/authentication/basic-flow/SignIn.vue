@@ -36,7 +36,7 @@
       <!--begin::Input group-->
       <div class="fv-row mb-10">
         <!--begin::Label-->
-        <label class="form-label fs-6 fw-bold text-gray-900">Email</label>
+        <label class="form-label fs-6 fw-bold text-gray-900">Username</label>
         <!--end::Label-->
 
         <!--begin::Input-->
@@ -44,13 +44,13 @@
           tabindex="1"
           class="form-control form-control-lg form-control-solid"
           type="text"
-          name="email"
+          name="username"
           autocomplete="off"
         />
         <!--end::Input-->
         <div class="fv-plugins-message-container">
           <div class="fv-help-block">
-            <ErrorMessage name="email" />
+            <ErrorMessage name="username" />
           </div>
         </div>
       </div>
@@ -186,7 +186,7 @@ export default defineComponent({
 
     //Create form validation object
     const login = Yup.object().shape({
-      email: Yup.string().email().required().label("Email"),
+      email: Yup.string().required().label("Username"),
       password: Yup.string().min(4).required().label("Password"),
     });
 

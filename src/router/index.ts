@@ -135,15 +135,15 @@ const routes: Array<RouteRecordRaw> = [
               pageTitle: "Overview",
             },
           },
-          {
-            path: "settings",
-            name: "organization-settings",
-            component: () =>
-              import("@/views/controlplane/organization/Settings.vue"),
-            meta: {
-              pageTitle: "Settings",
-            },
-          },
+          // {
+          //   path: "settings",
+          //   name: "organization-settings",
+          //   component: () =>
+          //     import("@/views/controlplane/organization/Settings.vue"),
+          //   meta: {
+          //     pageTitle: "Settings",
+          //   },
+          // },
         ],
       },
       {
@@ -163,15 +163,15 @@ const routes: Array<RouteRecordRaw> = [
               pageTitle: "Overview",
             },
           },
-          {
-            path: "settings",
-            name: "account-settings",
-            component: () =>
-              import("@/views/controlplane/account/Settings.vue"),
-            meta: {
-              pageTitle: "Settings",
-            },
-          },
+          // {
+          //   path: "settings",
+          //   name: "account-settings",
+          //   component: () =>
+          //     import("@/views/controlplane/account/Settings.vue"),
+          //   meta: {
+          //     pageTitle: "Settings",
+          //   },
+          // },
         ],
       },
       {
