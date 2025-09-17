@@ -117,6 +117,7 @@
 import { ref, reactive } from "vue";
 import { Modal } from "bootstrap";
 import { useRoute } from "vue-router";
+import ApiService from "@/core/services/ApiService";
 
 interface SiteFormData {
   name: string;
@@ -127,6 +128,10 @@ interface SiteFormData {
 // Props and Emits
 const emit = defineEmits<{
   "site-added": [site: any];
+}>();
+
+const props = defineProps<{
+  teamUid?: string;
 }>();
 
 // Get route instance to read query parameters
@@ -172,15 +177,25 @@ const submitForm = async () => {
   loading.value = true;
 
   try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // Determine team UID from prop, form, or route
+    const teamUid = formData.team_uid || props.teamUid || (route.query.teamId as string) || "";
+    if (!teamUid) {
+      console.error("No team_uid available for creating site");
+      loading.value = false;
+      return;
+    }
 
-    // Create new site object
-    const newSite = {
+    // Build payload — send core fields; backend derives team from path
+    const payload: Record<string, any> = {
       name: formData.name,
       description: formData.description,
-      team_uid: formData.team_uid,
     };
+
+    const resp = await ApiService.post(`teams/${teamUid}/sites`, payload);
+    const created = (resp as any)?.data?.data ?? (resp as any)?.data ?? payload;
+
+    // Ensure the returned object contains team_uid for UI consistency
+    const newSite = { team_uid: teamUid, ...created };
 
     // Emit event to parent component
     emit("site-added", newSite);
@@ -212,10 +227,8 @@ const resetForm = () => {
 const showModal = () => {
   resetForm();
   // Set team_uid from route query parameter
-  const teamId = route.query.teamId as string;
-  if (teamId) {
-    formData.team_uid = teamId;
-  }
+  const teamIdFromRoute = route.query.teamId as string;
+  formData.team_uid = props.teamUid || teamIdFromRoute || "";
   // initialize modal with backdrop static and keyboard disabled so click outside / ESC won't close
   const modal = new Modal(addSiteModalRef.value!, {
     backdrop: "static",

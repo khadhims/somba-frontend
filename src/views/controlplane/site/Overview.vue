@@ -150,7 +150,7 @@
         </div>
         <!--end::Search-->
 
-        <button @click="showAddSiteModal" class="btn btn-sm btn-light-primary">
+        <button @click="showAddSiteModal" class="btn btn-sm btn-light-primary" :disabled="!selectedTeamIdFilter">
           <i class="ki-duotone ki-plus fs-2"></i>
           Add Site
         </button>
@@ -243,7 +243,7 @@
   <!--end::Sites List-->
 
   <!-- Add Site Modal -->
-  <AddSiteModal ref="addSiteModalRef" @site-added="onSiteAdded" />
+  <AddSiteModal ref="addSiteModalRef" :team-uid="selectedTeamIdFilter" @site-added="onSiteAdded" />
 
   <!-- Edit Site Modal -->
   <EditSiteModal ref="editSiteModalRef" @site-updated="onSiteUpdated" />
@@ -321,6 +321,7 @@ const route = useRoute();
 // Reactive data
 const sites = ref<Site[]>([]);
 const loading = ref(false);
+const error = ref<string | null>(null)
 const searchQuery = ref("");
 const sortLabel = ref("");
 const sortOrder = ref<"asc" | "desc">("asc");
@@ -382,26 +383,26 @@ const tableHeader = ref([
 
 // Fetch sites from API
 const fetchSites = async () => {
+  const teamId = selectedTeamIdFilter.value
+  if (!teamId) return
+
   loading.value = true;
+  error.value = null;
   try {
-    // Get teamId from filter or query parameters
-    const teamId = selectedTeamIdFilter.value || (route.query.teamId as string) || "";
-    selectedTeamId.value = teamId;
-
-    // Build API URL with optional team filtering
-    let apiUrl = "/sites";
-    if (teamId) {
-      apiUrl += `?team_uid=${teamId}`;
+    const resp = await ApiService.query(`teams/${teamId}/sites`, {})
+    if (resp && resp.data) {
+      sites.value = resp.data
+      // Format created_at for each site
+      sites.value.forEach(site => {
+        if (site.created_at && typeof site.created_at === 'string') {
+          site.created_at = new Date(site.created_at).toLocaleDateString()
+        }
+      })
     }
-
-    const response = await ApiService.get(apiUrl);
-    sites.value = response.data.data || response.data;
-  } catch (error) {
-    console.error("Error fetching sites:", error);
-    // Fallback to empty array if API fails
-    sites.value = [];
+  } catch (e: any) {
+    error.value = e?.response?.data?.message || e.message || "Failed to load sites"
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 };
 
