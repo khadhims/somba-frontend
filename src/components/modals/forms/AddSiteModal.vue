@@ -114,10 +114,11 @@
 </template>
 
 <script setup lang="ts">
+
 import { ref, reactive } from "vue";
 import { Modal } from "bootstrap";
 import { useRoute } from "vue-router";
-import ApiService from "@/core/services/ApiService";
+import ApiService from "../../../core/services/ApiService"
 
 interface SiteFormData {
   name: string;
