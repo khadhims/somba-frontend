@@ -75,10 +75,10 @@ export const useAuthStore = defineStore("auth", () => {
     JwtService.destroyRefreshToken();
   }
 
-  function login(credentials: { email: string; password: string }) {
+  function login(credentials: { username: string; password: string }) {
     // API expects 'username' and 'password' — use email as username
     const payload = {
-      username: credentials.email,
+      username: credentials.username,
       password: credentials.password,
     };
 
