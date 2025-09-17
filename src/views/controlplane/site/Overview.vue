@@ -44,6 +44,8 @@
                   v-for="account in accounts"
                   :key="account.uid"
                   :value="account.uid"
+                  :disabled="!accountsWithTeams[account.uid]"
+                  :title="!accountsWithTeams[account.uid] ? 'No teams in this account' : ''"
                 >
                   {{ account.name }}
                 </option>
@@ -340,6 +342,8 @@ const accounts = ref<Account[]>([]);
 const loadingAccounts = ref(false);
 const selectedAccountId = ref('');
 const currentAccount = ref<Account | null>(null);
+const teamsCache = ref<Record<string, Team[]>>({})
+const accountsWithTeams = ref<Record<string, boolean>>({})
 
 // Team-related reactive data
 const teams = ref<Team[]>([]);
@@ -450,21 +454,37 @@ const fetchAccounts = async () => {
   loadingAccounts.value = true;
   try {
     const accountsResp = await ApiService.query(`organizations/${selectedOrganizationId.value}/accounts`, {});
-    accounts.value = accountsResp.data?.data || accountsResp.data || [];
+    const allAccounts: Account[] = accountsResp.data?.data || accountsResp.data || [];
+
+    // Probe teams for each account and record capability
+    teamsCache.value = {}
+    accountsWithTeams.value = {}
+    for (const acc of allAccounts) {
+      try {
+        const tResp = await ApiService.query(`accounts/${acc.uid}/teams`, {})
+        const tData: Team[] = tResp.data?.data || tResp.data || []
+        teamsCache.value[acc.uid] = tData
+        accountsWithTeams.value[acc.uid] = tData.length > 0
+      } catch (e) {
+        accountsWithTeams.value[acc.uid] = false
+      }
+    }
+    accounts.value = allAccounts
 
     // Auto-select account
     if (accounts.value.length > 0) {
       const lastAccountId = loadLastSelectedAccount();
       const accountFromUrl = route.query.accountId as string;
 
-      if (accountFromUrl && accounts.value.find(a => a.uid === accountFromUrl)) {
+      if (accountFromUrl && accounts.value.find(a => a.uid === accountFromUrl) && accountsWithTeams.value[accountFromUrl]) {
         selectedAccountId.value = accountFromUrl;
         saveLastSelectedAccount(accountFromUrl);
-      } else if (lastAccountId && accounts.value.find(a => a.uid === lastAccountId)) {
+      } else if (lastAccountId && accounts.value.find(a => a.uid === lastAccountId) && accountsWithTeams.value[lastAccountId]) {
         selectedAccountId.value = lastAccountId;
       } else {
-        selectedAccountId.value = accounts.value[0].uid;
-        saveLastSelectedAccount(accounts.value[0].uid);
+        const firstValid = accounts.value.find(a => accountsWithTeams.value[a.uid])
+        selectedAccountId.value = firstValid ? firstValid.uid : '';
+        if (firstValid) saveLastSelectedAccount(firstValid.uid);
       }
 
       // Set current account
@@ -472,7 +492,15 @@ const fetchAccounts = async () => {
       currentAccount.value = account || null;
 
       // Fetch teams for the selected account
-      fetchTeams();
+      if (selectedAccountId.value) {
+        fetchTeams();
+      } else {
+        // No valid account with teams — clear downstream
+        teams.value = []
+        sites.value = []
+        selectedTeamIdFilter.value = ''
+        currentTeam.value = null
+      }
     }
   } catch (error) {
     console.error('Error fetching accounts:', error);
@@ -488,8 +516,15 @@ const fetchTeams = async () => {
 
   loadingTeams.value = true;
   try {
-    const response = await ApiService.query(`accounts/${selectedAccountId.value}/teams`, {});
-    teams.value = response.data.data || response.data;
+    // Use cache when available to avoid refetching and to ensure accounts without teams are excluded
+    const cached = teamsCache.value[selectedAccountId.value]
+    if (cached) {
+      teams.value = cached
+    } else {
+      const response = await ApiService.query(`accounts/${selectedAccountId.value}/teams`, {});
+      teams.value = response.data.data || response.data;
+      teamsCache.value[selectedAccountId.value] = teams.value
+    }
 
     // Auto-select team
     if (teams.value.length > 0) {
@@ -524,7 +559,12 @@ const fetchTeams = async () => {
 // Switch account
 const switchAccount = () => {
   const account = accounts.value.find(a => a.uid === selectedAccountId.value);
-  currentAccount.value = account || null;
+  // If chosen account has no teams, auto-pick the first account that has teams
+  if (selectedAccountId.value && !accountsWithTeams.value[selectedAccountId.value]) {
+    const firstValid = accounts.value.find(a => accountsWithTeams.value[a.uid])
+    selectedAccountId.value = firstValid ? firstValid.uid : ''
+  }
+  currentAccount.value = accounts.value.find(a => a.uid === selectedAccountId.value) || null;
   // Save the selected account to localStorage
   if (selectedAccountId.value) {
     saveLastSelectedAccount(selectedAccountId.value);
@@ -535,7 +575,9 @@ const switchAccount = () => {
   selectedTeamIdFilter.value = '';
   currentTeam.value = null;
   // Fetch teams for the selected account
-  fetchTeams();
+  if (selectedAccountId.value) {
+    fetchTeams();
+  }
 };
 
 // Switch organization
@@ -698,3 +740,11 @@ const viewSiteDetails = (site: Site) => {
   // Navigate to site details or open modal
 };
 </script>
+
+<style scoped>
+/* Show prohibition cursor on disabled options in the account dropdown */
+.form-select option:disabled {
+  color: var(--bs-gray-500);
+  cursor: not-allowed;
+}
+</style>
