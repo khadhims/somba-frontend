@@ -12,6 +12,47 @@
         </div>
         <div class="col-md-8">
           <div class="d-flex justify-content-end gap-3">
+            <!-- Organization dropdown -->
+            <div class="d-flex align-items-center" v-if="organizations.length > 0">
+              <label class="form-label me-3 mb-0 fw-semibold">Organization:</label>
+              <select
+                v-model="selectedOrganizationId"
+                @change="switchOrganization"
+                class="form-select form-select-solid w-200px"
+                :disabled="loadingOrganizations"
+              >
+                <option
+                  v-for="org in organizations"
+                  :key="org.uid"
+                  :value="org.uid"
+                >
+                  {{ org.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Account dropdown -->
+            <div class="d-flex align-items-center" v-if="accounts.length > 0">
+              <label class="form-label me-3 mb-0 fw-semibold">Account:</label>
+              <select
+                v-model="selectedAccountId"
+                @change="switchAccount"
+                class="form-select form-select-solid w-200px"
+                :disabled="loadingAccounts"
+              >
+                <option
+                  v-for="account in accounts"
+                  :key="account.uid"
+                  :value="account.uid"
+                  :disabled="!accountsWithTeams[account.uid]"
+                  :title="!accountsWithTeams[account.uid] ? 'No teams in this account' : ''"
+                >
+                  {{ account.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Team dropdown -->
             <div class="d-flex align-items-center" v-if="teams.length > 0">
               <label class="form-label me-3 mb-0 fw-semibold">Team:</label>
               <select
@@ -111,7 +152,7 @@
         </div>
         <!--end::Search-->
 
-        <button @click="showAddSiteModal" class="btn btn-sm btn-light-primary">
+        <button @click="showAddSiteModal" class="btn btn-sm btn-light-primary" :disabled="!selectedTeamIdFilter">
           <i class="ki-duotone ki-plus fs-2"></i>
           Add Site
         </button>
@@ -204,7 +245,7 @@
   <!--end::Sites List-->
 
   <!-- Add Site Modal -->
-  <AddSiteModal ref="addSiteModalRef" @site-added="onSiteAdded" />
+  <AddSiteModal ref="addSiteModalRef" :team-uid="selectedTeamIdFilter" @site-added="onSiteAdded" />
 
   <!-- Edit Site Modal -->
   <EditSiteModal ref="editSiteModalRef" @site-updated="onSiteUpdated" />
@@ -233,15 +274,47 @@ interface Site {
   updated_at?: string;
 }
 
-interface Account {
-  uid: string;
-  name: string;
+interface Team {
+  uid: string
+  name: string
+  account_uid?: string
+  created_by?: {
+    username: string
+    email: string
+  }
+  created_at: string
+  updated_at: string
 }
 
-interface Team {
-  uid: string;
-  name: string;
-  account_uid?: string;
+interface Account {
+  uid: string
+  name: string
+  organization_uid?: string
+  created_by?: {
+    username: string
+    email: string
+  }
+  created_at: string
+  updated_at: string
+}
+
+interface Organization {
+  uid: string
+  name: string
+  legalName?: string
+  email?: string
+  phone?: string
+  website?: string
+  address?: string
+  country?: string
+  status?: 'active' | 'inactive'
+  created_at: string
+  updated_at?: string
+  created_by?: {
+    username: string
+    email: string
+  }
+  description?: string
 }
 
 // Get route instance to read query parameters
@@ -250,6 +323,7 @@ const route = useRoute();
 // Reactive data
 const sites = ref<Site[]>([]);
 const loading = ref(false);
+const error = ref<string | null>(null)
 const searchQuery = ref("");
 const sortLabel = ref("");
 const sortOrder = ref<"asc" | "desc">("asc");
@@ -257,11 +331,19 @@ const selectedTeamId = ref("");
 const addSiteModalRef = ref();
 const editSiteModalRef = ref();
 
+// Organization-related reactive data
+const organizations = ref<Organization[]>([])
+const loadingOrganizations = ref(false)
+const selectedOrganizationId = ref('')
+const currentOrganization = ref<Organization | null>(null)
+
 // Account-related reactive data
 const accounts = ref<Account[]>([]);
 const loadingAccounts = ref(false);
 const selectedAccountId = ref('');
 const currentAccount = ref<Account | null>(null);
+const teamsCache = ref<Record<string, Team[]>>({})
+const accountsWithTeams = ref<Record<string, boolean>>({})
 
 // Team-related reactive data
 const teams = ref<Team[]>([]);
@@ -305,101 +387,104 @@ const tableHeader = ref([
 
 // Fetch sites from API
 const fetchSites = async () => {
+  const teamId = selectedTeamIdFilter.value
+  if (!teamId) return
+
   loading.value = true;
+  error.value = null;
   try {
-    // Get teamId from filter or query parameters
-    const teamId = selectedTeamIdFilter.value || (route.query.teamId as string) || "";
-    selectedTeamId.value = teamId;
-
-    // Build API URL with optional team filtering
-    let apiUrl = "/sites";
-    if (teamId) {
-      apiUrl += `?team_uid=${teamId}`;
+    const resp = await ApiService.query(`teams/${teamId}/sites`, {})
+    if (resp && resp.data) {
+      sites.value = resp.data
+      // Format created_at for each site
+      sites.value.forEach(site => {
+        if (site.created_at && typeof site.created_at === 'string') {
+          site.created_at = new Date(site.created_at).toLocaleDateString()
+        }
+      })
     }
-
-    const response = await ApiService.get(apiUrl);
-    sites.value = response.data.data || response.data;
-  } catch (error) {
-    console.error("Error fetching sites:", error);
-    // Fallback to empty array if API fails
-    sites.value = [];
+  } catch (e: any) {
+    error.value = e?.response?.data?.message || e.message || "Failed to load sites"
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 };
 
+// Fetch organizations from API
+const fetchOrganizations = async () => {
+  loadingOrganizations.value = true
+  try {
+    const resp = await ApiService.query('organizations', {})
+    const data = resp?.data?.data || resp?.data || []
+    organizations.value = data
+
+    // Check URL for orgId
+    const orgIdFromUrl = route.query.orgId as string
+    if (orgIdFromUrl && organizations.value.find(o => o.uid === orgIdFromUrl)) {
+      selectedOrganizationId.value = orgIdFromUrl
+      currentOrganization.value = organizations.value.find(o => o.uid === orgIdFromUrl) || null
+      saveLastSelectedOrganization(orgIdFromUrl)
+    } else {
+      const lastOrgId = loadLastSelectedOrganization()
+      if (lastOrgId && organizations.value.find(o => o.uid === lastOrgId)) {
+        selectedOrganizationId.value = lastOrgId
+        currentOrganization.value = organizations.value.find(o => o.uid === lastOrgId) || null
+      } else if (organizations.value.length > 0) {
+        selectedOrganizationId.value = organizations.value[0].uid
+        currentOrganization.value = organizations.value[0]
+        saveLastSelectedOrganization(organizations.value[0].uid)
+      }
+    }
+
+    // With organization selected, fetch accounts
+    if (selectedOrganizationId.value) {
+      await fetchAccounts()
+    }
+  } catch (e) {
+    console.error('Failed to load organizations:', e)
+    organizations.value = []
+  } finally {
+    loadingOrganizations.value = false
+  }
+}
+
 // Fetch accounts (or, if accountId provided via route, fetch teams for that account)
 const fetchAccounts = async () => {
+  if (!selectedOrganizationId.value) return;
   loadingAccounts.value = true;
   try {
-    const accountFromRoute = (route.query.accountId as string) || '';
-    console.log('Account from route:', accountFromRoute);
-    // If previous page provided accountId, fetch teams for that account directly
-    if (accountFromRoute) {
+    const accountsResp = await ApiService.query(`organizations/${selectedOrganizationId.value}/accounts`, {});
+    const allAccounts: Account[] = accountsResp.data?.data || accountsResp.data || [];
+
+    // Probe teams for each account and record capability
+    teamsCache.value = {}
+    accountsWithTeams.value = {}
+    for (const acc of allAccounts) {
       try {
-        // use the account-specific teams endpoint
-        const resp = await ApiService.query(`accounts/${accountFromRoute}/teams`, {});
-        teams.value = resp.data.data || resp.data;
-
-        // remember selected account and team
-        selectedAccountId.value = accountFromRoute;
-        saveLastSelectedAccount(accountFromRoute);
-
-        if (teams.value.length > 0) {
-          const lastTeamId = loadLastSelectedTeam();
-          const teamFromUrl = route.query.teamId as string;
-
-          if (teamFromUrl && teams.value.find(t => t.uid === teamFromUrl)) {
-            selectedTeamIdFilter.value = teamFromUrl;
-            saveLastSelectedTeam(teamFromUrl);
-          } else if (lastTeamId && teams.value.find(t => t.uid === lastTeamId)) {
-            selectedTeamIdFilter.value = lastTeamId;
-          } else {
-            selectedTeamIdFilter.value = teams.value[0].uid;
-            saveLastSelectedTeam(teams.value[0].uid);
-          }
-
-          const team = teams.value.find(t => t.uid === selectedTeamIdFilter.value);
-          currentTeam.value = team || null;
-
-          // fetch sites for selected team
-          fetchSites();
-        }
-      } catch (err) {
-        console.error('Error fetching teams for account from route:', err);
-        teams.value = [];
-      } finally {
-        loadingAccounts.value = false;
+        const tResp = await ApiService.query(`accounts/${acc.uid}/teams`, {})
+        const tData: Team[] = tResp.data?.data || tResp.data || []
+        teamsCache.value[acc.uid] = tData
+        accountsWithTeams.value[acc.uid] = tData.length > 0
+      } catch (e) {
+        accountsWithTeams.value[acc.uid] = false
       }
-
-      return;
     }
-
-    // If no account provided via route, ensure we have the accounts list so we can
-    // auto-select one and then fetch its teams. Previously accounts.value could be
-    // empty and teams would never populate.
-    try {
-      const accountsResp = await ApiService.query('accounts', {});
-      accounts.value = accountsResp.data.data || accountsResp.data;
-    } catch (err) {
-      console.error('Error fetching accounts list:', err);
-      accounts.value = [];
-    }
- 
+    accounts.value = allAccounts
 
     // Auto-select account
     if (accounts.value.length > 0) {
       const lastAccountId = loadLastSelectedAccount();
       const accountFromUrl = route.query.accountId as string;
 
-      if (accountFromUrl && accounts.value.find(a => a.uid === accountFromUrl)) {
+      if (accountFromUrl && accounts.value.find(a => a.uid === accountFromUrl) && accountsWithTeams.value[accountFromUrl]) {
         selectedAccountId.value = accountFromUrl;
         saveLastSelectedAccount(accountFromUrl);
-      } else if (lastAccountId && accounts.value.find(a => a.uid === lastAccountId)) {
+      } else if (lastAccountId && accounts.value.find(a => a.uid === lastAccountId) && accountsWithTeams.value[lastAccountId]) {
         selectedAccountId.value = lastAccountId;
       } else {
-        selectedAccountId.value = accounts.value[0].uid;
-        saveLastSelectedAccount(accounts.value[0].uid);
+        const firstValid = accounts.value.find(a => accountsWithTeams.value[a.uid])
+        selectedAccountId.value = firstValid ? firstValid.uid : '';
+        if (firstValid) saveLastSelectedAccount(firstValid.uid);
       }
 
       // Set current account
@@ -407,7 +492,15 @@ const fetchAccounts = async () => {
       currentAccount.value = account || null;
 
       // Fetch teams for the selected account
-      fetchTeams();
+      if (selectedAccountId.value) {
+        fetchTeams();
+      } else {
+        // No valid account with teams — clear downstream
+        teams.value = []
+        sites.value = []
+        selectedTeamIdFilter.value = ''
+        currentTeam.value = null
+      }
     }
   } catch (error) {
     console.error('Error fetching accounts:', error);
@@ -423,8 +516,15 @@ const fetchTeams = async () => {
 
   loadingTeams.value = true;
   try {
-    const response = await ApiService.query(`accounts/${selectedAccountId.value}/teams`, {});
-    teams.value = response.data.data || response.data;
+    // Use cache when available to avoid refetching and to ensure accounts without teams are excluded
+    const cached = teamsCache.value[selectedAccountId.value]
+    if (cached) {
+      teams.value = cached
+    } else {
+      const response = await ApiService.query(`accounts/${selectedAccountId.value}/teams`, {});
+      teams.value = response.data.data || response.data;
+      teamsCache.value[selectedAccountId.value] = teams.value
+    }
 
     // Auto-select team
     if (teams.value.length > 0) {
@@ -459,7 +559,12 @@ const fetchTeams = async () => {
 // Switch account
 const switchAccount = () => {
   const account = accounts.value.find(a => a.uid === selectedAccountId.value);
-  currentAccount.value = account || null;
+  // If chosen account has no teams, auto-pick the first account that has teams
+  if (selectedAccountId.value && !accountsWithTeams.value[selectedAccountId.value]) {
+    const firstValid = accounts.value.find(a => accountsWithTeams.value[a.uid])
+    selectedAccountId.value = firstValid ? firstValid.uid : ''
+  }
+  currentAccount.value = accounts.value.find(a => a.uid === selectedAccountId.value) || null;
   // Save the selected account to localStorage
   if (selectedAccountId.value) {
     saveLastSelectedAccount(selectedAccountId.value);
@@ -470,8 +575,29 @@ const switchAccount = () => {
   selectedTeamIdFilter.value = '';
   currentTeam.value = null;
   // Fetch teams for the selected account
-  fetchTeams();
+  if (selectedAccountId.value) {
+    fetchTeams();
+  }
 };
+
+// Switch organization
+const switchOrganization = () => {
+  const org = organizations.value.find(o => o.uid === selectedOrganizationId.value)
+  currentOrganization.value = org || null
+  if (selectedOrganizationId.value) {
+    saveLastSelectedOrganization(selectedOrganizationId.value)
+  }
+  // Clear lower-level selections
+  accounts.value = []
+  teams.value = []
+  sites.value = []
+  selectedAccountId.value = ''
+  selectedTeamIdFilter.value = ''
+  currentAccount.value = null
+  currentTeam.value = null
+  // Fetch accounts for new organization
+  fetchAccounts()
+}
 
 // Switch team
 const switchTeam = () => {
@@ -494,6 +620,14 @@ const loadLastSelectedAccount = (): string | null => {
   return localStorage.getItem('siteLastSelectedAccount');
 };
 
+const saveLastSelectedOrganization = (orgId: string) => {
+  localStorage.setItem('siteLastSelectedOrganization', orgId)
+}
+
+const loadLastSelectedOrganization = (): string | null => {
+  return localStorage.getItem('siteLastSelectedOrganization')
+}
+
 const saveLastSelectedTeam = (teamId: string) => {
   localStorage.setItem('siteLastSelectedTeam', teamId);
 };
@@ -504,7 +638,7 @@ const loadLastSelectedTeam = (): string | null => {
 
 // Initialize data on component mount
 onMounted(() => {
-  fetchAccounts();
+  fetchOrganizations();
 });
 
 // Computed properties for summary statistics
@@ -606,3 +740,11 @@ const viewSiteDetails = (site: Site) => {
   // Navigate to site details or open modal
 };
 </script>
+
+<style scoped>
+/* Show prohibition cursor on disabled options in the account dropdown */
+.form-select option:disabled {
+  color: var(--bs-gray-500);
+  cursor: not-allowed;
+}
+</style>

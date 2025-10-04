@@ -187,8 +187,8 @@
           <div class="d-flex justify-content-end flex-shrink-0">
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              @click="addTeamMember(row)"
-              title="Add Team Member"
+              @click="openMembersModal(row)"
+              title="View Members"
             >
               <i class="ki-duotone ki-profile-user fs-2">
                 <span class="path1"></span>
@@ -315,6 +315,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Team Members Modal Component -->
+  <TeamMembersModal ref="membersModalRef" @add-member="handleAddMember" />
 </template>
 
 <script setup lang="ts">
@@ -324,6 +327,7 @@ import { Modal } from 'bootstrap'
 import Widget1 from '@/components/dashboard-default-widgets/Widget1.vue'
 import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
 import ApiService from '@/core/services/ApiService'
+import TeamMembersModal from '@/components/modals/general/TeamMembersModal.vue'
 
 // Interface definitions
 interface Team {
@@ -368,6 +372,7 @@ interface Organization {
   }
   description?: string
 }
+
 const teams = ref<Team[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -396,6 +401,9 @@ const newTeam = ref<Partial<Team>>({
 })
 const teamToEdit = ref<Team | null>(null)
 const teamToDelete = ref<Team | null>(null)
+
+// Team members modal component ref
+const membersModalRef = ref<InstanceType<typeof TeamMembersModal> | null>(null)
 
 // Table header configuration
 const tableHeader = ref([
@@ -694,9 +702,13 @@ const confirmDelete = async () => {
   }
 }
 
-const addTeamMember = (team: Team) => {
-  console.log('Adding member to team:', team.name)
-  // TODO: Navigate to add member view or show modal
+const openMembersModal = (team: Team) => {
+  membersModalRef.value?.open({ uid: team.uid, name: team.name })
+}
+
+const handleAddMember = (payload: { teamUid: string; teamName: string | null }) => {
+  // Placeholder for future: open add member modal / navigate
+  console.log('Add Member clicked for team:', payload.teamName || payload.teamUid)
 }
 
 const editTeam = (team: Team) => {
@@ -790,6 +802,8 @@ const filteredAndSortedTeams = computed(() => {
 
   return filtered
 })
+
+// members filtered logic now lives inside TeamMembersModal component
 
 // Initialize
 onMounted(() => {
