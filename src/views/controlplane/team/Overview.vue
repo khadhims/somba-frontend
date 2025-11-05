@@ -20,6 +20,9 @@
                 class="form-select form-select-solid w-200px"
                 :disabled="loadingOrganizations"
               >
+                <option value="" disabled>
+                  {{ loadingOrganizations ? 'Loading organizations...' : 'Select Organization' }}
+                </option>
                 <option
                   v-for="org in organizations"
                   :key="org.uid"
@@ -28,15 +31,29 @@
                   {{ org.name }}
                 </option>
               </select>
+              
+              <!-- Loading spinner for organizations -->
+              <div v-if="loadingOrganizations" class="ms-2">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
             </div>
-            <div class="d-flex align-items-center" v-if="accounts.length > 0">
+            
+            <div class="d-flex align-items-center">
               <label class="form-label me-3 mb-0 fw-semibold">Account:</label>
               <select
                 v-model="selectedAccountId"
                 @change="switchAccount"
                 class="form-select form-select-solid w-200px"
-                :disabled="loadingAccounts"
+                :disabled="loadingAccounts || !selectedOrganizationId || accounts.length === 0"
               >
+                <option value="" disabled>
+                  <span v-if="!selectedOrganizationId">Select organization first</span>
+                  <span v-else-if="loadingAccounts">Loading accounts...</span>
+                  <span v-else-if="accounts.length === 0">No accounts available</span>
+                  <span v-else>Select Account</span>
+                </option>
                 <option
                   v-for="account in accounts"
                   :key="account.uid"
@@ -45,6 +62,13 @@
                   {{ account.name }}
                 </option>
               </select>
+              
+              <!-- Loading spinner for accounts -->
+              <div v-if="loadingAccounts" class="ms-2">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -52,6 +76,25 @@
     </div>
   </div>
   <!--end::Organization & Account Switcher-->
+
+  <!--begin::Error Alert-->
+  <div v-if="error" class="alert alert-danger d-flex align-items-center mb-5" role="alert">
+    <i class="ki-duotone ki-cross-circle fs-2hx text-danger me-4">
+      <span class="path1"></span>
+      <span class="path2"></span>
+    </i>
+    <div class="d-flex flex-column">
+      <h5 class="mb-1">Error Loading Data</h5>
+      <span>{{ error }}</span>
+    </div>
+    <button 
+      @click="error = null" 
+      type="button" 
+      class="btn-close ms-auto" 
+      aria-label="Close"
+    ></button>
+  </div>
+  <!--end::Error Alert-->
 
   <div class="row g-5 g-xl-8 mb-8">
     <!--begin::Summary Cards-->
@@ -113,6 +156,23 @@
 
       <!--begin::Card toolbar-->
       <div class="card-toolbar">
+        <!--begin::Items per page-->
+        <div class="d-flex align-items-center me-5">
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">Items:</label>
+          <select 
+            class="form-select form-select-sm w-auto" 
+            v-model.number="pagination.per_page"
+            @change="changeItemsPerPage"
+          >
+            <option :value="1">1</option>
+            <option :value="5">5</option>
+            <option :value="10">10</option>
+            <option :value="25">25</option>
+            <option :value="50">50</option>
+          </select>
+        </div>
+        <!--end::Items per page-->
+
         <!--begin::Search-->
         <div class="d-flex align-items-center position-relative my-1 me-5">
           <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
@@ -144,17 +204,20 @@
     <!--begin::Card body-->
     <div class="card-body py-3">
       <KTDataTable
-        :data="filteredAndSortedTeams"
-        :header="tableHeader"
-        :checkbox-enabled="false"
-        :enable-items-per-page-dropdown="true"
-        :items-per-page="10"
-        :loading="loading"
-        :sort-label="sortLabel"
-        :sort-order="sortOrder"
-        @on-sort="handleSort"
-        empty-table-text="No teams found"
-      >
+          :data="filteredAndSortedTeams"
+          :header="tableHeader"
+          :checkbox-enabled="false"
+          :items-per-page-dropdown-enabled="false"
+          :items-per-page="pagination.per_page"
+          :current-page="pagination.page"
+          :loading="loading"
+          :sort-label="sortLabel"
+          :sort-order="sortOrder"
+          @on-sort="handleSort"
+          @page-change="goToPage"
+          @on-items-per-page-change="(val) => { pagination.per_page = val; changeItemsPerPage(); }"
+          :empty-table-text="emptyTableMessage"
+        >
         <template v-slot:name="{ row }">
           <div class="d-flex align-items-center">
             <div class="symbol symbol-45px me-5">
@@ -230,6 +293,17 @@
           </div>
         </template>
       </KTDataTable>
+      
+      <!--begin::Pagination-->
+      <Pagination
+        v-if="!loading"
+        :page="pagination.page"
+        :per-page="pagination.per_page"
+        :total-items="pagination.total_items || teams.length"
+        :total-pages="Math.max(1, pagination.total_pages)"
+        @page-change="goToPage"
+      />
+      <!--end::Pagination-->
     </div>
     <!--end::Card body-->
   </div>
@@ -327,6 +401,7 @@ import { Modal } from 'bootstrap'
 import Widget1 from '@/components/dashboard-default-widgets/Widget1.vue'
 import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
 import ApiService from '@/core/services/ApiService'
+import Pagination from '@/components/common/Pagination.vue'
 import TeamMembersModal from '@/components/modals/general/TeamMembersModal.vue'
 
 // Interface definitions
@@ -379,6 +454,16 @@ const error = ref<string | null>(null)
 const searchQuery = ref('')
 const sortLabel = ref('')
 const sortOrder = ref<'asc' | 'desc'>('asc')
+
+// Pagination state
+const pagination = ref({
+  page: 1,
+  per_page: 10,
+  total_pages: 1,
+  total_items: 0,
+  next_page: null as number | null,
+  prev_page: null as number | null,
+})
 
 // Organization-related reactive data
 const organizations = ref<Organization[]>([])
@@ -438,9 +523,24 @@ const loadLastSelectedAccount = (): string | null => {
 const fetchOrganizations = async () => {
   loadingOrganizations.value = true
   try {
+    console.log("🚀 Fetching organizations...");
     const resp = await ApiService.query("organizations", {})
+    console.log("📡 Organizations API Response:", resp);
+    
     if (resp && resp.data) {
-      organizations.value = resp.data
+      // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
+      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+        console.log("✅ Found organizations in data array:", resp.data.data);
+        organizations.value = resp.data.data;
+      } else if (Array.isArray(resp.data)) {
+        console.log("✅ Found organizations in direct data array:", resp.data);
+        organizations.value = resp.data;
+      } else {
+        console.log("⚠️ Unexpected organizations data format:", resp.data);
+        organizations.value = [];
+      }
+      
+      console.log("🎯 Final organizations:", organizations.value);
       
       // Check if orgId is provided in URL query parameters
       const orgIdFromUrl = route.query.orgId as string
@@ -519,9 +619,24 @@ const fetchAccounts = async () => {
 
   loadingAccounts.value = true
   try {
+    console.log("🚀 Fetching accounts for organization:", selectedOrganizationId.value);
     const resp = await ApiService.query(`organizations/${selectedOrganizationId.value}/accounts`, {})
+    console.log("📡 Accounts API Response:", resp);
+    
     if (resp && resp.data) {
-      accounts.value = resp.data
+      // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
+      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+        console.log("✅ Found accounts in data array:", resp.data.data);
+        accounts.value = resp.data.data;
+      } else if (Array.isArray(resp.data)) {
+        console.log("✅ Found accounts in direct data array:", resp.data);
+        accounts.value = resp.data;
+      } else {
+        console.log("⚠️ Unexpected accounts data format:", resp.data);
+        accounts.value = [];
+      }
+      
+      console.log("🎯 Final accounts:", accounts.value);
       
       // Check if accountId is provided in URL query parameters
       const accountIdFromUrl = route.query.accountId as string
@@ -535,7 +650,7 @@ const fetchAccounts = async () => {
           // Save this as the last selected account
           saveLastSelectedAccount(accountFromUrl.uid)
           // Fetch teams for the selected account
-          fetchTeams()
+          fetchTeams(pagination.value.page)
           return
         }
       }
@@ -565,7 +680,7 @@ const fetchAccounts = async () => {
       }
       
       // Fetch teams for the selected account
-      fetchTeams()
+      fetchTeams(pagination.value.page)
     }
   } catch (e: any) {
     console.error('Failed to load accounts:', e)
@@ -575,26 +690,97 @@ const fetchAccounts = async () => {
 }
 
 // Fetch teams from API
-const fetchTeams = async () => {
+const fetchTeams = async (page: number = 1) => {
   if (!selectedAccountId.value) return
 
   loading.value = true
   error.value = null
   try {
-    const resp = await ApiService.query(`accounts/${selectedAccountId.value}/teams`, {})
+    console.log("🚀 Fetching teams for account:", selectedAccountId.value, { page, per_page: pagination.value.per_page });
+    // Send both page_size (server) and per_page (client) for compatibility
+    const resp = await ApiService.query(`accounts/${selectedAccountId.value}/teams`, {
+      params: { page, page_size: pagination.value.per_page, per_page: pagination.value.per_page }
+    })
+    console.log("📡 Teams API Response:", resp);
+    
     if (resp && resp.data) {
-      teams.value = resp.data
+      // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
+      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+        console.log("✅ Found teams in data array:", resp.data.data);
+        teams.value = resp.data.data;
+        
+        // Update pagination info but preserve user-selected per_page
+        if (resp.data.pagination) {
+          const currentPerPage = pagination.value.per_page; // Preserve user's choice
+          const totalItems = resp.data.pagination.total_items ?? teams.value.length;
+          const recalculatedTotalPages = Math.max(1, Math.ceil(totalItems / (currentPerPage || 1)));
+
+          pagination.value = {
+            ...resp.data.pagination,
+            page: page,
+            per_page: currentPerPage,
+            total_pages: recalculatedTotalPages,
+            total_items: totalItems,
+            next_page: page < recalculatedTotalPages ? page + 1 : null,
+            prev_page: page > 1 ? page - 1 : null,
+          };
+        }
+      } else if (Array.isArray(resp.data)) {
+        console.log("✅ Found teams in direct data array:", resp.data);
+        teams.value = resp.data;
+        
+        // Calculate pagination manually if server doesn't provide it
+        const totalItems = teams.value.length;
+        const totalPages = Math.ceil(totalItems / pagination.value.per_page);
+        pagination.value = {
+          page: page,
+          per_page: pagination.value.per_page,
+          total_pages: totalPages,
+          total_items: totalItems,
+          next_page: page < totalPages ? page + 1 : null,
+          prev_page: page > 1 ? page - 1 : null,
+        };
+      } else {
+        console.log("⚠️ Unexpected teams data format:", resp.data);
+        teams.value = [];
+        // Reset pagination when no data
+        pagination.value = {
+          page: 1,
+          per_page: pagination.value.per_page,
+          total_pages: 1,
+          total_items: 0,
+          next_page: null,
+          prev_page: null,
+        };
+      }
+      
       // Format created_at for each team
       teams.value.forEach(team => {
         if (team.created_at && typeof team.created_at === 'string') {
           team.created_at = new Date(team.created_at).toLocaleDateString()
         }
       })
+      
+      // Ensure pagination.total_pages consistent with per_page and total_items
+      if (pagination.value.total_items == null) {
+        pagination.value.total_items = teams.value.length;
+      }
+      pagination.value.total_pages = Math.max(1, Math.ceil((pagination.value.total_items || 0) / (pagination.value.per_page || 1)));
+      pagination.value.next_page = pagination.value.page < pagination.value.total_pages ? pagination.value.page + 1 : null;
+      pagination.value.prev_page = pagination.value.page > 1 ? pagination.value.page - 1 : null;
+
+      console.log("🎯 Final teams:", teams.value);
+      console.log("📄 Pagination:", pagination.value);
+    } else {
+      console.log("⚠️ No valid teams response data");
+      teams.value = []
     }
   } catch (e: any) {
+    console.error('❌ Error fetching teams:', e)
     error.value = e?.response?.data?.message || e.message || "Failed to load teams"
   } finally {
     loading.value = false
+    console.log("📋 Teams fetch complete. Total teams:", teams.value.length);
   }
 }
 
@@ -628,7 +814,7 @@ const switchAccount = () => {
     saveLastSelectedAccount(selectedAccountId.value)
   }
   // Fetch teams for the selected account
-  fetchTeams()
+  fetchTeams(pagination.value.page)
 }
 
 const showAddTeamModal = () => {
@@ -656,7 +842,9 @@ const createTeam = async () => {
   try {
     const resp = await ApiService.post(`accounts/${selectedAccountId.value}/teams`, teamData)
     if (resp && resp.data) {
-      teams.value.unshift(resp.data)
+      // Refresh the teams list
+      await fetchTeams(pagination.value.page)
+      
       // Hide modal
       const modal = document.getElementById('addTeamModal')
       if (modal) {
@@ -687,7 +875,8 @@ const confirmDelete = async () => {
   deleting.value = true
   try {
     await ApiService.delete(`teams/${teamToDelete.value.uid}`)
-    teams.value = teams.value.filter(team => team.uid !== teamToDelete.value!.uid)
+    // Refresh the teams list
+    await fetchTeams(pagination.value.page)
     // Hide modal
     const modal = document.getElementById('deleteTeamModal')
     if (modal) {
@@ -730,11 +919,9 @@ const updateTeam = async () => {
       name: teamToEdit.value.name
     })
     if (resp && resp.data) {
-      // Update the team in the list
-      const index = teams.value.findIndex(team => team.uid === teamToEdit.value!.uid)
-      if (index !== -1) {
-        teams.value[index] = resp.data
-      }
+      // Refresh the teams list
+      await fetchTeams(pagination.value.page)
+      
       // Hide modal
       const modal = document.getElementById('editTeamModal')
       if (modal) {
@@ -800,10 +987,66 @@ const filteredAndSortedTeams = computed(() => {
     })
   }
 
+  // Apply client-side pagination if needed (when server doesn't provide paginated data)
+  if (filtered.length > pagination.value.per_page) {
+    const startIndex = (pagination.value.page - 1) * pagination.value.per_page;
+    const endIndex = startIndex + pagination.value.per_page;
+    return filtered.slice(startIndex, endIndex);
+  }
+
   return filtered
 })
 
-// members filtered logic now lives inside TeamMembersModal component
+// Pagination methods and computed properties
+const goToPage = (page: number) => {
+  if (page >= 1 && page <= pagination.value.total_pages) {
+    fetchTeams(page)
+  }
+}
+
+const changeItemsPerPage = () => {
+  // Reset to first page when changing items per page
+  fetchTeams(1)
+}
+
+const visiblePages = computed((): number[] => {
+  const current = pagination.value.page
+  const total = Math.max(1, pagination.value.total_pages) // Pastikan minimal 1 halaman
+  const pages: number[] = []
+  
+  // Show max 5 page numbers
+  const maxVisible = 5
+  let start = Math.max(1, current - Math.floor(maxVisible / 2))
+  let end = Math.min(total, start + maxVisible - 1)
+  
+  // Adjust start if we're near the end
+  if (end - start + 1 < maxVisible) {
+    start = Math.max(1, end - maxVisible + 1)
+  }
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
+  }
+  
+  return pages
+})
+
+// Empty table message based on current state
+const emptyTableMessage = computed(() => {
+  if (!selectedOrganizationId.value) {
+    return "Please select an organization to view teams"
+  }
+  if (!selectedAccountId.value) {
+    return "Please select an account to view teams"
+  }
+  if (loading.value) {
+    return "Loading teams..."
+  }
+  if (searchQuery.value.trim()) {
+    return `No teams found matching "${searchQuery.value}"`
+  }
+  return "No teams found for this account"
+})
 
 // Initialize
 onMounted(() => {

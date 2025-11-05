@@ -1,19 +1,19 @@
 <template>
   <!--begin::Site Overview-->
-  <!--begin::Account & Team Switcher-->
+  <!--begin::Organization, Account & Team Switcher-->
   <div class="card mb-5">
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col-md-4">
           <h4 class="card-title mb-0">Site Management</h4>
           <p class="text-muted mb-0">
-            Manage sites {{ currentTeam ? `for ${currentTeam.name}` : 'for your team' }}
+            Manage sites {{ currentTeam ? `for team ${currentTeam.name}` : 'for your team' }}
           </p>
         </div>
         <div class="col-md-8">
           <div class="d-flex justify-content-end gap-3">
-            <!-- Organization dropdown -->
-            <div class="d-flex align-items-center" v-if="organizations.length > 0">
+            <!-- Organization Dropdown -->
+            <div class="d-flex align-items-center">
               <label class="form-label me-3 mb-0 fw-semibold">Organization:</label>
               <select
                 v-model="selectedOrganizationId"
@@ -21,6 +21,9 @@
                 class="form-select form-select-solid w-200px"
                 :disabled="loadingOrganizations"
               >
+                <option value="" disabled>
+                  {{ loadingOrganizations ? 'Loading organizations...' : 'Select Organization' }}
+                </option>
                 <option
                   v-for="org in organizations"
                   :key="org.uid"
@@ -29,38 +32,62 @@
                   {{ org.name }}
                 </option>
               </select>
+              
+              <!-- Loading spinner for organizations -->
+              <div v-if="loadingOrganizations" class="ms-2">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
             </div>
-
-            <!-- Account dropdown -->
-            <div class="d-flex align-items-center" v-if="accounts.length > 0">
+            
+            <!-- Account Dropdown -->
+            <div class="d-flex align-items-center">
               <label class="form-label me-3 mb-0 fw-semibold">Account:</label>
               <select
                 v-model="selectedAccountId"
                 @change="switchAccount"
                 class="form-select form-select-solid w-200px"
-                :disabled="loadingAccounts"
+                :disabled="loadingAccounts || !selectedOrganizationId || accounts.length === 0"
               >
+                <option value="" disabled>
+                  <span v-if="!selectedOrganizationId">Select organization first</span>
+                  <span v-else-if="loadingAccounts">Loading accounts...</span>
+                  <span v-else-if="accounts.length === 0">No accounts available</span>
+                  <span v-else>Select Account</span>
+                </option>
                 <option
                   v-for="account in accounts"
                   :key="account.uid"
                   :value="account.uid"
-                  :disabled="!accountsWithTeams[account.uid]"
-                  :title="!accountsWithTeams[account.uid] ? 'No teams in this account' : ''"
                 >
                   {{ account.name }}
                 </option>
               </select>
+              
+              <!-- Loading spinner for accounts -->
+              <div v-if="loadingAccounts" class="ms-2">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
             </div>
-
-            <!-- Team dropdown -->
-            <div class="d-flex align-items-center" v-if="teams.length > 0">
+            
+            <!-- Team Dropdown -->
+            <div class="d-flex align-items-center">
               <label class="form-label me-3 mb-0 fw-semibold">Team:</label>
               <select
-                v-model="selectedTeamIdFilter"
+                v-model="selectedTeamId"
                 @change="switchTeam"
                 class="form-select form-select-solid w-200px"
-                :disabled="loadingTeams"
+                :disabled="loadingTeams || !selectedAccountId || teams.length === 0"
               >
+                <option value="" disabled>
+                  <span v-if="!selectedAccountId">Select account first</span>
+                  <span v-else-if="loadingTeams">Loading teams...</span>
+                  <span v-else-if="teams.length === 0">No teams available</span>
+                  <span v-else>Select Team</span>
+                </option>
                 <option
                   v-for="team in teams"
                   :key="team.uid"
@@ -69,13 +96,20 @@
                   {{ team.name }}
                 </option>
               </select>
+              
+              <!-- Loading spinner for teams -->
+              <div v-if="loadingTeams" class="ms-2">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <!--end::Account & Team Switcher-->
+  <!--end::Organization, Account & Team Switcher-->
 
   <div class="row g-5 g-xl-8 mb-8">
     <!--begin::Summary Cards-->
@@ -137,6 +171,23 @@
 
       <!--begin::Card toolbar-->
       <div class="card-toolbar">
+        <!--begin::Items per page-->
+        <div class="d-flex align-items-center me-5">
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">Items:</label>
+          <select 
+            class="form-select form-select-sm w-auto" 
+            v-model.number="pagination.per_page"
+            @change="changeItemsPerPage"
+            >
+            <option :value="1">1</option>
+            <option :value="5">5</option>
+            <option :value="10">10</option>
+            <option :value="25">25</option>
+            <option :value="50">50</option>
+          </select>
+        </div>
+        <!--end::Items per page-->
+
         <!--begin::Search-->
         <div class="d-flex align-items-center position-relative my-1 me-5">
           <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
@@ -152,7 +203,11 @@
         </div>
         <!--end::Search-->
 
-        <button @click="showAddSiteModal" class="btn btn-sm btn-light-primary" :disabled="!selectedTeamIdFilter">
+        <button 
+          @click="showAddSiteModal" 
+          class="btn btn-sm btn-light-primary"
+          :disabled="!selectedTeamId"
+        >
           <i class="ki-duotone ki-plus fs-2"></i>
           Add Site
         </button>
@@ -167,13 +222,16 @@
         :data="filteredAndSortedSites"
         :header="tableHeader"
         :checkbox-enabled="false"
-        :enable-items-per-page-dropdown="true"
-        :items-per-page="10"
+        :items-per-page-dropdown-enabled="false"
+        :items-per-page="pagination.per_page"
+        :current-page="pagination.page"
         :loading="loading"
         :sort-label="sortLabel"
         :sort-order="sortOrder"
         @on-sort="handleSort"
-        empty-table-text="No sites found"
+        @page-change="goToPage"
+        @on-items-per-page-change="(val) => { pagination.per_page = val; changeItemsPerPage(); }"
+        :empty-table-text="emptyTableMessage"
       >
         <template v-slot:name="{ row }">
           <div class="d-flex align-items-center">
@@ -239,6 +297,17 @@
           </div>
         </template>
       </KTDataTable>
+      
+      <!--begin::Pagination-->
+      <Pagination
+        v-if="!loading"
+        :page="pagination.page"
+        :per-page="pagination.per_page"
+        :total-items="pagination.total_items || sites.length"
+        :total-pages="Math.max(1, pagination.total_pages)"
+        @page-change="goToPage"
+      />
+      <!--end::Pagination-->
     </div>
     <!--end::Card body-->
   </div>
@@ -259,6 +328,7 @@ import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import AddSiteModal from "@/components/modals/forms/AddSiteModal.vue";
 import EditSiteModal from "@/components/modals/forms/EditSiteModal.vue";
 import ApiService from "@/core/services/ApiService";
+import Pagination from '@/components/common/Pagination.vue'
 
 // Interface definitions
 interface Site {
@@ -317,6 +387,44 @@ interface Organization {
   description?: string
 }
 
+interface Organization {
+  uid: string;
+  name: string;
+  legalName?: string;
+  email?: string;
+  phone?: string;
+  website?: string;
+  address?: string;
+  country?: string;
+  status?: 'active' | 'inactive';
+  created_at: string;
+  updated_at?: string;
+  created_by?: {
+    username: string;
+    email: string;
+  };
+  description?: string;
+}
+
+interface Organization {
+  uid: string;
+  name: string;
+  legalName?: string;
+  email?: string;
+  phone?: string;
+  website?: string;
+  address?: string;
+  country?: string;
+  status?: 'active' | 'inactive';
+  created_at: string;
+  updated_at?: string;
+  created_by?: {
+    username: string;
+    email: string;
+  };
+  description?: string;
+}
+
 // Get route instance to read query parameters
 const route = useRoute();
 
@@ -332,10 +440,10 @@ const addSiteModalRef = ref();
 const editSiteModalRef = ref();
 
 // Organization-related reactive data
-const organizations = ref<Organization[]>([])
-const loadingOrganizations = ref(false)
-const selectedOrganizationId = ref('')
-const currentOrganization = ref<Organization | null>(null)
+const organizations = ref<Organization[]>([]);
+const loadingOrganizations = ref(false);
+const selectedOrganizationId = ref("");
+const currentOrganization = ref<Organization | null>(null);
 
 // Account-related reactive data
 const accounts = ref<Account[]>([]);
@@ -350,6 +458,16 @@ const teams = ref<Team[]>([]);
 const loadingTeams = ref(false);
 const selectedTeamIdFilter = ref('');
 const currentTeam = ref<Team | null>(null);
+
+// Pagination state
+const pagination = ref({
+  page: 1,
+  per_page: 10,
+  total_pages: 1,
+  total_items: 0,
+  next_page: null as number | null,
+  prev_page: null as number | null,
+});
 
 // Table header configuration
 const tableHeader = ref([
@@ -385,179 +503,316 @@ const tableHeader = ref([
   },
 ]);
 
-// Fetch sites from API
-const fetchSites = async () => {
-  const teamId = selectedTeamIdFilter.value
-  if (!teamId) return
+// LocalStorage functions
+const saveLastSelectedOrganization = (orgId: string) => {
+  localStorage.setItem('lastSelectedOrganization', orgId)
+}
 
-  loading.value = true;
-  error.value = null;
-  try {
-    const resp = await ApiService.query(`teams/${teamId}/sites`, {})
-    if (resp && resp.data) {
-      sites.value = resp.data
-      // Format created_at for each site
-      sites.value.forEach(site => {
-        if (site.created_at && typeof site.created_at === 'string') {
-          site.created_at = new Date(site.created_at).toLocaleDateString()
-        }
-      })
-    }
-  } catch (e: any) {
-    error.value = e?.response?.data?.message || e.message || "Failed to load sites"
-  } finally {
-    loading.value = false
-  }
-};
+const loadLastSelectedOrganization = (): string | null => {
+  return localStorage.getItem('lastSelectedOrganization')
+}
+
+const saveLastSelectedAccount = (accountId: string) => {
+  localStorage.setItem('lastSelectedAccount', accountId)
+}
+
+const loadLastSelectedAccount = (): string | null => {
+  return localStorage.getItem('lastSelectedAccount')
+}
+
+const saveLastSelectedTeam = (teamId: string) => {
+  localStorage.setItem('lastSelectedTeam', teamId)
+}
+
+const loadLastSelectedTeam = (): string | null => {
+  return localStorage.getItem('lastSelectedTeam')
+}
 
 // Fetch organizations from API
 const fetchOrganizations = async () => {
   loadingOrganizations.value = true
   try {
-    const resp = await ApiService.query('organizations', {})
-    const data = resp?.data?.data || resp?.data || []
-    organizations.value = data
-
-    // Check URL for orgId
-    const orgIdFromUrl = route.query.orgId as string
-    if (orgIdFromUrl && organizations.value.find(o => o.uid === orgIdFromUrl)) {
-      selectedOrganizationId.value = orgIdFromUrl
-      currentOrganization.value = organizations.value.find(o => o.uid === orgIdFromUrl) || null
-      saveLastSelectedOrganization(orgIdFromUrl)
-    } else {
-      const lastOrgId = loadLastSelectedOrganization()
-      if (lastOrgId && organizations.value.find(o => o.uid === lastOrgId)) {
-        selectedOrganizationId.value = lastOrgId
-        currentOrganization.value = organizations.value.find(o => o.uid === lastOrgId) || null
+    console.log("🚀 Fetching organizations...");
+    const resp = await ApiService.query("organizations", {})
+    console.log("📡 Organizations API Response:", resp);
+    
+    if (resp && resp.data) {
+      // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
+      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+        console.log("✅ Found organizations in data array:", resp.data.data);
+        organizations.value = resp.data.data;
+      } else if (Array.isArray(resp.data)) {
+        console.log("✅ Found organizations in direct data array:", resp.data);
+        organizations.value = resp.data;
+      } else {
+        console.log("⚠️ Unexpected organizations data format:", resp.data);
+        organizations.value = [];
+      }
+      
+      console.log("🎯 Final organizations:", organizations.value);
+      
+      // Check URL parameters for initial selection
+      const orgIdFromUrl = route.query.orgId as string
+      const accountIdFromUrl = route.query.accountId as string
+      const teamIdFromUrl = route.query.teamId as string
+      
+      if (orgIdFromUrl) {
+        const orgFromUrl = organizations.value.find(o => o.uid === orgIdFromUrl)
+        if (orgFromUrl) {
+          selectedOrganizationId.value = orgFromUrl.uid
+          currentOrganization.value = orgFromUrl
+          saveLastSelectedOrganization(orgFromUrl.uid)
+          await fetchAccounts()
+          
+          if (accountIdFromUrl && accounts.value.find(a => a.uid === accountIdFromUrl)) {
+            selectedAccountId.value = accountIdFromUrl
+            currentAccount.value = accounts.value.find(a => a.uid === accountIdFromUrl) || null
+            saveLastSelectedAccount(accountIdFromUrl)
+            await fetchTeams()
+            
+            if (teamIdFromUrl && teams.value.find(t => t.uid === teamIdFromUrl)) {
+              selectedTeamId.value = teamIdFromUrl
+              selectedTeamIdFilter.value = teamIdFromUrl
+              currentTeam.value = teams.value.find(t => t.uid === teamIdFromUrl) || null
+              saveLastSelectedTeam(teamIdFromUrl)
+              fetchSites(pagination.value.page)
+            }
+          }
+        }
       } else if (organizations.value.length > 0) {
-        selectedOrganizationId.value = organizations.value[0].uid
-        currentOrganization.value = organizations.value[0]
-        saveLastSelectedOrganization(organizations.value[0].uid)
+        // Use last selected or first organization
+        const lastSelectedOrgId = loadLastSelectedOrganization()
+        if (lastSelectedOrgId) {
+          const lastOrg = organizations.value.find(o => o.uid === lastSelectedOrgId)
+          if (lastOrg) {
+            selectedOrganizationId.value = lastOrg.uid
+            currentOrganization.value = lastOrg
+          }
+        } else {
+          selectedOrganizationId.value = organizations.value[0].uid
+          currentOrganization.value = organizations.value[0]
+          saveLastSelectedOrganization(organizations.value[0].uid)
+        }
+        await fetchAccounts()
       }
     }
-
-    // With organization selected, fetch accounts
-    if (selectedOrganizationId.value) {
-      await fetchAccounts()
-    }
-  } catch (e) {
+  } catch (e: any) {
     console.error('Failed to load organizations:', e)
-    organizations.value = []
   } finally {
     loadingOrganizations.value = false
   }
 }
 
-// Fetch accounts (or, if accountId provided via route, fetch teams for that account)
+// Fetch accounts from API
 const fetchAccounts = async () => {
-  if (!selectedOrganizationId.value) return;
-  loadingAccounts.value = true;
+  if (!selectedOrganizationId.value) return
+
+  loadingAccounts.value = true
   try {
-    const accountsResp = await ApiService.query(`organizations/${selectedOrganizationId.value}/accounts`, {});
-    const allAccounts: Account[] = accountsResp.data?.data || accountsResp.data || [];
-
-    // Probe teams for each account and record capability
-    teamsCache.value = {}
-    accountsWithTeams.value = {}
-    for (const acc of allAccounts) {
-      try {
-        const tResp = await ApiService.query(`accounts/${acc.uid}/teams`, {})
-        const tData: Team[] = tResp.data?.data || tResp.data || []
-        teamsCache.value[acc.uid] = tData
-        accountsWithTeams.value[acc.uid] = tData.length > 0
-      } catch (e) {
-        accountsWithTeams.value[acc.uid] = false
+    console.log("🚀 Fetching accounts for organization:", selectedOrganizationId.value);
+    const resp = await ApiService.query(`organizations/${selectedOrganizationId.value}/accounts`, {})
+    console.log("📡 Accounts API Response:", resp);
+    
+    if (resp && resp.data) {
+      // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
+      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+        console.log("✅ Found accounts in data array:", resp.data.data);
+        accounts.value = resp.data.data;
+      } else if (Array.isArray(resp.data)) {
+        console.log("✅ Found accounts in direct data array:", resp.data);
+        accounts.value = resp.data;
+      } else {
+        console.log("⚠️ Unexpected accounts data format:", resp.data);
+        accounts.value = [];
+      }
+      
+      console.log("🎯 Final accounts:", accounts.value);
+      
+      // Auto-select account if available
+      if (accounts.value.length > 0 && !selectedAccountId.value) {
+        const lastSelectedAccountId = loadLastSelectedAccount()
+        if (lastSelectedAccountId) {
+          const lastAccount = accounts.value.find(a => a.uid === lastSelectedAccountId)
+          if (lastAccount) {
+            selectedAccountId.value = lastAccount.uid
+            currentAccount.value = lastAccount
+          }
+        } else {
+          selectedAccountId.value = accounts.value[0].uid
+          currentAccount.value = accounts.value[0]
+          saveLastSelectedAccount(accounts.value[0].uid)
+        }
+        fetchTeams()
       }
     }
-    accounts.value = allAccounts
-
-    // Auto-select account
-    if (accounts.value.length > 0) {
-      const lastAccountId = loadLastSelectedAccount();
-      const accountFromUrl = route.query.accountId as string;
-
-      if (accountFromUrl && accounts.value.find(a => a.uid === accountFromUrl) && accountsWithTeams.value[accountFromUrl]) {
-        selectedAccountId.value = accountFromUrl;
-        saveLastSelectedAccount(accountFromUrl);
-      } else if (lastAccountId && accounts.value.find(a => a.uid === lastAccountId) && accountsWithTeams.value[lastAccountId]) {
-        selectedAccountId.value = lastAccountId;
-      } else {
-        const firstValid = accounts.value.find(a => accountsWithTeams.value[a.uid])
-        selectedAccountId.value = firstValid ? firstValid.uid : '';
-        if (firstValid) saveLastSelectedAccount(firstValid.uid);
-      }
-
-      // Set current account
-      const account = accounts.value.find(a => a.uid === selectedAccountId.value);
-      currentAccount.value = account || null;
-
-      // Fetch teams for the selected account
-      if (selectedAccountId.value) {
-        fetchTeams();
-      } else {
-        // No valid account with teams — clear downstream
-        teams.value = []
-        sites.value = []
-        selectedTeamIdFilter.value = ''
-        currentTeam.value = null
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching accounts:', error);
-    accounts.value = [];
+  } catch (e: any) {
+    console.error('Failed to load accounts:', e)
   } finally {
-    loadingAccounts.value = false;
+    loadingAccounts.value = false
   }
-};
+}
 
-// Fetch teams for selected account
+// Fetch teams from API
 const fetchTeams = async () => {
-  if (!selectedAccountId.value) return;
+  if (!selectedAccountId.value) return
 
-  loadingTeams.value = true;
+  loadingTeams.value = true
   try {
-    // Use cache when available to avoid refetching and to ensure accounts without teams are excluded
-    const cached = teamsCache.value[selectedAccountId.value]
-    if (cached) {
-      teams.value = cached
-    } else {
-      const response = await ApiService.query(`accounts/${selectedAccountId.value}/teams`, {});
-      teams.value = response.data.data || response.data;
-      teamsCache.value[selectedAccountId.value] = teams.value
-    }
-
-    // Auto-select team
-    if (teams.value.length > 0) {
-      const lastTeamId = loadLastSelectedTeam();
-      const teamFromUrl = route.query.teamId as string;
-
-      if (teamFromUrl && teams.value.find(t => t.uid === teamFromUrl)) {
-        selectedTeamIdFilter.value = teamFromUrl;
-        saveLastSelectedTeam(teamFromUrl);
-      } else if (lastTeamId && teams.value.find(t => t.uid === lastTeamId)) {
-        selectedTeamIdFilter.value = lastTeamId;
+    console.log("🚀 Fetching teams for account:", selectedAccountId.value);
+    const resp = await ApiService.query(`accounts/${selectedAccountId.value}/teams`, {})
+    console.log("📡 Teams API Response:", resp);
+    
+    if (resp && resp.data) {
+      // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
+      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+        console.log("✅ Found teams in data array:", resp.data.data);
+        teams.value = resp.data.data;
+      } else if (Array.isArray(resp.data)) {
+        console.log("✅ Found teams in direct data array:", resp.data);
+        teams.value = resp.data;
       } else {
-        selectedTeamIdFilter.value = teams.value[0].uid;
-        saveLastSelectedTeam(teams.value[0].uid);
+        console.log("⚠️ Unexpected teams data format:", resp.data);
+        teams.value = [];
       }
-
-      // Set current team
-      const team = teams.value.find(t => t.uid === selectedTeamIdFilter.value);
-      currentTeam.value = team || null;
-
-      // Fetch sites for the selected team
-      fetchSites();
+      
+      console.log("🎯 Final teams:", teams.value);
+      
+      // Auto-select team if available
+      if (teams.value.length > 0 && !selectedTeamId.value) {
+        const lastSelectedTeamId = loadLastSelectedTeam()
+        if (lastSelectedTeamId) {
+          const lastTeam = teams.value.find(t => t.uid === lastSelectedTeamId)
+          if (lastTeam) {
+            selectedTeamId.value = lastTeam.uid
+            selectedTeamIdFilter.value = lastTeam.uid
+            currentTeam.value = lastTeam
+          }
+        } else {
+          selectedTeamId.value = teams.value[0].uid
+          selectedTeamIdFilter.value = teams.value[0].uid
+          currentTeam.value = teams.value[0]
+          saveLastSelectedTeam(teams.value[0].uid)
+        }
+        fetchSites(pagination.value.page)
+      }
     }
-  } catch (error) {
-    console.error('Error fetching teams:', error);
-    teams.value = [];
+  } catch (e: any) {
+    console.error('Failed to load teams:', e)
   } finally {
-    loadingTeams.value = false;
+    loadingTeams.value = false
   }
-};
+}
+
+// Fetch sites from API
+const fetchSites = async (page: number = 1) => {
+  if (!selectedTeamId.value) return
+
+  loading.value = true
+  try {
+    console.log("🚀 Fetching sites for team:", selectedTeamId.value, { page, per_page: pagination.value.per_page });
+    // Send both page_size (server) and per_page (client) for compatibility
+    const resp = await ApiService.query(`teams/${selectedTeamId.value}/sites`, {
+      params: { page, page_size: pagination.value.per_page, per_page: pagination.value.per_page }
+    })
+    console.log("📡 Sites API Response:", resp);
+    
+    if (resp && resp.data) {
+      // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
+      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+        console.log("✅ Found sites in data array:", resp.data.data);
+        sites.value = resp.data.data;
+        
+        // Update pagination info but preserve user-selected per_page
+        if (resp.data.pagination) {
+          const currentPerPage = pagination.value.per_page; // Preserve user's choice
+          const totalItems = resp.data.pagination.total_items ?? sites.value.length;
+          const recalculatedTotalPages = Math.max(1, Math.ceil(totalItems / (currentPerPage || 1)));
+
+          pagination.value = {
+            ...resp.data.pagination,
+            page: page,
+            per_page: currentPerPage,
+            total_pages: recalculatedTotalPages,
+            total_items: totalItems,
+            next_page: page < recalculatedTotalPages ? page + 1 : null,
+            prev_page: page > 1 ? page - 1 : null,
+          };
+        }
+      } else if (Array.isArray(resp.data)) {
+        console.log("✅ Found sites in direct data array:", resp.data);
+        sites.value = resp.data;
+        
+        // Calculate pagination manually if server doesn't provide it
+        const totalItems = sites.value.length;
+        const totalPages = Math.ceil(totalItems / pagination.value.per_page);
+        pagination.value = {
+          page: page,
+          per_page: pagination.value.per_page,
+          total_pages: totalPages,
+          total_items: totalItems,
+          next_page: page < totalPages ? page + 1 : null,
+          prev_page: page > 1 ? page - 1 : null,
+        };
+      } else {
+        console.log("⚠️ Unexpected sites data format:", resp.data);
+        sites.value = [];
+        // Reset pagination when no data
+        pagination.value = {
+          page: 1,
+          per_page: pagination.value.per_page,
+          total_pages: 1,
+          total_items: 0,
+          next_page: null,
+          prev_page: null,
+        };
+      }
+      
+        // Ensure pagination.total_pages consistent with per_page and total_items
+        if (pagination.value.total_items == null) {
+          pagination.value.total_items = sites.value.length;
+        }
+        pagination.value.total_pages = Math.max(1, Math.ceil((pagination.value.total_items || 0) / (pagination.value.per_page || 1)));
+        pagination.value.next_page = pagination.value.page < pagination.value.total_pages ? pagination.value.page + 1 : null;
+        pagination.value.prev_page = pagination.value.page > 1 ? pagination.value.page - 1 : null;
+
+        console.log("🎯 Final sites:", sites.value);
+        console.log("📄 Pagination:", pagination.value);
+    } else {
+      console.log("⚠️ No valid sites response data");
+      sites.value = []
+    }
+  } catch (e: any) {
+    console.error('❌ Error fetching sites:', e)
+    sites.value = []
+  } finally {
+    loading.value = false
+    console.log("📋 Sites fetch complete. Total sites:", sites.value.length);
+  }
+}
+
+// Methods
+const switchOrganization = async () => {
+  const org = organizations.value.find(o => o.uid === selectedOrganizationId.value)
+  currentOrganization.value = org || null
+  // Save the selected organization to localStorage
+  if (selectedOrganizationId.value) {
+    saveLastSelectedOrganization(selectedOrganizationId.value)
+  }
+  // Clear accounts, teams and sites when organization changes
+  accounts.value = []
+  teams.value = []
+  sites.value = []
+  selectedAccountId.value = ''
+  selectedTeamId.value = ''
+  selectedTeamIdFilter.value = ''
+  currentAccount.value = null
+  currentTeam.value = null
+  // Fetch accounts for the new organization
+  await fetchAccounts()
+}
 
 // Switch account
-const switchAccount = () => {
+const switchAccount = async () => {
   const account = accounts.value.find(a => a.uid === selectedAccountId.value);
   // If chosen account has no teams, auto-pick the first account that has teams
   if (selectedAccountId.value && !accountsWithTeams.value[selectedAccountId.value]) {
@@ -572,69 +827,37 @@ const switchAccount = () => {
   // Clear teams and sites when account changes
   teams.value = [];
   sites.value = [];
+  selectedTeamId.value = '';
   selectedTeamIdFilter.value = '';
   currentTeam.value = null;
   // Fetch teams for the selected account
-  if (selectedAccountId.value) {
-    fetchTeams();
-  }
+  await fetchTeams();
 };
-
-// Switch organization
-const switchOrganization = () => {
-  const org = organizations.value.find(o => o.uid === selectedOrganizationId.value)
-  currentOrganization.value = org || null
-  if (selectedOrganizationId.value) {
-    saveLastSelectedOrganization(selectedOrganizationId.value)
-  }
-  // Clear lower-level selections
-  accounts.value = []
-  teams.value = []
-  sites.value = []
-  selectedAccountId.value = ''
-  selectedTeamIdFilter.value = ''
-  currentAccount.value = null
-  currentTeam.value = null
-  // Fetch accounts for new organization
-  fetchAccounts()
-}
 
 // Switch team
 const switchTeam = () => {
   const team = teams.value.find(t => t.uid === selectedTeamIdFilter.value);
   currentTeam.value = team || null;
+  selectedTeamId.value = selectedTeamIdFilter.value;
   // Save the selected team to localStorage
   if (selectedTeamIdFilter.value) {
     saveLastSelectedTeam(selectedTeamIdFilter.value);
   }
   // Fetch sites for the selected team
-  fetchSites();
+  fetchSites(pagination.value.page);
 };
 
-// LocalStorage helper functions
-const saveLastSelectedAccount = (accountId: string) => {
-  localStorage.setItem('siteLastSelectedAccount', accountId);
-};
-
-const loadLastSelectedAccount = (): string | null => {
-  return localStorage.getItem('siteLastSelectedAccount');
-};
-
-const saveLastSelectedOrganization = (orgId: string) => {
-  localStorage.setItem('siteLastSelectedOrganization', orgId)
+// Pagination methods
+const goToPage = (page: number) => {
+  if (page >= 1 && page <= pagination.value.total_pages) {
+    fetchSites(page)
+  }
 }
 
-const loadLastSelectedOrganization = (): string | null => {
-  return localStorage.getItem('siteLastSelectedOrganization')
+const changeItemsPerPage = () => {
+  // Reset to first page when changing items per page
+  fetchSites(1)
 }
-
-const saveLastSelectedTeam = (teamId: string) => {
-  localStorage.setItem('siteLastSelectedTeam', teamId);
-};
-
-const loadLastSelectedTeam = (): string | null => {
-  return localStorage.getItem('siteLastSelectedTeam');
-};
 
 // Initialize data on component mount
 onMounted(() => {
@@ -666,6 +889,49 @@ const activeCameras = computed(() => sites.value.length); // Placeholder
 const activeCamerasPercentage = computed(() =>
   totalSites.value > 0 ? 100 : 0
 );
+
+// Computed properties for pagination
+const visiblePages = computed((): number[] => {
+  const current = pagination.value.page
+  const total = Math.max(1, pagination.value.total_pages)
+  const pages: number[] = []
+  
+  // Show max 5 page numbers
+  const maxVisible = 5
+  let start = Math.max(1, current - Math.floor(maxVisible / 2))
+  let end = Math.min(total, start + maxVisible - 1)
+  
+  // Adjust start if we're near the end
+  if (end - start + 1 < maxVisible) {
+    start = Math.max(1, end - maxVisible + 1)
+  }
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
+  }
+  
+  return pages
+})
+
+// Empty table message based on current state
+const emptyTableMessage = computed(() => {
+  if (!selectedOrganizationId.value) {
+    return "Please select an organization to view sites"
+  }
+  if (!selectedAccountId.value) {
+    return "Please select an account to view sites"
+  }
+  if (!selectedTeamId.value) {
+    return "Please select a team to view sites"
+  }
+  if (loading.value) {
+    return "Loading sites..."
+  }
+  if (searchQuery.value.trim()) {
+    return `No sites found matching "${searchQuery.value}"`
+  }
+  return "No sites found for this team"
+})
 
 // Search and Sort functionality
 const filteredAndSortedSites = computed(() => {
@@ -703,6 +969,13 @@ const filteredAndSortedSites = computed(() => {
       }
       return 0;
     });
+  }
+
+  // Apply client-side pagination if needed (when server doesn't provide paginated data)
+  if (filtered.length > pagination.value.per_page) {
+    const startIndex = (pagination.value.page - 1) * pagination.value.per_page;
+    const endIndex = startIndex + pagination.value.per_page;
+    return filtered.slice(startIndex, endIndex);
   }
 
   return filtered;

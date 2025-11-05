@@ -48,6 +48,34 @@
   </div>
   <!--end::Summary Cards-->
 
+  <!--begin::Error Alert-->
+  <div v-if="error" class="alert alert-danger d-flex align-items-center mb-5">
+    <i class="ki-duotone ki-shield-cross fs-2hx text-danger me-4">
+      <span class="path1"></span>
+      <span class="path2"></span>
+    </i>
+    <div class="d-flex flex-column">
+      <h5 class="mb-1">Connection Error</h5>
+      <span>{{ error }}</span>
+    </div>
+    <button 
+      type="button" 
+      class="btn-close ms-auto" 
+      @click="error = null"
+      aria-label="Close"
+    ></button>
+  </div>
+  <!--end::Error Alert-->
+
+  <!-- Debug Info (hapus setelah debugging selesai) -->
+  <div class="alert alert-info" v-if="false">
+    <strong>Debug Info:</strong><br>
+    Loading: {{ loading }}<br>
+    Organizations count: {{ organizations.length }}<br>
+    Error: {{ error }}<br>
+    Pagination: {{ JSON.stringify(pagination, null, 2) }}
+  </div>
+
   <!--begin::Organizations List-->
   <div class="card">
     <!--begin::Card header-->
@@ -60,6 +88,23 @@
 
       <!--begin::Card toolbar-->
       <div class="card-toolbar">
+        <!--begin::Items per page-->
+        <div class="d-flex align-items-center me-5">
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">Items:</label>
+          <select 
+            class="form-select form-select-sm w-auto" 
+            v-model.number="pagination.per_page"
+            @change="changeItemsPerPage"
+          >
+            <option :value="1">1</option>
+            <option :value="5">5</option>
+            <option :value="10">10</option>
+            <option :value="25">25</option>
+            <option :value="50">50</option>
+          </select>
+        </div>
+        <!--end::Items per page-->
+
         <!--begin::Search-->
         <div class="d-flex align-items-center position-relative my-1 me-5">
           <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
@@ -76,8 +121,23 @@
         <!--end::Search-->
 
         <button
+          v-if="error"
+          @click="fetchOrganizations(pagination.page)"
+          class="btn btn-sm btn-light-warning me-2"
+          :disabled="loading"
+        >
+          <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+          <i v-else class="ki-duotone ki-arrows-circle fs-2">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          {{ loading ? 'Retrying...' : 'Retry' }}
+        </button>
+
+        <button
           @click="showAddOrganizationModal"
           class="btn btn-sm btn-light-primary"
+          :disabled="loading"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
           Add Organization
@@ -93,12 +153,15 @@
         :data="filteredAndSortedOrganizations"
         :header="tableHeader"
         :checkbox-enabled="false"
-        :enable-items-per-page-dropdown="true"
-        :items-per-page="10"
+        :items-per-page-dropdown-enabled="false"
+        :items-per-page="pagination.per_page"
+        :current-page="pagination.page"
         :loading="loading"
         :sort-label="sortLabel"
         :sort-order="sortOrder"
         @on-sort="handleSort"
+        @page-change="goToPage"
+        @on-items-per-page-change="(val) => { pagination.per_page = val; changeItemsPerPage(); }"
         empty-table-text="No organizations found"
       >
         <template v-slot:name="{ row }">
@@ -184,6 +247,17 @@
           </div>
         </template>
       </KTDataTable>
+      
+      <!--begin::Pagination-->
+      <Pagination
+        v-if="!loading"
+        :page="pagination.page"
+        :per-page="pagination.per_page"
+        :total-items="pagination.total_items || organizations.length"
+        :total-pages="Math.max(1, pagination.total_pages)"
+        @page-change="goToPage"
+      />
+      <!--end::Pagination-->
     </div>
     <!--end::Card body-->
   </div>
@@ -457,6 +531,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import Pagination from '@/components/common/Pagination.vue'
 import { Modal } from "bootstrap";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
@@ -553,22 +628,111 @@ const tableHeader = ref([
   },
 ]);
 
+// Pagination state
+const pagination = ref({
+  page: 1,
+  per_page: 10,
+  total_pages: 1,
+  total_items: 0,
+  next_page: null as number | null,
+  prev_page: null as number | null,
+});
+
 // Fetch organizations from API
-const fetchOrganizations = async () => {
+const fetchOrganizations = async (page: number = 1) => {
   loading.value = true;
   error.value = null;
   try {
-    const resp = await ApiService.query("organizations", {});
+    console.log("🚀 Fetching organizations...", { page, per_page: pagination.value.per_page });
+    // Some backends expect `page_size` instead of `per_page` (see API docs).
+    // Send both for compatibility: `page_size` (server) and `per_page` (client-side/legacy)
+    const resp = await ApiService.query("/organizations", {
+      params: { page, page_size: pagination.value.per_page, per_page: pagination.value.per_page },
+    });
+    console.log("📡 Full API Response:", resp);
+    
     if (resp && resp.data) {
-      organizations.value = resp.data;
-      // Format created_at for each organization
-      organizations.value.forEach((org) => {
-        if (org.created_at && typeof org.created_at === "string") {
-          org.created_at = new Date(org.created_at).toLocaleDateString();
+      // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
+      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+        console.log("✅ Found organizations in data array:", resp.data.data);
+        organizations.value = resp.data.data;
+        
+        // Update pagination info but preserve user-selected per_page
+        if (resp.data.pagination) {
+          const currentPerPage = pagination.value.per_page; // Preserve user's choice
+          const totalItems = resp.data.pagination.total_items ?? organizations.value.length;
+          // Recalculate total_pages based on the user's per_page selection (not server's per_page field)
+          const recalculatedTotalPages = Math.max(1, Math.ceil(totalItems / (currentPerPage || 1)));
+
+          pagination.value = {
+            ...resp.data.pagination,
+            page: page, // ensure pagination.page matches the requested page
+            per_page: currentPerPage, // Keep user's selected per_page
+            total_pages: recalculatedTotalPages, // Recalculate based on user's per_page
+            total_items: totalItems,
+            next_page: page < recalculatedTotalPages ? page + 1 : null,
+            prev_page: page > 1 ? page - 1 : null,
+          };
         }
-      });
+        
+        // Format created_at for each organization
+        organizations.value.forEach((org) => {
+          if (org.created_at && typeof org.created_at === "string") {
+            org.created_at = new Date(org.created_at).toLocaleDateString();
+          }
+        });
+        
+        // Ensure pagination.total_pages consistent with per_page and total_items
+        if (pagination.value.total_items == null) {
+          pagination.value.total_items = organizations.value.length;
+        }
+        pagination.value.total_pages = Math.max(1, Math.ceil((pagination.value.total_items || 0) / (pagination.value.per_page || 1)));
+        pagination.value.next_page = pagination.value.page < pagination.value.total_pages ? pagination.value.page + 1 : null;
+        pagination.value.prev_page = pagination.value.page > 1 ? pagination.value.page - 1 : null;
+
+        console.log("🎯 Final organizations:", organizations.value);
+        console.log("📄 Pagination:", pagination.value);
+      } else if (Array.isArray(resp.data)) {
+        console.log("✅ Found organizations in direct data array:", resp.data);
+        organizations.value = resp.data;
+        
+        // Calculate pagination manually if server doesn't provide it
+        const totalItems = organizations.value.length;
+        const totalPages = Math.ceil(totalItems / pagination.value.per_page);
+        pagination.value = {
+          page: page,
+          per_page: pagination.value.per_page,
+          total_pages: totalPages,
+          total_items: totalItems,
+          next_page: page < totalPages ? page + 1 : null,
+          prev_page: page > 1 ? page - 1 : null,
+        };
+        
+        // Format created_at for each organization
+        organizations.value.forEach((org) => {
+          if (org.created_at && typeof org.created_at === "string") {
+            org.created_at = new Date(org.created_at).toLocaleDateString();
+          }
+        });
+        
+        console.log("🎯 Final organizations:", organizations.value);
+        console.log("📄 Pagination:", pagination.value);
+      } else {
+        console.log("⚠️ Unexpected data format:", resp.data);
+        organizations.value = [];
+        // Reset pagination when no data
+        pagination.value = {
+          page: 1,
+          per_page: pagination.value.per_page,
+          total_pages: 1,
+          total_items: 0,
+          next_page: null,
+          prev_page: null,
+        };
+      }
     }
   } catch (e: any) {
+    console.error("💥 Error fetching organizations:", e);
     error.value =
       e?.response?.data?.message || e.message || "Failed to load organizations";
   } finally {
@@ -652,6 +816,13 @@ const filteredAndSortedOrganizations = computed(() => {
     });
   }
 
+  // Apply client-side pagination if needed (when server doesn't provide paginated data)
+  if (filtered.length > pagination.value.per_page) {
+    const startIndex = (pagination.value.page - 1) * pagination.value.per_page;
+    const endIndex = startIndex + pagination.value.per_page;
+    return filtered.slice(startIndex, endIndex);
+  }
+
   return filtered;
 });
 
@@ -688,7 +859,9 @@ const createOrganization = async () => {
   try {
     const resp = await ApiService.post("organizations", newOrganization.value);
     if (resp && resp.data) {
-      organizations.value.unshift(resp.data);
+      // Refresh the organizations list
+      await fetchOrganizations(pagination.value.page);
+      
       // Hide modal
       const modal = document.getElementById("addOrganizationModal");
       if (modal) {
@@ -731,12 +904,9 @@ const updateOrganization = async () => {
       editOrganization.value
     );
     if (resp && resp.data) {
-      const index = organizations.value.findIndex(
-        (org) => org.uid === editOrganization.value.uid
-      );
-      if (index !== -1) {
-        organizations.value[index] = resp.data;
-      }
+      // Refresh the organizations list
+      await fetchOrganizations(pagination.value.page);
+      
       // Hide modal
       const modal = document.getElementById("editOrganizationModal");
       if (modal) {
@@ -770,9 +940,10 @@ const confirmDelete = async () => {
   deleting.value = true;
   try {
     await ApiService.delete(`organizations/${organizationToDelete.value.uid}`);
-    organizations.value = organizations.value.filter(
-      (org) => org.uid !== organizationToDelete.value!.uid
-    );
+    
+    // Refresh the organizations list
+    await fetchOrganizations(pagination.value.page);
+    
     // Hide modal
     const modal = document.getElementById("deleteOrganizationModal");
     if (modal) {
@@ -793,6 +964,40 @@ const confirmDelete = async () => {
 const formatDate = (date: string) => {
   return date ? new Date(date).toLocaleDateString() : "-";
 };
+
+// Pagination methods and computed properties
+const goToPage = (page: number) => {
+  if (page >= 1 && page <= pagination.value.total_pages) {
+    fetchOrganizations(page);
+  }
+};
+
+const changeItemsPerPage = () => {
+  // Reset to first page when changing items per page
+  fetchOrganizations(1);
+};
+
+const visiblePages = computed((): number[] => {
+  const current = pagination.value.page;
+  const total = Math.max(1, pagination.value.total_pages); // Pastikan minimal 1 halaman
+  const pages: number[] = [];
+  
+  // Show max 5 page numbers
+  const maxVisible = 5;
+  let start = Math.max(1, current - Math.floor(maxVisible / 2));
+  let end = Math.min(total, start + maxVisible - 1);
+  
+  // Adjust start if we're near the end
+  if (end - start + 1 < maxVisible) {
+    start = Math.max(1, end - maxVisible + 1);
+  }
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+  
+  return pages;
+});
 
 // Initialize
 onMounted(() => {
