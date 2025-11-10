@@ -214,6 +214,19 @@
 
         <template v-slot:actions="{ row }">
           <div class="d-flex justify-content-end flex-shrink-0">
+            <button
+              class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
+              @click="showOrganizationMembers(row)"
+              title="Manage Members"
+            >
+              <i class="ki-duotone ki-people fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </button>
             <router-link
               :to="{ name: 'account-overview', query: { orgId: row.uid } }"
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
@@ -527,6 +540,14 @@
       </div>
     </div>
   </div>
+
+  <!-- Organization Membership Modal -->
+  <MembershipListModal
+    ref="organizationMembershipModalRef"
+    entity-type="organization"
+    :entity-uid="selectedOrganizationUid"
+    modal-id="organizationMembershipModal"
+  />
 </template>
 
 <script setup lang="ts">
@@ -536,6 +557,7 @@ import { Modal } from "bootstrap";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
+import MembershipListModal from "@/components/modals/membership/MembershipListModal.vue";
 
 // Interface definitions
 interface Organization {
@@ -581,6 +603,10 @@ const newOrganization = ref<Partial<Organization>>({
 });
 const editOrganization = ref<Partial<Organization>>({});
 const organizationToDelete = ref<Organization | null>(null);
+
+// Modal references
+const organizationMembershipModalRef = ref();
+const selectedOrganizationUid = ref('');
 
 // Table header configuration
 const tableHeader = ref([
@@ -963,6 +989,11 @@ const confirmDelete = async () => {
 
 const formatDate = (date: string) => {
   return date ? new Date(date).toLocaleDateString() : "-";
+};
+
+const showOrganizationMembers = (organization: Organization) => {
+  selectedOrganizationUid.value = organization.uid;
+  organizationMembershipModalRef.value?.showModal();
 };
 
 // Pagination methods and computed properties

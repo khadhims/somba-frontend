@@ -11,26 +11,7 @@
 
       <!--begin::Card toolbar-->
       <div class="card-toolbar">
-        <div class="d-flex align-items-center position-relative my-1 me-5">
-          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          <input
-            type="text"
-            v-model="searchQuery"
-            class="form-control form-control-solid w-250px ps-12"
-            placeholder="Search rooms..."
-          />
-        </div>
-
-        <button
-          class="btn btn-sm btn-light-primary"
-          @click="showRoomForm = true"
-        >
-          <i class="ki-duotone ki-plus fs-2"></i>
-          Add Room
-        </button>
+        <!-- search and add moved below the form and above the table -->
       </div>
       <!--end::Card toolbar-->
     </div>
@@ -198,13 +179,50 @@
       </div>
       <!--end::Form Modal-->
 
+      <!--begin::Controls (below form, above table) -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+          <span class="me-2">Items:</span>
+          <select v-model="perPage" @change="onPerPageChange" class="form-select form-select-solid w-75px">
+            <option :value="1">1</option>
+            <option :value="5">5</option>
+            <option :value="10">10</option>
+            <option :value="25">25</option>
+            <option :value="50">50</option>
+          </select>
+        </div>
+
+        <div class="d-flex align-items-center">
+          <div class="me-3 d-flex align-items-center position-relative">
+            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <input
+              type="text"
+              v-model="searchQuery"
+              class="form-control form-control-solid w-250px ps-12"
+              placeholder="Search rooms..."
+            />
+          </div>
+
+          <button
+            class="btn btn-sm btn-light-primary"
+            @click="showRoomForm = true"
+          >
+            <i class="ki-duotone ki-plus fs-2 me-1"></i>
+            Add Room
+          </button>
+        </div>
+      </div>
+
       <!--begin::Table-->
       <KTDataTable
         :data="filteredAndSortedRooms"
         :header="tableHeader"
         :checkbox-enabled="false"
-        :enable-items-per-page-dropdown="true"
-        :items-per-page="10"
+        :items-per-page-dropdown-enabled="false"
+        :items-per-page="perPage"
         :loading="isLoading"
         :sort-label="sortLabel"
         :sort-order="sortOrder"
@@ -286,6 +304,19 @@
         </template>
       </KTDataTable>
       <!--end::Table-->
+
+      <!--begin::Pagination-->
+      <div class="d-flex justify-content-end align-items-center mt-4">
+        <Pagination
+          :page="currentPage"
+          :per-page="perPage"
+          :total-items="rooms.length"
+          :total-pages="Math.max(1, Math.ceil(rooms.length / perPage))"
+          @page-change="onPageChange"
+          @per-page-change="onPerPageChange"
+        />
+      </div>
+      <!--end::Pagination-->
     </div>
     <!--end::Card body-->
   </div>
@@ -296,6 +327,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import Pagination from '@/components/common/Pagination.vue';
 
 // Interfaces
 interface Site {
@@ -332,6 +364,12 @@ const isEdit = ref(false);
 const searchQuery = ref("");
 const sortLabel = ref("");
 const sortOrder = ref<"asc" | "desc">("asc");
+
+// Pagination state
+const currentPage = ref<number>(1);
+const perPage = ref<number>(10);
+const totalItems = ref<number>(0);
+const totalPages = ref<number>(0);
 
 const sites = ref<Site[]>([]);
 const rooms = ref<Room[]>([]);
@@ -559,6 +597,14 @@ const closeForm = () => {
     floor: "",
     description: "",
   };
+};
+
+const onPerPageChange = () => {
+  currentPage.value = 1;
+};
+
+const onPageChange = (p: number) => {
+  currentPage.value = p;
 };
 
 // Lifecycle

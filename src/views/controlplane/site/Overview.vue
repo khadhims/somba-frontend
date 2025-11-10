@@ -285,13 +285,26 @@
               </i>
             </button>
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm"
+              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="editSiteDetails(row)"
               title="Edit Site"
             >
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
+              </i>
+            </button>
+            <button
+              class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
+              @click="deleteSite(row)"
+              title="Delete Site"
+            >
+              <i class="ki-duotone ki-trash fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
               </i>
             </button>
           </div>
@@ -322,7 +335,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import AddSiteModal from "@/components/modals/forms/AddSiteModal.vue";
@@ -427,6 +440,7 @@ interface Organization {
 
 // Get route instance to read query parameters
 const route = useRoute();
+const router = useRouter();
 
 // Reactive data
 const sites = ref<Site[]>([]);
@@ -1009,8 +1023,41 @@ const onSiteUpdated = (updatedSite: Site) => {
 };
 
 const viewSiteDetails = (site: Site) => {
-  console.log("Viewing site details for:", site);
-  // Navigate to site details or open modal
+  // Navigate to the settings page and pass the site uid in query so Settings.vue will load it
+  router.push({ path: "/controlplane/site/settings", query: { id: site.uid } });
+};
+
+const deleteSite = async (site: Site) => {
+  if (!confirm(`Are you sure you want to delete site "${site.name}"? This action cannot be undone.`)) {
+    return;
+  }
+
+  loading.value = true;
+
+  try {
+    console.log('Deleting site UID:', site.uid);
+    
+    // DELETE using sites/{site_uid}
+    await ApiService.delete(`sites/${site.uid}`);
+
+    // Remove site from local state
+    sites.value = sites.value.filter((s) => s.uid !== site.uid);
+    
+    // Update pagination if needed
+    const newTotal = sites.value.length;
+    pagination.value.total_items = newTotal;
+    pagination.value.total_pages = Math.max(1, Math.ceil(newTotal / pagination.value.per_page));
+    
+    // If current page becomes empty, go to previous page
+    if (sites.value.length === 0 && pagination.value.page > 1) {
+      fetchSites(pagination.value.page - 1);
+    }
+  } catch (error) {
+    console.error("Error deleting site:", error);
+    alert("Failed to delete site. Please try again.");
+  } finally {
+    loading.value = false;
+  }
 };
 </script>
 

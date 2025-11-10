@@ -258,6 +258,19 @@
 
         <template v-slot:actions="{ row }">
           <div class="d-flex justify-content-end flex-shrink-0">
+            <button
+              class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
+              @click="showAccountMembers(row)"
+              title="Manage Members"
+            >
+              <i class="ki-duotone ki-people fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </button>
             <router-link
               :to="{ name: 'team-overview', query: { orgId: selectedOrganizationId, accountId: row.uid } }"
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
@@ -388,6 +401,14 @@
       </div>
     </div>
   </div>
+
+  <!-- Account Membership Modal -->
+  <MembershipListModal
+    ref="accountMembershipModalRef"
+    entity-type="account"
+    :entity-uid="selectedAccountUid"
+    modal-id="accountMembershipModal"
+  />
 </template>
 
 <script setup lang="ts">
@@ -398,6 +419,7 @@ import Widget1 from '@/components/dashboard-default-widgets/Widget1.vue'
 import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
 import ApiService from '@/core/services/ApiService'
 import Pagination from '@/components/common/Pagination.vue'
+import MembershipListModal from '@/components/modals/membership/MembershipListModal.vue'
 
 // Interface definitions
 interface Account {
@@ -464,6 +486,10 @@ const newAccount = ref<Partial<Account>>({
 })
 const accountToEdit = ref<Account | null>(null)
 const accountToDelete = ref<Account | null>(null)
+
+// Modal references
+const accountMembershipModalRef = ref()
+const selectedAccountUid = ref('')
 
 // Table header configuration
 const tableHeader = ref([
@@ -782,6 +808,11 @@ const updateAccount = async () => {
 
 const formatDate = (date: string) => {
   return date ? new Date(date).toLocaleDateString() : '-'
+}
+
+const showAccountMembers = (account: Account) => {
+  selectedAccountUid.value = account.uid
+  accountMembershipModalRef.value?.showModal()
 }
 
 // Get route instance to read query parameters

@@ -249,15 +249,16 @@
         <template v-slot:actions="{ row }">
           <div class="d-flex justify-content-end flex-shrink-0">
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              @click="openMembersModal(row)"
-              title="View Members"
+              class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
+              @click="showTeamMembers(row)"
+              title="Manage Members"
             >
-              <i class="ki-duotone ki-profile-user fs-2">
+              <i class="ki-duotone ki-people fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
                 <span class="path3"></span>
                 <span class="path4"></span>
+                <span class="path5"></span>
               </i>
             </button>
             <router-link
@@ -390,8 +391,13 @@
     </div>
   </div>
 
-  <!-- Team Members Modal Component -->
-  <TeamMembersModal ref="membersModalRef" @add-member="handleAddMember" />
+  <!-- Team Membership Modal -->
+  <MembershipListModal
+    ref="teamMembershipModalRef"
+    entity-type="team"
+    :entity-uid="selectedTeamUid"
+    modal-id="teamMembershipModal"
+  />
 </template>
 
 <script setup lang="ts">
@@ -402,7 +408,7 @@ import Widget1 from '@/components/dashboard-default-widgets/Widget1.vue'
 import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
 import ApiService from '@/core/services/ApiService'
 import Pagination from '@/components/common/Pagination.vue'
-import TeamMembersModal from '@/components/modals/general/TeamMembersModal.vue'
+import MembershipListModal from '@/components/modals/membership/MembershipListModal.vue'
 
 // Interface definitions
 interface Team {
@@ -487,8 +493,9 @@ const newTeam = ref<Partial<Team>>({
 const teamToEdit = ref<Team | null>(null)
 const teamToDelete = ref<Team | null>(null)
 
-// Team members modal component ref
-const membersModalRef = ref<InstanceType<typeof TeamMembersModal> | null>(null)
+// Modal references
+const teamMembershipModalRef = ref()
+const selectedTeamUid = ref('')
 
 // Table header configuration
 const tableHeader = ref([
@@ -891,13 +898,9 @@ const confirmDelete = async () => {
   }
 }
 
-const openMembersModal = (team: Team) => {
-  membersModalRef.value?.open({ uid: team.uid, name: team.name })
-}
-
-const handleAddMember = (payload: { teamUid: string; teamName: string | null }) => {
-  // Placeholder for future: open add member modal / navigate
-  console.log('Add Member clicked for team:', payload.teamName || payload.teamUid)
+const showTeamMembers = (team: Team) => {
+  selectedTeamUid.value = team.uid
+  teamMembershipModalRef.value?.showModal()
 }
 
 const editTeam = (team: Team) => {
