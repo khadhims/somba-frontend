@@ -551,7 +551,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import Pagination from '@/components/common/Pagination.vue'
 import { Modal } from "bootstrap";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
@@ -992,8 +992,14 @@ const formatDate = (date: string) => {
 };
 
 const showOrganizationMembers = (organization: Organization) => {
+  console.log('showOrganizationMembers called for organization:', organization);
   selectedOrganizationUid.value = organization.uid;
-  organizationMembershipModalRef.value?.showModal();
+  console.log('selectedOrganizationUid set to:', selectedOrganizationUid.value);
+  
+  // Wait a tick for Vue reactivity to update
+  nextTick(() => {
+    organizationMembershipModalRef.value?.showModal();
+  });
 };
 
 // Pagination methods and computed properties

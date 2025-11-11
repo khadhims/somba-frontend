@@ -182,6 +182,8 @@ const saveMember = async () => {
         role: form.role
       };
       
+      console.log('PATCH endpoint:', endpoint);
+      console.log('PATCH payload:', payload);
       const response = await ApiService.patch(endpoint, payload);
       console.log('Member role updated:', response);
     } else {
@@ -199,6 +201,8 @@ const saveMember = async () => {
         role: form.role
       };
       
+      console.log('POST endpoint:', endpoint);
+      console.log('POST payload:', payload);
       const response = await ApiService.post(endpoint, payload);
       console.log('New member added:', response);
     }

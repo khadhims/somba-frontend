@@ -307,7 +307,15 @@ const visiblePages = computed(() => {
 const fetchMembers = async () => {
   loading.value = true;
   try {
-    console.log(`Fetching ${props.entityType} members for ${props.entityUid}`);
+    console.log(`Fetching ${props.entityType} members for entityUid:`, props.entityUid);
+    
+    // Validate entityUid
+    if (!props.entityUid || props.entityUid.trim() === '') {
+      console.error('EntityUid is empty or undefined');
+      members.value = [];
+      loading.value = false;
+      return;
+    }
     
     let endpoint = '';
     if (props.entityType === 'account') {
@@ -318,6 +326,8 @@ const fetchMembers = async () => {
       endpoint = `organizations/${props.entityUid}/memberships`;
     }
     
+    console.log('Final endpoint:', endpoint);
+    console.log('Full URL will be:', import.meta.env.VITE_APP_API_URL + endpoint);
     const response = await ApiService.query(endpoint, {});
     
     console.log('Full API Response:', response);
@@ -439,6 +449,8 @@ const formatDate = (dateString: string): string => {
 
 // Public methods for parent components
 const showModal = () => {
+  console.log('showModal called, entityUid:', props.entityUid);
+  
   if (!modalInstance) {
     modalInstance = new Modal(document.getElementById(props.modalId)!);
   }
@@ -447,10 +459,13 @@ const showModal = () => {
   searchQuery.value = '';
   currentPage.value = 1;
   
-  // Fetch members when modal is shown
-  fetchMembers();
-  
+  // Show modal first
   modalInstance.show();
+  
+  // Fetch members after a small delay to ensure modal is fully shown and props are ready
+  setTimeout(() => {
+    fetchMembers();
+  }, 100);
 };
 
 const hideModal = () => {
@@ -462,6 +477,15 @@ const hideModal = () => {
 // Watch for search query changes to reset page
 watch(searchQuery, () => {
   currentPage.value = 1;
+});
+
+// Watch for entityUid changes to refetch data
+watch(() => props.entityUid, (newUid, oldUid) => {
+  console.log('EntityUid watcher triggered - from:', oldUid, 'to:', newUid);
+  if (newUid && newUid.trim() !== '' && newUid !== oldUid) {
+    console.log('EntityUid changed, refetching members...');
+    fetchMembers();
+  }
 });
 
 // Expose methods to parent
