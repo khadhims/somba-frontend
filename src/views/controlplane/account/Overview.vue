@@ -7,7 +7,10 @@
         <div class="col-md-6">
           <h4 class="card-title mb-0">Payment Account Management</h4>
           <p class="text-muted mb-0">
-            Manage payment accounts {{ currentOrganization ? `for ${currentOrganization.name}` : 'for your organization' }}
+            <span v-if="loadingOrganizations">Loading organization details...</span>
+            <span v-else-if="currentOrganization">Manage payment accounts for {{ currentOrganization.name }}</span>
+            <span v-else-if="organizations.length === 0">No organizations available</span>
+            <span v-else>Select an organization to manage payment accounts</span>
           </p>
         </div>
         <div class="col-md-6">
@@ -20,6 +23,9 @@
                 class="form-select form-select-solid w-200px"
                 :disabled="loadingOrganizations"
               >
+                <option value="" disabled>
+                  {{ loadingOrganizations ? 'Loading organizations...' : 'Select Organization' }}
+                </option>
                 <option
                   v-for="org in organizations"
                   :key="org.uid"
@@ -28,6 +34,13 @@
                   {{ org.name }}
                 </option>
               </select>
+              
+              <!-- Loading spinner -->
+              <div v-if="loadingOrganizations" class="ms-2">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -84,6 +97,35 @@
   </div>
   <!--end::Summary Cards-->
 
+  <!--begin::Error Alert-->
+  <div v-if="error" class="alert alert-danger d-flex align-items-center mb-5">
+    <i class="ki-duotone ki-shield-cross fs-2hx text-danger me-4">
+      <span class="path1"></span>
+      <span class="path2"></span>
+    </i>
+    <div class="d-flex flex-column">
+      <h5 class="mb-1">Connection Error</h5>
+      <span>{{ error }}</span>
+    </div>
+    <button 
+      type="button" 
+      class="btn-close ms-auto" 
+      @click="error = null"
+      aria-label="Close"
+    ></button>
+  </div>
+  <!--end::Error Alert-->
+
+  <!-- Debug Info (hapus setelah debugging selesai) -->
+  <div class="alert alert-info" v-if="false">
+    <strong>Debug Info:</strong><br>
+    Loading Organizations: {{ loadingOrganizations }}<br>
+    Organizations count: {{ organizations.length }}<br>
+    Selected Organization ID: {{ selectedOrganizationId }}<br>
+    Current Organization: {{ currentOrganization?.name }}<br>
+    Organizations: {{ JSON.stringify(organizations.map(o => ({uid: o.uid, name: o.name})), null, 2) }}
+  </div>
+
   <!--begin::Accounts List-->
   <div class="card">
     <!--begin::Card header-->
@@ -96,6 +138,23 @@
 
       <!--begin::Card toolbar-->
       <div class="card-toolbar">
+        <!--begin::Items per page-->
+        <div class="d-flex align-items-center me-5">
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">Items:</label>
+          <select 
+            class="form-select form-select-sm w-auto" 
+            v-model.number="pagination.per_page"
+            @change="changeItemsPerPage"
+          >
+            <option :value="1">1</option>
+            <option :value="5">5</option>
+            <option :value="10">10</option>
+            <option :value="25">25</option>
+            <option :value="50">50</option>
+          </select>
+        </div>
+        <!--end::Items per page-->
+
         <!--begin::Search-->
         <div class="d-flex align-items-center position-relative my-1 me-5">
           <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
@@ -112,8 +171,23 @@
         <!--end::Search-->
 
         <button
+          v-if="error"
+          @click="fetchAccounts(pagination.page)"
+          class="btn btn-sm btn-light-warning me-2"
+          :disabled="loading"
+        >
+          <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+          <i v-else class="ki-duotone ki-arrows-circle fs-2">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          {{ loading ? 'Retrying...' : 'Retry' }}
+        </button>
+
+        <button
           @click="showAddAccountModal"
           class="btn btn-sm btn-light-primary"
+          :disabled="loading || loadingOrganizations || !selectedOrganizationId"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
           Add Payment Account
@@ -125,16 +199,33 @@
 
     <!--begin::Card body-->
     <div class="card-body py-3">
+      <!-- Show message when no organization is selected -->
+      <div v-if="!selectedOrganizationId && !loadingOrganizations" class="d-flex flex-column align-items-center justify-content-center py-10">
+        <div class="text-center">
+          <i class="ki-duotone ki-questionnaire-tablet fs-4x text-muted mb-4">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          <h3 class="fw-semibold text-gray-500 mb-2">No Organization Selected</h3>
+          <p class="text-muted fs-6">Please select an organization from the dropdown above to view payment accounts.</p>
+        </div>
+      </div>
+      
+      <!-- Show table when organization is selected -->
       <KTDataTable
+        v-else
         :data="filteredAndSortedAccounts"
         :header="tableHeader"
         :checkbox-enabled="false"
-        :enable-items-per-page-dropdown="true"
-        :items-per-page="10"
+        :items-per-page-dropdown-enabled="false"
+        :items-per-page="pagination.per_page"
+        :current-page="pagination.page"
         :loading="loading"
         :sort-label="sortLabel"
         :sort-order="sortOrder"
         @on-sort="handleSort"
+        @page-change="goToPage"
+        @on-items-per-page-change="(val) => { pagination.per_page = val; changeItemsPerPage(); }"
         empty-table-text="No payment accounts found"
       >
         <template v-slot:name="{ row }">
@@ -167,6 +258,19 @@
 
         <template v-slot:actions="{ row }">
           <div class="d-flex justify-content-end flex-shrink-0">
+            <button
+              class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
+              @click="showAccountMembers(row)"
+              title="Manage Members"
+            >
+              <i class="ki-duotone ki-people fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </button>
             <router-link
               :to="{ name: 'team-overview', query: { orgId: selectedOrganizationId, accountId: row.uid } }"
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
@@ -200,6 +304,18 @@
           </div>
         </template>
       </KTDataTable>
+      
+      <!--begin::Pagination-->
+      <Pagination
+        v-if="!loading"
+        :page="pagination.page"
+        :per-page="pagination.per_page"
+        :total-items="pagination.total_items || accounts.length"
+        :total-pages="Math.max(1, pagination.total_pages)"
+        @page-change="goToPage"
+      />
+      <!--end::Pagination-->
+      
     </div>
     <!--end::Card body-->
   </div>
@@ -285,6 +401,14 @@
       </div>
     </div>
   </div>
+
+  <!-- Account Membership Modal -->
+  <MembershipListModal
+    ref="accountMembershipModalRef"
+    entity-type="account"
+    :entity-uid="selectedAccountUid"
+    modal-id="accountMembershipModal"
+  />
 </template>
 
 <script setup lang="ts">
@@ -294,6 +418,8 @@ import { Modal } from 'bootstrap'
 import Widget1 from '@/components/dashboard-default-widgets/Widget1.vue'
 import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
 import ApiService from '@/core/services/ApiService'
+import Pagination from '@/components/common/Pagination.vue'
+import MembershipListModal from '@/components/modals/membership/MembershipListModal.vue'
 
 // Interface definitions
 interface Account {
@@ -335,6 +461,16 @@ const searchQuery = ref('')
 const sortLabel = ref('')
 const sortOrder = ref<'asc' | 'desc'>('asc')
 
+// Pagination state
+const pagination = ref({
+  page: 1,
+  per_page: 10,
+  total_pages: 1,
+  total_items: 0,
+  next_page: null as number | null,
+  prev_page: null as number | null,
+})
+
 // Organization-related reactive data
 const organizations = ref<Organization[]>([])
 const loadingOrganizations = ref(false)
@@ -351,6 +487,10 @@ const newAccount = ref<Partial<Account>>({
 const accountToEdit = ref<Account | null>(null)
 const accountToDelete = ref<Account | null>(null)
 
+// Modal references
+const accountMembershipModalRef = ref()
+const selectedAccountUid = ref('')
+
 // Table header configuration
 const tableHeader = ref([
   { columnName: 'Account Name', columnLabel: 'name', sortEnabled: true, searchable: true },
@@ -360,23 +500,97 @@ const tableHeader = ref([
 ])
 
 // Fetch accounts from API
-const fetchAccounts = async () => {
+const fetchAccounts = async (page: number = 1) => {
   if (!selectedOrganizationId.value) return
 
   loading.value = true
   error.value = null
   try {
-    const resp = await ApiService.query(`organizations/${selectedOrganizationId.value}/accounts`, {})
+    console.log("🚀 Fetching accounts for organization:", selectedOrganizationId.value, { page, per_page: pagination.value.per_page });
+    // Send both page_size (server) and per_page (client) for compatibility
+    const resp = await ApiService.query(`organizations/${selectedOrganizationId.value}/accounts`, {
+      params: { page, page_size: pagination.value.per_page, per_page: pagination.value.per_page }
+    })
+    console.log("📡 Full API Response:", resp);
+    
     if (resp && resp.data) {
-      accounts.value = resp.data
-      // Format created_at for each account
-      accounts.value.forEach(account => {
-        if (account.created_at && typeof account.created_at === 'string') {
-          account.created_at = new Date(account.created_at).toLocaleDateString()
+      // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
+      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+        console.log("✅ Found accounts in data array:", resp.data.data);
+        accounts.value = resp.data.data;
+        
+        // Update pagination info but preserve user-selected per_page
+        if (resp.data.pagination) {
+          const currentPerPage = pagination.value.per_page; // Preserve user's choice
+          const totalItems = resp.data.pagination.total_items ?? accounts.value.length;
+          const recalculatedTotalPages = Math.max(1, Math.ceil(totalItems / (currentPerPage || 1)));
+
+          pagination.value = {
+            ...resp.data.pagination,
+            page: page,
+            per_page: currentPerPage, // Keep user's selected per_page
+            total_pages: recalculatedTotalPages, // Recalculate based on user's per_page
+            total_items: totalItems,
+            next_page: page < recalculatedTotalPages ? page + 1 : null,
+            prev_page: page > 1 ? page - 1 : null,
+          };
         }
-      })
+        
+        // Format created_at for each account
+        accounts.value.forEach(account => {
+          if (account.created_at && typeof account.created_at === 'string') {
+            account.created_at = new Date(account.created_at).toLocaleDateString()
+          }
+        })
+        
+        // Ensure pagination.total_pages consistent with per_page and total_items
+        if (pagination.value.total_items == null) {
+          pagination.value.total_items = accounts.value.length;
+        }
+        pagination.value.total_pages = Math.max(1, Math.ceil((pagination.value.total_items || 0) / (pagination.value.per_page || 1)));
+        pagination.value.next_page = pagination.value.page < pagination.value.total_pages ? pagination.value.page + 1 : null;
+        pagination.value.prev_page = pagination.value.page > 1 ? pagination.value.page - 1 : null;
+
+        console.log("🎯 Final accounts:", accounts.value);
+        console.log("📄 Pagination:", pagination.value);
+      } else if (Array.isArray(resp.data)) {
+        console.log("✅ Found accounts in direct data array:", resp.data);
+        accounts.value = resp.data;
+        
+        // Calculate pagination manually if server doesn't provide it
+        const totalItems = accounts.value.length;
+        const totalPages = Math.ceil(totalItems / pagination.value.per_page);
+        pagination.value = {
+          page: page,
+          per_page: pagination.value.per_page,
+          total_pages: totalPages,
+          total_items: totalItems,
+          next_page: page < totalPages ? page + 1 : null,
+          prev_page: page > 1 ? page - 1 : null,
+        };
+        
+        // Format created_at for each account
+        accounts.value.forEach(account => {
+          if (account.created_at && typeof account.created_at === 'string') {
+            account.created_at = new Date(account.created_at).toLocaleDateString()
+          }
+        })
+      } else {
+        console.log("⚠️ Unexpected data format:", resp.data);
+        accounts.value = [];
+        // Reset pagination when no data
+        pagination.value = {
+          page: 1,
+          per_page: pagination.value.per_page,
+          total_pages: 1,
+          total_items: 0,
+          next_page: null,
+          prev_page: null,
+        };
+      }
     }
   } catch (e: any) {
+    console.error("💥 Error fetching accounts:", e);
     error.value = e?.response?.data?.message || e.message || "Failed to load accounts"
   } finally {
     loading.value = false
@@ -429,6 +643,13 @@ const filteredAndSortedAccounts = computed(() => {
     })
   }
 
+  // Apply client-side pagination if needed (when server doesn't provide paginated data)
+  if (filtered.length > pagination.value.per_page) {
+    const startIndex = (pagination.value.page - 1) * pagination.value.per_page;
+    const endIndex = startIndex + pagination.value.per_page;
+    return filtered.slice(startIndex, endIndex);
+  }
+
   return filtered
 })
 
@@ -437,6 +658,40 @@ const handleSort = (sort: { label: string; order: 'asc' | 'desc' }) => {
   sortLabel.value = sort.label
   sortOrder.value = sort.order
 }
+
+// Pagination methods
+const goToPage = (page: number) => {
+  if (page >= 1 && page <= pagination.value.total_pages) {
+    fetchAccounts(page)
+  }
+}
+
+const changeItemsPerPage = () => {
+  // Reset to first page when changing items per page
+  fetchAccounts(1)
+}
+
+const visiblePages = computed((): number[] => {
+  const current = pagination.value.page
+  const total = Math.max(1, pagination.value.total_pages)
+  const pages: number[] = []
+  
+  // Show max 5 page numbers
+  const maxVisible = 5
+  let start = Math.max(1, current - Math.floor(maxVisible / 2))
+  let end = Math.min(total, start + maxVisible - 1)
+  
+  // Adjust start if we're near the end
+  if (end - start + 1 < maxVisible) {
+    start = Math.max(1, end - maxVisible + 1)
+  }
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
+  }
+  
+  return pages
+})
 
 const showAddAccountModal = () => {
   // Reset form
@@ -463,7 +718,9 @@ const createAccount = async () => {
   try {
     const resp = await ApiService.post(`organizations/${selectedOrganizationId.value}/accounts`, accountData)
     if (resp && resp.data) {
-      accounts.value.unshift(resp.data)
+      // Refresh the accounts list
+      await fetchAccounts(pagination.value.page)
+      
       // Hide modal
       const modal = document.getElementById('addAccountModal')
       if (modal) {
@@ -494,7 +751,10 @@ const confirmDelete = async () => {
   deleting.value = true
   try {
     await ApiService.delete(`accounts/${accountToDelete.value.uid}`)
-    accounts.value = accounts.value.filter(account => account.uid !== accountToDelete.value!.uid)
+    
+    // Refresh the accounts list
+    await fetchAccounts(pagination.value.page)
+    
     // Hide modal
     const modal = document.getElementById('deleteAccountModal')
     if (modal) {
@@ -528,11 +788,9 @@ const updateAccount = async () => {
       name: accountToEdit.value.name
     })
     if (resp && resp.data) {
-      // Update the account in the list
-      const index = accounts.value.findIndex(account => account.uid === accountToEdit.value!.uid)
-      if (index !== -1) {
-        accounts.value[index] = resp.data
-      }
+      // Refresh the accounts list
+      await fetchAccounts(pagination.value.page)
+      
       // Hide modal
       const modal = document.getElementById('editAccountModal')
       if (modal) {
@@ -552,6 +810,11 @@ const formatDate = (date: string) => {
   return date ? new Date(date).toLocaleDateString() : '-'
 }
 
+const showAccountMembers = (account: Account) => {
+  selectedAccountUid.value = account.uid
+  accountMembershipModalRef.value?.showModal()
+}
+
 // Get route instance to read query parameters
 const route = useRoute()
 
@@ -567,9 +830,24 @@ const loadLastSelectedOrganization = (): string | null => {
 const fetchOrganizations = async () => {
   loadingOrganizations.value = true
   try {
+    console.log("🚀 Fetching organizations...");
     const resp = await ApiService.query("organizations", {})
+    console.log("📡 Organizations API Response:", resp);
+    
     if (resp && resp.data) {
-      organizations.value = resp.data
+      // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
+      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+        console.log("✅ Found organizations in data array:", resp.data.data);
+        organizations.value = resp.data.data;
+      } else if (Array.isArray(resp.data)) {
+        console.log("✅ Found organizations in direct data array:", resp.data);
+        organizations.value = resp.data;
+      } else {
+        console.log("⚠️ Unexpected organizations data format:", resp.data);
+        organizations.value = [];
+      }
+      
+      console.log("🎯 Final organizations:", organizations.value);
       
       // Check if orgId is provided in URL query parameters
       const orgIdFromUrl = route.query.orgId as string
@@ -583,7 +861,7 @@ const fetchOrganizations = async () => {
           // Save this as the last selected organization
           saveLastSelectedOrganization(orgFromUrl.uid)
           // Fetch accounts for the selected organization
-          fetchAccounts()
+          fetchAccounts(pagination.value.page)
         } else {
           // If orgId not found, try to use last selected organization
           const lastSelectedOrgId = loadLastSelectedOrganization()
@@ -592,14 +870,14 @@ const fetchOrganizations = async () => {
             if (lastOrg) {
               selectedOrganizationId.value = lastOrg.uid
               currentOrganization.value = lastOrg
-              fetchAccounts()
+              fetchAccounts(pagination.value.page)
             } else {
               // If last selected not found, use first organization
               selectedOrganizationId.value = organizations.value[0]?.uid || ''
               currentOrganization.value = organizations.value[0] || null
               if (organizations.value[0]) {
                 saveLastSelectedOrganization(organizations.value[0].uid)
-                fetchAccounts()
+                fetchAccounts(pagination.value.page)
               }
             }
           } else {
@@ -608,7 +886,7 @@ const fetchOrganizations = async () => {
             currentOrganization.value = organizations.value[0] || null
             if (organizations.value[0]) {
               saveLastSelectedOrganization(organizations.value[0].uid)
-              fetchAccounts()
+              fetchAccounts(pagination.value.page)
             }
           }
         }
@@ -628,15 +906,22 @@ const fetchOrganizations = async () => {
           }
         } else {
           // No last selected, use first organization
-          selectedOrganizationId.value = organizations.value[0].uid
-          currentOrganization.value = organizations.value[0]
-          saveLastSelectedOrganization(organizations.value[0].uid)
+          if (organizations.value[0]) {
+            selectedOrganizationId.value = organizations.value[0].uid
+            currentOrganization.value = organizations.value[0]
+            saveLastSelectedOrganization(organizations.value[0].uid)
+          }
         }
-        fetchAccounts()
+        
+        // Only fetch accounts if we have a selected organization
+        if (selectedOrganizationId.value) {
+          fetchAccounts(pagination.value.page)
+        }
       }
     }
   } catch (e: any) {
     console.error('Failed to load organizations:', e)
+    error.value = "Failed to load organizations. Please refresh the page."
   } finally {
     loadingOrganizations.value = false
   }
@@ -645,13 +930,20 @@ const fetchOrganizations = async () => {
 const switchOrganization = () => {
   const org = organizations.value.find(o => o.uid === selectedOrganizationId.value)
   currentOrganization.value = org || null
+  console.log('🔄 Switching to organization:', org?.name, 'ID:', selectedOrganizationId.value)
+  
   // Save the selected organization to localStorage
   if (selectedOrganizationId.value) {
     saveLastSelectedOrganization(selectedOrganizationId.value)
   }
+  
+  // Clear previous error
+  error.value = null
+  
   // Refresh accounts for the selected organization
-  fetchAccounts()
-  console.log('Switched to organization:', org?.name)
+  if (selectedOrganizationId.value) {
+    fetchAccounts(pagination.value.page)
+  }
 }
 
 // Initialize

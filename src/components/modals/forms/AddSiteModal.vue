@@ -118,7 +118,7 @@
 import { ref, reactive } from "vue";
 import { Modal } from "bootstrap";
 import { useRoute } from "vue-router";
-import ApiService from "../../../core/services/ApiService"
+import ApiService from '@/core/services/ApiService'
 
 interface SiteFormData {
   name: string;
@@ -178,37 +178,43 @@ const submitForm = async () => {
   loading.value = true;
 
   try {
-    // Determine team UID from prop, form, or route
-    const teamUid = formData.team_uid || props.teamUid || (route.query.teamId as string) || "";
+    // Ensure we have a team UID
+    const teamUid = formData.team_uid || (route.query.teamId as string) || '';
     if (!teamUid) {
-      console.error("No team_uid available for creating site");
-      loading.value = false;
-      return;
+      throw new Error('No team selected for the site')
     }
 
-    // Build payload — send core fields; backend derives team from path
-    const payload: Record<string, any> = {
+    // Call API to create site under team
+    const payload = {
       name: formData.name,
       description: formData.description,
-    };
+    }
 
-    const resp = await ApiService.post(`teams/${teamUid}/sites`, payload);
-    const created = (resp as any)?.data?.data ?? (resp as any)?.data ?? payload;
+    // Use explicit API path as requested
+    const resp = await ApiService.post(`/teams/${teamUid}/sites`, payload)
 
-    // Ensure the returned object contains team_uid for UI consistency
-    const newSite = { team_uid: teamUid, ...created };
+    // Backend may return created resource under resp.data.data or resp.data
+    const created = resp?.data?.data ?? resp?.data ?? null
+    // Emit created site (fallback to local object if backend didn't return it)
+    const newSite = created ?? { name: formData.name, description: formData.description, team_uid: teamUid }
+    emit('site-added', newSite)
 
-    // Emit event to parent component
-    emit("site-added", newSite);
-
-    // Reset form
-    resetForm();
-
-    // Close modal
-    const modal = Modal.getInstance(addSiteModalRef.value!);
-    modal?.hide();
-  } catch (error) {
+    // Reset form and close modal
+    resetForm()
+    const modal = Modal.getInstance(addSiteModalRef.value!)
+    modal?.hide()
+  } catch (error: any) {
     console.error("Error adding site:", error);
+    // map validation errors if provided by backend
+    const respErrors = error?.response?.data?.errors || error?.response?.data || null
+    if (respErrors && typeof respErrors === 'object') {
+      // If backend returns field-specific errors, set them
+      if (respErrors.name) {
+        errors.name = Array.isArray(respErrors.name) ? respErrors.name.join(', ') : String(respErrors.name)
+      } else if (respErrors.message) {
+        errors.name = String(respErrors.message)
+      }
+    }
   } finally {
     loading.value = false;
   }
@@ -225,11 +231,14 @@ const resetForm = () => {
 };
 
 // Show modal method (exposed for parent component)
-const showModal = () => {
+// Accept optional teamId parameter so parent can specify which team to attach the site to
+const showModal = (teamId?: string) => {
   resetForm();
-  // Set team_uid from route query parameter
-  const teamIdFromRoute = route.query.teamId as string;
-  formData.team_uid = props.teamUid || teamIdFromRoute || "";
+  // Prefer explicit teamId argument, fallback to route query
+  const tid = teamId ?? (route.query.teamId as string) ?? '';
+  if (tid) {
+    formData.team_uid = tid;
+  }
   // initialize modal with backdrop static and keyboard disabled so click outside / ESC won't close
   const modal = new Modal(addSiteModalRef.value!, {
     backdrop: "static",

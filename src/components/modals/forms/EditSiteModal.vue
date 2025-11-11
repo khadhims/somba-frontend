@@ -116,6 +116,7 @@
 <script setup lang="ts">
 import { ref, reactive } from "vue";
 import { Modal } from "bootstrap";
+import ApiService from '@/core/services/ApiService'
 
 interface SiteFormData {
   uid: string;
@@ -176,17 +177,33 @@ const submitForm = async () => {
   loading.value = true;
 
   try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // Build payload for backend (only fields present in this modal)
+    const payload: any = {
+      name: formData.name,
+      description: formData.description,
+    };
 
-    // Emit event to parent component
-    emit("site-updated", { ...formData });
+    // Call PATCH /sites/{site_uid}
+    const resp = await ApiService.patch(`sites/${formData.uid}`, payload);
+
+    // Backend may return wrapped response { status, code, message, data }
+    const returned = resp && resp.data && resp.data.data ? resp.data.data : resp.data;
+
+    // Emit updated site to parent
+    emit("site-updated", returned || { ...formData });
 
     // Close modal
     const modal = Modal.getInstance(editSiteModalRef.value!);
     modal?.hide();
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating site:", error);
+
+    // If backend returns validation errors, map them to UI
+    const serverErrors = error?.response?.data?.errors;
+    if (serverErrors) {
+      if (serverErrors.name) errors.name = Array.isArray(serverErrors.name) ? serverErrors.name.join(" ") : serverErrors.name;
+      if (serverErrors.description) errors.description = Array.isArray(serverErrors.description) ? serverErrors.description.join(" ") : serverErrors.description;
+    }
   } finally {
     loading.value = false;
   }

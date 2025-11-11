@@ -142,7 +142,7 @@
             <!--begin::Input-->
             <input
               type="text"
-              v-model="siteForm.contactPerson"
+              v-model="siteForm.contact_person"
               class="form-control form-control-solid"
               placeholder="Contact person name"
             />
@@ -158,7 +158,7 @@
             <!--begin::Input-->
             <input
               type="tel"
-              v-model="siteForm.contactPhone"
+              v-model="siteForm.contact_phone"
               class="form-control form-control-solid"
               placeholder="Contact phone number"
             />
@@ -177,11 +177,11 @@
             <!--end::Label-->
             <!--begin::Select-->
             <select
-              v-model="siteForm.status"
+              v-model="siteForm.is_active"
               class="form-select form-select-solid"
             >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
+              <option :value="true">Active</option>
+              <option :value="false">Inactive</option>
             </select>
             <!--end::Select-->
           </div>
@@ -194,12 +194,12 @@
             <!--end::Label-->
             <!--begin::Select-->
             <select
-              v-model="siteForm.timeZone"
+              v-model="siteForm.timezone"
               class="form-select form-select-solid"
             >
-              <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
-              <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
-              <option value="Asia/Jayapura">Asia/Jayapura (WIT)</option>
+              <option value="WIB">Asia/Jakarta (WIB)</option>
+              <option value="WITA">Asia/Makassar (WITA)</option>
+              <option value="WIT">Asia/Jayapura (WIT)</option>
             </select>
             <!--end::Select-->
           </div>
@@ -236,20 +236,21 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import ApiService from '@/core/services/ApiService'
 
 // Interface
 interface SiteForm {
-  id?: number;
+  id?: string;
   name: string;
   code: string;
   description: string;
   address: string;
   latitude?: number;
   longitude?: number;
-  contactPerson: string;
-  contactPhone: string;
-  status: "Active" | "Inactive";
-  timeZone: string;
+  contact_person: string;
+  contact_phone: string;
+  is_active: boolean;
+  timezone: string; // enum: WIB | WITA | WIT
 }
 
 // Router
@@ -265,10 +266,10 @@ const siteForm = ref<SiteForm>({
   address: "",
   latitude: undefined,
   longitude: undefined,
-  contactPerson: "",
-  contactPhone: "",
-  status: "Active",
-  timeZone: "Asia/Jakarta",
+  contact_person: "",
+  contact_phone: "",
+  is_active: true,
+  timezone: "WIB",
 });
 
 // Computed
@@ -292,12 +293,32 @@ const saveSite = async () => {
       siteForm.value.code = generateSiteCode(siteForm.value.name);
     }
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // Build payload matching backend field names
+    const payload: any = {
+      name: siteForm.value.name,
+      code: siteForm.value.code,
+      description: siteForm.value.description,
+      address: siteForm.value.address,
+      latitude: siteForm.value.latitude,
+      longitude: siteForm.value.longitude,
+      contact_person: siteForm.value.contact_person,
+      contact_phone: siteForm.value.contact_phone,
+      is_active: siteForm.value.is_active,
+      timezone: siteForm.value.timezone,
+    };
 
-    console.log("Site saved:", siteForm.value);
+    if (isEdit.value && route.query.id) {
+      // Update existing site via PATCH /sites/{site_uid}
+      const siteUid = route.query.id as string;
+      const resp = await ApiService.patch(`sites/${siteUid}`, payload);
+      console.log("Site updated:", resp);
+    } else {
+      // Create new site via POST /sites
+      const resp = await ApiService.post("sites", payload);
+      console.log("Site created:", resp);
+    }
 
-    // Redirect to overview
+    // Redirect back to overview after save
     router.push("/controlplane/site");
   } catch (error) {
     console.error("Error saving site:", error);
@@ -314,10 +335,10 @@ const resetForm = () => {
     address: "",
     latitude: undefined,
     longitude: undefined,
-    contactPerson: "",
-    contactPhone: "",
-    status: "Active",
-    timeZone: "Asia/Jakarta",
+    contact_person: "",
+    contact_phone: "",
+    is_active: true,
+    timezone: "WIB",
   };
 };
 
@@ -325,23 +346,25 @@ const loadSite = async (id: string) => {
   isLoading.value = true;
 
   try {
-    // Simulate API call to load site data
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const resp = await ApiService.query(`sites/${id}`, {});
+    // backend may return wrapped response { is_active, code, message, data }
+    const data = resp && resp.data && resp.data.data ? resp.data.data : resp.data;
 
-    // Mock data
-    siteForm.value = {
-      id: parseInt(id),
-      name: "Main Office",
-      code: "MAIN_2024",
-      description: "Primary office building",
-      address: "Jl. Sudirman No. 123, Jakarta Selatan, DKI Jakarta 12190",
-      latitude: -6.2088,
-      longitude: 106.8456,
-      contactPerson: "John Doe",
-      contactPhone: "+62-21-1234567",
-      status: "Active",
-      timeZone: "Asia/Jakarta",
-    };
+    if (data) {
+      siteForm.value = {
+        id: data.uid || data.id || id,
+        name: data.name || "",
+        code: data.code || "",
+        description: data.description || "",
+        address: data.address || "",
+        latitude: data.latitude ?? undefined,
+        longitude: data.longitude ?? undefined,
+        contact_person: data.contact_person || "",
+        contact_phone: data.contact_phone || "",
+        is_active: !!data.is_active,
+        timezone: data.timezone || data.timeZone || "WIB",
+      };
+    }
   } catch (error) {
     console.error("Error loading site:", error);
   } finally {
