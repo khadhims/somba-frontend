@@ -713,25 +713,48 @@ const onPageChange = (page: number) => {
 
 const loadSites = async () => {
   try {
-    // Get selected team from localStorage or query params
-    const selectedTeamId = localStorage.getItem('lastSelectedTeam') || route.query.teamId as string;
-    if (!selectedTeamId) {
-      console.warn('No team selected, cannot load sites');
-      return;
+    // Prefer team-scoped sites when team is available, otherwise fetch all sites
+    const selectedTeamId = (localStorage.getItem('lastSelectedTeam') as string) || (route.query.teamId as string) || '';
+    let resp: any = null;
+    if (selectedTeamId) {
+      resp = await ApiService.query(`teams/${encodeURIComponent(selectedTeamId)}/sites`, {});
+    } else {
+      // fallback to global sites list
+      resp = await ApiService.query('sites', {});
     }
 
-    const resp = await ApiService.query(`teams/${selectedTeamId}/sites`, {});
-    
-    // Parse response (wrapped or direct)
-    if (resp && resp.data) {
-      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
-        sites.value = resp.data.data;
-      } else if (Array.isArray(resp.data)) {
-        sites.value = resp.data;
-      }
+    // Normalize response shapes: resp.data.data | resp.data | items | sites | results
+    const raw = resp?.data?.data ?? resp?.data ?? [];
+    let data: any[] = [];
+    if (Array.isArray(raw)) data = raw;
+    else if (raw && typeof raw === 'object') {
+      if (Array.isArray(raw.items)) data = raw.items;
+      else if (Array.isArray(raw.sites)) data = raw.sites;
+      else if (Array.isArray(raw.results)) data = raw.results;
+      else data = [raw];
+    }
+
+    sites.value = data.map((s: any) => ({ uid: s.uid ?? s.id, name: s.name ?? s.title ?? '' }));
+
+    // Initialize selected site filter: route > lastSelectedSite > first site
+    const fromRoute = (route.query.siteId as string) || '';
+    const fromStorage = localStorage.getItem('lastSelectedSite') || '';
+    selectedSiteFilter.value = fromRoute || fromStorage || (sites.value[0] ? sites.value[0].uid : '');
+
+    if (selectedSiteFilter.value) {
+      // persist selection
+      localStorage.setItem('lastSelectedSite', selectedSiteFilter.value);
+      // load NVRs for selected site
+      await loadNvrs(selectedSiteFilter.value, currentPage.value, perPage.value);
+    } else {
+      // no sites available
+      nvrs.value = [];
+      totalItems.value = 0;
+      totalPages.value = 0;
     }
   } catch (error) {
     console.error('Error loading sites:', error);
+    sites.value = [];
   }
 };
 

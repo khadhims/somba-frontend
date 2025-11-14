@@ -77,7 +77,7 @@
             <div class="d-flex align-items-center">
               <label class="form-label me-3 mb-0 fw-semibold">Team:</label>
               <select
-                v-model="selectedTeamId"
+                v-model="selectedTeamIdFilter"
                 @change="switchTeam"
                 class="form-select form-select-solid w-200px"
                 :disabled="loadingTeams || !selectedAccountId || teams.length === 0"
@@ -206,7 +206,7 @@
         <button 
           @click="showAddSiteModal" 
           class="btn btn-sm btn-light-primary"
-          :disabled="!selectedTeamId"
+          :disabled="!selectedTeamIdFilter"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
           Add Site

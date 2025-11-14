@@ -318,8 +318,12 @@ const saveSite = async () => {
       console.log("Site created:", resp);
     }
 
-    // Redirect back to overview after save
-    router.push("/controlplane/site");
+    // Redirect back to overview after save (defensive: log and fallback on failure)
+    try {
+      await router.push('/controlplane/site/overview');
+    } catch (navErr) {
+      console.error('[Settings] router.push failed:', navErr);    
+    }
   } catch (error) {
     console.error("Error saving site:", error);
   } finally {

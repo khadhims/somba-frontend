@@ -178,16 +178,19 @@ const submitForm = async () => {
   loading.value = true;
 
   try {
-    // Ensure we have a team UID
-    const teamUid = formData.team_uid || (route.query.teamId as string) || '';
+    // Ensure we have a team UID: prefer form value, then prop, then route query
+    const teamUid = formData.team_uid || props.teamUid || (route.query.teamId as string) || '';
     if (!teamUid) {
-      throw new Error('No team selected for the site')
+      // user-friendly message and graceful return (don't throw)
+      loading.value = false;
+      alert('Select a team to add the site to.');
+      return;
     }
 
     // Call API to create site under team
     const payload = {
       name: formData.name,
-      description: formData.description,
+      // description: formData.description,
     }
 
     // Use explicit API path as requested
@@ -196,7 +199,7 @@ const submitForm = async () => {
     // Backend may return created resource under resp.data.data or resp.data
     const created = resp?.data?.data ?? resp?.data ?? null
     // Emit created site (fallback to local object if backend didn't return it)
-    const newSite = created ?? { name: formData.name, description: formData.description, team_uid: teamUid }
+    const newSite = created ?? { name: formData.name, team_uid: teamUid }
     emit('site-added', newSite)
 
     // Reset form and close modal
@@ -234,17 +237,22 @@ const resetForm = () => {
 // Accept optional teamId parameter so parent can specify which team to attach the site to
 const showModal = (teamId?: string) => {
   resetForm();
-  // Prefer explicit teamId argument, fallback to route query
-  const tid = teamId ?? (route.query.teamId as string) ?? '';
+  // Prefer explicit teamId argument, then prop, then route query
+  const tid = teamId ?? props.teamUid ?? (route.query.teamId as string) ?? '';
   if (tid) {
     formData.team_uid = tid;
   }
   // initialize modal with backdrop static and keyboard disabled so click outside / ESC won't close
-  const modal = new Modal(addSiteModalRef.value!, {
+  const el = addSiteModalRef.value!;
+  if (!el) {
+    console.warn('[AddSiteModal] addSiteModalRef is not set!');
+  }
+
+  const modalInstance = (Modal.getInstance(el) as Modal) || new Modal(el, {
     backdrop: "static",
     keyboard: false,
   });
-  modal.show();
+  modalInstance.show();
 };
 
 // Expose methods to parent
