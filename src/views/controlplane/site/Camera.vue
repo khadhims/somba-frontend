@@ -612,6 +612,7 @@ interface Camera {
 
 interface CameraForm {
   id?: number;
+  uid?: string;
   siteId: string;
   roomId: number | string;
   nvrId: string;
@@ -653,6 +654,7 @@ const totalItems = ref<number>(0);
 const totalPages = ref<number>(0);
 
 const cameraForm = ref<CameraForm>({
+  uid: undefined,
   siteId: "",
   roomId: "",
   nvrId: "",
@@ -1010,12 +1012,14 @@ const saveCamera = async () => {
 
   try {
     // Hard-coded camera_config as requested
-    const defaultCameraConfig = {
+    const defaultCameraConfig: any = {
       zones: [],
-      uid: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      name: "string",
-      allow_labels: ["string"],
-      deny_labels: ["string"],
+      // Do not send a hard-coded UID for camera_config — the backend should
+      // generate or preserve it. Including a fixed UID causes DB uniqueness
+      // / integrity errors when multiple cameras share the same config UID.
+      name: "default",
+      allow_labels: [],
+      deny_labels: [],
       min_score: 0.3,
       zone_test: "center",
       iou_threshold: 0.1
@@ -1038,14 +1042,14 @@ const saveCamera = async () => {
 
     if (isEdit.value) {
       // PATCH for update using sites/{site_uid}/cameras/{camera_uid}
-      // Use the original camera UID from the form ID field
-      const cameraUid = cameraForm.value.id; // This should contain the UID from edit
+      // Prefer an explicit UID if available, fallback to numeric id
+      const cameraUid = cameraForm.value.uid || cameraForm.value.id;
       console.log('Updating camera with UID:', cameraUid, 'on site:', cameraForm.value.siteId);
       await ApiService.patch(`sites/${cameraForm.value.siteId}/cameras/${cameraUid}`, payload);
       
       // Update existing camera in local state
       const index = cameras.value.findIndex(
-        (c) => c.id === cameraForm.value.id
+        (c) => (c.uid || c.id) === (cameraForm.value.uid || cameraForm.value.id)
       );
       if (index !== -1) {
         cameras.value[index] = {
@@ -1121,7 +1125,8 @@ const editCamera = async (camera: Camera) => {
       if (cameraData && typeof cameraData === 'object' && !Array.isArray(cameraData)) {
         // Map the API response to form values
         cameraForm.value = {
-          id: cameraData.uid || cameraData.id || camera.id,
+          uid: cameraData.uid || cameraData.id || camera.id,
+          id: cameraData.id || camera.id,
           siteId: cameraData.site_uid || camera.siteId,
           roomId: cameraData.room_id ?? cameraData.roomId ?? camera.roomId,
           nvrId: cameraData.video_recorder_uid || cameraData.nvrId || camera.nvrId,
@@ -1139,6 +1144,7 @@ const editCamera = async (camera: Camera) => {
         console.warn('API returned unexpected data structure, using local camera data');
         // Use local camera data if API returns unexpected structure
         cameraForm.value = {
+          uid: camera.uid,
           id: camera.id,
           siteId: camera.siteId,
           roomId: camera.roomId,
@@ -1158,6 +1164,7 @@ const editCamera = async (camera: Camera) => {
       console.warn('No data received from API, using local camera data');
       // Fallback to local camera data if API fails
       cameraForm.value = {
+        uid: camera.uid,
         id: camera.id,
         siteId: camera.siteId,
         roomId: camera.roomId,
