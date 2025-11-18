@@ -11,20 +11,15 @@
         </div>
         <div class="col-md-8">
           <div class="d-flex justify-content-end gap-3">
-            <div class="d-flex align-items-center" v-if="sites.length > 0">
+            <div class="me-3 d-flex align-items-center">
               <label class="form-label me-3 mb-0 fw-semibold">Site:</label>
               <select
-                v-model="selectedSiteId"
-                @change="switchSite"
+                v-model="selectedSiteFilter"
+                @change="onFilterSiteChange"
                 class="form-select form-select-solid w-200px"
-                :disabled="loadingSites"
               >
                 <option value="">All Sites</option>
-                <option
-                  v-for="site in sites"
-                  :key="site.uid"
-                  :value="site.uid"
-                >
+                <option v-for="site in sites" :key="site.uid" :value="site.uid">
                   {{ site.name }}
                 </option>
               </select>
@@ -181,10 +176,10 @@
 
         <template v-slot:timestamp="{ row }">
           <span class="text-dark fw-bold d-block fs-6">{{
-            new Date(row.timestamp).toLocaleDateString()
+            new Date(row.timestamp).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' })
           }}</span>
           <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-            new Date(row.timestamp).toLocaleTimeString()
+            new Date(row.timestamp).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false })
           }}</span>
         </template>
 
@@ -219,7 +214,7 @@
             </button>
             <button
               v-if="row.status === 'acknowledged'"
-              class="btn btn-icon btn-bg-light btn-active-color-info btn-sm"
+              class="btn btn-icon btn-bg-light btn-active-color-info btn-sm me-1"
               @click="resolveEvent(row)"
               title="Resolve"
             >
@@ -228,23 +223,208 @@
                 <span class="path2"></span>
               </i>
             </button>
+            <button
+              class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
+              @click="deleteEvent(row)"
+              title="Delete"
+            >
+              <i class="ki-duotone ki-trash fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </button>
           </div>
         </template>
       </KTDataTable>
+      
+      <!--begin::Pagination-->
+      <div class="d-flex flex-stack flex-wrap pt-10">
+        <div class="fs-6 fw-semibold text-gray-700">
+          Showing {{ ((currentPage - 1) * itemsPerPage) + 1 }} to {{ Math.min(currentPage * itemsPerPage, totalItems) }} of {{ totalItems }} entries
+        </div>
+        <ul class="pagination">
+          <li class="page-item" :class="{ disabled: currentPage === 1 }">
+            <button 
+              class="page-link" 
+              @click="goToPage(currentPage - 1)"
+              :disabled="currentPage === 1"
+            >
+              <i class="previous"></i>
+            </button>
+          </li>
+          <li 
+            v-for="page in visiblePages" 
+            :key="page"
+            class="page-item" 
+            :class="{ active: page === currentPage }"
+          >
+            <button class="page-link" @click="goToPage(page)">{{ page }}</button>
+          </li>
+          <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+            <button 
+              class="page-link" 
+              @click="goToPage(currentPage + 1)"
+              :disabled="currentPage === totalPages"
+            >
+              <i class="next"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+      <!--end::Pagination-->
     </div>
     <!--end::Card body-->
   </div>
   <!--end::Events List-->
+
+  <!--begin::Event Details Modal-->
+  <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title fw-bold" id="eventDetailsModalLabel">Event Details</h3>
+          <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" v-if="selectedEvent">
+          <!--begin::Event Image-->
+          <div class="row mb-6" v-if="selectedEvent.image_path">
+            <div class="col-12">
+              <label class="fw-semibold fs-4 mb-2">Event Image:</label>
+              <div class="text-center">
+                <img 
+                  :src="selectedEvent.image_path" 
+                  :alt="selectedEvent.description"
+                  class="img-fluid rounded border"
+                  style="max-height: 300px; object-fit: contain;"
+                  @error="handleImageError"
+                />
+              </div>
+            </div>
+          </div>
+          <!--end::Event Image-->
+
+          <!--begin::Event Info Grid-->
+          <div class="row g-6">
+            <!--begin::Left Column-->
+            <div class="col-md-6">
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Event Type:</label>
+                <div>
+                  <span class="badge fs-5" :class="getEventTypeBadgeClass(selectedEvent.type)" style="padding: 8px 12px;">
+                    {{ getEventTypeLabel(selectedEvent.type) }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Severity:</label>
+                <div>
+                  <span class="badge fs-5" :class="getSeverityBadgeClass(selectedEvent.severity)" style="padding: 8px 12px;">
+                    {{ selectedEvent.severity }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Status:</label>
+                <div>
+                  <span class="badge fs-5" :class="getStatusBadgeClass(selectedEvent.status)" style="padding: 8px 12px;">
+                    {{ selectedEvent.status }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Process:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.description }}</p>
+              </div>
+            </div>
+            <!--end::Left Column-->
+
+            <!--begin::Right Column-->
+            <div class="col-md-6">
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Start Time:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.startTime) }}</p>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">End Time:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.endTime) }}</p>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Duration:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ formatDuration(selectedEvent.duration) }}</p>
+              </div>
+
+              <div class="mb-4" v-if="selectedEvent.camera_name">
+                <label class="fw-semibold fs-4 mb-2">Camera:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.camera_name }}</p>
+              </div>
+
+              <div class="mb-4" v-if="selectedEvent.location">
+                <label class="fw-semibold fs-4 mb-2">Location:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.location }}</p>
+              </div>
+            </div>
+            <!--end::Right Column-->
+          </div>
+          <!--end::Event Info Grid-->
+
+          <!--begin::Event UID-->
+          <div class="row mt-6">
+            <div class="col-12">
+              <div class="bg-light p-4 rounded">
+                <label class="fw-semibold fs-5 text-gray-600 mb-1">Event ID:</label>
+                <p class="text-gray-800 mb-0 font-monospace fs-6">{{ selectedEvent.uid }}</p>
+              </div>
+            </div>
+          </div>
+          <!--end::Event UID-->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary fs-5 px-4 py-2" @click="closeModal">Close</button>
+          <button type="button" class="btn btn-primary fs-5 px-4 py-2" v-if="selectedEvent && selectedEvent.status === 'active'" @click="acknowledgeEventFromModal">
+            <i class="ki-duotone ki-check fs-2 me-2"></i>
+            Acknowledge
+          </button>
+          <button type="button" class="btn btn-success fs-5 px-4 py-2" v-if="selectedEvent && selectedEvent.status === 'acknowledged'" @click="resolveEventFromModal">
+            <i class="ki-duotone ki-check-circle fs-2 me-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            Resolve
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end::Event Details Modal-->
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import { Modal } from "bootstrap";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
 
 // Interface definitions
 interface Event {
+  code: number;
+  message: string;
+  data: Array<{
+    duration: number;
+    endTime: string;
+    image_path: string;
+    process: string;
+    startTime: string;
+    status: string;
+  }>;
   uid: string;
   type: 'motion' | 'intrusion' | 'system' | 'camera_offline';
   severity: 'low' | 'medium' | 'high' | 'critical';
@@ -262,16 +442,28 @@ interface Site {
 }
 
 // Reactive data
-const events = ref<Event[]>([]);
+const events = ref<any[]>([]);
 const sites = ref<Site[]>([]);
+const nvrs = ref<Array<{ uid: string; name: string; site_uid?: string }>>([]);
 const loading = ref(false);
 const loadingSites = ref(false);
+const loadingNvrs = ref(false);
 const searchQuery = ref("");
 const selectedSiteId = ref("");
+// Header filter state (site + nvr)
+const selectedSiteFilter = ref<string>("");
+const selectedNvrFilter = ref<string>("");
 const selectedEventType = ref("");
 const sortLabel = ref("timestamp");
 const sortOrder = ref<"asc" | "desc">("desc");
 const currentSite = ref<Site | null>(null);
+// Pagination
+const currentPage = ref(1);
+const itemsPerPage = ref(15);
+const totalItems = ref(0);
+const totalPages = ref(0);
+// Modal state
+const selectedEvent = ref<any>(null);
 
 // Table header configuration
 const tableHeader = ref([
@@ -313,64 +505,101 @@ const tableHeader = ref([
   },
 ]);
 
-// Mock data for demonstration
-const mockEvents: Event[] = [
-  {
-    uid: "1",
-    type: "motion",
-    severity: "medium",
-    description: "Motion detected in restricted area",
-    camera_name: "Front Entrance",
-    location: "Lobby",
-    timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 min ago
-    status: "active",
-    site_uid: "site1"
-  },
-  {
-    uid: "2",
-    type: "intrusion",
-    severity: "critical",
-    description: "Unauthorized access attempt",
-    camera_name: "Parking Area",
-    location: "Parking",
-    timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(), // 45 min ago
-    status: "acknowledged",
-    site_uid: "site1"
-  },
-  {
-    uid: "3",
-    type: "camera_offline",
-    severity: "high",
-    description: "Camera connection lost",
-    camera_name: "Reception Desk",
-    location: "Reception",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
-    status: "resolved",
-    site_uid: "site1"
-  },
-];
+// Mock response in the required shape (fallback)
+const mockEventsResponse = {
+  code: 200,
+  message: "Data retrieved successfully",
+  data: [
+    {
+      duration: 0.12,
+      endTime: "2025-09-09T04:13:00+07:00",
+      image_path: "/image/stream_502_20250909_0406.jpg",
+      process: "Pengiriman",
+      startTime: "2025-09-09T04:06:00+07:00",
+      status: "completed"
+    },
+    {
+      duration: 0.1,
+      endTime: "2025-09-09T04:12:00+07:00",
+      image_path: "/image/stream_902_20250909_0406.jpg",
+      process: "Masak", startTime: "2025-09-09T04:06:00+07:00",
+      status: "completed"
+    },
+    {
+      duration: 0.17,
+      endTime: "2025-09-09T04:13:00+07:00",
+      image_path: "/image/stream_102_20250909_0403.jpg",
+      process: "Ambil Nampan",
+      startTime: "2025-09-09T04:03:00+07:00",
+      status: "completed"
+    },
+    {
+      duration: 0.17,
+      endTime: "2025-09-09T04:13:00+07:00",
+      image_path: "/image/stream_702_20250909_0403.jpg",
+      process: "Pemorsian",
+      startTime: "2025-09-09T04:03:00+07:00",
+      status: "completed"
+    },
+    {
+      duration: 0.15,
+      endTime: "2025-09-09T04:12:00+07:00",
+      image_path: "/image/stream_602_20250909_0403.jpg",
+      process: "Unknown Stream 602",
+      startTime: "2025-09-09T04:03:00+07:00",
+      status: "completed"
+    }
+  ],
+  pagination: {
+    page: 1,
+    per_page: 3,
+    total_pages: 2,
+    total_items: 5,
+    next_page: 2,
+    prev_page: null
+  }
+};
 
-const mockSites: Site[] = [
-  { uid: "site1", name: "Main Office" },
-  { uid: "site2", name: "Warehouse Branch" },
-];
 
-// Fetch events from API
+// Fetch events from API (uses mock response shape as fallback)
 const fetchEvents = async () => {
   loading.value = true;
   try {
     // TODO: Replace with actual API call
     // let apiUrl = "/events";
-    // if (selectedSiteId.value) {
-    //   apiUrl += `?site_uid=${selectedSiteId.value}`;
-    // }
+    // if (selectedSiteFilter.value) apiUrl += `?site_uid=${selectedSiteFilter.value}`;
     // const response = await ApiService.get(apiUrl);
-    // events.value = response.data.data || response.data;
-    
-    // Using mock data for now
-    events.value = mockEvents.filter(event => 
-      !selectedSiteId.value || event.site_uid === selectedSiteId.value
-    );
+    // const payload = response.data;
+
+    // Using mock response for now
+    const payload = mockEventsResponse;
+
+    // Map response.data items into the event model used by this component
+    events.value = (payload.data || []).map((item, idx) => ({
+      uid: `evt-${idx}-${item.startTime}`,
+      type: 'motion',
+      severity: 'low',
+      description: item.process || 'Event',
+      camera_name: (item as any).camera_name || '',
+      location: (item as any).location || '',
+      timestamp: item.startTime || item.endTime || new Date().toISOString(),
+      status: item.status || 'active',
+      site_uid: selectedSiteFilter.value || null,
+      // Preserve original mock data for modal display
+      duration: item.duration,
+      startTime: item.startTime,
+      endTime: item.endTime,
+      image_path: item.image_path,
+    }));
+
+    // Apply client-side filters if header filters are set
+    if (selectedSiteFilter.value) {
+      events.value = events.value.filter(e => !e.site_uid || e.site_uid === selectedSiteFilter.value);
+    }
+    if (selectedNvrFilter.value) {
+      // If events carry video_recorder_uid in the real API, filter here.
+      // For mock data we don't have that field, so this is a no-op placeholder.
+    }
   } catch (error) {
     console.error("Error fetching events:", error);
     events.value = [];
@@ -379,19 +608,36 @@ const fetchEvents = async () => {
   }
 };
 
-// Fetch sites from API
+// Fetch sites from API (following Camera.vue pattern)
 const fetchSites = async () => {
   loadingSites.value = true;
   try {
-    // TODO: Replace with actual API call
-    // const response = await ApiService.get("/sites");
-    // sites.value = response.data.data || response.data;
+    // Get selected team from localStorage (following Camera.vue pattern)
+    const selectedTeamId = localStorage.getItem('lastSelectedTeam');
+    if (!selectedTeamId) {
+      console.warn('No team selected, cannot load sites');
+      sites.value = [];
+      return;
+    }
     
-    // Using mock data for now
-    sites.value = mockSites;
+    const resp = await ApiService.query(`teams/${selectedTeamId}/sites`, {});
+    // Parse response (wrapped or direct) - exactly like Camera.vue
+    if (resp && resp.data) {
+      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+        sites.value = resp.data.data;
+      } else if (Array.isArray(resp.data)) {
+        sites.value = resp.data;
+      } else {
+        console.warn('Unexpected sites response format:', resp.data);
+        sites.value = [];
+      }
+    } else {
+      console.warn('No data received from sites API');
+      sites.value = [];
+    }
   } catch (error) {
     console.error("Error fetching sites:", error);
-    sites.value = [];
+    // Fallback to mock data for development
   } finally {
     loadingSites.value = false;
   }
@@ -413,6 +659,21 @@ const filterEvents = () => {
 const refreshEvents = () => {
   fetchEvents();
 };
+
+// Header filter handlers
+const onFilterSiteChange = () => {
+  // selectedSiteFilter stores the site uid
+  currentSite.value = sites.value.find(s => s.uid === selectedSiteFilter.value) || null;
+  // reset NVR filter when site changes
+  selectedNvrFilter.value = "";
+  fetchEvents();
+};
+
+const onFilterNvrChange = () => {
+  // Changing NVR filter should reload events scoped to that NVR
+  fetchEvents();
+};
+
 
 // Badge class helpers
 const getEventTypeBadgeClass = (type: string) => {
@@ -451,7 +712,7 @@ const getStatusBadgeClass = (status: string) => {
       return 'badge-light-danger';
     case 'acknowledged':
       return 'badge-light-warning';
-    case 'resolved':
+    case 'completed':
       return 'badge-light-success';
     default:
       return 'badge-light-secondary';
@@ -484,7 +745,11 @@ const filteredAndSortedEvents = computed(() => {
       (event) =>
         event.description.toLowerCase().includes(query) ||
         (event.camera_name && event.camera_name.toLowerCase().includes(query)) ||
-        event.location.toLowerCase().includes(query)
+        event.location.toLowerCase().includes(query) ||
+        event.type.toLowerCase().includes(query) ||
+        event.status.toLowerCase().includes(query) ||
+        event.severity.toLowerCase().includes(query) ||
+        getEventTypeLabel(event.type).toLowerCase().includes(query)
     );
   }
 
@@ -515,7 +780,15 @@ const filteredAndSortedEvents = computed(() => {
     });
   }
 
-  return filtered;
+  // Update pagination info whenever filters change
+  totalItems.value = filtered.length;
+  totalPages.value = Math.ceil(totalItems.value / itemsPerPage.value);
+  
+  // Apply pagination
+  const startIndex = (currentPage.value - 1) * itemsPerPage.value;
+  const endIndex = startIndex + itemsPerPage.value;
+  
+  return filtered.slice(startIndex, endIndex);
 });
 
 // Statistics computed properties
@@ -542,15 +815,167 @@ const resolvedTodayPercentage = computed(() =>
 
 const responseTimePercentage = computed(() => 75); // Mock data
 
+// Pagination computed properties
+const visiblePages = computed(() => {
+  const pages = [];
+  const start = Math.max(1, currentPage.value - 2);
+  const end = Math.min(totalPages.value, currentPage.value + 2);
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+  return pages;
+});
+
 // Methods
 const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
   sortLabel.value = sort.label;
   sortOrder.value = sort.order;
 };
 
+const goToPage = (page: number) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
+
+const deleteEvent = async (event: Event) => {
+  if (!confirm(`Are you sure you want to delete this event?`)) {
+    return;
+  }
+  
+  try {
+    // TODO: API call to delete event
+    // await ApiService.delete(`/events/${event.uid}`);
+    
+    // Update local state
+    const index = events.value.findIndex(e => e.uid === event.uid);
+    if (index !== -1) {
+      events.value.splice(index, 1);
+      updatePaginationInfo();
+    }
+  } catch (error) {
+    console.error("Error deleting event:", error);
+  }
+};
+
+const updatePaginationInfo = () => {
+  totalItems.value = filteredAndSortedEvents.value.length;
+  totalPages.value = Math.ceil(totalItems.value / itemsPerPage.value);
+  
+  // Adjust current page if it exceeds total pages
+  if (currentPage.value > totalPages.value && totalPages.value > 0) {
+    currentPage.value = totalPages.value;
+  }
+};
+
 const viewEventDetails = (event: Event) => {
-  console.log("View event details:", event);
-  // TODO: Implement event details modal
+  selectedEvent.value = event;
+  console.log('Opening modal for event:', event);
+  
+  // Show modal using Bootstrap 5
+  const modalElement = document.getElementById('eventDetailsModal');
+  if (modalElement) {
+    try {
+      const modal = new Modal(modalElement);
+      modal.show();
+      console.log('Modal shown successfully');
+    } catch (error) {
+      console.error('Error showing modal:', error);
+      // Fallback: manually show modal
+      modalElement.classList.add('show');
+      modalElement.style.display = 'block';
+      modalElement.setAttribute('aria-hidden', 'false');
+      
+      // Add backdrop
+      const backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop fade show';
+      backdrop.id = 'eventDetailsModalBackdrop';
+      document.body.appendChild(backdrop);
+      
+      // Add body class for modal behavior
+      document.body.classList.add('modal-open');
+    }
+  } else {
+    console.error('Modal element not found');
+  }
+};
+
+const closeModal = () => {
+  const modalElement = document.getElementById('eventDetailsModal');
+  if (modalElement) {
+    try {
+      const modal = Modal.getInstance(modalElement);
+      if (modal) {
+        modal.hide();
+      }
+    } catch (error) {
+      console.error('Error hiding modal:', error);
+      // Fallback: manually hide modal
+      modalElement.classList.remove('show');
+      modalElement.style.display = 'none';
+      modalElement.setAttribute('aria-hidden', 'true');
+      
+      // Remove backdrop
+      const backdrop = document.getElementById('eventDetailsModalBackdrop');
+      if (backdrop) {
+        backdrop.remove();
+      }
+      
+      // Remove body class
+      document.body.classList.remove('modal-open');
+    }
+  }
+  selectedEvent.value = null;
+};
+
+const acknowledgeEventFromModal = async () => {
+  if (selectedEvent.value) {
+    await acknowledgeEvent(selectedEvent.value);
+    // Update selected event status
+    selectedEvent.value.status = 'acknowledged';
+    closeModal();
+  }
+};
+
+const resolveEventFromModal = async () => {
+  if (selectedEvent.value) {
+    await resolveEvent(selectedEvent.value);
+    // Update selected event status
+    selectedEvent.value.status = 'resolved';
+    closeModal();
+  }
+};
+
+const formatDateTime = (dateTimeString: string) => {
+  if (!dateTimeString) return 'N/A';
+  try {
+    const date = new Date(dateTimeString);
+    return date.toLocaleDateString('id-ID', { 
+      timeZone: 'Asia/Jakarta',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  } catch {
+    return dateTimeString;
+  }
+};
+
+const formatDuration = (duration: number) => {
+  if (!duration && duration !== 0) return 'N/A';
+  if (duration < 1) {
+    return `${(duration * 60).toFixed(1)} seconds`;
+  }
+  return `${duration.toFixed(2)} minutes`;
+};
+
+const handleImageError = (event: any) => {
+  event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMzUgNzVIMTY1VjEyNUgxMzVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMjAgMTA1TDE0MCA5MEwxNjAgMTEwTDE4MCA5MEwyMDAgMTEwVjEzNUgxMDBWMTEwTDEyMCAxMDVaIiBmaWxsPSIjQ0NDQ0NDIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE0cHgiPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+Cjwvc3ZnPgo=';
+  event.target.alt = 'Image not available';
 };
 
 const acknowledgeEvent = async (event: Event) => {
@@ -587,5 +1012,12 @@ const resolveEvent = async (event: Event) => {
 onMounted(() => {
   fetchSites();
   fetchEvents();
+  
+  // Add event listener for manual modal backdrop click
+  document.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement)?.id === 'eventDetailsModalBackdrop') {
+      closeModal();
+    }
+  });
 });
 </script>
