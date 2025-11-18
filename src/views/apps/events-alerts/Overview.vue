@@ -224,16 +224,13 @@
               </i>
             </button>
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
-              @click="deleteEvent(row)"
-              title="Delete"
+              class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm"
+              @click="editEvent(row)"
+              title="Edit"
             >
-              <i class="ki-duotone ki-trash fs-2">
+              <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-                <span class="path5"></span>
               </i>
             </button>
           </div>
@@ -375,6 +372,17 @@
           </div>
           <!--end::Event Info Grid-->
 
+          <!--begin::Comments Section-->
+          <div class="row mt-6" v-if="selectedEvent.comment">
+            <div class="col-12">
+              <div class="bg-light-info p-4 rounded">
+                <label class="fw-semibold fs-4 text-gray-700 mb-2 d-block">Comments:</label>
+                <p class="text-gray-800 mb-0 fs-5" style="white-space: pre-wrap;">{{ selectedEvent.comment }}</p>
+              </div>
+            </div>
+          </div>
+          <!--end::Comments Section-->
+
           <!--begin::Event UID-->
           <div class="row mt-6">
             <div class="col-12">
@@ -404,6 +412,149 @@
     </div>
   </div>
   <!--end::Event Details Modal-->
+
+  <!--begin::Edit Event Modal-->
+  <div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title fw-bold" id="editEventModalLabel">Edit Event</h3>
+          <button type="button" class="btn-close" @click="closeEditModal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" v-if="selectedEventForEdit">
+          <!--begin::Event Image-->
+          <div class="row mb-6" v-if="selectedEventForEdit.image_path">
+            <div class="col-12">
+              <label class="fw-semibold fs-4 mb-2">Event Image:</label>
+              <div class="text-center">
+                <img 
+                  :src="selectedEventForEdit.image_path" 
+                  :alt="selectedEventForEdit.description"
+                  class="img-fluid rounded border"
+                  style="max-height: 300px; object-fit: contain;"
+                  @error="handleImageError"
+                />
+              </div>
+            </div>
+          </div>
+          <!--end::Event Image-->
+
+          <!--begin::Event Info Grid-->
+          <div class="row g-6">
+            <!--begin::Left Column-->
+            <div class="col-md-6">
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Event Type:</label>
+                <div>
+                  <span class="badge fs-5" :class="getEventTypeBadgeClass(selectedEventForEdit.type)" style="padding: 8px 12px;">
+                    {{ getEventTypeLabel(selectedEventForEdit.type) }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Severity:</label>
+                <div>
+                  <span class="badge fs-5" :class="getSeverityBadgeClass(selectedEventForEdit.severity)" style="padding: 8px 12px;">
+                    {{ selectedEventForEdit.severity }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Current Status:</label>
+                <div>
+                  <span class="badge fs-5" :class="getStatusBadgeClass(selectedEventForEdit.status)" style="padding: 8px 12px;">
+                    {{ selectedEventForEdit.status }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Process:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEventForEdit.description }}</p>
+              </div>
+            </div>
+            <!--end::Left Column-->
+
+            <!--begin::Right Column-->
+            <div class="col-md-6">
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Start Time:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEventForEdit.startTime) }}</p>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">End Time:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEventForEdit.endTime) }}</p>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Duration:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ formatDuration(selectedEventForEdit.duration) }}</p>
+              </div>
+
+              <div class="mb-4" v-if="selectedEventForEdit.camera_name">
+                <label class="fw-semibold fs-4 mb-2">Camera:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEventForEdit.camera_name }}</p>
+              </div>
+
+              <div class="mb-4" v-if="selectedEventForEdit.location">
+                <label class="fw-semibold fs-4 mb-2">Location:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEventForEdit.location }}</p>
+              </div>
+            </div>
+            <!--end::Right Column-->
+          </div>
+          <!--end::Event Info Grid-->
+
+          <!--begin::Edit Fields-->
+          <div class="row mt-6">
+            <div class="col-12">
+              <div class="bg-light p-4 rounded">
+                <div class="row g-4">
+                  <div class="col-md-6">
+                    <label class="fw-semibold fs-4 mb-2">Update Status:</label>
+                    <select v-model="editStatus" class="form-select form-select-solid fs-5">
+                      <option value="">Select new status...</option>
+                      <option value="resolved">Resolved</option>
+                      <option value="not resolved">Not Resolved</option>
+                      <option value="false detection">False Detection</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="fw-semibold fs-4 mb-2">Event ID:</label>
+                    <p class="text-gray-800 mb-0 font-monospace fs-6">{{ selectedEventForEdit.uid }}</p>
+                  </div>
+                </div>
+                <div class="row mt-4">
+                  <div class="col-12">
+                    <label class="fw-semibold fs-4 mb-2">Comment:</label>
+                    <textarea 
+                      v-model="editComment" 
+                      class="form-control form-control-solid fs-5" 
+                      rows="4" 
+                      placeholder="Leave a comment about this event..."
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--end::Edit Fields-->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary fs-5 px-4 py-2" @click="closeEditModal" :disabled="isEditModalLoading">Cancel</button>
+          <button type="button" class="btn btn-primary fs-5 px-4 py-2" @click="saveEventEdit" :disabled="!editStatus || isEditModalLoading">
+            <span v-if="isEditModalLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <i v-else class="ki-duotone ki-check fs-2 me-2"></i>
+            {{ isEditModalLoading ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end::Edit Event Modal-->
 </template>
 
 <script setup lang="ts">
@@ -424,6 +575,7 @@ interface Event {
     process: string;
     startTime: string;
     status: string;
+    comment?: string;
   }>;
   uid: string;
   type: 'motion' | 'intrusion' | 'system' | 'camera_offline';
@@ -434,6 +586,7 @@ interface Event {
   timestamp: string;
   status: 'active' | 'acknowledged' | 'resolved';
   site_uid?: string;
+  comment?: string;
 }
 
 interface Site {
@@ -464,6 +617,10 @@ const totalItems = ref(0);
 const totalPages = ref(0);
 // Modal state
 const selectedEvent = ref<any>(null);
+const selectedEventForEdit = ref<any>(null);
+const editStatus = ref('');
+const editComment = ref('');
+const isEditModalLoading = ref(false);
 
 // Table header configuration
 const tableHeader = ref([
@@ -516,14 +673,16 @@ const mockEventsResponse = {
       image_path: "/image/stream_502_20250909_0406.jpg",
       process: "Pengiriman",
       startTime: "2025-09-09T04:06:00+07:00",
-      status: "completed"
+      status: "completed",
+      comment: "Event berhasil diselesaikan dengan baik. Pengiriman telah sampai ke tujuan."
     },
     {
       duration: 0.1,
       endTime: "2025-09-09T04:12:00+07:00",
       image_path: "/image/stream_902_20250909_0406.jpg",
       process: "Masak", startTime: "2025-09-09T04:06:00+07:00",
-      status: "completed"
+      status: "completed",
+      comment: "Proses memasak telah selesai sesuai standar operasional."
     },
     {
       duration: 0.17,
@@ -531,7 +690,8 @@ const mockEventsResponse = {
       image_path: "/image/stream_102_20250909_0403.jpg",
       process: "Ambil Nampan",
       startTime: "2025-09-09T04:03:00+07:00",
-      status: "completed"
+      status: "completed",
+      comment: null
     },
     {
       duration: 0.17,
@@ -539,7 +699,8 @@ const mockEventsResponse = {
       image_path: "/image/stream_702_20250909_0403.jpg",
       process: "Pemorsian",
       startTime: "2025-09-09T04:03:00+07:00",
-      status: "completed"
+      status: "completed",
+      comment: "Aktivitas pemorsian berjalan normal tanpa kendala."
     },
     {
       duration: 0.15,
@@ -547,7 +708,8 @@ const mockEventsResponse = {
       image_path: "/image/stream_602_20250909_0403.jpg",
       process: "Unknown Stream 602",
       startTime: "2025-09-09T04:03:00+07:00",
-      status: "completed"
+      status: "completed",
+      comment: null
     }
   ],
   pagination: {
@@ -574,31 +736,30 @@ const fetchEvents = async () => {
     // Using mock response for now
     const payload = mockEventsResponse;
 
-    // Map response.data items into the event model used by this component
+    // Map response.data items sesuai struktur mockEventsResponse
     events.value = (payload.data || []).map((item, idx) => ({
-      uid: `evt-${idx}-${item.startTime}`,
+      uid: `evt-${idx}-${Date.now()}`,
       type: 'motion',
-      severity: 'low',
+      severity: 'low', 
       description: item.process || 'Event',
-      camera_name: (item as any).camera_name || '',
-      location: (item as any).location || '',
+      camera_name: '',
+      location: '',
       timestamp: item.startTime || item.endTime || new Date().toISOString(),
-      status: item.status || 'active',
+      // Gunakan status dari response langsung
+      status: item.status || 'completed',
       site_uid: selectedSiteFilter.value || null,
-      // Preserve original mock data for modal display
+      // Preserve semua field dari mockEventsResponse
       duration: item.duration,
       startTime: item.startTime,
       endTime: item.endTime,
       image_path: item.image_path,
+      process: item.process,
+      comment: item.comment || null
     }));
 
     // Apply client-side filters if header filters are set
     if (selectedSiteFilter.value) {
       events.value = events.value.filter(e => !e.site_uid || e.site_uid === selectedSiteFilter.value);
-    }
-    if (selectedNvrFilter.value) {
-      // If events carry video_recorder_uid in the real API, filter here.
-      // For mock data we don't have that field, so this is a no-op placeholder.
     }
   } catch (error) {
     console.error("Error fetching events:", error);
@@ -713,7 +874,12 @@ const getStatusBadgeClass = (status: string) => {
     case 'acknowledged':
       return 'badge-light-warning';
     case 'completed':
+    case 'resolved':
       return 'badge-light-success';
+    case 'not resolved':
+      return 'badge-light-danger';
+    case 'false detection':
+      return 'badge-light-info';
     default:
       return 'badge-light-secondary';
   }
@@ -839,23 +1005,77 @@ const goToPage = (page: number) => {
   }
 };
 
-const deleteEvent = async (event: Event) => {
-  if (!confirm(`Are you sure you want to delete this event?`)) {
-    return;
-  }
-  
+const editEvent = async (event: Event) => {
   try {
-    // TODO: API call to delete event
-    // await ApiService.delete(`/events/${event.uid}`);
+    isEditModalLoading.value = true;
     
-    // Update local state
-    const index = events.value.findIndex(e => e.uid === event.uid);
-    if (index !== -1) {
-      events.value.splice(index, 1);
-      updatePaginationInfo();
+    // TODO: Fetch event details dari API
+    // const response = await ApiService.get(`events/${event.uid}`);
+    // selectedEventForEdit.value = response.data;
+    
+    // Untuk sementara gunakan data yang ada
+    selectedEventForEdit.value = { ...event };
+    editStatus.value = '';
+    editComment.value = '';
+    
+    // Show edit modal
+    const modalElement = document.getElementById('editEventModal');
+    if (modalElement) {
+      const modal = new Modal(modalElement);
+      modal.show();
     }
   } catch (error) {
-    console.error("Error deleting event:", error);
+    console.error("Error fetching event details:", error);
+  } finally {
+    isEditModalLoading.value = false;
+  }
+};
+
+const closeEditModal = () => {
+  const modalElement = document.getElementById('editEventModal');
+  if (modalElement) {
+    try {
+      const modal = Modal.getInstance(modalElement);
+      if (modal) {
+        modal.hide();
+      }
+    } catch (error) {
+      console.error('Error hiding edit modal:', error);
+    }
+  }
+  selectedEventForEdit.value = null;
+  editStatus.value = '';
+  editComment.value = '';
+};
+
+const saveEventEdit = async () => {
+  if (!editStatus.value) return;
+  
+  try {
+    isEditModalLoading.value = true;
+    
+    const updateData = {
+      status: editStatus.value,
+      comment: editComment.value
+    };
+    
+    // TODO: API call untuk update event
+    // await ApiService.put(`events/${selectedEventForEdit.value.uid}`, updateData);
+    
+    // Update local state
+    const index = events.value.findIndex(e => e.uid === selectedEventForEdit.value.uid);
+    if (index !== -1) {
+      events.value[index].status = editStatus.value;
+      // Bisa tambahkan field comment jika diperlukan
+    }
+    
+    console.log('Event updated:', updateData);
+    closeEditModal();
+    
+  } catch (error) {
+    console.error("Error updating event:", error);
+  } finally {
+    isEditModalLoading.value = false;
   }
 };
 
