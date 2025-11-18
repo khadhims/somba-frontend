@@ -18,7 +18,7 @@ const MainMenuConfig: Array<MenuItem> = [
       {
         heading: "organization",
         route: "/controlplane/organization/overview",
-        keenthemesIcon: "building",
+        keenthemesIcon: "abstract-25",
         bootstrapIcon: "bi-building",
       },
       {
@@ -30,7 +30,7 @@ const MainMenuConfig: Array<MenuItem> = [
       {
         heading: "team",
         route: "/controlplane/team/overview",
-        keenthemesIcon: "users",
+        keenthemesIcon: "profile-circle",
         bootstrapIcon: "bi-people",
       },
       {
@@ -188,8 +188,8 @@ const MainMenuConfig: Array<MenuItem> = [
       },
       {
         sectionTitle: "recordingPlayback",
-        route: "/recording-playback",
-        keenthemesIcon: "video",
+        route: "/recording-playbook",
+        keenthemesIcon: "screen",
         bootstrapIcon: "bi-play-circle",
         sub: [
           {
@@ -205,7 +205,7 @@ const MainMenuConfig: Array<MenuItem> = [
       {
         sectionTitle: "monitoringCenter",
         route: "/monitoring-center",
-        keenthemesIcon: "monitor-mobbile",
+        keenthemesIcon: "monitor-mobile",
         bootstrapIcon: "bi-display",
         sub: [
           {

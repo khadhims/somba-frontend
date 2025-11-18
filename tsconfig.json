@@ -1,14 +1,19 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.web.json",
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
   "compilerOptions": {
-    "lib": ["es2017"],
-    "ignoreDeprecations": "5.0",
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "preserve",
+    "jsxImportSource": "vue",
+    "lib": ["ES2020", "DOM"],
+    "skipLibCheck": true,
     "noImplicitAny": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["vite/client"]
   },
   "references": [
     {

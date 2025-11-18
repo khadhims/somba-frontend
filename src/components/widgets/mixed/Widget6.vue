@@ -289,23 +289,15 @@ const chartOptions = (
       },
     },
     states: {
-      normal: {
-        filter: {
-          type: "none",
-          value: 0,
-        },
-      },
       hover: {
         filter: {
           type: "none",
-          value: 0,
         },
       },
       active: {
         allowMultipleDataPointsSelection: false,
         filter: {
           type: "none",
-          value: 0,
         },
       },
     },

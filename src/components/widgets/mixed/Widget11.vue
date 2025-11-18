@@ -209,23 +209,15 @@ const chartOptions = (chartHeight: string = "auto"): ApexOptions => {
       opacity: [0.25, 1],
     },
     states: {
-      normal: {
-        filter: {
-          type: "none",
-          value: 0,
-        },
-      },
       hover: {
         filter: {
           type: "none",
-          value: 0,
         },
       },
       active: {
         allowMultipleDataPointsSelection: false,
         filter: {
           type: "none",
-          value: 0,
         },
       },
     },

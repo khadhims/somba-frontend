@@ -10,24 +10,48 @@
       </div>
 
       <div class="d-flex align-items-center gap-2">
-        <div v-if="sites.length > 0" class="d-flex align-items-center">
+        <div class="d-flex align-items-center">
           <label class="form-label me-2 mb-0 fw-semibold">Site:</label>
           <select
-            v-model="selectedSiteId"
-            @change="switchSite"
+            v-model="selectedSiteFilter"
+            @change="onHeaderSiteFilterChange"
             class="form-select form-select-solid w-200px"
             :disabled="loadingSites"
           >
-            <option value="">All Sites</option>
-            <option v-for="site in sites" :key="site.uid" :value="site.uid">
-              {{ site.name }}
-            </option>
+            <option v-if="loadingSites" value="">Loading sites...</option>
+            <option v-else-if="sites.length === 0" value="">No sites available</option>
+            <option v-else value="" disabled>Select Sites</option>
+            <option v-for="site in sites" :key="site.uid" :value="site.uid">{{ site.name }}</option>
+          </select>
+        </div>
+
+        <div class="d-flex align-items-center">
+          <label class="form-label me-2 mb-0 fw-semibold">NVR:</label>
+          <select
+            v-model="selectedNvrFilter"
+            @change="onHeaderNvrFilterChange"
+            class="form-select form-select-solid w-200px"
+            :disabled="loadingNvrs || !selectedSiteFilter"
+          >
+            <option v-if="loadingNvrs" value="">Loading NVRs...</option>
+            <option v-else-if="!selectedSiteFilter" value="">Select a site first</option>
+            <option v-else-if="availableHeaderNvrs.length === 0" value="">No NVRs available</option>
+            <option v-else value="">All NVRs</option>
+            <option v-for="nvr in availableHeaderNvrs" :key="nvr.uid" :value="nvr.uid">{{ nvr.name }}</option>
           </select>
         </div>
 
         <div class="btn-group" role="group">
           <button type="button" class="btn btn-sm" :class="{ 'btn-light': true }">
             <i class="bi-grid-fill"></i>
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm"
+            :class="gridView === '1x1' ? 'btn-primary' : 'btn-light'"
+            @click="setGridView('1x1')"
+          >
+            1x1
           </button>
           <button
             type="button"
@@ -72,25 +96,25 @@
                     <span class="badge" :class="camera.status === 'online' ? 'badge-light-success' : 'badge-light-danger'">{{ camera.status }}</span>
                   </div>
 
-                  <div class="camera-feed-container bg-gray-300 rounded" style="height: 160px; position: relative;">
-                    <div v-if="camera.public_endpoint_url && !invalidUrlSet.has(camera.uid)" class="h-100">
-                      <video
-                        :src="camera.public_endpoint_url"
-                        class="camera-video"
-                        playsinline
-                        muted
-                        autoplay
-                        preload="auto"
-                        crossorigin="anonymous"
-                        controls
-                      ></video>
-                    </div>
-                    <div v-else-if="camera.public_endpoint_url && invalidUrlSet.has(camera.uid)" class="d-flex align-items-center justify-content-center h-100 px-3 text-wrap">
-                      <small class="text-muted">URL invalid: <a :href="camera.public_endpoint_url" target="_blank" rel="noopener">{{ camera.public_endpoint_url }}</a></small>
-                    </div>
+                  <div
+                    class="camera-feed-container bg-gray-300 rounded"
+                    :style="{ height: gridView === '1x1' ? '520px' : '160px', position: 'relative' }"
+                  >
+                    <video
+                      v-if="camera.public_endpoint_url"
+                      :id="`video-${camera.uid}`"
+                      class="camera-video"
+                      playsinline
+                      muted
+                      autoplay
+                      preload="auto"
+                      crossorigin="anonymous"
+                      controls
+                    ></video>
                     <div v-else class="d-flex align-items-center justify-content-center h-100">
                       <i class="ki-duotone ki-security-user fs-3x text-gray-500"><span class="path1"></span><span class="path2"></span></i>
                     </div>
+
                     <div class="position-absolute bottom-0 start-0 p-2">
                       <small class="text-white bg-dark bg-opacity-75 px-2 py-1 rounded">{{ camera.name }}</small>
                     </div>
@@ -151,8 +175,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from "vue";
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { useRoute } from 'vue-router';
+
+// Using HLS from CDN via window.Hls (see index.html)
+
+// Ensure HLS is available via CDN (no-op if already present)
+const loadHlsCdn = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const w = window as any;
+    if (w.Hls && typeof w.Hls.isSupported === 'function') {
+      resolve();
+      return;
+    }
+    let script = document.querySelector('script[data-hls-cdn]') as HTMLScriptElement | null;
+    if (!script) {
+      script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+      script.async = true;
+      script.setAttribute('data-hls-cdn', 'true');
+      document.head.appendChild(script);
+    }
+    script.addEventListener('load', () => resolve());
+    script.addEventListener('error', () => reject(new Error('Failed to load HLS CDN script')));
+  });
+};
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import ApiService from "@/core/services/ApiService";
 
@@ -161,10 +208,16 @@ interface Camera {
   uid: string;
   name: string;
   room: string;
-  status: 'online' | 'offline';
+  status: 'online' | 'offline' | 'connecting';
   recording: boolean;
   site_uid: string;
+  nvr_uid?: string;
   public_endpoint_url?: string;
+  // runtime fields for status management
+  errorCount?: number;
+  offlineTimer?: any;
+  retryTimer?: any;
+  statusCheckPausedUntil?: number | null;
 }
 
 interface Site {
@@ -172,244 +225,455 @@ interface Site {
   name: string;
 }
 
+interface NVR {
+  uid: string;
+  name: string;
+  site_uid: string;
+}
+
 // Reactive data
 const cameras = ref<Camera[]>([]);
 const sites = ref<Site[]>([]);
+const nvrs = ref<NVR[]>([]);
 const loading = ref(false);
-const loadingSites = ref(false);
+const loadingSites = ref(true);
+const loadingNvrs = ref(false);
 const searchQuery = ref("");
-const selectedSiteId = ref("");
+const selectedSiteId = ref(""); // Keep for internal use
+const selectedNvrId = ref(""); // Keep for internal use
+// Header filter state (like Camera.vue)
+const selectedSiteFilter = ref<string>("");
+const selectedNvrFilter = ref<string>("");
 const gridView = ref("3x3");
 
-// Track urls that fail quick validation
-const invalidUrlSet = ref<Set<string>>(new Set());
+// Mock fallbacks to avoid compile/runtime errors when API fails
+const mockSites: Site[] = [];
+const mockCameras: Camera[] = [];
+
+// Fetch cameras from API
+const hlsInstances = new Map<string, any>();
+const stallWatchers = new Map<string, number>();
+// Nudge playback to live-edge when too far behind or stalling
+const snapToLiveEdge = (videoEl: HTMLVideoElement, maxLagSec = 8, safetyBackSec = 2) => {
+  try {
+    if (!videoEl.seekable || videoEl.seekable.length === 0) return;
+    const end = videoEl.seekable.end(videoEl.seekable.length - 1);
+    const lag = end - videoEl.currentTime;
+    if (lag > maxLagSec) {
+      const target = Math.max(0, end - safetyBackSec);
+      videoEl.currentTime = target;
+    }
+  } catch {}
+};
+let videoObserver: IntersectionObserver | null = null;
+const attachedSet = new Set<string>();
+
+const attachStreamToVideo = (cam: Camera) => {
+  const videoEl = document.getElementById(`video-${cam.uid}`) as HTMLVideoElement | null;
+  const url = cam.public_endpoint_url;
+  if (!videoEl || !url) return;
+
+  // Destroy previous instance if exists and source changed
+  const existing = hlsInstances.get(cam.uid);
+  if (existing) {
+    try { existing.destroy(); } catch(_) {}
+    hlsInstances.delete(cam.uid);
+  }
+  const existingWatch = stallWatchers.get(cam.uid);
+  if (existingWatch) {
+    clearInterval(existingWatch);
+    stallWatchers.delete(cam.uid);
+  }
+
+  // initialize status tracking
+  if (cam.offlineTimer) { try { clearTimeout(cam.offlineTimer); } catch {} cam.offlineTimer = null; }
+  cam.errorCount = 0;
+  cam.statusCheckPausedUntil = null;
+  // Set connecting while (re)initializing
+  cam.status = 'connecting';
+
+  const HlsGlobal = (window as any).Hls;
+  if (HlsGlobal && HlsGlobal.isSupported && HlsGlobal.isSupported()) {
+    const hls = new HlsGlobal({
+      // Optimized chunking configuration for 9 CCTV
+      lowLatencyMode: true,
+      backBufferLength: 30,
+      maxBufferLength: 300, // 5 menit buffer
+      maxMaxBufferLength: 600, // 10 menit buffer
+      liveSyncDurationCount: 16, // lebih panjang, request chunk lebih jarang
+      liveMaxLatencyDurationCount: 20,
+
+      // Fragment loading optimization
+      fragLoadingTimeOut: 10000,
+      fragLoadingMaxRetry: 3,
+      fragLoadingRetryDelay: 1000,
+
+      // Manifest loading optimization
+      manifestLoadingTimeOut: 5000,
+      manifestLoadingMaxRetry: 3,
+      manifestLoadingRetryDelay: 1000,
+
+      // Level loading optimization
+      levelLoadingTimeOut: 5000,
+      levelLoadingMaxRetry: 2,
+      levelLoadingRetryDelay: 2000,
+
+      // Reduce aggressive requesting
+      enableWorker: true,
+      startFragPrefetch: false,
+      testBandwidth: false,
+      maxLiveSyncPlaybackRate: 2,
+    });
+
+    // Helpful logs and live-edge management
+    const markOnline = () => {
+      cam.status = 'online';
+      cam.errorCount = 0;
+      if (cam.offlineTimer) { try { clearTimeout(cam.offlineTimer); } catch {} cam.offlineTimer = null; }
+      cam.statusCheckPausedUntil = Date.now() + 5 * 60 * 1000; // pause status flips for 5 minutes
+    };
+
+    hls.on(HlsGlobal.Events.LEVEL_LOADED, (_evt: any, data: any) => {
+      if ((import.meta as any)?.env?.DEV) {
+        console.log('[HLS] level loaded:', {
+          live: data?.details?.live,
+          targetduration: data?.details?.targetduration,
+          partTarget: data?.details?.partTarget,
+          totalduration: data?.details?.totalduration,
+        });
+      }
+    });
+
+    hls.on(HlsGlobal.Events.BUFFER_APPENDED, () => {
+      // keep near live edge, but not at exact end
+      snapToLiveEdge(videoEl, 12, 2);
+      // Optional: debug buffer length in dev
+      if ((import.meta as any)?.env?.DEV) {
+        try {
+          const b = videoEl.buffered;
+          if (b.length) {
+            const len = b.end(b.length - 1) - videoEl.currentTime;
+            console.log(`[HLS] buffer=${len.toFixed(2)}s for`, cam.uid);
+          }
+        } catch {}
+      }
+    });
+
+    hls.on(HlsGlobal.Events.FRAG_LOADED, () => {
+      if (cam.status !== 'online') markOnline();
+    });
+    hls.on(HlsGlobal.Events.ERROR, (_evt: any, data: any) => {
+      // Respect pause window to avoid thrash for status flips, but still handle recovery
+      const inPause = cam.statusCheckPausedUntil && Date.now() < cam.statusCheckPausedUntil;
+      if (data && data.fatal === false) {
+        const details = (data.details || data.error || data.reason || '').toString().toLowerCase();
+        if (details.includes('buffer_stalled') || details.includes('buffer-stalled')) {
+          snapToLiveEdge(videoEl, 6, 1.5);
+          videoEl.play().catch(() => {});
+        }
+        cam.errorCount = (cam.errorCount || 0) + 1;
+        if (!inPause && cam.errorCount > 3 && !cam.offlineTimer) {
+          cam.offlineTimer = setTimeout(() => {
+            if ((cam.errorCount || 0) > 3) {
+              cam.status = 'offline';
+              cam.statusCheckPausedUntil = null;
+              if (!cam.retryTimer) {
+                cam.retryTimer = setInterval(() => {
+                  if (cam.statusCheckPausedUntil && Date.now() < cam.statusCheckPausedUntil) return;
+                  cam.errorCount = 0;
+                  cam.status = 'offline';
+                  const ex = hlsInstances.get(cam.uid);
+                  if (ex) { try { ex.destroy(); } catch {} hlsInstances.delete(cam.uid); }
+                  const ve = document.getElementById(`video-${cam.uid}`) as HTMLVideoElement | null;
+                  if (ve) attachStreamToVideo(cam);
+                }, 30000);
+              }
+            }
+            cam.offlineTimer = null;
+          }, 60000);
+        }
+        return;
+      }
+      if (!data || !('fatal' in data)) return;
+      // Fatal errors
+      switch (data.type) {
+        case HlsGlobal.ErrorTypes.NETWORK_ERROR:
+          hls.startLoad();
+          break;
+        case HlsGlobal.ErrorTypes.MEDIA_ERROR:
+          hls.recoverMediaError();
+          break;
+        default:
+          try { hls.destroy(); } catch {}
+          hls.loadSource(url);
+          hls.attachMedia(videoEl);
+      }
+    });
+
+    hls.loadSource(url);
+    hls.attachMedia(videoEl);
+    hls.on(HlsGlobal.Events.MANIFEST_PARSED, () => {
+      markOnline();
+      videoEl.play().catch(() => {
+        // Autoplay or readiness might delay playback; retry shortly without flipping status
+        window.setTimeout(() => {
+          try { videoEl.play().catch(() => {}); } catch {}
+        }, 500);
+      });
+    });
+    hlsInstances.set(cam.uid, hls);
+  } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
+    // native HLS (Safari)
+    videoEl.src = url;
+    const onPlaying = () => {
+      cam.status = 'online';
+    };
+    videoEl.addEventListener('playing', onPlaying, { once: true });
+    videoEl.addEventListener('loadeddata', () => {
+      try {
+        videoEl.play().catch(() => {
+          // Retry without changing status
+          window.setTimeout(() => { try { videoEl.play().catch(() => {}); } catch {} }, 500);
+        });
+      } catch {}
+    }, { once: true });
+  } else {
+    // fallback: set src and hope for best
+    videoEl.src = url;
+  }
+
+  // Simple stall detection and recovery for live
+  const watcher = window.setInterval(() => {
+    if (!videoEl) return;
+    const stalled = videoEl.readyState < 2 || videoEl.paused;
+    if (stalled) {
+      try {
+        videoEl.play().catch(() => {});
+      } catch {}
+    }
+  }, 5000);
+  stallWatchers.set(cam.uid, watcher);
+  attachedSet.add(cam.uid);
+};
+
+const detachAllStreams = () => {
+  hlsInstances.forEach((hls) => {
+    try { hls.destroy(); } catch(_) {}
+  });
+  hlsInstances.clear();
+  stallWatchers.forEach((id) => clearInterval(id));
+  stallWatchers.clear();
+  // clear camera timers
+  cameras.value.forEach((c) => {
+    if (c.retryTimer) { try { clearInterval(c.retryTimer); } catch {} c.retryTimer = null; }
+    if (c.offlineTimer) { try { clearTimeout(c.offlineTimer); } catch {} c.offlineTimer = null; }
+  });
+  attachedSet.clear();
+  if (videoObserver) {
+    try { videoObserver.disconnect(); } catch {}
+    videoObserver = null;
+  }
+};
+
+// Lazy initialize streams only when videos are visible, with staggered initialization
+const setupVideoObservers = () => {
+  if (videoObserver) {
+    try { videoObserver.disconnect(); } catch {}
+    videoObserver = null;
+  }
+  let staggerIndex = 0;
+  videoObserver = new IntersectionObserver((entries) => {
+    const visible = entries.filter((e) => e.isIntersecting);
+    visible.forEach((entry) => {
+      const el = entry.target as HTMLVideoElement;
+      const id = el.id.replace('video-', '');
+      if (!id) return;
+      if (attachedSet.has(id)) return;
+      const cam = cameras.value.find((c) => c.uid === id);
+      if (!cam) return;
+      // Skip if already has hls instance
+      if (hlsInstances.has(id)) return;
+      const delay = staggerIndex * 150;
+      staggerIndex += 1;
+      window.setTimeout(() => attachStreamToVideo(cam), delay);
+    });
+  }, { root: null, rootMargin: '64px', threshold: 0.25 });
+
+  // Observe current rendered videos
+  cameras.value.forEach((cam) => {
+    const el = document.getElementById(`video-${cam.uid}`) as HTMLVideoElement | null;
+    if (el) {
+      try { videoObserver!.observe(el); } catch {}
+    }
+  });
+};
 
 const route = useRoute();
 
-// Mock data for demonstration
-const mockCameras: Camera[] = [
-  { uid: "1", name: "Front Entrance", room: "Lobby", status: "online", recording: true, site_uid: "site1" },
-  { uid: "2", name: "Parking Area", room: "Parking", status: "online", recording: true, site_uid: "site1" },
-  { uid: "3", name: "Reception Desk", room: "Reception", status: "offline", recording: false, site_uid: "site1" },
-  { uid: "4", name: "Conference Room A", room: "Meeting", status: "online", recording: true, site_uid: "site1" },
-  { uid: "5", name: "Warehouse Entry", room: "Warehouse", status: "online", recording: true, site_uid: "site1" },
-  { uid: "6", name: "Loading Dock", room: "Loading", status: "online", recording: false, site_uid: "site1" },
-];
-
-const mockSites: Site[] = [
-  { uid: "site1", name: "Main Office" },
-  { uid: "site2", name: "Warehouse Branch" },
-];
-
-// Fetch cameras from API (sites/{site_uid}/cameras)
 const fetchCameras = async () => {
   loading.value = true;
-  invalidUrlSet.value = new Set();
   try {
     if (!selectedSiteId.value) {
       cameras.value = [];
       return;
     }
 
-    const resp = await ApiService.query(`sites/${encodeURIComponent(selectedSiteId.value)}/cameras`, {});
+    const resp = await ApiService.query(`sites/${selectedSiteId.value}/cameras`, {});
+    // Debug raw response for troubleshooting when status 200 but no cameras shown
+    console.debug('[LiveView] fetchCameras raw response:', resp);
+
+    // Normalize different API shapes: resp.data.data, resp.data, or single object
     let raw: any = resp?.data?.data ?? resp?.data ?? null;
+    console.debug('[LiveView] fetchCameras selectedSiteId:', selectedSiteId.value, 'rawType:', typeof raw, 'isArray:', Array.isArray(raw));
+
     let data: any[] = [];
-    if (Array.isArray(raw)) data = raw; else if (raw && typeof raw === 'object') {
+    if (Array.isArray(raw)) {
+      data = raw;
+    } else if (raw == null) {
+      data = [];
+    } else if (typeof raw === 'object') {
+      // If server wrapped list under common keys, detect them
       if (Array.isArray(raw.items)) data = raw.items;
       else if (Array.isArray(raw.cameras)) data = raw.cameras;
       else if (Array.isArray(raw.results)) data = raw.results;
-      else data = [raw];
+      else {
+        // single object -> wrap into array
+        data = [raw];
+      }
+    } else {
+      data = [];
     }
 
-    cameras.value = data.map((it: any) => ({
-      uid: it.uid ?? it.id?.toString() ?? (Math.random() * 1e9).toString(),
-      name: it.name ?? it.camera_name ?? '',
-      room: it.room_name ?? it.room ?? it.location ?? '',
-      status: (String(it.status || '').toLowerCase() === 'online') ? 'online' : 'offline',
-      recording: Boolean(it.is_recording || it.recording),
-      site_uid: it.site_uid ?? it.site?.uid ?? selectedSiteId.value,
-      public_endpoint_url: it.public_endpoint_url ?? it.publicEndpointUrl ?? it.ipAddress ?? it.url ?? undefined,
-    }));
+    console.debug('[LiveView] fetchCameras normalized data length:', data.length);
 
-    // Quick validation: try load each URL natively to detect obviously invalid URLs
-    await nextTick();
-    cameras.value.forEach((cam) => {
-      const url = cam.public_endpoint_url;
-      if (!url) return;
-
-      const lower = String(url).toLowerCase();
-
-      // If URL looks like an HLS manifest, attempt HLS-aware validation first.
-      if (lower.includes('.m3u8')) {
-        try {
-          // If browser natively supports HLS (Safari), treat as valid
-          const nativeTest = document.createElement('video');
-          if (nativeTest && typeof nativeTest.canPlayType === 'function') {
-            const can = nativeTest.canPlayType('application/vnd.apple.mpegurl');
-            if (can === 'probably' || can === 'maybe') {
-              return; // native HLS supported
-            }
-          }
-
-          const HlsLib = (window as any).Hls;
-          if (HlsLib) {
-            let done = false;
-            const videoEl = document.createElement('video');
-            videoEl.muted = true;
-            videoEl.crossOrigin = 'anonymous';
-
-            const hls = new HlsLib({
-              enableWorker: true,
-              lowLatencyMode: true,
-              maxBufferLength: 30,
-              // don't automatically start loading fragments (segments) during validation
-              // this prevents .ts segment downloads until we explicitly call startLoad()
-              autoStartLoad: false,
-            });
-
-            const cleanupHls = () => {
-              try { hls.destroy(); } catch (e) {}
-              try { videoEl.removeAttribute('src'); videoEl.load(); } catch (e) {}
-            };
-
-            const manifestParsed = () => {
-              if (done) return; done = true;
-              clearTimeout(hlsTimer);
-              cleanupHls();
-              // manifest parsed => treat as valid (do nothing)
-            };
-
-            const onHlsError = (_evt: any, data: any) => {
-              if (done) return;
-              // mark invalid only on fatal errors
-              if (data && data.fatal) {
-                done = true;
-                clearTimeout(hlsTimer);
-                cleanupHls();
-                invalidUrlSet.value.add(cam.uid);
-              }
-            };
-
-            hls.on(HlsLib.Events.MANIFEST_PARSED, manifestParsed);
-            hls.on(HlsLib.Events.ERROR, onHlsError);
-
-            // safety timeout
-            const hlsTimer = window.setTimeout(() => {
-              if (done) return; done = true;
-              try { cleanupHls(); } catch (e) {}
-              // if manifest not parsed within timeout, mark invalid
-              invalidUrlSet.value.add(cam.uid);
-            }, 4000);
-
-            try {
-              hls.loadSource(url);
-              hls.attachMedia(videoEl);
-              return; // we've launched HLS validation, skip native test
-            } catch (e) {
-              try { clearTimeout(hlsTimer); } catch (e) {}
-              try { cleanupHls(); } catch (e) {}
-              // fall through to native test as fallback
-            }
-          } else {
-            // hls.js not available; don't mark invalid here — let main player try
-            return;
-          }
-        } catch (e) {
-          // any unexpected error — fall back to native validation below
-        }
-      }
-
-      // create an off-DOM video element to test native playback for non-HLS URLs
-      try {
-        const v = document.createElement('video');
-        v.crossOrigin = 'anonymous';
-        v.preload = 'metadata';
-        let done = false;
-        let timer: number | undefined;
-        const onCan = () => {
-          if (done) return; done = true;
-          cleanup();
-        };
-        const onErr = () => {
-          if (done) return; done = true;
-          invalidUrlSet.value.add(cam.uid);
-          cleanup();
-        };
-        const cleanup = () => {
-          try { if (timer) clearTimeout(timer); } catch (e) {}
-          try { v.pause(); } catch {}
-          try { v.removeAttribute('src'); } catch {}
-          try { v.load(); } catch {}
-          v.removeEventListener('loadeddata', onCan);
-          v.removeEventListener('error', onErr);
-        };
-        v.addEventListener('loadeddata', onCan, { once: true });
-        v.addEventListener('error', onErr, { once: true });
-        // timeout fallback: if not loaded in 3s mark invalid
-        timer = window.setTimeout(() => {
-          if (done) return; done = true;
-          invalidUrlSet.value.add(cam.uid);
-          cleanup();
-        }, 3000);
-        // set src last
-        v.src = url;
-      } catch (e) {
-        invalidUrlSet.value.add(cam.uid);
-      }
+    // Map to local Camera interface with tolerant field matching
+    cameras.value = data.map((it: any) => {
+      // Normalize NVR-related identifiers into multiple fields so filters can match
+      const nvrCandidate = it.nvr_uid ?? it.video_recorder_uid ?? it.video_recorder_uid ?? it.nvr?.uid ?? it.nvrId ?? it.nvrUid ?? it.nvr_id ?? it.nvrId ?? it.nvr ?? undefined;
+      return ({
+        uid: it.uid ?? it.id?.toString() ?? (Math.random() * 1e9).toString(),
+        name: it.name ?? it.camera_name ?? '',
+        room: it.room_name ?? it.roomName ?? it.room ?? it.location ?? '',
+        status: (String(it.status || '').toLowerCase() === 'online') ? 'online' : 'offline',
+        recording: Boolean(it.is_recording || it.recording),
+        site_uid: (it.site_uid ?? it.site?.uid) || selectedSiteId.value,
+        // Canonical field used across this component
+        nvr_uid: nvrCandidate ?? undefined,
+        // Keep original common variants to help debugging and external consumers
+        video_recorder_uid: it.video_recorder_uid ?? undefined,
+        nvrId: it.nvrId ?? it.nvr_id ?? undefined,
+        nvr: it.nvr ?? undefined,
+        public_endpoint_url: it.public_endpoint_url ?? it.publicEndpointUrl ?? it.ipAddress ?? it.url ?? undefined,
+      });
     });
 
-  } catch (error) {
-    console.error('Error fetching cameras:', error);
+  // Ensure HLS is loaded, wait DOM update, then lazily attach streams
+  try { await loadHlsCdn(); } catch {}
+    await nextTick();
+    setupVideoObservers();
+  } catch (err) {
+    console.error('Error fetching cameras:', err);
+    // fallback to mock if API fails
     cameras.value = mockCameras.filter(camera => !selectedSiteId.value || camera.site_uid === selectedSiteId.value);
   } finally {
     loading.value = false;
   }
 };
 
-// Fetch sites from API (prefer team-scoped: teams/{team_uid}/sites)
+// Fetch NVRs from API - following Camera.vue pattern exactly
+const fetchNvrs = async () => {
+  if (!selectedSiteId.value) {
+    nvrs.value = [];
+    return;
+  }
+
+  loadingNvrs.value = true;
+  try {
+    // Use video-recorders endpoint exactly like Camera.vue
+    const resp = await ApiService.query(`sites/${selectedSiteId.value}/video-recorders`, {});
+    console.debug('[LiveView] fetchNvrs response:', resp);
+    
+    if (resp && resp.data) {
+      const siteNvrs = resp.data.data && Array.isArray(resp.data.data) ? resp.data.data : Array.isArray(resp.data) ? resp.data : [];
+      
+      nvrs.value = siteNvrs.map((nvr: any) => ({
+        uid: nvr.uid,
+        site_uid: nvr.site_uid || selectedSiteId.value,
+        name: nvr.name
+      }));
+      
+      console.debug('[LiveView] fetchNvrs mapped:', nvrs.value);
+    } else {
+      nvrs.value = [];
+    }
+  } catch (error) {
+    console.error('[LiveView] Error loading NVRs:', error);
+    // Fallback to mock data like Camera.vue
+    nvrs.value = [
+      { uid: "nvr-1", site_uid: selectedSiteId.value, name: "NVR-Reception-01" },
+      { uid: "nvr-2", site_uid: selectedSiteId.value, name: "NVR-Conference-01" },
+    ];
+  } finally {
+    loadingNvrs.value = false;
+  }
+};
+
+// Fetch sites from API - following Camera.vue pattern exactly
 const fetchSites = async () => {
   loadingSites.value = true;
   try {
-    // Resolve team UID from route query or localStorage
-    const teamUid = (route.query.teamId as string) || localStorage.getItem('lastSelectedTeam') || '';
+    // Get selected team from localStorage or query params (exactly like Camera.vue)
+    const selectedTeamId = localStorage.getItem('lastSelectedTeam') || route.query.teamId as string;
+    if (!selectedTeamId) {
+      console.warn('[LiveView] No team selected, cannot load sites');
+      sites.value = [];
+      return;
+    }
 
-    let resp: any;
-    if (teamUid) {
-      resp = await ApiService.query(`teams/${encodeURIComponent(teamUid)}/sites`, {});
+    console.debug('[LiveView] Using selectedTeamId:', selectedTeamId);
+    const resp = await ApiService.query(`teams/${selectedTeamId}/sites`, {});
+    
+    // Parse response (wrapped or direct) - exactly like Camera.vue
+    if (resp && resp.data) {
+      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+        sites.value = resp.data.data;
+      } else if (Array.isArray(resp.data)) {
+        sites.value = resp.data;
+      } else {
+        console.warn('[LiveView] Unexpected sites response format:', resp.data);
+        sites.value = [];
+      }
     } else {
-      resp = await ApiService.query('sites', {});
+      console.warn('[LiveView] No data received from sites API');
+      sites.value = [];
     }
 
-    // Normalize response shapes: resp.data.data | resp.data | items | sites | results
-    const raw = resp?.data?.data ?? resp?.data ?? [];
-    let data: any[] = [];
-    if (Array.isArray(raw)) data = raw;
-    else if (raw && typeof raw === 'object') {
-      if (Array.isArray(raw.items)) data = raw.items;
-      else if (Array.isArray(raw.sites)) data = raw.sites;
-      else if (Array.isArray(raw.results)) data = raw.results;
-      else data = [raw];
-    }
-
-    sites.value = data.map((s: any) => ({ uid: s.uid ?? s.id, name: s.name ?? s.title ?? '' }));
-
-    // choose selected site: prefer route query -> lastSelectedSite -> first site
-    const fromRoute = (route.query.siteId as string) || '';
-    const fromStorage = localStorage.getItem('lastSelectedSite') || '';
-    selectedSiteId.value = fromRoute || fromStorage || (sites.value[0] ? sites.value[0].uid : '');
-
-    if (selectedSiteId.value) {
-      // persist selection
-      try { localStorage.setItem('lastSelectedSite', selectedSiteId.value); } catch {}
-      await fetchCameras();
-    } else {
-      cameras.value = [];
-    }
-  } catch (err) {
-    console.error('Error fetching sites:', err);
-    // fall back to mock sites if API fails
-    sites.value = mockSites;
+    console.debug('[LiveView] Loaded sites:', sites.value);
+    
     if (sites.value.length > 0) {
+      // Auto-select first site or preferred site
+      const preferred = sites.value.find((ss) => ss.name === 'Site BE');
+      const selectedUid = preferred ? preferred.uid : sites.value[0].uid;
+      
+      // Initialize both filter and internal state
+      selectedSiteFilter.value = selectedUid;
+      selectedSiteId.value = selectedUid;
+      
+      console.debug('[LiveView] selectedSiteId set to:', selectedSiteId.value);
+      await fetchNvrs();
+      await fetchCameras();
+    }
+  } catch (error) {
+    console.error('[LiveView] Error loading sites:', error);
+    // Fallback to mock data for development - like Camera.vue
+    sites.value = [
+      { uid: "site-1", name: "Main Office" },
+      { uid: "site-2", name: "Branch Office" },
+      { uid: "site-3", name: "Warehouse A" },
+    ];
+    if (sites.value.length > 0) {
+      // Initialize both filter and internal state
+      selectedSiteFilter.value = sites.value[0].uid;
       selectedSiteId.value = sites.value[0].uid;
       await fetchCameras();
     }
@@ -418,14 +682,67 @@ const fetchSites = async () => {
   }
 };
 
-// Switch site
-const switchSite = () => {
-  fetchCameras();
+// Header filter change handlers (following Camera.vue pattern)
+const onHeaderSiteFilterChange = () => {
+  selectedNvrFilter.value = "";
+  selectedSiteId.value = selectedSiteFilter.value; // Sync internal state
+  // cleanup previous streams
+  detachAllStreams();
+  // Load cameras for the new selected site
+  if (selectedSiteFilter.value) {
+    fetchNvrs();
+    fetchCameras();
+  } else {
+    cameras.value = [];
+    nvrs.value = [];
+  }
 };
 
+const onHeaderNvrFilterChange = async () => {
+  selectedNvrId.value = selectedNvrFilter.value; // Sync internal state
+  // Re-init streams for the currently rendered (filtered) videos so
+  // HLS instances attach and status flips to `online` when playback starts.
+  detachAllStreams();
+  await nextTick();
+  try { await loadHlsCdn(); } catch {}
+  setupVideoObservers();
+  console.debug('[LiveView] onHeaderNvrFilterChange - selectedNvrFilter:', selectedNvrFilter.value);
+};
+
+// Switch site (kept for backward compatibility)
+const switchSite = async () => {
+  // cleanup previous streams
+  detachAllStreams();
+  selectedNvrId.value = ""; // Reset NVR selection when site changes
+  await fetchNvrs();
+  await fetchCameras();
+};
+
+// Switch NVR (kept for backward compatibility)
+const switchNvr = async () => {
+  // cleanup previous streams
+  detachAllStreams();
+  await fetchCameras();
+};
+
+// cleanup on unmount
+onUnmounted(() => {
+  detachAllStreams();
+});
+
+// if selected site changes elsewhere, refresh cameras
+watch(selectedSiteId, (nv, ov) => {
+  if (nv !== ov) {
+    detachAllStreams();
+    fetchCameras();
+  }
+});
+
 // Grid view management
-const setGridView = (view: string) => {
+const setGridView = async (view: string) => {
   gridView.value = view;
+  await nextTick();
+  setupVideoObservers();
 };
 
 // Computed properties
@@ -435,6 +752,8 @@ const gridClasses = computed(() => {
 
 const cameraColClass = computed(() => {
   switch (gridView.value) {
+    case '1x1':
+      return 'col-12';
     case '2x2':
       return 'col-md-6';
     case '3x3':
@@ -446,16 +765,58 @@ const cameraColClass = computed(() => {
   }
 });
 
-const filteredCameras = computed(() => {
-  if (!searchQuery.value.trim()) {
-    return cameras.value;
-  }
-  
-  const query = searchQuery.value.toLowerCase();
-  return cameras.value.filter(camera =>
-    camera.name.toLowerCase().includes(query) ||
-    camera.room.toLowerCase().includes(query)
+const filteredNvrs = computed(() => {
+  return nvrs.value.filter(nvr => nvr.site_uid === selectedSiteId.value);
+});
+
+const availableHeaderNvrs = computed(() => {
+  if (!selectedSiteFilter.value) return [];
+  return nvrs.value.filter(
+    (nvr) => nvr.site_uid === selectedSiteFilter.value
   );
+});
+
+const filteredCameras = computed(() => {
+  let filtered = cameras.value;
+
+  // Filter by NVR if selected (using header filter)
+  if (selectedNvrFilter.value) {
+    const sel = String(selectedNvrFilter.value).trim();
+    filtered = filtered.filter((camera) => {
+      const anyCam: any = camera as any;
+      const camNvr = (
+        anyCam.nvr_uid ?? anyCam.nvrUid ?? anyCam.nvrId ?? anyCam.nvr ?? anyCam.video_recorder_uid ?? (anyCam.nvr && anyCam.nvr.uid) ?? ''
+      );
+      return String(camNvr || '').trim() === sel;
+    });
+  }
+
+  // Filter by search query
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(camera =>
+      camera.name.toLowerCase().includes(query) ||
+      camera.room.toLowerCase().includes(query)
+    );
+  }
+
+  return filtered;
+});
+
+// Debug watcher: log filter changes and counts to help diagnose missing cameras
+watch(selectedNvrFilter, (nv) => {
+  try {
+    const sel = String(nv || '').trim();
+    const total = cameras.value.length;
+    const matched = cameras.value.filter((camera) => {
+      const anyCam: any = camera as any;
+      const camNvr = (
+        anyCam.nvr_uid ?? anyCam.nvrUid ?? anyCam.nvrId ?? anyCam.nvr ?? anyCam.video_recorder_uid ?? (anyCam.nvr && anyCam.nvr.uid) ?? ''
+      );
+      return String(camNvr || '').trim() === sel;
+    }).length;
+    console.debug('[LiveView] selectedNvrFilter changed:', sel, 'totalCameras:', total, 'matchedByNvr:', matched);
+  } catch (e) {}
 });
 
 const totalCameras = computed(() => cameras.value.length);
@@ -510,5 +871,12 @@ onMounted(() => {
 <style scoped>
 .camera-feed-container {
   border: 2px solid #e4e6ef;
+}
+.camera-video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  background: #000;
 }
 </style>
