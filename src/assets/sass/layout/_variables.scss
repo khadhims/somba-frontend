@@ -2,6 +2,8 @@
 // Layout Config
 //
 
+@use "sass:color";
+
 // Root font Sizes
 $root-font-size:                                    13px; // Root font size for desktop mode
 $root-font-size-lg:                             	13px; // Root font size for tablet mode
@@ -54,7 +56,7 @@ $aside-config: (
 	border: 0,
 	border-dark: 1px solid $coal-100,
 	scrollbar-color: #4d4d69,
-	scrollbar-hover-color: lighten(#4d4d69, 2%)	
+	scrollbar-hover-color: color.adjust(#4d4d69, $lightness: 2%)	
 ) !default;
 
 // Aside

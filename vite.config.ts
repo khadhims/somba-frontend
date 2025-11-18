@@ -16,4 +16,19 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 3000,
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        includePaths: ["node_modules"],
+        quietDeps: true,
+        // Silence legacy Sass deprecation noise from third-party packages until they migrate.
+        silenceDeprecations: [
+          "import",
+          "global-builtin",
+          "color-functions",
+          "abs-percent",
+        ],
+      },
+    },
+  },
 });
