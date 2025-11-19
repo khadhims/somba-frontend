@@ -152,7 +152,8 @@ class ApiService {
     resource: string,
     slug = "" as string
   ): Promise<AxiosResponse> {
-    return ApiService.vueInstance.axios.get(`${resource}/${slug}`);
+    const url = slug ? `${resource}/${slug}` : resource;
+    return ApiService.vueInstance.axios.get(url);
   }
 
   /**
@@ -177,7 +178,8 @@ class ApiService {
     slug: string,
     params: any
   ): Promise<AxiosResponse> {
-    return ApiService.vueInstance.axios.put(`${resource}/${slug}`, params);
+    const url = slug ? `${resource}/${slug}` : resource;
+    return ApiService.vueInstance.axios.put(url, params);
   }
 
   /**

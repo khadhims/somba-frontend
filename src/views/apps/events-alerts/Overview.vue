@@ -22,6 +22,12 @@
                 <option v-for="site in sites" :key="site.uid" :value="site.uid">
                   {{ site.name }}
                 </option>
+                <option 
+                  value="fff0f3a7-cea8-4383-a0de-c7d9041a2519"
+                  key="fff0f3a7-cea8-4383-a0de-c7d9041a2519"
+                  >
+                  Site A
+                </option>
               </select>
             </div>
           </div>
@@ -105,7 +111,7 @@
         </div>
         <!--end::Search-->
 
-        <!--begin::Filter-->
+        <!--begin::Filter Types-->
         <div class="me-3">
           <select
             v-model="selectedEventType"
@@ -120,6 +126,20 @@
           </select>
         </div>
 
+        <!--begin::Filter Severity-->
+        <div class="me-3">
+          <select
+            v-model="selectedSeverityType"
+            @change="filterEvents"
+            class="form-select form-select-solid w-150px"
+          >
+            <option value="">All Level</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
         <button @click="refreshEvents" class="btn btn-sm btn-light-primary">
           <i class="ki-duotone ki-arrows-circle fs-2"></i>
           Refresh
@@ -143,44 +163,43 @@
         @on-sort="handleSort"
         empty-table-text="No events found"
       >
-        <template v-slot:type="{ row }">
-          <span
-            class="badge"
-            :class="getEventTypeBadgeClass(row.type)"
-          >
-            {{ getEventTypeLabel(row.type) }}
-          </span>
+        <template v-slot:uid="{ row }">
+          <div style="max-width: 200px; min-width: 180px;">
+            <span class="text-dark fw-bold text-hover-primary fs-6" style="word-break: break-all;">
+              {{ row.uid }}
+            </span>
+          </div>
         </template>
 
-        <template v-slot:severity="{ row }">
-          <span
-            class="badge"
-            :class="getSeverityBadgeClass(row.severity)"
-          >
-            {{ row.severity }}
-          </span>
-        </template>
-
-        <template v-slot:description="{ row }">
-          <div class="d-flex align-items-center">
+        <template v-slot:camera_name="{ row }">
+          <div class="d-flex align-items-center" style="max-width: 200px; min-width: 180px;">
             <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">{{
-                row.description
-              }}</span>
-              <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-                row.camera_name || row.location
-              }}</span>
+              <span class="text-dark fw-bold fs-6" style="word-break: break-all;">{{ row.camera_name }}</span>
+              <span class="text-muted fw-semibold d-block fs-7">{{ row.location || 'No location' }}</span>
             </div>
           </div>
         </template>
 
-        <template v-slot:timestamp="{ row }">
+        <template v-slot:startTime="{ row }">
           <span class="text-dark fw-bold d-block fs-6">{{
-            new Date(row.timestamp).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' })
+            row.startTime ? new Date(row.startTime).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-'
           }}</span>
-          <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-            new Date(row.timestamp).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false })
-          }}</span>
+          <span class="text-muted fw-semibold d-block fs-7">
+            {{ row.startTime ? new Date(row.startTime).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false }).substring(0, 5) : '-' }}
+            <span v-if="row.endTime"> - {{ new Date(row.endTime).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false }).substring(0, 5) }}</span>
+          </span>
+        </template>
+
+        <template v-slot:duration="{ row }">
+          <span class="text-dark fw-bold fs-6">
+            {{ row.duration || 0 }} min
+          </span>
+        </template>
+
+        <template v-slot:avg_seconds_with_detection="{ row }">
+          <span class="text-dark fw-bold fs-6">
+            {{ row.avg_seconds_with_detection ? Math.round(row.avg_seconds_with_detection * 100) / 100 : 0 }}s
+          </span>
         </template>
 
         <template v-slot:status="{ row }">
@@ -308,21 +327,13 @@
             <!--begin::Left Column-->
             <div class="col-md-6">
               <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">Event Type:</label>
-                <div>
-                  <span class="badge fs-5" :class="getEventTypeBadgeClass(selectedEvent.type)" style="padding: 8px 12px;">
-                    {{ getEventTypeLabel(selectedEvent.type) }}
-                  </span>
-                </div>
+                <label class="fw-semibold fs-4 mb-2">Event ID:</label>
+                <p class="text-gray-800 mb-0 fs-4 font-monospace">{{ selectedEvent.uid }}</p>
               </div>
               
               <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">Severity:</label>
-                <div>
-                  <span class="badge fs-5" :class="getSeverityBadgeClass(selectedEvent.severity)" style="padding: 8px 12px;">
-                    {{ selectedEvent.severity }}
-                  </span>
-                </div>
+                <label class="fw-semibold fs-4 mb-2">Camera UUID:</label>
+                <p class="text-gray-800 mb-0 fs-4 font-monospace">{{ selectedEvent.camera_name }}</p>
               </div>
               
               <div class="mb-4">
@@ -335,7 +346,7 @@
               </div>
 
               <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">Process:</label>
+                <label class="fw-semibold fs-4 mb-2">Description:</label>
                 <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.description }}</p>
               </div>
             </div>
@@ -355,17 +366,17 @@
               
               <div class="mb-4">
                 <label class="fw-semibold fs-4 mb-2">Duration:</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ formatDuration(selectedEvent.duration) }}</p>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.duration || 0 }} minutes</p>
               </div>
 
-              <div class="mb-4" v-if="selectedEvent.camera_name">
-                <label class="fw-semibold fs-4 mb-2">Camera:</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.camera_name }}</p>
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Total Minutes:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.total_minutes || 0 }} minutes</p>
               </div>
 
-              <div class="mb-4" v-if="selectedEvent.location">
-                <label class="fw-semibold fs-4 mb-2">Location:</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.location }}</p>
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Avg Detection Time:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.avg_seconds_with_detection ? Math.round(selectedEvent.avg_seconds_with_detection * 100) / 100 : 0 }} seconds</p>
               </div>
             </div>
             <!--end::Right Column-->
@@ -598,6 +609,7 @@ interface Site {
 const events = ref<any[]>([]);
 const sites = ref<Site[]>([]);
 const nvrs = ref<Array<{ uid: string; name: string; site_uid?: string }>>([]);
+const camerasCache = ref<Record<string, Record<string, string>>>({});
 const loading = ref(false);
 const loadingSites = ref(false);
 const loadingNvrs = ref(false);
@@ -607,6 +619,7 @@ const selectedSiteId = ref("");
 const selectedSiteFilter = ref<string>("");
 const selectedNvrFilter = ref<string>("");
 const selectedEventType = ref("");
+const selectedSeverityType = ref("");
 const sortLabel = ref("timestamp");
 const sortOrder = ref<"asc" | "desc">("desc");
 const currentSite = ref<Site | null>(null);
@@ -625,26 +638,32 @@ const isEditModalLoading = ref(false);
 // Table header configuration
 const tableHeader = ref([
   {
-    columnName: "Type",
-    columnLabel: "type",
+    columnName: "Event Name",
+    columnLabel: "uid",
     sortEnabled: true,
-    searchable: false,
+    searchable: true,
   },
   {
-    columnName: "Severity",
-    columnLabel: "severity",
-    sortEnabled: true,
-    searchable: false,
-  },
-  {
-    columnName: "Description",
-    columnLabel: "description",
+    columnName: "Camera Name",
+    columnLabel: "camera_name",
     sortEnabled: true,
     searchable: true,
   },
   {
     columnName: "Timestamp",
-    columnLabel: "timestamp",
+    columnLabel: "startTime",
+    sortEnabled: true,
+    searchable: false,
+  },
+  {
+    columnName: "Duration (min)",
+    columnLabel: "duration",
+    sortEnabled: true,
+    searchable: false,
+  },
+  {
+    columnName: "Avg Detection (s)",
+    columnLabel: "avg_seconds_with_detection",
     sortEnabled: true,
     searchable: false,
   },
@@ -662,100 +681,69 @@ const tableHeader = ref([
   },
 ]);
 
-// Mock response in the required shape (fallback)
-const mockEventsResponse = {
-  code: 200,
-  message: "Data retrieved successfully",
-  data: [
-    {
-      duration: 0.12,
-      endTime: "2025-09-09T04:13:00+07:00",
-      image_path: "/image/stream_502_20250909_0406.jpg",
-      process: "Pengiriman",
-      startTime: "2025-09-09T04:06:00+07:00",
-      status: "completed",
-      comment: "Event berhasil diselesaikan dengan baik. Pengiriman telah sampai ke tujuan."
-    },
-    {
-      duration: 0.1,
-      endTime: "2025-09-09T04:12:00+07:00",
-      image_path: "/image/stream_902_20250909_0406.jpg",
-      process: "Masak", startTime: "2025-09-09T04:06:00+07:00",
-      status: "completed",
-      comment: "Proses memasak telah selesai sesuai standar operasional."
-    },
-    {
-      duration: 0.17,
-      endTime: "2025-09-09T04:13:00+07:00",
-      image_path: "/image/stream_102_20250909_0403.jpg",
-      process: "Ambil Nampan",
-      startTime: "2025-09-09T04:03:00+07:00",
-      status: "completed",
-      comment: null
-    },
-    {
-      duration: 0.17,
-      endTime: "2025-09-09T04:13:00+07:00",
-      image_path: "/image/stream_702_20250909_0403.jpg",
-      process: "Pemorsian",
-      startTime: "2025-09-09T04:03:00+07:00",
-      status: "completed",
-      comment: "Aktivitas pemorsian berjalan normal tanpa kendala."
-    },
-    {
-      duration: 0.15,
-      endTime: "2025-09-09T04:12:00+07:00",
-      image_path: "/image/stream_602_20250909_0403.jpg",
-      process: "Unknown Stream 602",
-      startTime: "2025-09-09T04:03:00+07:00",
-      status: "completed",
-      comment: null
-    }
-  ],
-  pagination: {
-    page: 1,
-    per_page: 3,
-    total_pages: 2,
-    total_items: 5,
-    next_page: 2,
-    prev_page: null
-  }
-};
-
-
 // Fetch events from API (uses mock response shape as fallback)
 const fetchEvents = async () => {
   loading.value = true;
   try {
-    // TODO: Replace with actual API call
-    // let apiUrl = "/events";
-    // if (selectedSiteFilter.value) apiUrl += `?site_uid=${selectedSiteFilter.value}`;
-    // const response = await ApiService.get(apiUrl);
-    // const payload = response.data;
+    // Determine site uid to request - prefer selectedSiteFilter, fallback to first loaded site
+    let siteUid = selectedSiteFilter.value || (sites.value.length ? sites.value[0].uid : "") || "fff0f3a7-cea8-4383-a0de-c7d9041a2519";
+    if (!siteUid) {
+      console.warn("No site selected and no sites available - skipping list-activity call");
+      events.value = [];
+      totalItems.value = 0;
+      totalPages.value = 0;
+      return;
+    }
 
-    // Using mock response for now
-    const payload = mockEventsResponse;
+    await fetchCameras(siteUid);
 
-    // Map response.data items sesuai struktur mockEventsResponse
-    events.value = (payload.data || []).map((item, idx) => ({
-      uid: `evt-${idx}-${Date.now()}`,
-      type: 'motion',
-      severity: 'low', 
-      description: item.process || 'Event',
-      camera_name: '',
-      location: '',
-      timestamp: item.startTime || item.endTime || new Date().toISOString(),
-      // Gunakan status dari response langsung
-      status: item.status || 'completed',
-      site_uid: selectedSiteFilter.value || null,
-      // Preserve semua field dari mockEventsResponse
-      duration: item.duration,
-      startTime: item.startTime,
-      endTime: item.endTime,
-      image_path: item.image_path,
-      process: item.process,
-      comment: item.comment || null
-    }));
+    // Call API: sites/{site_uid}/list-activity
+    const resp = await ApiService.get(`sites/${siteUid}/list-activity`);
+    const payload = resp && resp.data ? resp.data : resp;
+
+    // Handle API response structure: { status, code, message, data: [...], pagination: {...} }
+    let results = [];
+    if (payload?.status === "success" && Array.isArray(payload?.data)) {
+      results = payload.data;
+    } else if (Array.isArray(payload?.results)) {
+      // Fallback untuk struktur lama
+      results = payload.results;
+    } else {
+      console.warn('Unexpected API response format:', payload);
+      results = [];
+    }
+
+    // Map response data items to internal event structure
+    events.value = results.map((item: any, idx: number) => {
+      const camName = (camerasCache.value[siteUid] && camerasCache.value[siteUid][item.camera_uuid]) || item.camera_uuid || '';
+      return {
+        uid: item.event_id || `evt-${idx}-${Date.now()}`,
+        type: 'motion', // default type - adjust if API provides type later
+        severity: 'medium', // default severity based on detection activity
+        description: `Activity detected - ${Math.round(item.avg_seconds_with_detection || 0)}s avg detection`,
+        camera_name: camName,
+        location: '',
+        timestamp: item.event_start || item.event_end || new Date().toISOString(),
+        status: 'resolved', // default status
+        site_uid: siteUid,
+        // preserve fields from API
+        duration: item.duration_minutes,
+        startTime: item.event_start,
+        endTime: item.event_end,
+        image_path: '',
+        process: '',
+        comment: null,
+        avg_seconds_with_detection: item.avg_seconds_with_detection
+      }
+    });
+
+    // Use pagination from API response
+    const pagination = payload?.pagination || {};
+    totalItems.value = typeof pagination.total_items === "number" ? pagination.total_items : events.value.length;
+    itemsPerPage.value = typeof pagination.per_page === "number" && pagination.per_page > 0 ? pagination.per_page : itemsPerPage.value;
+    totalPages.value = typeof pagination.total_pages === "number" && pagination.total_pages > 0
+      ? pagination.total_pages
+      : Math.ceil(totalItems.value / itemsPerPage.value);
 
     // Apply client-side filters if header filters are set
     if (selectedSiteFilter.value) {
@@ -764,6 +752,8 @@ const fetchEvents = async () => {
   } catch (error) {
     console.error("Error fetching events:", error);
     events.value = [];
+    totalItems.value = 0;
+    totalPages.value = 0;
   } finally {
     loading.value = false;
   }
@@ -803,6 +793,41 @@ const fetchSites = async () => {
     loadingSites.value = false;
   }
 };
+
+  // Fetch cameras for a site and cache uuid->name map per site
+  const fetchCameras = async (siteUid: string) => {
+    if (!siteUid) return;
+    // if cache exists for this site, skip
+    if (camerasCache.value[siteUid] && Object.keys(camerasCache.value[siteUid]).length) return;
+
+    try {
+      const resp = await ApiService.get(`sites/${siteUid}/cameras`);
+      const payload = resp && resp.data ? resp.data : resp;
+
+      let cams: any[] = [];
+      if (payload?.status === 'success' && Array.isArray(payload?.data)) {
+        cams = payload.data;
+      } else if (Array.isArray(payload)) {
+        cams = payload;
+      } else if (Array.isArray(payload?.results)) {
+        cams = payload.results;
+      }
+
+      const map: Record<string, string> = {};
+      cams.forEach((c: any) => {
+        const id = c.uuid || c.camera_uuid || c.id;
+        if (id) {
+          map[id] = c.name || c.camera_name || c.label || id;
+        }
+      });
+
+      camerasCache.value[siteUid] = map;
+    } catch (err) {
+      console.warn('Failed to load cameras for site', siteUid, err);
+      // set empty map to avoid retry storm
+      camerasCache.value[siteUid] = {};
+    }
+  };
 
 // Switch site
 const switchSite = () => {
@@ -873,10 +898,9 @@ const getStatusBadgeClass = (status: string) => {
       return 'badge-light-danger';
     case 'acknowledged':
       return 'badge-light-warning';
-    case 'completed':
     case 'resolved':
       return 'badge-light-success';
-    case 'not resolved':
+    case 'unresolved':
       return 'badge-light-danger';
     case 'false detection':
       return 'badge-light-info';
@@ -915,6 +939,10 @@ const filteredAndSortedEvents = computed(() => {
         event.type.toLowerCase().includes(query) ||
         event.status.toLowerCase().includes(query) ||
         event.severity.toLowerCase().includes(query) ||
+        (event.location && event.location.toLowerCase().includes(query)) ||
++       (event.type && event.type.toLowerCase().includes(query)) ||
++       (event.status && event.status.toLowerCase().includes(query)) ||
++       (event.severity && event.severity.toLowerCase().includes(query)) ||
         getEventTypeLabel(event.type).toLowerCase().includes(query)
     );
   }
@@ -922,6 +950,11 @@ const filteredAndSortedEvents = computed(() => {
   // Filter by event type
   if (selectedEventType.value) {
     filtered = filtered.filter(event => event.type === selectedEventType.value);
+  }
+
+  // Filter by severity
+  if (selectedSeverityType.value) {
+    filtered = filtered.filter(event => event.severity === selectedSeverityType.value);
   }
 
   // Sort data
@@ -1201,7 +1234,7 @@ const handleImageError = (event: any) => {
 const acknowledgeEvent = async (event: Event) => {
   try {
     // TODO: API call to acknowledge event
-    // await ApiService.post(`/events/${event.uid}/acknowledge`);
+    // await ApiService.post(`events/${event.uid}/acknowledge`);
     
     // Update local state
     const index = events.value.findIndex(e => e.uid === event.uid);
@@ -1216,7 +1249,7 @@ const acknowledgeEvent = async (event: Event) => {
 const resolveEvent = async (event: Event) => {
   try {
     // TODO: API call to resolve event
-    // await ApiService.post(`/events/${event.uid}/resolve`);
+    // await ApiService.post(`events/${event.uid}/resolve`);
     
     // Update local state
     const index = events.value.findIndex(e => e.uid === event.uid);
