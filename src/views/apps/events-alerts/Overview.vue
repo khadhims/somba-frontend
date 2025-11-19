@@ -11,21 +11,22 @@
         </div>
         <div class="col-md-8">
           <div class="d-flex justify-content-end gap-3">
-            <div class="d-flex align-items-center" v-if="sites.length > 0">
+            <div class="me-3 d-flex align-items-center">
               <label class="form-label me-3 mb-0 fw-semibold">Site:</label>
               <select
-                v-model="selectedSiteId"
-                @change="switchSite"
+                v-model="selectedSiteFilter"
+                @change="onFilterSiteChange"
                 class="form-select form-select-solid w-200px"
-                :disabled="loadingSites"
               >
                 <option value="">All Sites</option>
-                <option
-                  v-for="site in sites"
-                  :key="site.uid"
-                  :value="site.uid"
-                >
+                <option v-for="site in sites" :key="site.uid" :value="site.uid">
                   {{ site.name }}
+                </option>
+                <option 
+                  value="fff0f3a7-cea8-4383-a0de-c7d9041a2519"
+                  key="fff0f3a7-cea8-4383-a0de-c7d9041a2519"
+                  >
+                  Site A
                 </option>
               </select>
             </div>
@@ -110,7 +111,7 @@
         </div>
         <!--end::Search-->
 
-        <!--begin::Filter-->
+        <!--begin::Filter Types-->
         <div class="me-3">
           <select
             v-model="selectedEventType"
@@ -125,6 +126,20 @@
           </select>
         </div>
 
+        <!--begin::Filter Severity-->
+        <div class="me-3">
+          <select
+            v-model="selectedSeverityType"
+            @change="filterEvents"
+            class="form-select form-select-solid w-150px"
+          >
+            <option value="">All Level</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
         <button @click="refreshEvents" class="btn btn-sm btn-light-primary">
           <i class="ki-duotone ki-arrows-circle fs-2"></i>
           Refresh
@@ -148,44 +163,43 @@
         @on-sort="handleSort"
         empty-table-text="No events found"
       >
-        <template v-slot:type="{ row }">
-          <span
-            class="badge"
-            :class="getEventTypeBadgeClass(row.type)"
-          >
-            {{ getEventTypeLabel(row.type) }}
-          </span>
+        <template v-slot:uid="{ row }">
+          <div style="max-width: 200px; min-width: 180px;">
+            <span class="text-dark fw-bold text-hover-primary fs-6" style="word-break: break-all;">
+              {{ row.uid }}
+            </span>
+          </div>
         </template>
 
-        <template v-slot:severity="{ row }">
-          <span
-            class="badge"
-            :class="getSeverityBadgeClass(row.severity)"
-          >
-            {{ row.severity }}
-          </span>
-        </template>
-
-        <template v-slot:description="{ row }">
-          <div class="d-flex align-items-center">
+        <template v-slot:camera_name="{ row }">
+          <div class="d-flex align-items-center" style="max-width: 200px; min-width: 180px;">
             <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">{{
-                row.description
-              }}</span>
-              <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-                row.camera_name || row.location
-              }}</span>
+              <span class="text-dark fw-bold fs-6" style="word-break: break-all;">{{ row.camera_name }}</span>
+              <span class="text-muted fw-semibold d-block fs-7">{{ row.location || 'No location' }}</span>
             </div>
           </div>
         </template>
 
-        <template v-slot:timestamp="{ row }">
+        <template v-slot:startTime="{ row }">
           <span class="text-dark fw-bold d-block fs-6">{{
-            new Date(row.timestamp).toLocaleDateString()
+            row.startTime ? new Date(row.startTime).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-'
           }}</span>
-          <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-            new Date(row.timestamp).toLocaleTimeString()
-          }}</span>
+          <span class="text-muted fw-semibold d-block fs-7">
+            {{ row.startTime ? new Date(row.startTime).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false }).substring(0, 5) : '-' }}
+            <span v-if="row.endTime"> - {{ new Date(row.endTime).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false }).substring(0, 5) }}</span>
+          </span>
+        </template>
+
+        <template v-slot:duration="{ row }">
+          <span class="text-dark fw-bold fs-6">
+            {{ row.duration || 0 }} min
+          </span>
+        </template>
+
+        <template v-slot:avg_seconds_with_detection="{ row }">
+          <span class="text-dark fw-bold fs-6">
+            {{ row.avg_seconds_with_detection ? Math.round(row.avg_seconds_with_detection * 100) / 100 : 0 }}s
+          </span>
         </template>
 
         <template v-slot:status="{ row }">
@@ -219,7 +233,7 @@
             </button>
             <button
               v-if="row.status === 'acknowledged'"
-              class="btn btn-icon btn-bg-light btn-active-color-info btn-sm"
+              class="btn btn-icon btn-bg-light btn-active-color-info btn-sm me-1"
               @click="resolveEvent(row)"
               title="Resolve"
             >
@@ -228,23 +242,352 @@
                 <span class="path2"></span>
               </i>
             </button>
+            <button
+              class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm"
+              @click="editEvent(row)"
+              title="Edit"
+            >
+              <i class="ki-duotone ki-pencil fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </button>
           </div>
         </template>
       </KTDataTable>
+      
+      <!--begin::Pagination-->
+      <div class="d-flex flex-stack flex-wrap pt-10">
+        <div class="fs-6 fw-semibold text-gray-700">
+          Showing {{ ((currentPage - 1) * itemsPerPage) + 1 }} to {{ Math.min(currentPage * itemsPerPage, totalItems) }} of {{ totalItems }} entries
+        </div>
+        <ul class="pagination">
+          <li class="page-item" :class="{ disabled: currentPage === 1 }">
+            <button 
+              class="page-link" 
+              @click="goToPage(currentPage - 1)"
+              :disabled="currentPage === 1"
+            >
+              <i class="previous"></i>
+            </button>
+          </li>
+          <li 
+            v-for="page in visiblePages" 
+            :key="page"
+            class="page-item" 
+            :class="{ active: page === currentPage }"
+          >
+            <button class="page-link" @click="goToPage(page)">{{ page }}</button>
+          </li>
+          <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+            <button 
+              class="page-link" 
+              @click="goToPage(currentPage + 1)"
+              :disabled="currentPage === totalPages"
+            >
+              <i class="next"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+      <!--end::Pagination-->
     </div>
     <!--end::Card body-->
   </div>
   <!--end::Events List-->
+
+  <!--begin::Event Details Modal-->
+  <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title fw-bold" id="eventDetailsModalLabel">Event Details</h3>
+          <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" v-if="selectedEvent">
+          <!--begin::Event Image-->
+          <div class="row mb-6" v-if="selectedEvent.image_path">
+            <div class="col-12">
+              <label class="fw-semibold fs-4 mb-2">Event Image:</label>
+              <div class="text-center">
+                <img 
+                  :src="selectedEvent.image_path" 
+                  :alt="selectedEvent.description"
+                  class="img-fluid rounded border"
+                  style="max-height: 300px; object-fit: contain;"
+                  @error="handleImageError"
+                />
+              </div>
+            </div>
+          </div>
+          <!--end::Event Image-->
+
+          <!--begin::Event Info Grid-->
+          <div class="row g-6">
+            <!--begin::Left Column-->
+            <div class="col-md-6">
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Event ID:</label>
+                <p class="text-gray-800 mb-0 fs-4 font-monospace">{{ selectedEvent.uid }}</p>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Camera UUID:</label>
+                <p class="text-gray-800 mb-0 fs-4 font-monospace">{{ selectedEvent.camera_name }}</p>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Status:</label>
+                <div>
+                  <span class="badge fs-5" :class="getStatusBadgeClass(selectedEvent.status)" style="padding: 8px 12px;">
+                    {{ selectedEvent.status }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Description:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.description }}</p>
+              </div>
+            </div>
+            <!--end::Left Column-->
+
+            <!--begin::Right Column-->
+            <div class="col-md-6">
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Start Time:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.startTime) }}</p>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">End Time:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.endTime) }}</p>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Duration:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.duration || 0 }} minutes</p>
+              </div>
+
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Total Minutes:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.total_minutes || 0 }} minutes</p>
+              </div>
+
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Avg Detection Time:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.avg_seconds_with_detection ? Math.round(selectedEvent.avg_seconds_with_detection * 100) / 100 : 0 }} seconds</p>
+              </div>
+            </div>
+            <!--end::Right Column-->
+          </div>
+          <!--end::Event Info Grid-->
+
+          <!--begin::Comments Section-->
+          <div class="row mt-6" v-if="selectedEvent.comment">
+            <div class="col-12">
+              <div class="bg-light-info p-4 rounded">
+                <label class="fw-semibold fs-4 text-gray-700 mb-2 d-block">Comments:</label>
+                <p class="text-gray-800 mb-0 fs-5" style="white-space: pre-wrap;">{{ selectedEvent.comment }}</p>
+              </div>
+            </div>
+          </div>
+          <!--end::Comments Section-->
+
+          <!--begin::Event UID-->
+          <div class="row mt-6">
+            <div class="col-12">
+              <div class="bg-light p-4 rounded">
+                <label class="fw-semibold fs-5 text-gray-600 mb-1">Event ID:</label>
+                <p class="text-gray-800 mb-0 font-monospace fs-6">{{ selectedEvent.uid }}</p>
+              </div>
+            </div>
+          </div>
+          <!--end::Event UID-->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary fs-5 px-4 py-2" @click="closeModal">Close</button>
+          <button type="button" class="btn btn-primary fs-5 px-4 py-2" v-if="selectedEvent && selectedEvent.status === 'active'" @click="acknowledgeEventFromModal">
+            <i class="ki-duotone ki-check fs-2 me-2"></i>
+            Acknowledge
+          </button>
+          <button type="button" class="btn btn-success fs-5 px-4 py-2" v-if="selectedEvent && selectedEvent.status === 'acknowledged'" @click="resolveEventFromModal">
+            <i class="ki-duotone ki-check-circle fs-2 me-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            Resolve
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end::Event Details Modal-->
+
+  <!--begin::Edit Event Modal-->
+  <div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title fw-bold" id="editEventModalLabel">Edit Event</h3>
+          <button type="button" class="btn-close" @click="closeEditModal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" v-if="selectedEventForEdit">
+          <!--begin::Event Image-->
+          <div class="row mb-6" v-if="selectedEventForEdit.image_path">
+            <div class="col-12">
+              <label class="fw-semibold fs-4 mb-2">Event Image:</label>
+              <div class="text-center">
+                <img 
+                  :src="selectedEventForEdit.image_path" 
+                  :alt="selectedEventForEdit.description"
+                  class="img-fluid rounded border"
+                  style="max-height: 300px; object-fit: contain;"
+                  @error="handleImageError"
+                />
+              </div>
+            </div>
+          </div>
+          <!--end::Event Image-->
+
+          <!--begin::Event Info Grid-->
+          <div class="row g-6">
+            <!--begin::Left Column-->
+            <div class="col-md-6">
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Event Type:</label>
+                <div>
+                  <span class="badge fs-5" :class="getEventTypeBadgeClass(selectedEventForEdit.type)" style="padding: 8px 12px;">
+                    {{ getEventTypeLabel(selectedEventForEdit.type) }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Severity:</label>
+                <div>
+                  <span class="badge fs-5" :class="getSeverityBadgeClass(selectedEventForEdit.severity)" style="padding: 8px 12px;">
+                    {{ selectedEventForEdit.severity }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Current Status:</label>
+                <div>
+                  <span class="badge fs-5" :class="getStatusBadgeClass(selectedEventForEdit.status)" style="padding: 8px 12px;">
+                    {{ selectedEventForEdit.status }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Process:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEventForEdit.description }}</p>
+              </div>
+            </div>
+            <!--end::Left Column-->
+
+            <!--begin::Right Column-->
+            <div class="col-md-6">
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Start Time:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEventForEdit.startTime) }}</p>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">End Time:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEventForEdit.endTime) }}</p>
+              </div>
+              
+              <div class="mb-4">
+                <label class="fw-semibold fs-4 mb-2">Duration:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ formatDuration(selectedEventForEdit.duration) }}</p>
+              </div>
+
+              <div class="mb-4" v-if="selectedEventForEdit.camera_name">
+                <label class="fw-semibold fs-4 mb-2">Camera:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEventForEdit.camera_name }}</p>
+              </div>
+
+              <div class="mb-4" v-if="selectedEventForEdit.location">
+                <label class="fw-semibold fs-4 mb-2">Location:</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEventForEdit.location }}</p>
+              </div>
+            </div>
+            <!--end::Right Column-->
+          </div>
+          <!--end::Event Info Grid-->
+
+          <!--begin::Edit Fields-->
+          <div class="row mt-6">
+            <div class="col-12">
+              <div class="bg-light p-4 rounded">
+                <div class="row g-4">
+                  <div class="col-md-6">
+                    <label class="fw-semibold fs-4 mb-2">Update Status:</label>
+                    <select v-model="editStatus" class="form-select form-select-solid fs-5">
+                      <option value="">Select new status...</option>
+                      <option value="resolved">Resolved</option>
+                      <option value="not resolved">Not Resolved</option>
+                      <option value="false detection">False Detection</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="fw-semibold fs-4 mb-2">Event ID:</label>
+                    <p class="text-gray-800 mb-0 font-monospace fs-6">{{ selectedEventForEdit.uid }}</p>
+                  </div>
+                </div>
+                <div class="row mt-4">
+                  <div class="col-12">
+                    <label class="fw-semibold fs-4 mb-2">Comment:</label>
+                    <textarea 
+                      v-model="editComment" 
+                      class="form-control form-control-solid fs-5" 
+                      rows="4" 
+                      placeholder="Leave a comment about this event..."
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--end::Edit Fields-->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary fs-5 px-4 py-2" @click="closeEditModal" :disabled="isEditModalLoading">Cancel</button>
+          <button type="button" class="btn btn-primary fs-5 px-4 py-2" @click="saveEventEdit" :disabled="!editStatus || isEditModalLoading">
+            <span v-if="isEditModalLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <i v-else class="ki-duotone ki-check fs-2 me-2"></i>
+            {{ isEditModalLoading ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end::Edit Event Modal-->
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import { Modal } from "bootstrap";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
 
 // Interface definitions
 interface Event {
+  code: number;
+  message: string;
+  data: Array<{
+    duration: number;
+    endTime: string;
+    image_path: string;
+    process: string;
+    startTime: string;
+    status: string;
+    comment?: string;
+  }>;
   uid: string;
   type: 'motion' | 'intrusion' | 'system' | 'camera_offline';
   severity: 'low' | 'medium' | 'high' | 'critical';
@@ -254,6 +597,7 @@ interface Event {
   timestamp: string;
   status: 'active' | 'acknowledged' | 'resolved';
   site_uid?: string;
+  comment?: string;
 }
 
 interface Site {
@@ -262,40 +606,64 @@ interface Site {
 }
 
 // Reactive data
-const events = ref<Event[]>([]);
+const events = ref<any[]>([]);
 const sites = ref<Site[]>([]);
+const nvrs = ref<Array<{ uid: string; name: string; site_uid?: string }>>([]);
+const camerasCache = ref<Record<string, Record<string, string>>>({});
 const loading = ref(false);
 const loadingSites = ref(false);
+const loadingNvrs = ref(false);
 const searchQuery = ref("");
 const selectedSiteId = ref("");
+// Header filter state (site + nvr)
+const selectedSiteFilter = ref<string>("");
+const selectedNvrFilter = ref<string>("");
 const selectedEventType = ref("");
+const selectedSeverityType = ref("");
 const sortLabel = ref("timestamp");
 const sortOrder = ref<"asc" | "desc">("desc");
 const currentSite = ref<Site | null>(null);
+// Pagination
+const currentPage = ref(1);
+const itemsPerPage = ref(15);
+const totalItems = ref(0);
+const totalPages = ref(0);
+// Modal state
+const selectedEvent = ref<any>(null);
+const selectedEventForEdit = ref<any>(null);
+const editStatus = ref('');
+const editComment = ref('');
+const isEditModalLoading = ref(false);
 
 // Table header configuration
 const tableHeader = ref([
   {
-    columnName: "Type",
-    columnLabel: "type",
+    columnName: "Event Name",
+    columnLabel: "uid",
     sortEnabled: true,
-    searchable: false,
+    searchable: true,
   },
   {
-    columnName: "Severity",
-    columnLabel: "severity",
-    sortEnabled: true,
-    searchable: false,
-  },
-  {
-    columnName: "Description",
-    columnLabel: "description",
+    columnName: "Camera Name",
+    columnLabel: "camera_name",
     sortEnabled: true,
     searchable: true,
   },
   {
     columnName: "Timestamp",
-    columnLabel: "timestamp",
+    columnLabel: "startTime",
+    sortEnabled: true,
+    searchable: false,
+  },
+  {
+    columnName: "Duration (min)",
+    columnLabel: "duration",
+    sortEnabled: true,
+    searchable: false,
+  },
+  {
+    columnName: "Avg Detection (s)",
+    columnLabel: "avg_seconds_with_detection",
     sortEnabled: true,
     searchable: false,
   },
@@ -313,89 +681,153 @@ const tableHeader = ref([
   },
 ]);
 
-// Mock data for demonstration
-const mockEvents: Event[] = [
-  {
-    uid: "1",
-    type: "motion",
-    severity: "medium",
-    description: "Motion detected in restricted area",
-    camera_name: "Front Entrance",
-    location: "Lobby",
-    timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 min ago
-    status: "active",
-    site_uid: "site1"
-  },
-  {
-    uid: "2",
-    type: "intrusion",
-    severity: "critical",
-    description: "Unauthorized access attempt",
-    camera_name: "Parking Area",
-    location: "Parking",
-    timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(), // 45 min ago
-    status: "acknowledged",
-    site_uid: "site1"
-  },
-  {
-    uid: "3",
-    type: "camera_offline",
-    severity: "high",
-    description: "Camera connection lost",
-    camera_name: "Reception Desk",
-    location: "Reception",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
-    status: "resolved",
-    site_uid: "site1"
-  },
-];
-
-const mockSites: Site[] = [
-  { uid: "site1", name: "Main Office" },
-  { uid: "site2", name: "Warehouse Branch" },
-];
-
-// Fetch events from API
+// Fetch events from API (uses mock response shape as fallback)
 const fetchEvents = async () => {
   loading.value = true;
   try {
-    // TODO: Replace with actual API call
-    // let apiUrl = "/events";
-    // if (selectedSiteId.value) {
-    //   apiUrl += `?site_uid=${selectedSiteId.value}`;
-    // }
-    // const response = await ApiService.get(apiUrl);
-    // events.value = response.data.data || response.data;
-    
-    // Using mock data for now
-    events.value = mockEvents.filter(event => 
-      !selectedSiteId.value || event.site_uid === selectedSiteId.value
-    );
+    // Determine site uid to request - prefer selectedSiteFilter, fallback to first loaded site
+    let siteUid = selectedSiteFilter.value || (sites.value.length ? sites.value[0].uid : "") || "fff0f3a7-cea8-4383-a0de-c7d9041a2519";
+    if (!siteUid) {
+      console.warn("No site selected and no sites available - skipping list-activity call");
+      events.value = [];
+      totalItems.value = 0;
+      totalPages.value = 0;
+      return;
+    }
+
+    await fetchCameras(siteUid);
+
+    // Call API: sites/{site_uid}/list-activity
+    const resp = await ApiService.get(`sites/${siteUid}/list-activity`);
+    const payload = resp && resp.data ? resp.data : resp;
+
+    // Handle API response structure: { status, code, message, data: [...], pagination: {...} }
+    let results = [];
+    if (payload?.status === "success" && Array.isArray(payload?.data)) {
+      results = payload.data;
+    } else if (Array.isArray(payload?.results)) {
+      // Fallback untuk struktur lama
+      results = payload.results;
+    } else {
+      console.warn('Unexpected API response format:', payload);
+      results = [];
+    }
+
+    // Map response data items to internal event structure
+    events.value = results.map((item: any, idx: number) => {
+      const camName = (camerasCache.value[siteUid] && camerasCache.value[siteUid][item.camera_uuid]) || item.camera_uuid || '';
+      return {
+        uid: item.event_id || `evt-${idx}-${Date.now()}`,
+        type: 'motion', // default type - adjust if API provides type later
+        severity: 'medium', // default severity based on detection activity
+        description: `Activity detected - ${Math.round(item.avg_seconds_with_detection || 0)}s avg detection`,
+        camera_name: camName,
+        location: '',
+        timestamp: item.event_start || item.event_end || new Date().toISOString(),
+        status: 'resolved', // default status
+        site_uid: siteUid,
+        // preserve fields from API
+        duration: item.duration_minutes,
+        startTime: item.event_start,
+        endTime: item.event_end,
+        image_path: '',
+        process: '',
+        comment: null,
+        avg_seconds_with_detection: item.avg_seconds_with_detection
+      }
+    });
+
+    // Use pagination from API response
+    const pagination = payload?.pagination || {};
+    totalItems.value = typeof pagination.total_items === "number" ? pagination.total_items : events.value.length;
+    itemsPerPage.value = typeof pagination.per_page === "number" && pagination.per_page > 0 ? pagination.per_page : itemsPerPage.value;
+    totalPages.value = typeof pagination.total_pages === "number" && pagination.total_pages > 0
+      ? pagination.total_pages
+      : Math.ceil(totalItems.value / itemsPerPage.value);
+
+    // Apply client-side filters if header filters are set
+    if (selectedSiteFilter.value) {
+      events.value = events.value.filter(e => !e.site_uid || e.site_uid === selectedSiteFilter.value);
+    }
   } catch (error) {
     console.error("Error fetching events:", error);
     events.value = [];
+    totalItems.value = 0;
+    totalPages.value = 0;
   } finally {
     loading.value = false;
   }
 };
 
-// Fetch sites from API
+// Fetch sites from API (following Camera.vue pattern)
 const fetchSites = async () => {
   loadingSites.value = true;
   try {
-    // TODO: Replace with actual API call
-    // const response = await ApiService.get("/sites");
-    // sites.value = response.data.data || response.data;
+    // Get selected team from localStorage (following Camera.vue pattern)
+    const selectedTeamId = localStorage.getItem('lastSelectedTeam');
+    if (!selectedTeamId) {
+      console.warn('No team selected, cannot load sites');
+      sites.value = [];
+      return;
+    }
     
-    // Using mock data for now
-    sites.value = mockSites;
+    const resp = await ApiService.query(`teams/${selectedTeamId}/sites`, {});
+    // Parse response (wrapped or direct) - exactly like Camera.vue
+    if (resp && resp.data) {
+      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+        sites.value = resp.data.data;
+      } else if (Array.isArray(resp.data)) {
+        sites.value = resp.data;
+      } else {
+        console.warn('Unexpected sites response format:', resp.data);
+        sites.value = [];
+      }
+    } else {
+      console.warn('No data received from sites API');
+      sites.value = [];
+    }
   } catch (error) {
     console.error("Error fetching sites:", error);
-    sites.value = [];
+    // Fallback to mock data for development
   } finally {
     loadingSites.value = false;
   }
 };
+
+  // Fetch cameras for a site and cache uuid->name map per site
+  const fetchCameras = async (siteUid: string) => {
+    if (!siteUid) return;
+    // if cache exists for this site, skip
+    if (camerasCache.value[siteUid] && Object.keys(camerasCache.value[siteUid]).length) return;
+
+    try {
+      const resp = await ApiService.get(`sites/${siteUid}/cameras`);
+      const payload = resp && resp.data ? resp.data : resp;
+
+      let cams: any[] = [];
+      if (payload?.status === 'success' && Array.isArray(payload?.data)) {
+        cams = payload.data;
+      } else if (Array.isArray(payload)) {
+        cams = payload;
+      } else if (Array.isArray(payload?.results)) {
+        cams = payload.results;
+      }
+
+      const map: Record<string, string> = {};
+      cams.forEach((c: any) => {
+        const id = c.uuid || c.camera_uuid || c.id;
+        if (id) {
+          map[id] = c.name || c.camera_name || c.label || id;
+        }
+      });
+
+      camerasCache.value[siteUid] = map;
+    } catch (err) {
+      console.warn('Failed to load cameras for site', siteUid, err);
+      // set empty map to avoid retry storm
+      camerasCache.value[siteUid] = {};
+    }
+  };
 
 // Switch site
 const switchSite = () => {
@@ -413,6 +845,21 @@ const filterEvents = () => {
 const refreshEvents = () => {
   fetchEvents();
 };
+
+// Header filter handlers
+const onFilterSiteChange = () => {
+  // selectedSiteFilter stores the site uid
+  currentSite.value = sites.value.find(s => s.uid === selectedSiteFilter.value) || null;
+  // reset NVR filter when site changes
+  selectedNvrFilter.value = "";
+  fetchEvents();
+};
+
+const onFilterNvrChange = () => {
+  // Changing NVR filter should reload events scoped to that NVR
+  fetchEvents();
+};
+
 
 // Badge class helpers
 const getEventTypeBadgeClass = (type: string) => {
@@ -453,6 +900,10 @@ const getStatusBadgeClass = (status: string) => {
       return 'badge-light-warning';
     case 'resolved':
       return 'badge-light-success';
+    case 'unresolved':
+      return 'badge-light-danger';
+    case 'false detection':
+      return 'badge-light-info';
     default:
       return 'badge-light-secondary';
   }
@@ -484,13 +935,26 @@ const filteredAndSortedEvents = computed(() => {
       (event) =>
         event.description.toLowerCase().includes(query) ||
         (event.camera_name && event.camera_name.toLowerCase().includes(query)) ||
-        event.location.toLowerCase().includes(query)
+        event.location.toLowerCase().includes(query) ||
+        event.type.toLowerCase().includes(query) ||
+        event.status.toLowerCase().includes(query) ||
+        event.severity.toLowerCase().includes(query) ||
+        (event.location && event.location.toLowerCase().includes(query)) ||
++       (event.type && event.type.toLowerCase().includes(query)) ||
++       (event.status && event.status.toLowerCase().includes(query)) ||
++       (event.severity && event.severity.toLowerCase().includes(query)) ||
+        getEventTypeLabel(event.type).toLowerCase().includes(query)
     );
   }
 
   // Filter by event type
   if (selectedEventType.value) {
     filtered = filtered.filter(event => event.type === selectedEventType.value);
+  }
+
+  // Filter by severity
+  if (selectedSeverityType.value) {
+    filtered = filtered.filter(event => event.severity === selectedSeverityType.value);
   }
 
   // Sort data
@@ -515,7 +979,15 @@ const filteredAndSortedEvents = computed(() => {
     });
   }
 
-  return filtered;
+  // Update pagination info whenever filters change
+  totalItems.value = filtered.length;
+  totalPages.value = Math.ceil(totalItems.value / itemsPerPage.value);
+  
+  // Apply pagination
+  const startIndex = (currentPage.value - 1) * itemsPerPage.value;
+  const endIndex = startIndex + itemsPerPage.value;
+  
+  return filtered.slice(startIndex, endIndex);
 });
 
 // Statistics computed properties
@@ -542,21 +1014,227 @@ const resolvedTodayPercentage = computed(() =>
 
 const responseTimePercentage = computed(() => 75); // Mock data
 
+// Pagination computed properties
+const visiblePages = computed(() => {
+  const pages = [];
+  const start = Math.max(1, currentPage.value - 2);
+  const end = Math.min(totalPages.value, currentPage.value + 2);
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+  return pages;
+});
+
 // Methods
 const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
   sortLabel.value = sort.label;
   sortOrder.value = sort.order;
 };
 
+const goToPage = (page: number) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
+
+const editEvent = async (event: Event) => {
+  try {
+    isEditModalLoading.value = true;
+    
+    // TODO: Fetch event details dari API
+    // const response = await ApiService.get(`events/${event.uid}`);
+    // selectedEventForEdit.value = response.data;
+    
+    // Untuk sementara gunakan data yang ada
+    selectedEventForEdit.value = { ...event };
+    editStatus.value = '';
+    editComment.value = '';
+    
+    // Show edit modal
+    const modalElement = document.getElementById('editEventModal');
+    if (modalElement) {
+      const modal = new Modal(modalElement);
+      modal.show();
+    }
+  } catch (error) {
+    console.error("Error fetching event details:", error);
+  } finally {
+    isEditModalLoading.value = false;
+  }
+};
+
+const closeEditModal = () => {
+  const modalElement = document.getElementById('editEventModal');
+  if (modalElement) {
+    try {
+      const modal = Modal.getInstance(modalElement);
+      if (modal) {
+        modal.hide();
+      }
+    } catch (error) {
+      console.error('Error hiding edit modal:', error);
+    }
+  }
+  selectedEventForEdit.value = null;
+  editStatus.value = '';
+  editComment.value = '';
+};
+
+const saveEventEdit = async () => {
+  if (!editStatus.value) return;
+  
+  try {
+    isEditModalLoading.value = true;
+    
+    const updateData = {
+      status: editStatus.value,
+      comment: editComment.value
+    };
+    
+    // TODO: API call untuk update event
+    // await ApiService.put(`events/${selectedEventForEdit.value.uid}`, updateData);
+    
+    // Update local state
+    const index = events.value.findIndex(e => e.uid === selectedEventForEdit.value.uid);
+    if (index !== -1) {
+      events.value[index].status = editStatus.value;
+      // Bisa tambahkan field comment jika diperlukan
+    }
+    
+    console.log('Event updated:', updateData);
+    closeEditModal();
+    
+  } catch (error) {
+    console.error("Error updating event:", error);
+  } finally {
+    isEditModalLoading.value = false;
+  }
+};
+
+const updatePaginationInfo = () => {
+  totalItems.value = filteredAndSortedEvents.value.length;
+  totalPages.value = Math.ceil(totalItems.value / itemsPerPage.value);
+  
+  // Adjust current page if it exceeds total pages
+  if (currentPage.value > totalPages.value && totalPages.value > 0) {
+    currentPage.value = totalPages.value;
+  }
+};
+
 const viewEventDetails = (event: Event) => {
-  console.log("View event details:", event);
-  // TODO: Implement event details modal
+  selectedEvent.value = event;
+  console.log('Opening modal for event:', event);
+  
+  // Show modal using Bootstrap 5
+  const modalElement = document.getElementById('eventDetailsModal');
+  if (modalElement) {
+    try {
+      const modal = new Modal(modalElement);
+      modal.show();
+      console.log('Modal shown successfully');
+    } catch (error) {
+      console.error('Error showing modal:', error);
+      // Fallback: manually show modal
+      modalElement.classList.add('show');
+      modalElement.style.display = 'block';
+      modalElement.setAttribute('aria-hidden', 'false');
+      
+      // Add backdrop
+      const backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop fade show';
+      backdrop.id = 'eventDetailsModalBackdrop';
+      document.body.appendChild(backdrop);
+      
+      // Add body class for modal behavior
+      document.body.classList.add('modal-open');
+    }
+  } else {
+    console.error('Modal element not found');
+  }
+};
+
+const closeModal = () => {
+  const modalElement = document.getElementById('eventDetailsModal');
+  if (modalElement) {
+    try {
+      const modal = Modal.getInstance(modalElement);
+      if (modal) {
+        modal.hide();
+      }
+    } catch (error) {
+      console.error('Error hiding modal:', error);
+      // Fallback: manually hide modal
+      modalElement.classList.remove('show');
+      modalElement.style.display = 'none';
+      modalElement.setAttribute('aria-hidden', 'true');
+      
+      // Remove backdrop
+      const backdrop = document.getElementById('eventDetailsModalBackdrop');
+      if (backdrop) {
+        backdrop.remove();
+      }
+      
+      // Remove body class
+      document.body.classList.remove('modal-open');
+    }
+  }
+  selectedEvent.value = null;
+};
+
+const acknowledgeEventFromModal = async () => {
+  if (selectedEvent.value) {
+    await acknowledgeEvent(selectedEvent.value);
+    // Update selected event status
+    selectedEvent.value.status = 'acknowledged';
+    closeModal();
+  }
+};
+
+const resolveEventFromModal = async () => {
+  if (selectedEvent.value) {
+    await resolveEvent(selectedEvent.value);
+    // Update selected event status
+    selectedEvent.value.status = 'resolved';
+    closeModal();
+  }
+};
+
+const formatDateTime = (dateTimeString: string) => {
+  if (!dateTimeString) return 'N/A';
+  try {
+    const date = new Date(dateTimeString);
+    return date.toLocaleDateString('id-ID', { 
+      timeZone: 'Asia/Jakarta',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  } catch {
+    return dateTimeString;
+  }
+};
+
+const formatDuration = (duration: number) => {
+  if (!duration && duration !== 0) return 'N/A';
+  if (duration < 1) {
+    return `${(duration * 60).toFixed(1)} seconds`;
+  }
+  return `${duration.toFixed(2)} minutes`;
+};
+
+const handleImageError = (event: any) => {
+  event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMzUgNzVIMTY1VjEyNUgxMzVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMjAgMTA1TDE0MCA5MEwxNjAgMTEwTDE4MCA5MEwyMDAgMTEwVjEzNUgxMDBWMTEwTDEyMCAxMDVaIiBmaWxsPSIjQ0NDQ0NDIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE0cHgiPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+Cjwvc3ZnPgo=';
+  event.target.alt = 'Image not available';
 };
 
 const acknowledgeEvent = async (event: Event) => {
   try {
     // TODO: API call to acknowledge event
-    // await ApiService.post(`/events/${event.uid}/acknowledge`);
+    // await ApiService.post(`events/${event.uid}/acknowledge`);
     
     // Update local state
     const index = events.value.findIndex(e => e.uid === event.uid);
@@ -571,7 +1249,7 @@ const acknowledgeEvent = async (event: Event) => {
 const resolveEvent = async (event: Event) => {
   try {
     // TODO: API call to resolve event
-    // await ApiService.post(`/events/${event.uid}/resolve`);
+    // await ApiService.post(`events/${event.uid}/resolve`);
     
     // Update local state
     const index = events.value.findIndex(e => e.uid === event.uid);
@@ -587,5 +1265,12 @@ const resolveEvent = async (event: Event) => {
 onMounted(() => {
   fetchSites();
   fetchEvents();
+  
+  // Add event listener for manual modal backdrop click
+  document.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement)?.id === 'eventDetailsModalBackdrop') {
+      closeModal();
+    }
+  });
 });
 </script>
