@@ -1,9 +1,101 @@
 import { createI18n } from "vue-i18n";
+import enControlplaneSite from "@/core/translate/en/controlplane/site.json";
+import idControlplaneSite from "@/core/translate/id/controlplane/site.json";
+import enControlplaneTeam from "@/core/translate/en/controlplane/team.json";
+import idControlplaneTeam from "@/core/translate/id/controlplane/team.json";
+import enControlplaneAccount from "@/core/translate/en/controlplane/account.json";
+import idControlplaneAccount from "@/core/translate/id/controlplane/account.json";
+import enControlplaneOrganization from "@/core/translate/en/controlplane/organization.json";
+import idControlplaneOrganization from "@/core/translate/id/controlplane/organization.json";
+import enAppsLiveView from "@/core/translate/en/apps/live-view.json";
+import idAppsLiveView from "@/core/translate/id/apps/live-view.json";
+import enAppsEventsAlerts from "@/core/translate/en/apps/events-alerts.json";
+import idAppsEventsAlerts from "@/core/translate/id/apps/events-alerts.json";
+import enAppsRecordingPlayback from "@/core/translate/en/apps/records-playback.json";
+import idAppsRecordingPlayback from "@/core/translate/id/apps/records-playback.json";
+import enComponentsMembership from "@/core/translate/en/components/membership.json";
+import idComponentsMembership from "@/core/translate/id/components/membership.json";
+
+export const APP_LOCALE_STORAGE_KEY = "app_locale";
+const LEGACY_LOCALE_STORAGE_KEY = "lang";
+export const AVAILABLE_LOCALES = ["en", "id"] as const;
+export type AppLocale = (typeof AVAILABLE_LOCALES)[number];
+const DEFAULT_LOCALE: AppLocale = "id";
+const FALLBACK_LOCALE: AppLocale = "id";
+
+const isAppLocale = (value: unknown): value is AppLocale => {
+  return (
+    typeof value === "string" &&
+    AVAILABLE_LOCALES.some((locale) => locale === value)
+  );
+};
+
+const readStoredLocale = (): AppLocale => {
+  if (typeof window === "undefined") {
+    return DEFAULT_LOCALE;
+  }
+
+  try {
+    const storage = window.localStorage;
+    const stored =
+      storage.getItem(APP_LOCALE_STORAGE_KEY) ||
+      storage.getItem(LEGACY_LOCALE_STORAGE_KEY);
+
+    if (isAppLocale(stored)) {
+      storage.setItem(APP_LOCALE_STORAGE_KEY, stored);
+      if (storage.getItem(LEGACY_LOCALE_STORAGE_KEY)) {
+        storage.removeItem(LEGACY_LOCALE_STORAGE_KEY);
+      }
+      return stored;
+    }
+  } catch (e) {
+    // ignore storage access issues
+  }
+
+  return DEFAULT_LOCALE;
+};
+
+const applyLocaleToDocument = (locale: AppLocale) => {
+  if (typeof document !== "undefined") {
+    document.documentElement.setAttribute("lang", locale);
+  }
+};
+
+const mergeDeep = (
+  target: Record<string, any>,
+  source: Record<string, any>
+): Record<string, any> => {
+  Object.keys(source).forEach((key) => {
+    const sourceValue = source[key];
+    if (
+      sourceValue &&
+      typeof sourceValue === "object" &&
+      !Array.isArray(sourceValue)
+    ) {
+      if (
+        !target[key] ||
+        typeof target[key] !== "object" ||
+        Array.isArray(target[key])
+      ) {
+        target[key] = {};
+      }
+      mergeDeep(target[key], sourceValue);
+    } else {
+      target[key] = sourceValue;
+    }
+  });
+  return target;
+};
 
 const messages = {
   en: {
     dashboard: "Dashboard",
     layoutBuilder: "Layout builder",
+    home: "Home",
+    dashboards: "Dashboards",
+    layout: "Layout",
+    wizard: "Wizard",
+    site: "Site",
     craft: "Crafted",
     pages: "Pages",
     profile: "Profile",
@@ -25,6 +117,8 @@ const messages = {
     basicFlow: "Basic Flow",
     signIn: "Sign-in",
     signUp: "Sign-up",
+  signOut: "Sign Out",
+  signOutConfirm: "Are you sure you want to sign out?",
     passwordReset: "Password Reset",
     multiStepSignUp: "Multi-steps Sign up",
     error404: "Error 404",
@@ -83,330 +177,94 @@ const messages = {
     roomManagement: "Room Management",
     nvrSystems: "NVR Systems",
     cameraManagement: "Camera Management",
+  selectOrganization: "Select Organization",
+  loadingOrganizations: "Loading organizations...",
+  selectAccount: "Select Account",
+  selectOrganizationFirst: "Select organization first",
+  loadingAccounts: "Loading accounts...",
+  noAccounts: "No accounts available",
+  selectTeam: "Select Team",
+  selectAccountFirst: "Select account first",
+  loadingTeams: "Loading teams...",
+  noTeams: "No teams available",
+  sitesOverview: "Sites Overview",
+  totalSites: "Total Sites",
+  activeSites: "Active Sites",
+  totalVisitors: "Total Visitors",
+  avgPerformance: "Avg Performance",
+  items: "Items:",
+  searchSites: "Search sites...",
+  addSite: "Add Site",
+  manageSites: "Manage sites",
+  forYourTeam: "for your team",
+  manageSitesForTeam: "Manage sites for team {name}",
+  editSite: "Edit Site",
+  deleteSite: "Delete Site",
+  cancel: "Cancel",
+  createSite: "Create Site",
+  updateSite: "Update Site",
+  delete: "Delete",
+  itemsPerPage: "Items per page:",
+  previous: "Previous",
+  next: "Next",
+  showingEntries: "Showing {from} to {to} of {total} entries",
+  retry: "Retry",
+  retrying: "Retrying...",
+  loading: "Loading...",
+  errorLoadingData: "Error Loading Data",
+  noOrganizationSelected: "No Organization Selected",
+  selectOrgToViewAccounts: "Please select an organization from the dropdown above to view payment accounts.",
+  paymentAccountManagement: "Payment Account Management",
+  managePaymentAccountsForOrg: "Manage payment accounts for {name}",
+  noOrganizations: "No organizations available",
+  paymentAccountsOverview: "Payment Accounts Overview",
+  searchPaymentAccounts: "Search payment accounts...",
+  addPaymentAccount: "Add Payment Account",
+  // organization view
+  totalOrganizations: "Total Organizations",
+  totalTeam: "Total Team",
+  totalUsers: "Total Users",
+  totalCameras: "Total Camera",
+  connectionError: "Connection Error",
+  organizationsOverview: "Organizations Overview",
+  searchOrganizations: "Search organizations...",
+  noOrganizationsFound: "No organizations found",
+  addOrganization: "Add Organization",
+  editOrganization: "Edit Organization",
+  deleteOrganization: "Delete Organization",
+  createOrganization: "Create Organization",
+  updateOrganization: "Update Organization",
+  active: "Active",
+  inactive: "Inactive",
+  organizationName: "Organization Name",
+  email: "Email",
+  phone: "Phone",
+  country: "Country",
+  status: "Status",
+  created: "Created",
+  actions: "Actions",
+  manageMembers: "Manage Members",
+  manageAccounts: "Manage Accounts",
+  manageOrganization: "Manage Organization",
+  deleteConfirmation: "Are you sure you want to delete {name}?",
+  thisActionCannotBeUndone: "This action cannot be undone.",
+  teamManagement: "Team Management",
+  manageTeamsForAccount: "Manage teams for {name}",
+  manageTeams: "Manage teams",
+  forYourAccount: "for your account",
+  teamsOverview: "Teams Overview",
+  searchTeams: "Search teams...",
+  addTeam: "Add Team",
   },
-  es: {
-    dashboard: "Tablero",
-    layoutBuilder: "Constructor de maquetación",
-    craft: "Elaborado",
-    pages: "Paginas",
-    profile: "Perfil",
-    profileOverview: "Descripción general",
-    projects: "Proyectos",
-    campaigns: "Campañas",
-    documents: "Documentos",
-    connections: "Conexiones",
-    wizards: "Magos",
-    horizontal: "Horizontal",
-    vertical: "Vertical",
-    account: "Cuenta",
-    accountOverview: "Descripción general",
-    settings: "Ajustes",
-    authentication: "Autenticación",
-    basicFlow: "Flujo básico",
-    signIn: "Registrarse",
-    signUp: "Inscribirse",
-    passwordReset: "Restablecimiento de contraseña",
-    multiStepSignUp: "Regístrese Multi-Pasos",
-    error404: "Error 404",
-    error500: "Error 500",
-    apps: "Aplicaciones",
-    chat: "Chat",
-    privateChat: "Chat privado",
-    groupChat: "Grupo de chat",
-    drawerChat: "Chat del cajón",
-    widgets: "Widgets",
-    widgetsLists: "Liza",
-    widgetsStatistics: "Estadísticas",
-    widgetsCharts: "Gráficos",
-    widgetsMixed: "Mezclada",
-    widgetsTables: "Mesas",
-    widgetsFeeds: "Alimenta",
-    changelog: "Registro de cambios",
-    docsAndComponents: "Documentos & Componentes",
-    megaMenu: "Mega menú",
-    exampleLink: "Enlace de ejemplo",
-    modals: "Modales",
-    general: "General",
-    inviteFriends: "Invitar A Amigos",
-    viewUsers: "Ver Usuarios",
-    upgradePlan: "Plan De Actualización",
-    shareAndEarn: "Compartir Y Ganar",
-    forms: "Formas",
-    newTarget: "Nuevo Objetivo",
-    newCard: "Nueva Tarjeta",
-    newAddress: "Nueva Direccion",
-    createAPIKey: "Crea Clave De Api",
-    twoFactorAuth: "Dos Factores",
-    createApp: "Crear Aplicacion",
-    createAccount: "Crear Una Cuenta",
-    activity: "Actividad",
-    documentation: "Documentación",
-    components: "Componentes",
-    resources: "Recursos",
-    customers: "Clientes",
-    gettingStarted: "Empezando",
-    customersListing: "Listado De Clientes",
-    customerDetails: "Detalles De Los Clientes",
-    calendarApp: "Calendario",
-    subscriptions: "Suscripciones",
-    getStarted: "Empezando",
-    subscriptionList: "Lista De Suscripción",
-    addSubscription: "Añadir Suscripción",
-    viewSubscription: "Suscripción",
-    liveView: "Vista En Vivo",
-    eventsAlerts: "Eventos y Alertas",
-    recordingPlayback: "Grabación y Reproducción",
-    monitoringCenter: "Centro de Monitoreo",
-    overview: "Resumen",
-    siteManagement: "Gestión de Sitio",
-    siteConfiguration: "Configuración de Sitio",
-    roomManagement: "Gestión de Salas",
-    nvrSystems: "Sistemas NVR",
-    cameraManagement: "Gestión de Cámaras",
-  },
-  de: {
-    dashboard: "Instrumententafel",
-    layoutBuilder: "Layout-Builder",
-    craft: "Hergestellt",
-    pages: "Seiten",
-    profile: "Profil",
-    profileOverview: "Überblick",
-    projects: "Projekte",
-    campaigns: "Kampagnen",
-    documents: "Unterlagen",
-    connections: "Anschlüsse",
-    wizards: "Zauberer",
-    horizontal: "Horizontal",
-    vertical: "Vertikal",
-    account: "Konto",
-    accountOverview: "Überblick",
-    settings: "Die Einstellungen",
-    authentication: "Authentifizierung",
-    basicFlow: "Grundfluss",
-    signIn: "Einloggen",
-    signUp: "Anmelden",
-    passwordReset: "Passwort zurücksetzen",
-    multiStepSignUp: "Multi-Steps-Anmeldung",
-    error404: "Fehler 404",
-    error500: "Fehler 500",
-    apps: "Apps",
-    chat: "Plaudern",
-    privateChat: "Private Chat",
-    groupChat: "Privater Chat",
-    drawerChat: "Gruppenchat Schubladen-Chat",
-    widgets: "Widgets",
-    widgetsLists: "Listen",
-    widgetsStatistics: "Statistiken",
-    widgetsCharts: "Diagramme",
-    widgetsMixed: "Gemischt",
-    widgetsTables: "Tabellen",
-    widgetsFeeds: "Einspeisungen",
-    changelog: "Änderungsprotokoll",
-    docsAndComponents: "Dokumente & Komponenten",
-    megaMenu: "Mega-Menü",
-    exampleLink: "Beispiellink",
-    modals: "Modale",
-    general: "Allgemeines",
-    inviteFriends: "Freunde Einladen",
-    viewUsers: "Benutzer Anzeigen.",
-    upgradePlan: "Upgrade-Plan",
-    shareAndEarn: "Teilen & Verdienen",
-    forms: "Formen",
-    newTarget: "Neues Ziel",
-    newCard: "Neue Karte",
-    newAddress: "Neue Adresse",
-    createAPIKey: "Api-Key Erstellen",
-    twoFactorAuth: "Zwei Faktor Auth.",
-    createApp: "App Erstellen",
-    createAccount: "Benutzerkonto Erstellen",
-    activity: "Aktivität",
-    documentation: "Dokumentation",
-    components: "Bauteile",
-    resources: "Ressourcen",
-    customers: "Kunden",
-    gettingStarted: "Einstieg",
-    customersListing: "Kundenauflistung",
-    customerDetails: "Kundenangaben",
-    calendarApp: "Kalender",
-    subscriptions: "Abonnements",
-    getStarted: "Einstieg",
-    subscriptionList: "Abonnementliste",
-    addSubscription: "Subskription Hinzufügen.",
-    viewSubscription: "Abonnement Anzeigen.",
-    liveView: "Live-Ansicht",
-    eventsAlerts: "Ereignisse & Warnungen",
-    recordingPlayback: "Aufzeichnung & Wiedergabe",
-    monitoringCenter: "Überwachungszentrum",
-    overview: "Übersicht",
-    siteManagement: "Standort-Management",
-    siteConfiguration: "Standort-Konfiguration",
-    roomManagement: "Raum-Management",
-    nvrSystems: "NVR-Systeme",
-    cameraManagement: "Kamera-Management",
-  },
-  ja: {
-    dashboard: "ダッシュボード",
-    layoutBuilder: "レイアウトビルダー",
-    craft: "作成された",
-    pages: "ページ",
-    profile: "プロフィール",
-    profileOverview: "概要",
-    projects: "プロジェクト",
-    campaigns: "キャンペーン",
-    documents: "書類",
-    connections: "接続",
-    wizards: "ウィザード",
-    horizontal: "横",
-    vertical: "垂直",
-    account: "アカウント",
-    accountOverview: "概要",
-    settings: "設定",
-    authentication: "認証",
-    basicFlow: "基本的な流れ",
-    signIn: "サインイン",
-    signUp: "サインアップ",
-    passwordReset: "パスワードのリセット",
-    multiStepSignUp: "マルチステップサインアップ",
-    error404: "エラー404",
-    error500: "エラー 500",
-    apps: "アプリ",
-    chat: "チャット",
-    privateChat: "プライベートチャット",
-    groupChat: "グループチャット",
-    drawerChat: "ドロワーチャット",
-    widgets: "ウィジェット",
-    widgetsLists: "リスト",
-    widgetsStatistics: "統計",
-    widgetsCharts: "チャート",
-    widgetsMixed: "混合",
-    widgetsTables: "テーブル",
-    widgetsFeeds: "フィード",
-    changelog: "変更ログ",
-    docsAndComponents: "ドキュメントとコンポーネント",
-    megaMenu: "メガメニュー",
-    exampleLink: "リンク例",
-    modals: "モーダルズ",
-    general: "一般",
-    inviteFriends: "友達を招待",
-    viewUsers: "ユーザーを表示します",
-    upgradePlan: "アップグレードプラン",
-    shareAndEarn: "シェア＆稼働",
-    forms: "フォーム",
-    newTarget: "新しいターゲット",
-    newCard: "新しいカード",
-    newAddress: "新しいアドレス",
-    createAPIKey: "Apiキーを作成します",
-    twoFactorAuth: "2つの要因Auth",
-    createApp: "アプリを作成します",
-    createAccount: "アカウントを作成する",
-    activity: "アクティビティ",
-    documentation: "ドキュメンテーション",
-    components: "コンポーネント",
-    resources: "資力",
-    customers: "お客様のお客様",
-    gettingStarted: "入門",
-    customersListing: "顧客のリスト",
-    customerDetails: "お客様の詳細",
-    calendarApp: "カレンダー",
-    subscriptions: "購読",
-    getStarted: "入門",
-    subscriptionList: "サブスクリプションリスト",
-    addSubscription: "サブスクリプションを追加します",
-    viewSubscription: "購読を見る",
-    liveView: "ライブビュー",
-    eventsAlerts: "イベント＆アラート",
-    recordingPlayback: "録画・再生",
-    monitoringCenter: "監視センター",
-    overview: "概要",
-    siteManagement: "サイト管理",
-    siteConfiguration: "サイト設定",
-    roomManagement: "ルーム管理",
-    nvrSystems: "NVRシステム",
-    cameraManagement: "カメラ管理",
-  },
-  fr: {
-    dashboard: "Générateur de mise",
-    layoutBuilder: "En page",
-    craft: "Fabriqué",
-    pages: "Pages",
-    profile: "Profil",
-    profileOverview: "Aperçu",
-    projects: "Projets",
-    campaigns: "Campagnes",
-    documents: "Documents",
-    connections: "Connexions",
-    wizards: "Sorciers",
-    horizontal: "Horizontal",
-    vertical: "Verticale",
-    account: "Compte",
-    accountOverview: "Aperçu",
-    settings: "Paramètres",
-    authentication: "Authentification",
-    basicFlow: "Flux de base",
-    signIn: "SS'identifier",
-    signUp: "Inscrivez-vous",
-    passwordReset: "Réinitialisation du mot de passe",
-    multiStepSignUp: "S'Inscrire Multi-Étapes",
-    error404: "Erreur 404",
-    error500: "Erreur 500",
-    apps: "Applications",
-    chat: "Discuter",
-    privateChat: "Discussion privée",
-    groupChat: "Discussion de groupe",
-    drawerChat: "Chat de tiroir",
-    widgets: "Widgets",
-    widgetsLists: "Listes",
-    widgetsStatistics: "Statistiques",
-    widgetsCharts: "Graphiques",
-    widgetsMixed: "Mixte",
-    widgetsTables: "Les tables",
-    widgetsFeeds: "Flux",
-    changelog: "Journal des modifications",
-    docsAndComponents: "Documents & composants",
-    megaMenu: "Méga Menu",
-    exampleLink: "Exemple de lien",
-    modals: "Modals",
-    general: "Général",
-    inviteFriends: "Inviter Des Amis",
-    viewUsers: "Voir Les Utilisateurs",
-    upgradePlan: "Plan De Mise À Niveau",
-    shareAndEarn: "Partager Et Gagner",
-    forms: "Formes",
-    newTarget: "Nouvelle Cible",
-    newCard: "Nouvelle Carte",
-    newAddress: "Nouvelle Adresse",
-    createAPIKey: "Créer Une Touche Api",
-    twoFactorAuth: "Deux Facteurs D'Authentification",
-    createApp: "Créer Une Application",
-    createAccount: "Créer Un Compte",
-    activity: "Activité",
-    documentation: "Documentation",
-    components: "Composants",
-    resources: "Ressources",
-    customers: "Les Clients",
-    gettingStarted: "Commencer",
-    customersListing: "Liste Des Clients",
-    customerDetails: "Détails Des Clients",
-    calendarApp: "Calendrier",
-    subscriptions: "Abonnements",
-    getStarted: "Commencer",
-    subscriptionList: "Liste D'Abonnement",
-    addSubscription: "Ajouter Un Abonnement",
-    viewSubscription: "Voir L'Abonnement",
-    liveView: "Vue en Direct",
-    eventsAlerts: "Événements et Alertes",
-    recordingPlayback: "Enregistrement et Lecture",
-    monitoringCenter: "Centre de Surveillance",
-    overview: "Aperçu",
-    siteManagement: "Gestion de Site",
-    siteConfiguration: "Configuration de Site",
-    roomManagement: "Gestion des Salles",
-    nvrSystems: "Systèmes NVR",
-    cameraManagement: "Gestion des Caméras",
-  },
+
   id: {
     dashboard: "Dasbor",
     layoutBuilder: "Pembuat Tata Letak",
+    home: "Beranda",
+    dashboards: "Dasbor",
+    layout: "Tata Letak",
+    wizard: "Panduan",
+    site: "Situs",
     craft: "Dibuat",
     pages: "Halaman",
     profile: "Profil",
@@ -428,6 +286,8 @@ const messages = {
     basicFlow: "Alur Dasar",
     signIn: "Masuk",
     signUp: "Daftar",
+  signOut: "Keluar",
+  signOutConfirm: "Apakah Anda yakin ingin keluar?",
     passwordReset: "Reset Kata Sandi",
     multiStepSignUp: "Daftar Multi-Langkah",
     error404: "Error 404",
@@ -486,14 +346,143 @@ const messages = {
     roomManagement: "Manajemen Ruangan",
     nvrSystems: "Sistem NVR",
     cameraManagement: "Manajemen Kamera",
+  selectOrganization: "Pilih Organisasi",
+  loadingOrganizations: "Memuat organisasi...",
+  selectAccount: "Pilih Akun",
+  selectOrganizationFirst: "Pilih organisasi terlebih dahulu",
+  loadingAccounts: "Memuat akun...",
+  noAccounts: "Tidak ada akun tersedia",
+  selectTeam: "Pilih Tim",
+  selectAccountFirst: "Pilih akun terlebih dahulu",
+  loadingTeams: "Memuat tim...",
+  noTeams: "Tidak ada tim tersedia",
+  sitesOverview: "Ringkasan Situs",
+  totalSites: "Total Situs",
+  activeSites: "Situs Aktif",
+  totalVisitors: "Total Pengunjung",
+  avgPerformance: "Rata-rata Kinerja",
+  items: "Item:",
+  searchSites: "Cari situs...",
+  addSite: "Tambah Situs",
+  manageSites: "Kelola situs",
+  forYourTeam: "untuk tim Anda",
+  manageSitesForTeam: "Kelola situs untuk tim {name}",
+  editSite: "Ubah Situs",
+  deleteSite: "Hapus Situs",
+  createSite: "Buat Situs",
+  updateSite: "Perbarui Situs",
+  delete: "Hapus",
+  deleteConfirmation: "Apakah Anda yakin ingin menghapus situs {name}?",
+  actionCannotBeUndone: "Tindakan ini tidak dapat dikembalikan.",
+  itemsPerPage: "Item per halaman:",
+  previous: "Sebelumnya",
+  next: "Berikutnya",
+  showingEntries: "Menampilkan {from} hingga {to} dari {total} entri",
+  retry: "Ulangi",
+  retrying: "Mengulang...",
+  loading: "Memuat...",
+  errorLoadingData: "Gagal Memuat Data",
+  noOrganizationSelected: "Belum Ada Organisasi Dipilih",
+  selectOrgToViewAccounts: "Silakan pilih organisasi dari dropdown di atas untuk melihat akun pembayaran.",
+  paymentAccountManagement: "Manajemen Akun Pembayaran",
+  managePaymentAccountsForOrg: "Kelola akun pembayaran untuk {name}",
+  noOrganizations: "Tidak ada organisasi tersedia",
+  paymentAccountsOverview: "Ringkasan Akun Pembayaran",
+  searchPaymentAccounts: "Cari akun pembayaran...",
+  addPaymentAccount: "Tambah Akun Pembayaran",
+  // organization view (id)
+  totalOrganizations: "Total Organisasi",
+  totalTeam: "Total Tim",
+  totalUsers: "Total Pengguna",
+  totalCameras: "Total Kamera",
+  connectionError: "Koneksi Gagal",
+  organizationsOverview: "Ringkasan Organisasi",
+  searchOrganizations: "Cari organisasi...",
+  noOrganizationsFound: "Tidak ada organisasi yang ditemukan",
+  addOrganization: "Tambah Organisasi",
+  editOrganization: "Ubah Organisasi",
+  deleteOrganization: "Hapus Organisasi",
+  createOrganization: "Buat Organisasi",
+  updateOrganization: "Perbarui Organisasi",
+  cancel: "Batal",
+  active: "Aktif",
+  inactive: "Tidak Aktif",
+  organizationName: "Nama Organisasi",
+  email: "Email",
+  phone: "Telepon",
+  country: "Negara",
+  status: "Status",
+  created: "Dibuat",
+  actions: "Aksi",
+  manageMembers: "Kelola Anggota",
+  manageAccounts: "Kelola Akun",
+  manageOrganization: "Kelola Organisasi",
+  thisActionCannotBeUndone: "Tindakan ini tidak dapat dikembalikan.",
+  teamManagement: "Manajemen Tim",
+  manageTeamsForAccount: "Kelola tim untuk {name}",
+  manageTeams: "Kelola tim",
+  forYourAccount: "untuk akun Anda",
+  teamsOverview: "Ringkasan Tim",
+  searchTeams: "Cari tim...",
+  addTeam: "Tambah Tim",
   },
 };
 
+mergeDeep(messages.en, { controlplane: { site: enControlplaneSite } });
+mergeDeep(messages.id, { controlplane: { site: idControlplaneSite } });
+mergeDeep(messages.en, { controlplane: { team: enControlplaneTeam } });
+mergeDeep(messages.id, { controlplane: { team: idControlplaneTeam } });
+mergeDeep(messages.en, { controlplane: { account: enControlplaneAccount } });
+mergeDeep(messages.id, { controlplane: { account: idControlplaneAccount } });
+mergeDeep(messages.en, { controlplane: { organization: enControlplaneOrganization } });
+mergeDeep(messages.id, { controlplane: { organization: idControlplaneOrganization } });
+mergeDeep(messages.en, { appsLiveView: enAppsLiveView });
+mergeDeep(messages.id, { appsLiveView: idAppsLiveView });
+mergeDeep(messages.en, { appsEventsAlerts: enAppsEventsAlerts });
+mergeDeep(messages.id, { appsEventsAlerts: idAppsEventsAlerts });
+mergeDeep(messages.en, { appsRecordingPlayback: enAppsRecordingPlayback });
+mergeDeep(messages.id, { appsRecordingPlayback: idAppsRecordingPlayback });
+mergeDeep(messages.en, { components: { membership: enComponentsMembership } });
+mergeDeep(messages.id, { components: { membership: idComponentsMembership } });
+
+const defaultLocale = readStoredLocale();
+
 const i18n = createI18n({
   legacy: false,
-  locale: "en",
+  locale: defaultLocale,
+  fallbackLocale: FALLBACK_LOCALE,
   globalInjection: true,
   messages,
 });
+
+applyLocaleToDocument(defaultLocale);
+
+if (typeof window !== "undefined") {
+  try {
+    window.localStorage.setItem(APP_LOCALE_STORAGE_KEY, defaultLocale);
+  } catch (e) {
+    // ignore storage access issues
+  }
+}
+
+export const setAppLocale = (locale: AppLocale) => {
+  if (i18n.global.locale.value !== locale) {
+    i18n.global.locale.value = locale;
+  }
+
+  applyLocaleToDocument(locale);
+
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem(APP_LOCALE_STORAGE_KEY, locale);
+    } catch (e) {
+      // ignore storage access issues
+    }
+  }
+};
+
+export const getCurrentLocale = (): AppLocale => {
+  return i18n.global.locale.value as AppLocale;
+};
 
 export default i18n;

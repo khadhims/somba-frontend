@@ -5,16 +5,17 @@
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col-md-4">
-          <h4 class="card-title mb-0">Site Management</h4>
+          <h4 class="card-title mb-0">{{ t('siteManagement') }}</h4>
           <p class="text-muted mb-0">
-            Manage sites {{ currentTeam ? `for team ${currentTeam.name}` : 'for your team' }}
+            <span v-if="currentTeam">{{ t('manageSitesForTeam', { name: currentTeam.name }) }}</span>
+            <span v-else>{{ t('manageSites') }} {{ t('forYourTeam') }}</span>
           </p>
         </div>
         <div class="col-md-8">
           <div class="d-flex justify-content-end gap-3">
             <!-- Organization Dropdown -->
             <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">Organization:</label>
+              <label class="form-label me-3 mb-0 fw-semibold">{{ t('organization') }}:</label>
               <select
                 v-model="selectedOrganizationId"
                 @change="switchOrganization"
@@ -22,7 +23,7 @@
                 :disabled="loadingOrganizations"
               >
                 <option value="" disabled>
-                  {{ loadingOrganizations ? 'Loading organizations...' : 'Select Organization' }}
+                  {{ loadingOrganizations ? t('loadingOrganizations') : t('selectOrganization') }}
                 </option>
                 <option
                   v-for="org in organizations"
@@ -43,7 +44,7 @@
             
             <!-- Account Dropdown -->
             <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">Account:</label>
+              <label class="form-label me-3 mb-0 fw-semibold">{{ t('account') }}:</label>
               <select
                 v-model="selectedAccountId"
                 @change="switchAccount"
@@ -51,10 +52,10 @@
                 :disabled="loadingAccounts || !selectedOrganizationId || accounts.length === 0"
               >
                 <option value="" disabled>
-                  <span v-if="!selectedOrganizationId">Select organization first</span>
-                  <span v-else-if="loadingAccounts">Loading accounts...</span>
-                  <span v-else-if="accounts.length === 0">No accounts available</span>
-                  <span v-else>Select Account</span>
+                  <span v-if="!selectedOrganizationId">{{ t('selectOrganizationFirst') }}</span>
+                  <span v-else-if="loadingAccounts">{{ t('loadingAccounts') }}</span>
+                  <span v-else-if="accounts.length === 0">{{ t('noAccounts') }}</span>
+                  <span v-else>{{ t('selectAccount') }}</span>
                 </option>
                 <option
                   v-for="account in accounts"
@@ -75,7 +76,7 @@
             
             <!-- Team Dropdown -->
             <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">Team:</label>
+              <label class="form-label me-3 mb-0 fw-semibold">{{ t('team') }}:</label>
               <select
                 v-model="selectedTeamId"
                 @change="switchTeam"
@@ -83,10 +84,10 @@
                 :disabled="loadingTeams || !selectedAccountId || teams.length === 0"
               >
                 <option value="" disabled>
-                  <span v-if="!selectedAccountId">Select account first</span>
-                  <span v-else-if="loadingTeams">Loading teams...</span>
-                  <span v-else-if="teams.length === 0">No teams available</span>
-                  <span v-else>Select Team</span>
+                  <span v-if="!selectedAccountId">{{ t('selectAccountFirst') }}</span>
+                  <span v-else-if="loadingTeams">{{ t('loadingTeams') }}</span>
+                  <span v-else-if="teams.length === 0">{{ t('noTeams') }}</span>
+                  <span v-else>{{ t('selectTeam') }}</span>
                 </option>
                 <option
                   v-for="team in teams"
@@ -118,7 +119,7 @@
       <span class="path2"></span>
     </i>
     <div class="d-flex flex-column">
-      <h5 class="mb-1">Error Loading Data</h5>
+  <h5 class="mb-1">{{ t('errorLoadingData') }}</h5>
       <span>{{ error }}</span>
     </div>
     <button 
@@ -142,8 +143,8 @@
           <div class="text-gray-900 fw-bold fs-2 mb-2 me-5">
             {{ totalSites }}
           </div>
-          <div class="fw-semibold text-gray-400">
-            Total Sites
+            <div class="fw-semibold text-gray-400">
+            {{ t('totalSites') }}
           </div>
         </div>
       </div>
@@ -160,7 +161,7 @@
             {{ activeSites }}
           </div>
           <div class="fw-semibold text-gray-400">
-            Active Sites
+            {{ t('activeSites') }}
           </div>
         </div>
       </div>
@@ -177,7 +178,7 @@
             {{ totalVisitors }}
           </div>
           <div class="fw-semibold text-gray-400">
-            Total Visitors
+            {{ t('totalVisitors') }}
           </div>
         </div>
       </div>
@@ -194,7 +195,7 @@
             {{ avgPerformance }}%
           </div>
           <div class="fw-semibold text-gray-400">
-            Avg Performance
+            {{ t('avgPerformance') }}
           </div>
         </div>
       </div>
@@ -208,7 +209,7 @@
     <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
       <div class="card-title">
-        <h3 class="fw-bold m-0">Sites Overview</h3>
+  <h3 class="fw-bold m-0">{{ t('sitesOverview') }}</h3>
       </div>
       <!--end::Card title-->
 
@@ -216,7 +217,7 @@
       <div class="card-toolbar">
         <!--begin::Items per page-->
         <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">Items:</label>
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('items') }}</label>
           <select 
             class="form-select form-select-sm w-auto" 
             v-model="pagination.per_page"
@@ -240,7 +241,7 @@
             type="text"
             v-model="searchQuery"
             class="form-control form-control-solid w-250px ps-12"
-            placeholder="Search sites..."
+            :placeholder="t('searchSites')"
           />
         </div>
         <!--end::Search-->
@@ -251,7 +252,7 @@
           :disabled="!selectedTeamId"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
-          Add Site
+          {{ t('addSite') }}
         </button>
       </div>
       <!--end::Card toolbar-->
@@ -329,14 +330,16 @@
       <!--begin::Pagination-->
       <div class="d-flex flex-stack flex-wrap pt-10" v-if="!loading && sites.length >= 0">
         <div class="d-flex align-items-center">
-          <div class="fs-6 fw-semibold text-gray-700 me-5">
-            Showing {{ ((pagination.page - 1) * pagination.per_page) + 1 }} to 
-            {{ Math.min(pagination.page * pagination.per_page, pagination.total_items) }} of 
-            {{ pagination.total_items }} entries
+            <div class="fs-6 fw-semibold text-gray-700 me-5">
+            {{ t('showingEntries', {
+              from: ((pagination.page - 1) * pagination.per_page) + 1,
+              to: Math.min(pagination.page * pagination.per_page, pagination.total_items),
+              total: pagination.total_items
+            }) }}
           </div>
           
           <div class="d-flex align-items-center">
-            <span class="text-gray-700 me-2">Items per page:</span>
+            <span class="text-gray-700 me-2">{{ t('itemsPerPage') }}</span>
             <span class="badge badge-light fs-6">{{ pagination.per_page }}</span>
           </div>
         </div>
@@ -467,6 +470,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { Modal } from 'bootstrap'
 import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
@@ -1101,4 +1105,7 @@ const filteredAndSortedSites = computed(() => {
 onMounted(() => {
   fetchOrganizations()
 })
+
+// i18n
+const { t } = useI18n()
 </script>

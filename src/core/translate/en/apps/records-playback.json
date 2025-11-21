@@ -1,0 +1,236 @@
+{
+	"overview": {
+		"title": "Recording & Playback",
+		"subtitleAll": "Manage recordings across all sites",
+		"subtitleSite": "Manage recordings for {site}"
+	},
+	"filters": {
+		"siteLabel": "Site:",
+		"siteAll": "All Sites"
+	},
+	"cards": {
+		"totalStorage": {
+			"title": "Total Storage",
+			"value": "{total}GB",
+			"progress": "{used}GB Used"
+		},
+		"recordingCameras": {
+			"title": "Recording Cameras",
+			"value": "{count}",
+			"progress": "{total} Total"
+		},
+		"recordingsToday": {
+			"title": "Recordings Today",
+			"value": "{count}",
+			"progress": "{total} Total"
+		},
+		"averageDuration": {
+			"title": "Average Duration",
+			"value": "{value} min",
+			"progress": "Per Recording"
+		}
+	},
+	"controls": {
+		"title": "Recording Controls",
+		"startAll": "Start All",
+		"stopAll": "Stop All",
+		"status": {
+			"recording": "Recording",
+			"stopped": "Stopped"
+		},
+		"buttons": {
+			"start": "Start",
+			"stop": "Stop",
+			"live": "Live"
+		}
+	},
+	"list": {
+		"title": "Recorded Videos",
+		"searchPlaceholder": "Search recordings...",
+		"cameraFilterAll": "All Cameras",
+		"refresh": "Refresh",
+		"table": {
+			"columns": {
+				"camera": "Camera",
+				"startTime": "Start Time",
+				"duration": "Duration",
+				"fileSize": "File Size",
+				"type": "Type",
+				"actions": "Actions"
+			},
+			"empty": "No recordings found",
+			"types": {
+				"scheduled": "Scheduled",
+				"motion": "Motion",
+				"manual": "Manual",
+				"unknown": "Unknown"
+			},
+			"actions": {
+				"play": "Play Recording",
+				"download": "Download",
+				"delete": "Delete Recording"
+			}
+		},
+		"bulk": {
+			"selected": "{count} recording(s) selected",
+			"download": "Download Selected",
+			"delete": "Delete Selected",
+			"confirmSingle": "Are you sure you want to delete this recording?",
+			"confirmMultiple": "Are you sure you want to delete {count} recording(s)?"
+		}
+	},
+	"settings": {
+		"header": {
+			"title": "Recording & Playback Settings",
+			"description": "Configure recording schedules and storage settings"
+		},
+		"recording": {
+			"title": "Recording Configuration",
+			"mode": {
+				"label": "Recording Mode",
+				"help": "Choose how recordings are triggered",
+				"options": {
+					"continuous": "Continuous Recording",
+					"scheduled": "Scheduled Recording",
+					"motion": "Motion-Based Recording",
+					"hybrid": "Hybrid (Motion + Scheduled)"
+				}
+			},
+			"quality": {
+				"label": "Video Quality",
+				"help": "Higher quality uses more storage space",
+				"options": {
+					"720p": "720p (Standard)",
+					"1080p": "1080p (High)",
+					"4k": "4K (Ultra High)"
+				}
+			},
+			"frameRate": {
+				"label": "Frame Rate (FPS)",
+				"help": "Higher frame rates provide smoother video",
+				"options": {
+					"fps15": "15 FPS",
+					"fps25": "25 FPS",
+					"fps30": "30 FPS",
+					"fps60": "60 FPS"
+				}
+			},
+			"compression": {
+				"label": "Video Compression",
+				"help": "H.265 provides better compression but requires more processing",
+				"options": {
+					"h264": "H.264 (Standard)",
+					"h265": "H.265 (Efficient)",
+					"mjpeg": "MJPEG (High Quality)"
+				}
+			},
+			"preRecording": {
+				"label": "Pre-Recording (seconds)",
+				"help": "Record before motion trigger"
+			},
+			"postRecording": {
+				"label": "Post-Recording (seconds)",
+				"help": "Record after motion ends"
+			}
+		},
+		"storage": {
+			"title": "Storage Management",
+			"location": {
+				"label": "Storage Location",
+				"browse": "Browse",
+				"help": "Default location for recorded videos"
+			},
+			"retention": {
+				"label": "Auto-Delete Policy",
+				"help": "Automatically manage storage space",
+				"options": {
+					"never": "Never delete",
+					"7days": "Delete after 7 days",
+					"30days": "Delete after 30 days",
+					"90days": "Delete after 90 days",
+					"1year": "Delete after 1 year",
+					"storageFull": "Delete when storage is full"
+				}
+			},
+			"limit": {
+				"label": "Maximum Storage (GB)",
+				"help": "Maximum space to use for recordings"
+			},
+			"usage": {
+				"label": "Current Storage Usage",
+				"used": "{value}GB used",
+				"total": "{value}GB total"
+			},
+			"backup": {
+				"label": "Enable Cloud Backup",
+				"help": "Automatically backup recordings to cloud storage",
+				"provider": {
+					"label": "Backup Provider",
+					"options": {
+						"awsS3": "Amazon S3",
+						"googleCloud": "Google Cloud Storage",
+						"azureBlob": "Azure Blob Storage",
+						"ftp": "FTP Server"
+					}
+				},
+				"schedule": {
+					"label": "Backup Schedule",
+					"options": {
+						"immediately": "Immediately after recording",
+						"hourly": "Every hour",
+						"daily": "Daily at midnight",
+						"weekly": "Weekly on Sunday"
+					}
+				}
+			}
+		},
+		"schedule": {
+			"title": "Recording Schedule",
+			"actions": {
+				"add": "Add Schedule",
+				"edit": "Edit Schedule",
+				"delete": "Delete Schedule"
+			},
+			"table": {
+				"camera": "Camera",
+				"days": "Days",
+				"start": "Start Time",
+				"end": "End Time",
+				"status": "Status",
+				"actions": "Actions",
+				"empty": "No recording schedules configured"
+			},
+			"status": {
+				"active": "Active",
+				"inactive": "Inactive"
+			},
+			"days": {
+				"mon": "Mon",
+				"tue": "Tue",
+				"wed": "Wed",
+				"thu": "Thu",
+				"fri": "Fri",
+				"sat": "Sat",
+				"sun": "Sun"
+			},
+			"unknownCamera": "Unknown Camera"
+		},
+		"actions": {
+			"saving": "Saving...",
+			"saveRecording": "Save Recording Settings",
+			"saveStorage": "Save Storage Settings"
+		},
+		"messages": {
+			"deleteScheduleConfirm": "Are you sure you want to delete this schedule?"
+		}
+	},
+	"format": {
+		"notAvailable": "Not available",
+		"duration": {
+			"hoursMinutesSeconds": "{hours}h {minutes}m {seconds}s",
+			"minutesSeconds": "{minutes}m {seconds}s",
+			"seconds": "{seconds}s"
+		},
+		"fileSize": "{value} {unit}"
+	}
+}

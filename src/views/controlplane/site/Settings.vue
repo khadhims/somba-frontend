@@ -5,7 +5,7 @@
     <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
       <div class="card-title">
-        <h3 class="fw-bold m-0">Site Configuration</h3>
+        <h3 class="fw-bold m-0">{{ t("controlplane.site.settings.title") }}</h3>
       </div>
       <!--end::Card title-->
     </div>
@@ -20,14 +20,16 @@
           <!--begin::Col-->
           <div class="col-md-6">
             <!--begin::Label-->
-            <label class="required fw-semibold fs-6 mb-2">Site Name</label>
+            <label class="required fw-semibold fs-6 mb-2">
+              {{ t("controlplane.site.settings.form.fields.name.label") }}
+            </label>
             <!--end::Label-->
             <!--begin::Input-->
             <input
               type="text"
               v-model="siteForm.name"
               class="form-control form-control-solid"
-              placeholder="Enter site name"
+              :placeholder="t('controlplane.site.settings.form.fields.name.placeholder')"
               required
             />
             <!--end::Input-->
@@ -37,14 +39,16 @@
           <!--begin::Col-->
           <div class="col-md-6">
             <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">Site Code</label>
+            <label class="fw-semibold fs-6 mb-2">
+              {{ t("controlplane.site.settings.form.fields.code.label") }}
+            </label>
             <!--end::Label-->
             <!--begin::Input-->
             <input
               type="text"
               v-model="siteForm.code"
               class="form-control form-control-solid"
-              placeholder="Site code (auto-generated)"
+              :placeholder="t('controlplane.site.settings.form.fields.code.placeholder')"
               readonly
             />
             <!--end::Input-->
@@ -58,14 +62,16 @@
           <!--begin::Col-->
           <div class="col-md-12">
             <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">Description</label>
+            <label class="fw-semibold fs-6 mb-2">
+              {{ t("controlplane.site.settings.form.fields.description.label") }}
+            </label>
             <!--end::Label-->
             <!--begin::Input-->
             <textarea
               v-model="siteForm.description"
               class="form-control form-control-solid"
               rows="3"
-              placeholder="Site description"
+              :placeholder="t('controlplane.site.settings.form.fields.description.placeholder')"
             ></textarea>
             <!--end::Input-->
           </div>
@@ -78,14 +84,16 @@
           <!--begin::Col-->
           <div class="col-md-12">
             <!--begin::Label-->
-            <label class="required fw-semibold fs-6 mb-2">Address</label>
+            <label class="required fw-semibold fs-6 mb-2">
+              {{ t("controlplane.site.settings.form.fields.address.label") }}
+            </label>
             <!--end::Label-->
             <!--begin::Input-->
             <textarea
               v-model="siteForm.address"
               class="form-control form-control-solid"
               rows="3"
-              placeholder="Complete address"
+              :placeholder="t('controlplane.site.settings.form.fields.address.placeholder')"
               required
             ></textarea>
             <!--end::Input-->
@@ -99,14 +107,16 @@
           <!--begin::Col-->
           <div class="col-md-6">
             <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">Latitude</label>
+            <label class="fw-semibold fs-6 mb-2">
+              {{ t("controlplane.site.settings.form.fields.latitude.label") }}
+            </label>
             <!--end::Label-->
             <!--begin::Input-->
             <input
               type="number"
               v-model="siteForm.latitude"
               class="form-control form-control-solid"
-              placeholder="Latitude coordinate"
+              :placeholder="t('controlplane.site.settings.form.fields.latitude.placeholder')"
               step="any"
             />
             <!--end::Input-->
@@ -116,14 +126,16 @@
           <!--begin::Col-->
           <div class="col-md-6">
             <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">Longitude</label>
+            <label class="fw-semibold fs-6 mb-2">
+              {{ t("controlplane.site.settings.form.fields.longitude.label") }}
+            </label>
             <!--end::Label-->
             <!--begin::Input-->
             <input
               type="number"
               v-model="siteForm.longitude"
               class="form-control form-control-solid"
-              placeholder="Longitude coordinate"
+              :placeholder="t('controlplane.site.settings.form.fields.longitude.placeholder')"
               step="any"
             />
             <!--end::Input-->
@@ -137,14 +149,16 @@
           <!--begin::Col-->
           <div class="col-md-6">
             <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">Contact Person</label>
+            <label class="fw-semibold fs-6 mb-2">
+              {{ t("controlplane.site.settings.form.fields.contactPerson.label") }}
+            </label>
             <!--end::Label-->
             <!--begin::Input-->
             <input
               type="text"
               v-model="siteForm.contact_person"
               class="form-control form-control-solid"
-              placeholder="Contact person name"
+              :placeholder="t('controlplane.site.settings.form.fields.contactPerson.placeholder')"
             />
             <!--end::Input-->
           </div>
@@ -153,14 +167,16 @@
           <!--begin::Col-->
           <div class="col-md-6">
             <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">Contact Phone</label>
+            <label class="fw-semibold fs-6 mb-2">
+              {{ t("controlplane.site.settings.form.fields.contactPhone.label") }}
+            </label>
             <!--end::Label-->
             <!--begin::Input-->
             <input
               type="tel"
               v-model="siteForm.contact_phone"
               class="form-control form-control-solid"
-              placeholder="Contact phone number"
+              :placeholder="t('controlplane.site.settings.form.fields.contactPhone.placeholder')"
             />
             <!--end::Input-->
           </div>
@@ -173,15 +189,21 @@
           <!--begin::Col-->
           <div class="col-md-6">
             <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">Status</label>
+            <label class="fw-semibold fs-6 mb-2">
+              {{ t("controlplane.site.settings.form.fields.status.label") }}
+            </label>
             <!--end::Label-->
             <!--begin::Select-->
             <select
               v-model="siteForm.is_active"
               class="form-select form-select-solid"
             >
-              <option :value="true">Active</option>
-              <option :value="false">Inactive</option>
+              <option :value="true">
+                {{ t("controlplane.site.settings.form.fields.status.options.active") }}
+              </option>
+              <option :value="false">
+                {{ t("controlplane.site.settings.form.fields.status.options.inactive") }}
+              </option>
             </select>
             <!--end::Select-->
           </div>
@@ -190,16 +212,24 @@
           <!--begin::Col-->
           <div class="col-md-6">
             <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">Time Zone</label>
+            <label class="fw-semibold fs-6 mb-2">
+              {{ t("controlplane.site.settings.form.fields.timezone.label") }}
+            </label>
             <!--end::Label-->
             <!--begin::Select-->
             <select
               v-model="siteForm.timezone"
               class="form-select form-select-solid"
             >
-              <option value="WIB">Asia/Jakarta (WIB)</option>
-              <option value="WITA">Asia/Makassar (WITA)</option>
-              <option value="WIT">Asia/Jayapura (WIT)</option>
+              <option value="WIB">
+                {{ t("controlplane.site.settings.form.fields.timezone.options.wib") }}
+              </option>
+              <option value="WITA">
+                {{ t("controlplane.site.settings.form.fields.timezone.options.wita") }}
+              </option>
+              <option value="WIT">
+                {{ t("controlplane.site.settings.form.fields.timezone.options.wit") }}
+              </option>
             </select>
             <!--end::Select-->
           </div>
@@ -210,17 +240,21 @@
         <!--begin::Actions-->
         <div class="text-center pt-10">
           <button type="button" class="btn btn-light me-3" @click="resetForm">
-            Reset
+            {{ t("controlplane.site.settings.form.actions.reset") }}
           </button>
           <button type="submit" class="btn btn-primary" :disabled="isLoading">
             <span v-if="isLoading" class="indicator-progress">
-              Please wait...
+              {{ t("controlplane.site.settings.form.actions.loading") }}
               <span
                 class="spinner-border spinner-border-sm align-middle ms-2"
               ></span>
             </span>
             <span v-else class="indicator-label">
-              {{ isEdit ? "Update Site" : "Create Site" }}
+              {{
+                isEdit
+                  ? t("controlplane.site.settings.form.actions.update")
+                  : t("controlplane.site.settings.form.actions.create")
+              }}
             </span>
           </button>
         </div>
@@ -234,8 +268,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import ApiService from '@/core/services/ApiService'
 
 // Interface
@@ -256,6 +291,8 @@ interface SiteForm {
 // Router
 const route = useRoute();
 const router = useRouter();
+
+const { t } = useI18n();
 
 // Reactive data
 const isLoading = ref(false);
@@ -384,7 +421,6 @@ onMounted(() => {
 });
 
 // Watch for name changes to auto-generate code
-import { watch } from "vue";
 watch(
   () => siteForm.value.name,
   (newName) => {

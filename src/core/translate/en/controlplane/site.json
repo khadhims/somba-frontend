@@ -1,0 +1,449 @@
+{
+	"common": {
+		"noDescription": "No description",
+		"unknown": "Unknown"
+	},
+	"header": {
+		"title": "Site Management",
+		"subtitleDefault": "Manage sites for your team",
+		"subtitleWithTeam": "Manage sites for team {name}"
+	},
+	"filters": {
+		"organizationLabel": "Organization",
+		"organizationPlaceholder": "Select Organization",
+		"organizationLoading": "Loading organizations...",
+		"accountLabel": "Account",
+		"accountPlaceholder": "Select Account",
+		"accountLoading": "Loading accounts...",
+		"accountEmpty": "No accounts available",
+		"accountRequiresOrganization": "Select organization first",
+		"teamLabel": "Team",
+		"teamPlaceholder": "Select Team",
+		"teamLoading": "Loading teams...",
+		"teamEmpty": "No teams available",
+		"teamRequiresAccount": "Select account first"
+	},
+	"toolbar": {
+		"title": "Sites Overview",
+		"itemsLabel": "Items:",
+		"searchPlaceholder": "Search sites...",
+		"addButton": "Add Site"
+	},
+	"table": {
+		"siteName": "Site Name",
+		"description": "Description",
+		"createdBy": "Created By",
+		"createdAt": "Created At",
+		"actions": "Actions"
+	},
+	"modals": {
+		"add": {
+			"title": "Add New Site",
+			"submit": "Add Site"
+		},
+		"edit": {
+			"title": "Edit Site",
+			"submit": "Update Site"
+		},
+		"form": {
+			"name": {
+				"label": "Site Name",
+				"placeholder": "Enter site name",
+				"required": "Site name is required"
+			},
+			"description": {
+				"label": "Description",
+				"placeholder": "Enter site description"
+			}
+		},
+		"actions": {
+			"cancel": "Cancel",
+			"loading": "Please wait..."
+		},
+		"alerts": {
+			"selectTeam": "Select a team to add the site to."
+		}
+	},
+	"actions": {
+		"viewDetails": "View Site Details",
+		"edit": "Edit Site",
+		"delete": "Delete Site"
+	},
+	"empty": {
+		"selectOrganization": "Please select an organization to view sites",
+		"selectAccount": "Please select an account to view sites",
+		"selectTeam": "Please select a team to view sites",
+		"loading": "Loading sites...",
+		"searchNoResults": "No sites found matching \"{query}\"",
+		"noResults": "No sites found for this team"
+	},
+	"notifications": {
+		"deleteFailed": "Failed to delete site. Please try again."
+	},
+	"dialogs": {
+		"confirmDelete": "Are you sure you want to delete site \"{name}\"? This action cannot be undone."
+	},
+	"pagination": {
+		"showingEntries": "Showing {from} to {to} of {total} entries"
+	},
+	"camera": {
+		"title": "Camera Management",
+		"filters": {
+			"siteLabel": "Site:",
+			"siteAll": "All Sites",
+			"nvrLabel": "NVR:",
+			"nvrAll": "All NVRs",
+			"nvrRequiresSite": "Select Site First"
+		},
+		"form": {
+			"titleCreate": "Add Camera",
+			"titleEdit": "Edit Camera",
+			"fields": {
+				"site": {
+					"label": "Site",
+					"placeholder": "Select Site"
+				},
+				"room": {
+					"label": "Room",
+					"placeholder": "Select Room"
+				},
+				"nvr": {
+					"label": "NVR",
+					"placeholder": "Select NVR"
+				},
+				"name": {
+					"label": "Camera Name",
+					"placeholder": "Enter camera name"
+				},
+				"ipAddress": {
+					"label": "IP Address",
+					"placeholder": "192.168.1.200"
+				},
+				"brand": {
+					"label": "Brand",
+					"placeholder": "Select Brand",
+					"options": {
+						"hikvision": "Hikvision",
+						"dahua": "Dahua",
+						"uniview": "Uniview",
+						"tiandy": "Tiandy",
+						"axis": "Axis",
+						"other": "Other"
+					}
+				},
+				"model": {
+					"label": "Model",
+					"placeholder": "Model number"
+				},
+				"type": {
+					"label": "Camera Type",
+					"options": {
+						"dome": "Dome",
+						"bullet": "Bullet",
+						"ptz": "PTZ",
+						"fisheye": "Fisheye",
+						"turret": "Turret"
+					}
+				},
+				"resolution": {
+					"label": "Resolution",
+					"options": {
+						"1080p": "1080P (2MP)",
+						"4mp": "4MP",
+						"5mp": "5MP",
+						"4k": "4K (8MP)",
+						"12mp": "12MP"
+					}
+				},
+				"channel": {
+					"label": "Channel Number",
+					"placeholder": "1"
+				},
+				"location": {
+					"label": "Location",
+					"placeholder": "Specific location description"
+				},
+				"description": {
+					"label": "Description",
+					"placeholder": "Camera description"
+				}
+			},
+			"actions": {
+				"cancel": "Cancel",
+				"loading": "Please wait...",
+				"create": "Save Camera",
+				"update": "Update Camera"
+			}
+		},
+		"toolbar": {
+			"itemsLabel": "Items:",
+			"searchPlaceholder": "Search cameras...",
+			"addButton": "Add Camera"
+		},
+		"table": {
+			"name": "Camera Name",
+			"location": "Location",
+			"specs": "Specifications",
+			"nvr": "NVR",
+			"status": "Status",
+			"actions": "Actions",
+			"empty": "No cameras found",
+			"channelPrefix": "Ch."
+		},
+		"actions": {
+			"view": "View Live Stream",
+			"edit": "Edit Camera",
+			"delete": "Delete Camera",
+			"viewAlert": "Live stream for {name} would open here"
+		},
+		"status": {
+			"online": "Online",
+			"offline": "Offline"
+		},
+		"notifications": {
+			"deleteConfirm": "Are you sure you want to delete this camera?"
+		},
+		"fallback": {
+			"unknownSite": "Unknown Site",
+			"unknownRoom": "Unknown Room",
+			"unknownNvr": "Unknown NVR"
+		}
+	},
+	"nvr": {
+		"title": "NVR Management",
+		"filters": {
+			"siteLabel": "Site:",
+			"sitePlaceholder": "All Sites"
+		},
+		"form": {
+			"titleCreate": "Add NVR",
+			"titleEdit": "Edit NVR",
+			"fields": {
+				"site": {
+					"label": "Site",
+					"placeholder": "Select Site"
+				},
+				"room": {
+					"label": "Room",
+					"placeholder": "Select Room"
+				},
+				"name": {
+					"label": "NVR Name",
+					"placeholder": "Enter NVR name"
+				},
+				"endpoint": {
+					"label": "Endpoint URL",
+					"placeholder": "192.168.1.100"
+				},
+				"type": {
+					"label": "Type",
+					"options": {
+						"nvr": "NVR",
+						"dvr": "DVR",
+						"hybrid": "HYBRID"
+					}
+				},
+				"brand": {
+					"label": "Brand",
+					"placeholder": "Select Brand",
+					"options": {
+						"hikvision": "Hikvision",
+						"dahua": "Dahua",
+						"uniview": "Uniview",
+						"tiandy": "Tiandy",
+						"other": "Other"
+					}
+				},
+				"model": {
+					"label": "Model",
+					"placeholder": "Model number"
+				},
+				"username": {
+					"label": "Username",
+					"placeholder": "Username"
+				},
+				"password": {
+					"label": "Password",
+					"placeholder": "Password"
+				},
+				"port": {
+					"label": "Port",
+					"placeholder": "8000"
+				},
+				"channels": {
+					"label": "Channels",
+					"placeholder": "16"
+				},
+				"status": {
+					"label": "Status",
+					"options": {
+						"active": "Active",
+						"inactive": "Inactive"
+					}
+				}
+			},
+			"actions": {
+				"cancel": "Cancel",
+				"loading": "Please wait...",
+				"create": "Save NVR",
+				"update": "Update NVR"
+			}
+		},
+		"toolbar": {
+			"itemsLabel": "Items:",
+			"searchPlaceholder": "Search NVRs...",
+			"addButton": "Add NVR"
+		},
+		"table": {
+			"name": "NVR Name",
+			"location": "Location",
+			"brand": "Brand",
+			"channels": "Channels",
+			"status": "Status",
+			"actions": "Actions",
+			"empty": "No NVRs found"
+		},
+		"actions": {
+			"manageCameras": "Manage Cameras",
+			"edit": "Edit NVR",
+			"delete": "Delete NVR"
+		},
+		"status": {
+			"active": "Active",
+			"inactive": "Inactive"
+		},
+		"notifications": {
+			"deleteConfirm": "Are you sure you want to delete this NVR?"
+		},
+		"fallback": {
+			"unknownSite": "Unknown Site",
+			"unknownRoom": "Unknown Room"
+		}
+	},
+	"settings": {
+		"title": "Site Configuration",
+		"form": {
+			"fields": {
+				"name": {
+					"label": "Site Name",
+					"placeholder": "Enter site name"
+				},
+				"code": {
+					"label": "Site Code",
+					"placeholder": "Site code (auto-generated)"
+				},
+				"description": {
+					"label": "Description",
+					"placeholder": "Site description"
+				},
+				"address": {
+					"label": "Address",
+					"placeholder": "Complete address"
+				},
+				"latitude": {
+					"label": "Latitude",
+					"placeholder": "Latitude coordinate"
+				},
+				"longitude": {
+					"label": "Longitude",
+					"placeholder": "Longitude coordinate"
+				},
+				"contactPerson": {
+					"label": "Contact Person",
+					"placeholder": "Contact person name"
+				},
+				"contactPhone": {
+					"label": "Contact Phone",
+					"placeholder": "Contact phone number"
+				},
+				"status": {
+					"label": "Status",
+					"options": {
+						"active": "Active",
+						"inactive": "Inactive"
+					}
+				},
+				"timezone": {
+					"label": "Time Zone",
+					"options": {
+						"wib": "Asia/Jakarta (WIB)",
+						"wita": "Asia/Makassar (WITA)",
+						"wit": "Asia/Jayapura (WIT)"
+					}
+				}
+			},
+			"actions": {
+				"reset": "Reset",
+				"loading": "Please wait...",
+				"create": "Create Site",
+				"update": "Update Site"
+			}
+		}
+	},
+	"room": {
+		"title": "Room Management",
+		"form": {
+			"titleCreate": "Add Room",
+			"titleEdit": "Edit Room",
+			"fields": {
+				"site": {
+					"label": "Site",
+					"placeholder": "Select Site"
+				},
+				"name": {
+					"label": "Room Name",
+					"placeholder": "Enter room name"
+				},
+				"type": {
+					"label": "Room Type",
+					"options": {
+						"office": "Office",
+						"meeting": "Meeting Room",
+						"lobby": "Lobby",
+						"warehouse": "Warehouse",
+						"security": "Security Room",
+						"other": "Other"
+					}
+				},
+				"floor": {
+					"label": "Floor",
+					"placeholder": "Floor level"
+				},
+				"description": {
+					"label": "Description",
+					"placeholder": "Room description"
+				}
+			},
+			"actions": {
+				"cancel": "Cancel",
+				"loading": "Please wait...",
+				"create": "Save Room",
+				"update": "Update Room"
+			}
+		},
+		"toolbar": {
+			"itemsLabel": "Items:",
+			"searchPlaceholder": "Search rooms...",
+			"addButton": "Add Room"
+		},
+		"table": {
+			"name": "Room Name",
+			"site": "Site",
+			"type": "Type",
+			"floor": "Floor",
+			"actions": "Actions",
+			"empty": "No rooms found"
+		},
+		"actions": {
+			"manageNvrs": "Manage NVRs",
+			"edit": "Edit Room",
+			"delete": "Delete Room"
+		},
+		"notifications": {
+			"deleteConfirm": "Are you sure you want to delete this room?"
+		},
+		"fallback": {
+			"unknownSite": "Unknown Site"
+		}
+	}
+}

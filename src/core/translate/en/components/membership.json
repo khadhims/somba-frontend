@@ -1,0 +1,89 @@
+{
+  "common": {
+    "entity": {
+      "account": "Account",
+      "team": "Team",
+      "organization": "Organization"
+    },
+    "entityLower": {
+      "account": "account",
+      "team": "team",
+      "organization": "organization"
+    },
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "member": "Member"
+    }
+  },
+  "addEdit": {
+    "title": {
+      "add": "Add Member to {entity}",
+      "edit": "Edit Member Role"
+    },
+    "fields": {
+      "email": {
+        "label": "Email Address",
+        "placeholder": "Enter member's email address",
+        "help": "The user will be invited to join this {entity}."
+      },
+      "role": {
+        "label": "Role",
+        "placeholder": "Select Role"
+      }
+    },
+    "currentMember": {
+      "unknown": "Unknown User",
+      "currentRole": "Current Role: {role}"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "add": "Add Member",
+      "update": "Update Role",
+      "loading": "Please wait..."
+    },
+    "notifications": {
+      "error": "Failed to save member. Please try again."
+    }
+  },
+  "list": {
+    "title": "{entity} Members",
+    "buttons": {
+      "add": "Add Member",
+      "close": "Close"
+    },
+    "filters": {
+      "itemsLabel": "Items:",
+      "searchPlaceholder": "Search members..."
+    },
+    "table": {
+      "headers": {
+        "member": "Member",
+        "role": "Role",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "loadingLabel": "Loading...",
+      "loadingMessage": "Loading members...",
+      "empty": "No members found",
+      "emptySearch": "No members found matching \"{query}\"",
+      "rolePrefix": "Role: {role}",
+      "unknownUser": "Unknown User",
+      "unknownDate": "Unknown",
+      "invalidDate": "Invalid date"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "actions": {
+      "edit": "Edit Member Role",
+      "remove": "Remove Member"
+    },
+    "alerts": {
+      "cannotRemoveOwner": "Cannot remove the owner from membership.",
+      "confirmRemove": "Are you sure you want to remove {member} from the {entity}?",
+      "removeFailed": "Failed to remove member. Please try again."
+    }
+  }
+}

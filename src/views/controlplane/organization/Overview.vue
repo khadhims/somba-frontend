@@ -3,44 +3,36 @@
   <div class="row g-5 g-xl-8 mb-8">
     <!--begin::Summary Cards-->
     <div class="col-xl-3">
-      <Widget1
-        :description="'Total Organizations'"
-        :value="totalOrganizations"
-        :progress-text="`${activeOrganizations} Active`"
-        :progress-value="activeOrganizationsPercentage"
+      <CardWidget1
+        :description="t('controlplane.organization.summary.totalOrganizations')"
+        :value="0"
         bg-color="#1B84FF"
         text-color="white"
       />
     </div>
 
     <div class="col-xl-3">
-      <Widget1
-        :description="'Total Users'"
-        :value="totalUsers"
-        :progress-text="`${activeUsers} Active`"
-        :progress-value="activeUsersPercentage"
+      <CardWidget1
+        :description="t('controlplane.organization.summary.totalTeams')"
+        :value="0"
         bg-color="#17C653"
         text-color="white"
       />
     </div>
 
     <div class="col-xl-3">
-      <Widget1
-        :description="'Total Projects'"
-        :value="totalProjects"
-        :progress-text="`${activeProjects} Ongoing`"
-        :progress-value="activeProjectsPercentage"
+      <CardWidget1
+        :description="t('controlplane.organization.summary.totalUsers')"
+        :value="0"
         bg-color="#3699FF"
         text-color="white"
       />
     </div>
 
     <div class="col-xl-3">
-      <Widget1
-        :description="'Revenue'"
-        :value="totalRevenue"
-        :progress-text="'This Month'"
-        :progress-value="revenueGrowth"
+      <CardWidget1
+        :description="t('controlplane.organization.summary.totalCameras')"
+        :value="0"
         bg-color="#FFA800"
         text-color="white"
       />
@@ -55,7 +47,7 @@
       <span class="path2"></span>
     </i>
     <div class="d-flex flex-column">
-      <h5 class="mb-1">Connection Error</h5>
+      <h5 class="mb-1">{{ t('controlplane.organization.error.title') }}</h5>
       <span>{{ error }}</span>
     </div>
     <button 
@@ -82,7 +74,7 @@
     <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
       <div class="card-title">
-        <h3 class="fw-bold m-0">Organizations Overview</h3>
+        <h3 class="fw-bold m-0">{{ t('controlplane.organization.toolbar.title') }}</h3>
       </div>
       <!--end::Card title-->
 
@@ -90,7 +82,7 @@
       <div class="card-toolbar">
         <!--begin::Items per page-->
         <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">Items:</label>
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('controlplane.organization.toolbar.itemsLabel') }}</label>
           <select 
             class="form-select form-select-sm w-auto" 
             v-model.number="pagination.per_page"
@@ -115,7 +107,7 @@
             type="text"
             v-model="searchQuery"
             class="form-control form-control-solid w-250px ps-12"
-            placeholder="Search organizations..."
+            :placeholder="t('controlplane.organization.toolbar.searchPlaceholder')"
           />
         </div>
         <!--end::Search-->
@@ -131,7 +123,7 @@
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
-          {{ loading ? 'Retrying...' : 'Retry' }}
+          {{ loading ? t('controlplane.organization.toolbar.retrying') : t('controlplane.organization.toolbar.retry') }}
         </button>
 
         <button
@@ -140,7 +132,7 @@
           :disabled="loading"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
-          Add Organization
+          {{ t('controlplane.organization.toolbar.addButton') }}
         </button>
       </div>
       <!--end::Card toolbar-->
@@ -162,7 +154,7 @@
         @on-sort="handleSort"
         @page-change="goToPage"
         @on-items-per-page-change="(val) => { pagination.per_page = val; changeItemsPerPage(); }"
-        empty-table-text="No organizations found"
+        :empty-table-text="emptyTableMessage"
       >
         <template v-slot:name="{ row }">
           <div class="d-flex align-items-center">
@@ -176,33 +168,29 @@
                 row.name
               }}</span>
               <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-                row.legalName || row.description
+                row.legalName || row.description || t('controlplane.organization.common.unknown')
               }}</span>
             </div>
           </div>
         </template>
 
         <template v-slot:email="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{ row.email }}</span>
+          <span class="text-dark fw-bold d-block fs-6">{{ row.email || t('controlplane.organization.common.unknown') }}</span>
         </template>
 
         <template v-slot:phone="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{ row.phone }}</span>
+          <span class="text-dark fw-bold d-block fs-6">{{ row.phone || t('controlplane.organization.common.unknown') }}</span>
         </template>
 
         <template v-slot:country="{ row }">
           <span class="badge badge-light-info fs-7 fw-bold">{{
-            row.country
+            row.country || t('controlplane.organization.common.unknown')
           }}</span>
         </template>
 
         <template v-slot:status="{ row }">
-          <span
-            :class="`badge badge-light-${
-              row.status === 'active' ? 'success' : 'danger'
-            } fs-7 fw-bold`"
-          >
-            {{ row.status }}
+          <span :class="statusBadgeClass(row.status)">
+            {{ resolveStatusLabel(row.status) }}
           </span>
         </template>
 
@@ -217,7 +205,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
               @click="showOrganizationMembers(row)"
-              title="Manage Members"
+              :title="t('controlplane.organization.actions.viewMembers')"
             >
               <i class="ki-duotone ki-people fs-2">
                 <span class="path1"></span>
@@ -230,7 +218,7 @@
             <router-link
               :to="{ name: 'account-overview', query: { orgId: row.uid } }"
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              title="Manage Accounts"
+              :title="t('controlplane.organization.actions.manageAccounts')"
             >
               <i class="ki-duotone ki-switch fs-2">
                 <span class="path1"></span>
@@ -240,7 +228,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="openEditModal(row)"
-              title="Edit Organization"
+              :title="t('controlplane.organization.actions.edit')"
             >
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
@@ -250,7 +238,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
               @click="deleteOrganization(row)"
-              title="Delete Organization"
+              :title="t('controlplane.organization.actions.delete')"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -286,7 +274,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Add Organization</h5>
+          <h5 class="modal-title">{{ t('controlplane.organization.modals.add.title') }}</h5>
           <button
             type="button"
             class="btn-close"
@@ -298,7 +286,7 @@
           <div class="modal-body">
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">Name *</label>
+                <label class="form-label">{{ t('controlplane.organization.form.name') }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -307,7 +295,7 @@
                 />
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">Legal Name</label>
+                <label class="form-label">{{ t('controlplane.organization.form.legalName') }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -317,7 +305,7 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">Email *</label>
+                <label class="form-label">{{ t('controlplane.organization.form.email') }}</label>
                 <input
                   type="email"
                   class="form-control"
@@ -326,7 +314,7 @@
                 />
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">Phone</label>
+                <label class="form-label">{{ t('controlplane.organization.form.phone') }}</label>
                 <input
                   type="tel"
                   class="form-control"
@@ -336,7 +324,7 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">Website</label>
+                <label class="form-label">{{ t('controlplane.organization.form.website') }}</label>
                 <input
                   type="url"
                   class="form-control"
@@ -344,7 +332,7 @@
                 />
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">Country</label>
+                <label class="form-label">{{ t('controlplane.organization.form.country') }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -353,7 +341,7 @@
               </div>
             </div>
             <div class="mb-3">
-              <label class="form-label">Address</label>
+              <label class="form-label">{{ t('controlplane.organization.form.address') }}</label>
               <textarea
                 class="form-control"
                 v-model="newOrganization.address"
@@ -361,23 +349,23 @@
               ></textarea>
             </div>
             <div class="mb-3">
-              <label class="form-label">Status</label>
+              <label class="form-label">{{ t('controlplane.organization.form.status') }}</label>
               <select class="form-select" v-model="newOrganization.status">
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="active">{{ t('controlplane.organization.form.statusOptions.active') }}</option>
+                <option value="inactive">{{ t('controlplane.organization.form.statusOptions.inactive') }}</option>
               </select>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-              Cancel
+              {{ t('controlplane.organization.common.cancel') }}
             </button>
             <button type="submit" class="btn btn-primary" :disabled="creating">
               <span
                 v-if="creating"
                 class="spinner-border spinner-border-sm me-2"
               ></span>
-              Create Organization
+              {{ t('controlplane.organization.modals.add.submit') }}
             </button>
           </div>
         </form>
@@ -395,7 +383,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Edit Organization</h5>
+          <h5 class="modal-title">{{ t('controlplane.organization.modals.edit.title') }}</h5>
           <button
             type="button"
             class="btn-close"
@@ -407,7 +395,7 @@
           <div class="modal-body">
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">Name *</label>
+                <label class="form-label">{{ t('controlplane.organization.form.name') }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -416,7 +404,7 @@
                 />
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">Legal Name</label>
+                <label class="form-label">{{ t('controlplane.organization.form.legalName') }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -426,7 +414,7 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">Email *</label>
+                <label class="form-label">{{ t('controlplane.organization.form.email') }}</label>
                 <input
                   type="email"
                   class="form-control"
@@ -435,7 +423,7 @@
                 />
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">Phone</label>
+                <label class="form-label">{{ t('controlplane.organization.form.phone') }}</label>
                 <input
                   type="tel"
                   class="form-control"
@@ -445,7 +433,7 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">Website</label>
+                <label class="form-label">{{ t('controlplane.organization.form.website') }}</label>
                 <input
                   type="url"
                   class="form-control"
@@ -453,7 +441,7 @@
                 />
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">Country</label>
+                <label class="form-label">{{ t('controlplane.organization.form.country') }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -462,7 +450,7 @@
               </div>
             </div>
             <div class="mb-3">
-              <label class="form-label">Address</label>
+              <label class="form-label">{{ t('controlplane.organization.form.address') }}</label>
               <textarea
                 class="form-control"
                 v-model="editOrganization.address"
@@ -470,23 +458,23 @@
               ></textarea>
             </div>
             <div class="mb-3">
-              <label class="form-label">Status</label>
+              <label class="form-label">{{ t('controlplane.organization.form.status') }}</label>
               <select class="form-select" v-model="editOrganization.status">
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="active">{{ t('controlplane.organization.form.statusOptions.active') }}</option>
+                <option value="inactive">{{ t('controlplane.organization.form.statusOptions.inactive') }}</option>
               </select>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-              Cancel
+              {{ t('controlplane.organization.common.cancel') }}
             </button>
             <button type="submit" class="btn btn-primary" :disabled="updating">
               <span
                 v-if="updating"
                 class="spinner-border spinner-border-sm me-2"
               ></span>
-              Update Organization
+              {{ t('controlplane.organization.modals.edit.submit') }}
             </button>
           </div>
         </form>
@@ -504,7 +492,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Delete Organization</h5>
+          <h5 class="modal-title">{{ t('controlplane.organization.modals.delete.title') }}</h5>
           <button
             type="button"
             class="btn-close"
@@ -514,15 +502,15 @@
         </div>
         <div class="modal-body">
           <p>
-            Are you sure you want to delete
-            <strong>{{ organizationToDelete?.name }}</strong
-            >?
+            {{ t('controlplane.organization.modals.delete.confirmPrefix') }}
+            <strong>{{ organizationToDelete?.name }}</strong>
+            {{ t('controlplane.organization.modals.delete.confirmSuffix') }}
           </p>
-          <p class="text-muted">This action cannot be undone.</p>
+          <p class="text-muted">{{ t('controlplane.organization.modals.delete.warning') }}</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-            Cancel
+            {{ t('controlplane.organization.common.cancel') }}
           </button>
           <button
             type="button"
@@ -534,7 +522,7 @@
               v-if="deleting"
               class="spinner-border spinner-border-sm me-2"
             ></span>
-            Delete
+            {{ t('controlplane.organization.modals.delete.submit') }}
           </button>
         </div>
       </div>
@@ -554,10 +542,11 @@
 import { ref, computed, onMounted, nextTick } from "vue";
 import Pagination from '@/components/common/Pagination.vue'
 import { Modal } from "bootstrap";
-import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
 import MembershipListModal from "@/components/modals/membership/MembershipListModal.vue";
+import CardWidget1 from "@/components/dashboard-default-widgets/CardWidget1.vue";
+import { useI18n } from "vue-i18n";
 
 // Interface definitions
 interface Organization {
@@ -569,7 +558,7 @@ interface Organization {
   website?: string;
   address?: string;
   country?: string;
-  status?: "active" | "inactive";
+  status?: "active" | "inactive" | "pending";
   created_at: string;
   updated_at?: string;
   created_by?: {
@@ -608,51 +597,87 @@ const organizationToDelete = ref<Organization | null>(null);
 const organizationMembershipModalRef = ref();
 const selectedOrganizationUid = ref('');
 
+const { t } = useI18n();
+
 // Table header configuration
-const tableHeader = ref([
+const tableHeader = computed(() => [
   {
-    columnName: "Organization Name",
+    columnName: t('controlplane.organization.table.organizationName'),
     columnLabel: "name",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Email",
+    columnName: t('controlplane.organization.table.email'),
     columnLabel: "email",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Phone",
+    columnName: t('controlplane.organization.table.phone'),
     columnLabel: "phone",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Country",
+    columnName: t('controlplane.organization.table.country'),
     columnLabel: "country",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Status",
+    columnName: t('controlplane.organization.table.status'),
     columnLabel: "status",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Created",
+    columnName: t('controlplane.organization.table.created'),
     columnLabel: "created_at",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: "Actions",
+    columnName: t('controlplane.organization.table.actions'),
     columnLabel: "actions",
     sortEnabled: false,
     searchable: false,
   },
 ]);
+
+const emptyTableMessage = computed(() => {
+  if (loading.value) {
+    return t('controlplane.organization.empty.loading');
+  }
+  if (searchQuery.value.trim()) {
+    return t('controlplane.organization.empty.searchNoResults', { query: searchQuery.value });
+  }
+  return t('controlplane.organization.empty.noResults');
+});
+
+const resolveStatusLabel = (
+  status: Organization["status"] | string | undefined
+): string => {
+  if (status === "active" || status === "inactive" || status === "pending") {
+    return t(`controlplane.organization.table.statusLabel.${status}`);
+  }
+  return t('controlplane.organization.common.unknown');
+};
+
+const statusBadgeClass = (
+  status: Organization["status"] | string | undefined
+): string => {
+  if (status === "active") {
+    return "badge badge-light-success fs-7 fw-bold";
+  }
+  if (status === "inactive") {
+    return "badge badge-light-danger fs-7 fw-bold";
+  }
+  if (status === "pending") {
+    return "badge badge-light-warning fs-7 fw-bold";
+  }
+  return "badge badge-light-secondary fs-7 fw-bold";
+};
 
 // Pagination state
 const pagination = ref({
@@ -760,7 +785,7 @@ const fetchOrganizations = async (page: number = 1) => {
   } catch (e: any) {
     console.error("💥 Error fetching organizations:", e);
     error.value =
-      e?.response?.data?.message || e.message || "Failed to load organizations";
+      e?.response?.data?.message || e.message || t('controlplane.organization.error.loadFailed');
   } finally {
     loading.value = false;
   }
@@ -899,7 +924,7 @@ const createOrganization = async () => {
     error.value =
       e?.response?.data?.message ||
       e.message ||
-      "Failed to create organization";
+      t('controlplane.organization.error.createFailed');
   } finally {
     creating.value = false;
   }
@@ -944,7 +969,7 @@ const updateOrganization = async () => {
     error.value =
       e?.response?.data?.message ||
       e.message ||
-      "Failed to update organization";
+      t('controlplane.organization.error.updateFailed');
   } finally {
     updating.value = false;
   }
@@ -981,7 +1006,7 @@ const confirmDelete = async () => {
     error.value =
       e?.response?.data?.message ||
       e.message ||
-      "Failed to delete organization";
+      t('controlplane.organization.error.deleteFailed');
   } finally {
     deleting.value = false;
   }

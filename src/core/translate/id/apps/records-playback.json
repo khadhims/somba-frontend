@@ -1,0 +1,236 @@
+{
+	"overview": {
+		"title": "Recording & Playback",
+		"subtitleAll": "Kelola rekaman di semua situs",
+		"subtitleSite": "Kelola rekaman untuk {site}"
+	},
+	"filters": {
+		"siteLabel": "Situs:",
+		"siteAll": "Semua Situs"
+	},
+	"cards": {
+		"totalStorage": {
+			"title": "Total Penyimpanan",
+			"value": "{total}GB",
+			"progress": "{used}GB Terpakai"
+		},
+		"recordingCameras": {
+			"title": "Kamera Merekam",
+			"value": "{count}",
+			"progress": "{total} Total"
+		},
+		"recordingsToday": {
+			"title": "Rekaman Hari Ini",
+			"value": "{count}",
+			"progress": "{total} Total"
+		},
+		"averageDuration": {
+			"title": "Durasi Rata-rata",
+			"value": "{value} mnt",
+			"progress": "Per Rekaman"
+		}
+	},
+	"controls": {
+		"title": "Kontrol Rekaman",
+		"startAll": "Mulai Semua",
+		"stopAll": "Hentikan Semua",
+		"status": {
+			"recording": "Merekam",
+			"stopped": "Berhenti"
+		},
+		"buttons": {
+			"start": "Mulai",
+			"stop": "Hentikan",
+			"live": "Tampilan Langsung"
+		}
+	},
+	"list": {
+		"title": "Video Terekam",
+		"searchPlaceholder": "Cari rekaman...",
+		"cameraFilterAll": "Semua Kamera",
+		"refresh": "Muat Ulang",
+		"table": {
+			"columns": {
+				"camera": "Kamera",
+				"startTime": "Waktu Mulai",
+				"duration": "Durasi",
+				"fileSize": "Ukuran File",
+				"type": "Tipe",
+				"actions": "Tindakan"
+			},
+			"empty": "Tidak ada rekaman",
+			"types": {
+				"scheduled": "Terjadwal",
+				"motion": "Gerakan",
+				"manual": "Manual",
+				"unknown": "Tidak diketahui"
+			},
+			"actions": {
+				"play": "Putar Rekaman",
+				"download": "Unduh Rekaman",
+				"delete": "Hapus Rekaman"
+			}
+		},
+		"bulk": {
+			"selected": "{count} rekaman dipilih",
+			"download": "Unduh Terpilih",
+			"delete": "Hapus Terpilih",
+			"confirmSingle": "Yakin ingin menghapus rekaman ini?",
+			"confirmMultiple": "Yakin ingin menghapus {count} rekaman?"
+		}
+	},
+	"settings": {
+		"header": {
+			"title": "Pengaturan Rekaman & Pemutaran",
+			"description": "Atur jadwal rekaman dan pengelolaan penyimpanan"
+		},
+		"recording": {
+			"title": "Konfigurasi Rekaman",
+			"mode": {
+				"label": "Mode Rekaman",
+				"help": "Pilih cara rekaman dijalankan",
+				"options": {
+					"continuous": "Rekaman Berkelanjutan",
+					"scheduled": "Rekaman Terjadwal",
+					"motion": "Rekaman Berbasis Gerakan",
+					"hybrid": "Hibrida (Gerakan + Jadwal)"
+				}
+			},
+			"quality": {
+				"label": "Kualitas Video",
+				"help": "Kualitas lebih tinggi menggunakan ruang penyimpanan lebih banyak",
+				"options": {
+					"720p": "720p (Standar)",
+					"1080p": "1080p (Tinggi)",
+					"4k": "4K (Sangat Tinggi)"
+				}
+			},
+			"frameRate": {
+				"label": "Frame Rate (FPS)",
+				"help": "Frame rate lebih tinggi memberikan video lebih mulus",
+				"options": {
+					"fps15": "15 FPS",
+					"fps25": "25 FPS",
+					"fps30": "30 FPS",
+					"fps60": "60 FPS"
+				}
+			},
+			"compression": {
+				"label": "Kompresi Video",
+				"help": "H.265 memberi kompresi lebih baik namun butuh proses lebih tinggi",
+				"options": {
+					"h264": "H.264 (Standar)",
+					"h265": "H.265 (Efisien)",
+					"mjpeg": "MJPEG (Kualitas Tinggi)"
+				}
+			},
+			"preRecording": {
+				"label": "Sebelum Merekam (detik)",
+				"help": "Rekam sebelum memicu gerakan"
+			},
+			"postRecording": {
+				"label": "Setelah Merekam (detik)",
+				"help": "Rekam setelah gerakan berhenti"
+			}
+		},
+		"storage": {
+			"title": "Manajemen Penyimpanan",
+			"location": {
+				"label": "Lokasi Penyimpanan",
+				"browse": "Telusuri",
+				"help": "Lokasi default untuk video rekaman"
+			},
+			"retention": {
+				"label": "Kebijakan Hapus Otomatis",
+				"help": "Kelola ruang penyimpanan secara otomatis",
+				"options": {
+					"never": "Jangan pernah hapus",
+					"7days": "Hapus setelah 7 hari",
+					"30days": "Hapus setelah 30 hari",
+					"90days": "Hapus setelah 90 hari",
+					"1year": "Hapus setelah 1 tahun",
+					"storageFull": "Hapus saat penyimpanan penuh"
+				}
+			},
+			"limit": {
+				"label": "Batas Maksimum Penyimpanan (GB)",
+				"help": "Ruang maksimum untuk rekaman"
+			},
+			"usage": {
+				"label": "Penggunaan Penyimpanan Saat Ini",
+				"used": "{value}GB terpakai",
+				"total": "{value}GB total"
+			},
+			"backup": {
+				"label": "Aktifkan Backup Cloud",
+				"help": "Backup rekaman secara otomatis ke penyimpanan cloud",
+				"provider": {
+					"label": "Penyedia Backup",
+					"options": {
+						"awsS3": "Amazon S3",
+						"googleCloud": "Google Cloud Storage",
+						"azureBlob": "Azure Blob Storage",
+						"ftp": "Server FTP"
+					}
+				},
+				"schedule": {
+					"label": "Jadwal Backup",
+					"options": {
+						"immediately": "Langsung setelah rekaman",
+						"hourly": "Setiap jam",
+						"daily": "Setiap hari pukul 00.00",
+						"weekly": "Setiap hari Minggu"
+					}
+				}
+			}
+		},
+		"schedule": {
+			"title": "Jadwal Rekaman",
+			"actions": {
+				"add": "Tambah Jadwal",
+				"edit": "Ubah Jadwal",
+				"delete": "Hapus Jadwal"
+			},
+			"table": {
+				"camera": "Kamera",
+				"days": "Hari",
+				"start": "Waktu Mulai",
+				"end": "Waktu Selesai",
+				"status": "Status",
+				"actions": "Tindakan",
+				"empty": "Belum ada jadwal rekaman"
+			},
+			"status": {
+				"active": "Aktif",
+				"inactive": "Tidak Aktif"
+			},
+			"days": {
+				"mon": "Sen",
+				"tue": "Sel",
+				"wed": "Rab",
+				"thu": "Kam",
+				"fri": "Jum",
+				"sat": "Sab",
+				"sun": "Min"
+			},
+			"unknownCamera": "Kamera Tidak Dikenal"
+		},
+		"actions": {
+			"saving": "Menyimpan...",
+			"saveRecording": "Simpan Pengaturan Rekaman",
+			"saveStorage": "Simpan Pengaturan Penyimpanan"
+		},
+		"messages": {
+			"deleteScheduleConfirm": "Yakin ingin menghapus jadwal ini?"
+		}
+	},
+	"format": {
+		"notAvailable": "Tidak tersedia",
+		"duration": {
+			"hoursMinutesSeconds": "{hours}jam {minutes}menit {seconds}detik",
+			"minutesSeconds": "{minutes}menit {seconds}detik",
+			"seconds": "{seconds}detik"
+		},
+		"fileSize": "{value} {unit}"
+	}
+}

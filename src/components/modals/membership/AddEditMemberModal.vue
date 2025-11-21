@@ -6,7 +6,11 @@
         <!-- Modal Header -->
         <div class="modal-header">
           <h5 class="modal-title">
-            {{ isEdit ? 'Edit Member Role' : `Add Member to ${entityType.charAt(0).toUpperCase() + entityType.slice(1)}` }}
+            {{
+              isEdit
+                ? t('components.membership.addEdit.title.edit')
+                : t('components.membership.addEdit.title.add', { entity: entityLabel })
+            }}
           </h5>
           <button
             type="button"
@@ -21,16 +25,18 @@
           <div class="modal-body">
             <!-- Email Field (Only for Add) -->
             <div v-if="!isEdit" class="mb-4">
-              <label class="required fw-semibold fs-6 mb-2">Email Address</label>
+              <label class="required fw-semibold fs-6 mb-2">
+                {{ t('components.membership.addEdit.fields.email.label') }}
+              </label>
               <input
                 type="email"
                 v-model="form.email"
                 class="form-control form-control-solid"
-                placeholder="Enter member's email address"
+                :placeholder="t('components.membership.addEdit.fields.email.placeholder')"
                 required
               />
               <div class="form-text">
-                The user will be invited to join this {{ entityType.toLowerCase() }}.
+                {{ t('components.membership.addEdit.fields.email.help', { entity: entityLabelLower }) }}
               </div>
             </div>
 
@@ -44,10 +50,10 @@
                 </div>
                 <div>
                   <span class="text-dark fw-bold d-block fs-6">
-                    {{ memberToEdit.email || 'Unknown User' }}
+                    {{ memberToEdit.email || t('components.membership.addEdit.currentMember.unknown') }}
                   </span>
                   <span class="text-muted fw-semibold d-block fs-7">
-                    Current Role: {{ memberToEdit.role }}
+                    {{ t('components.membership.addEdit.currentMember.currentRole', { role: getRoleLabel(memberToEdit.role) }) }}
                   </span>
                 </div>
               </div>
@@ -55,16 +61,24 @@
 
             <!-- Role Field -->
             <div class="mb-4">
-              <label class="required fw-semibold fs-6 mb-2">Role</label>
+              <label class="required fw-semibold fs-6 mb-2">
+                {{ t('components.membership.addEdit.fields.role.label') }}
+              </label>
               <select
                 v-model="form.role"
                 class="form-select form-select-solid"
                 required
               >
-                <option value="">Select Role</option>
-                <option value="OWNER">Owner</option>
-                <option value="ADMIN">Admin</option>
-                <option value="MEMBER">Member</option>
+                <option value="" disabled>
+                  {{ t('components.membership.addEdit.fields.role.placeholder') }}
+                </option>
+                <option
+                  v-for="option in roleOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ option.label }}
+                </option>
               </select>
             </div>
           </div>
@@ -72,7 +86,7 @@
           <!-- Modal Footer -->
           <div class="modal-footer">
             <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-              Cancel
+              {{ t('components.membership.addEdit.actions.cancel') }}
             </button>
             <button
               type="submit"
@@ -81,10 +95,14 @@
             >
               <span v-if="loading" class="indicator-progress">
                 <span class="spinner-border spinner-border-sm align-middle me-2"></span>
-                Please wait...
+                {{ t('components.membership.addEdit.actions.loading') }}
               </span>
               <span v-else class="indicator-label">
-                {{ isEdit ? 'Update Role' : 'Add Member' }}
+                {{
+                  isEdit
+                    ? t('components.membership.addEdit.actions.update')
+                    : t('components.membership.addEdit.actions.add')
+                }}
               </span>
             </button>
           </div>
@@ -95,9 +113,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue';
-import { Modal } from 'bootstrap';
-import ApiService from '@/core/services/ApiService';
+import { ref, reactive, computed } from "vue";
+import { Modal } from "bootstrap";
+import { useI18n } from "vue-i18n";
+import ApiService from "@/core/services/ApiService";
 
 // Props
 interface Props {
@@ -140,15 +159,34 @@ interface Member {
 }
 
 // Reactive data
+const { t } = useI18n();
+
 const loading = ref(false);
 const isEdit = ref(false);
 const memberToEdit = ref<Member | null>(null);
 const modalId = computed(() => `addEditMember${props.entityType}Modal${props.entityUid}`);
+const entityLabel = computed(() => t(`components.membership.common.entity.${props.entityType}`));
+const entityLabelLower = computed(() => t(`components.membership.common.entityLower.${props.entityType}`));
+const roleOptions = computed(() => [
+  { value: "OWNER", label: t("components.membership.common.roles.owner") },
+  { value: "ADMIN", label: t("components.membership.common.roles.admin") },
+  { value: "MEMBER", label: t("components.membership.common.roles.member") },
+]);
 
 const form = reactive({
   email: '',
   role: ''
 });
+
+const getRoleLabel = (role?: string) => {
+  if (!role) {
+    return "";
+  }
+  const key = role.toLowerCase();
+  const translationKey = `components.membership.common.roles.${key}`;
+  const translated = t(translationKey);
+  return translated !== translationKey ? translated : role;
+};
 
 // Modal instance
 let modalInstance: Modal | null = null;
@@ -220,11 +258,11 @@ const saveMember = async () => {
     console.error('Error saving member:', error);
     
     // Show error message
-    let errorMessage = 'Failed to save member. Please try again.';
+    let errorMessage = t('components.membership.addEdit.notifications.error');
     if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
+      errorMessage = String(error.response.data.message);
     } else if (error.message) {
-      errorMessage = error.message;
+      errorMessage = String(error.message);
     }
     
     alert(errorMessage);

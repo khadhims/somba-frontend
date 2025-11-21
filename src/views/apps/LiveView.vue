@@ -3,40 +3,40 @@
   <div class="card mb-4">
     <div class="card-body d-flex align-items-center justify-content-between">
       <div>
-        <h4 class="card-title mb-0">Live Camera Feed</h4>
+        <h4 class="card-title mb-0">{{ t('appsLiveView.header.title') }}</h4>
         <div class="small text-muted">
-          <span class="text-success me-2">●</span>{{ activeCameras }} cameras online
+          <span class="text-success me-2">●</span>{{ t('appsLiveView.header.status', { count: activeCameras }) }}
         </div>
       </div>
 
       <div class="d-flex align-items-center gap-2">
         <div class="d-flex align-items-center">
-          <label class="form-label me-2 mb-0 fw-semibold">Site:</label>
+          <label class="form-label me-2 mb-0 fw-semibold">{{ t('appsLiveView.header.filters.siteLabel') }}</label>
           <select
             v-model="selectedSiteFilter"
             @change="onHeaderSiteFilterChange"
             class="form-select form-select-solid w-200px"
             :disabled="loadingSites"
           >
-            <option v-if="loadingSites" value="">Loading sites...</option>
-            <option v-else-if="sites.length === 0" value="">No sites available</option>
-            <option v-else value="" disabled>Select Sites</option>
+            <option v-if="loadingSites" value="">{{ t('appsLiveView.header.filters.site.loading') }}</option>
+            <option v-else-if="sites.length === 0" value="">{{ t('appsLiveView.header.filters.site.none') }}</option>
+            <option v-else value="" disabled>{{ t('appsLiveView.header.filters.site.placeholder') }}</option>
             <option v-for="site in sites" :key="site.uid" :value="site.uid">{{ site.name }}</option>
           </select>
         </div>
 
         <div class="d-flex align-items-center">
-          <label class="form-label me-2 mb-0 fw-semibold">NVR:</label>
+          <label class="form-label me-2 mb-0 fw-semibold">{{ t('appsLiveView.header.filters.nvrLabel') }}</label>
           <select
             v-model="selectedNvrFilter"
             @change="onHeaderNvrFilterChange"
             class="form-select form-select-solid w-200px"
             :disabled="loadingNvrs || !selectedSiteFilter"
           >
-            <option v-if="loadingNvrs" value="">Loading NVRs...</option>
-            <option v-else-if="!selectedSiteFilter" value="">Select a site first</option>
-            <option v-else-if="availableHeaderNvrs.length === 0" value="">No NVRs available</option>
-            <option v-else value="">All NVRs</option>
+            <option v-if="loadingNvrs" value="">{{ t('appsLiveView.header.filters.nvr.loading') }}</option>
+            <option v-else-if="!selectedSiteFilter" value="">{{ t('appsLiveView.header.filters.nvr.requiresSite') }}</option>
+            <option v-else-if="availableHeaderNvrs.length === 0" value="">{{ t('appsLiveView.header.filters.nvr.none') }}</option>
+            <option v-else value="">{{ t('appsLiveView.header.filters.nvr.all') }}</option>
             <option v-for="nvr in availableHeaderNvrs" :key="nvr.uid" :value="nvr.uid">{{ nvr.name }}</option>
           </select>
         </div>
@@ -93,7 +93,7 @@
                 <div class="card-body p-3">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <h6 class="card-title mb-0">{{ camera.room }}</h6>
-                    <span class="badge" :class="camera.status === 'online' ? 'badge-light-success' : 'badge-light-danger'">{{ camera.status }}</span>
+                    <span class="badge" :class="camera.status === 'online' ? 'badge-light-success' : 'badge-light-danger'">{{ getStatusLabel(camera.status) }}</span>
                   </div>
 
                   <div
@@ -124,11 +124,11 @@
                     <div class="d-flex justify-content-between">
                       <button class="btn btn-sm btn-light-primary" @click="viewFullscreen(camera)">
                         <i class="ki-duotone ki-maximize fs-6"></i>
-                        Fullscreen
+                          {{ t('appsLiveView.grid.fullscreen') }}
                       </button>
                       <button class="btn btn-sm btn-light-info" @click="viewRecordings(camera)">
                         <i class="ki-duotone ki-video fs-6"></i>
-                        Recordings
+                          {{ t('appsLiveView.grid.recordings') }}
                       </button>
                     </div>
                   </div>
@@ -139,7 +139,7 @@
 
           <div v-if="filteredCameras.length === 0" class="text-center py-5">
             <i class="ki-duotone ki-security-user fs-3x text-gray-400 mb-3"><span class="path1"></span><span class="path2"></span></i>
-            <p class="text-gray-500">No cameras found</p>
+              <p class="text-gray-500">{{ t('appsLiveView.grid.empty') }}</p>
           </div>
         </div>
       </div>
@@ -150,7 +150,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
           <div>
             <h3 class="fw-bold m-0">{{ selectedSiteName }}</h3>
-            <div class="small text-muted">{{ totalCameras }} cameras</div>
+            <div class="small text-muted">{{ t('appsLiveView.sidebar.cameraCount', { count: totalCameras }) }}</div>
           </div>
           <div class="btn btn-sm btn-light">
             <i class="bi-list"></i>
@@ -177,6 +177,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { useRoute } from 'vue-router';
+import { useI18n } from "vue-i18n";
 
 // Using HLS from CDN via window.Hls (see index.html)
 
@@ -202,6 +203,8 @@ const loadHlsCdn = (): Promise<void> => {
 };
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import ApiService from "@/core/services/ApiService";
+
+const { t } = useI18n();
 
 // Interface definitions
 interface Camera {
@@ -245,6 +248,21 @@ const selectedNvrId = ref(""); // Keep for internal use
 const selectedSiteFilter = ref<string>("");
 const selectedNvrFilter = ref<string>("");
 const gridView = ref("3x3");
+
+const normalizeStatusKey = (status?: string) => (status ?? "").toLowerCase();
+
+const getStatusLabel = (status: string) => {
+  switch (normalizeStatusKey(status)) {
+    case "online":
+      return t('appsLiveView.grid.status.online');
+    case "offline":
+      return t('appsLiveView.grid.status.offline');
+    case "connecting":
+      return t('appsLiveView.grid.status.connecting');
+    default:
+      return status;
+  }
+};
 
 // Mock fallbacks to avoid compile/runtime errors when API fails
 const mockSites: Site[] = [];

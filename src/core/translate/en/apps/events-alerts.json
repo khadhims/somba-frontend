@@ -1,0 +1,213 @@
+{
+	"overview": {
+		"title": "Events & Alerts Management",
+		"subtitleAll": "Monitor and manage security events across all sites",
+		"subtitleSite": "Monitor and manage security events for {site}"
+	},
+	"filters": {
+		"siteLabel": "Site:",
+		"siteAll": "All Sites",
+		"sampleSite": "Site A",
+		"searchPlaceholder": "Search events...",
+		"typeLabel": "Type:",
+		"typeAll": "All Types",
+		"severityLabel": "Level:",
+		"severityAll": "All Levels",
+		"refresh": "Refresh"
+	},
+	"cards": {
+		"activeAlerts": {
+			"title": "Active Alerts",
+			"progress": "{count} Critical"
+		},
+		"motionEvents": {
+			"title": "Motion Events",
+			"progress": "Last 24h"
+		},
+		"resolvedToday": {
+			"title": "Resolved Today",
+			"progress": "{count} Total"
+		},
+		"responseTime": {
+			"title": "Response Time",
+			"progress": "Average"
+		}
+	},
+	"table": {
+		"title": "Recent Events & Alerts",
+		"columns": {
+			"uid": "Event Name",
+			"camera": "Camera Name",
+			"timestamp": "Timestamp",
+			"duration": "Duration (min)",
+			"avgDetection": "Avg Detection (s)",
+			"status": "Status",
+			"actions": "Actions"
+		},
+		"empty": "No events found",
+		"noLocation": "No location",
+		"generatedDescription": "Activity detected - {seconds}s avg detection",
+		"pagination": "Showing {start} to {end} of {total} entries",
+		"actions": {
+			"view": "View Details",
+			"acknowledge": "Acknowledge",
+			"resolve": "Resolve",
+			"edit": "Edit"
+		},
+		"status": {
+			"active": "Active",
+			"acknowledged": "Acknowledged",
+			"resolved": "Resolved",
+			"unresolved": "Unresolved",
+			"notResolved": "Not Resolved",
+			"falseDetection": "False Detection",
+			"unknown": "Unknown"
+		},
+		"types": {
+			"motion": "Motion",
+			"intrusion": "Intrusion",
+			"system": "System",
+			"cameraOffline": "Camera Offline",
+			"unknown": "Unknown"
+		},
+		"severity": {
+			"low": "Low",
+			"medium": "Medium",
+			"high": "High",
+			"critical": "Critical",
+			"unknown": "Unknown"
+		}
+	},
+	"actions": {
+		"close": "Close",
+		"acknowledge": "Acknowledge",
+		"resolve": "Resolve",
+		"cancel": "Cancel",
+		"save": "Save Changes",
+		"saving": "Saving..."
+	},
+	"modals": {
+		"details": {
+			"title": "Event Details",
+			"image": "Event Image:",
+			"eventId": "Event ID:",
+			"cameraUuid": "Camera UUID:",
+			"status": "Status:",
+			"description": "Description:",
+			"startTime": "Start Time:",
+			"endTime": "End Time:",
+			"duration": "Duration:",
+			"totalMinutes": "Total Minutes:",
+			"avgDetection": "Avg Detection Time:",
+			"comments": "Comments:",
+			"eventIdHint": "Event ID:",
+			"imageFallback": "Image not available"
+		},
+		"edit": {
+			"title": "Edit Event",
+			"eventType": "Event Type:",
+			"severity": "Severity:",
+			"currentStatus": "Current Status:",
+			"process": "Process:",
+			"startTime": "Start Time:",
+			"endTime": "End Time:",
+			"duration": "Duration:",
+			"camera": "Camera:",
+			"location": "Location:",
+			"updateStatus": "Update Status:",
+			"selectStatus": "Select new status...",
+			"comment": "Comment:",
+			"commentPlaceholder": "Leave a comment about this event...",
+			"eventId": "Event ID:"
+		}
+	},
+	"form": {
+		"statusOptions": {
+			"resolved": "Resolved",
+			"notResolved": "Not Resolved",
+			"falseDetection": "False Detection"
+		}
+	},
+	"format": {
+		"minutesShort": "{value} min",
+		"secondsShort": "{value}s",
+		"minutesLong": "{value} minutes",
+		"secondsLong": "{value} seconds",
+		"notAvailable": "N/A"
+	},
+	"settings": {
+		"header": {
+			"title": "Events & Alerts Settings",
+			"description": "Configure event detection and alert notifications"
+		},
+		"eventDetection": {
+			"title": "Event Detection",
+			"motion": {
+				"label": "Motion Detection",
+				"description": "Detect motion in camera feeds and trigger events",
+				"sensitivity": "Sensitivity Level",
+				"minArea": "Minimum Detection Area (%)"
+			},
+			"intrusion": {
+				"label": "Intrusion Detection",
+				"description": "Detect unauthorized access in restricted areas",
+				"zones": "Detection Zones",
+				"configure": "Configure Zones"
+			},
+			"system": {
+				"label": "System Monitoring",
+				"description": "Monitor camera and NVR system health",
+				"cameraOffline": "Camera Offline Detection",
+				"lowDiskSpace": "Low Disk Space Warning",
+				"networkIssues": "Network Issues Detection"
+			},
+			"saveButton": "Save Event Settings"
+		},
+		"notifications": {
+			"title": "Alert Notifications",
+			"email": {
+				"label": "Email Notifications",
+				"description": "Send alert notifications via email",
+				"recipients": "Email Recipients",
+				"placeholder": "Enter email addresses, one per line",
+				"threshold": "Alert Severity Threshold",
+				"options": {
+					"low": "All Alerts (Low and above)",
+					"medium": "Medium and above",
+					"high": "High and above",
+					"critical": "Critical only"
+				}
+			},
+			"sms": {
+				"label": "SMS Notifications",
+				"description": "Send critical alerts via SMS",
+				"numbers": "Phone Numbers",
+				"placeholder": "Enter phone numbers, one per line",
+				"threshold": "SMS Alert Threshold",
+				"options": {
+					"high": "High and above",
+					"critical": "Critical only"
+				}
+			},
+			"push": {
+				"label": "Push Notifications",
+				"description": "Send browser/mobile push notifications",
+				"threshold": "Push Alert Threshold",
+				"sound": "Play notification sound"
+			},
+			"saveButton": "Save Notification Settings"
+		},
+		"advanced": {
+			"title": "Advanced Settings",
+			"eventRetention": {
+				"label": "Event Retention Period (days)",
+				"help": "How long to keep event history"
+			},
+			"autoResolution": {
+				"label": "Auto-resolution Timeout (hours)",
+				"help": "Auto-resolve acknowledged events after timeout"
+			},
+			"saveButton": "Save Advanced Settings"
+		}
+	}
+}

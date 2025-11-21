@@ -95,6 +95,10 @@
       </div>
       <!--end::Theme mode-->
 
+  <!--begin::Language-->
+  <LanguageSwitcher />
+  <!--end::Language-->
+
       <!--begin::User Profile-->
       <div class="d-flex align-items-center">
         <div 
@@ -140,7 +144,7 @@
           <!--begin::Menu item-->
           <div class="menu-item px-5">
             <router-link to="/controlplane/account/overview" class="menu-link px-5">
-              My Profile
+              {{ t('profile') }}
             </router-link>
           </div>
           <!--end::Menu item-->
@@ -148,7 +152,7 @@
           <!--begin::Menu item-->
           <div class="menu-item px-5">
             <router-link to="/controlplane/account/settings" class="menu-link px-5">
-              Account Settings
+              {{ t('account') }} {{ t('settings') }}
             </router-link>
           </div>
           <!--end::Menu item-->
@@ -160,7 +164,7 @@
           <!--begin::Menu item-->
           <div class="menu-item px-5">
             <a href="#" class="menu-link px-5" @click.prevent="logout">
-              Sign Out
+              {{ t('signOut') }}
             </a>
           </div>
           <!--end::Menu item-->
@@ -179,16 +183,20 @@ import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 import KTThemeModeSwitcher from "@/layouts/default-layout/components/theme-mode/ThemeModeSwitcher.vue";
 import NotificationsMenu from "@/layouts/default-layout/components/menus/NotificationsMenu.vue";
+import LanguageSwitcher from "@/layouts/default-layout/components/header/LanguageSwitcher.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
+import { useI18n } from 'vue-i18n';
 
 export default defineComponent({
   name: "layout-topbar",
   components: {
     KTThemeModeSwitcher,
     NotificationsMenu,
+    LanguageSwitcher,
   },
   setup() {
+    const { t } = useI18n();
     const authStore = useAuthStore();
     const router = useRouter();
 
@@ -200,8 +208,8 @@ export default defineComponent({
     const recordingCount = ref(18);
     const storageUsed = ref(68);
     const systemUptime = ref('72h 15m');
-    const userName = ref('Admin User');
-    const userRole = ref('Security Administrator');
+    const userName = ref('User');
+    const userRole = ref('Administrator');
 
     // Timer for real-time updates
     let timeInterval: number;
@@ -224,7 +232,7 @@ export default defineComponent({
 
     const logout = async () => {
       try {
-        if (confirm('Are you sure you want to sign out?')) {
+        if (confirm(t('signOutConfirm') as string)) {
           // Clear authentication state
           await authStore.logout();
           
@@ -262,6 +270,7 @@ export default defineComponent({
 
     return {
       getAssetPath,
+      t,
       currentTime,
       alertCount,
       connectedCameras,

@@ -1,0 +1,87 @@
+{
+	"common": {
+		"unknown": "Tidak diketahui",
+		"loading": "Memuat...",
+		"cancel": "Batal",
+		"delete": "Hapus"
+	},
+	"summary": {
+		"totalOrganizations": "Total Organisasi",
+		"totalTeams": "Total Tim",
+		"totalUsers": "Total Pengguna",
+		"totalCameras": "Total Kamera"
+	},
+	"toolbar": {
+		"title": "Ringkasan Organisasi",
+		"itemsLabel": "Item:",
+		"searchPlaceholder": "Cari organisasi...",
+		"retry": "Ulangi",
+		"retrying": "Mengulang...",
+		"addButton": "Tambah Organisasi"
+	},
+	"table": {
+		"organizationName": "Nama Organisasi",
+		"email": "Email",
+		"phone": "Telepon",
+		"country": "Negara",
+		"status": "Status",
+		"created": "Dibuat Pada Tanggal",
+		"actions": "Aksi",
+		"empty": "Tidak ada organisasi",
+		"statusLabel": {
+			"active": "Aktif",
+			"inactive": "Tidak Aktif",
+			"pending": "Menunggu"
+		}
+	},
+	"actions": {
+		"viewMembers": "Kelola Anggota",
+		"manageAccounts": "Kelola Akun",
+		"edit": "Ubah Detail Organisasi",
+		"delete": "Hapus Organisasi"
+	},
+	"empty": {
+		"loading": "Memuat organisasi...",
+		"searchNoResults": "Tidak ada organisasi yang cocok dengan \"{query}\"",
+		"noResults": "Tidak ada organisasi"
+	},
+	"error": {
+		"title": "Koneksi Gagal",
+		"loadFailed": "Gagal memuat organisasi.",
+		"createFailed": "Gagal membuat organisasi.",
+		"updateFailed": "Gagal memperbarui organisasi.",
+		"deleteFailed": "Gagal menghapus organisasi."
+	},
+	"form": {
+		"name": "Nama *",
+		"legalName": "Nama Legal",
+		"email": "Email *",
+		"phone": "Telepon",
+		"website": "Website",
+		"country": "Negara",
+		"address": "Alamat",
+		"status": "Status",
+		"statusOptions": {
+			"active": "Aktif",
+			"inactive": "Tidak Aktif",
+			"pending": "Menunggu"
+		}
+	},
+	"modals": {
+		"add": {
+			"title": "Tambah Organisasi",
+			"submit": "Buat Organisasi"
+		},
+		"edit": {
+			"title": "Ubah Detail Organisasi",
+			"submit": "Perbarui Organisasi"
+		},
+		"delete": {
+			"title": "Hapus Organisasi",
+			"confirmPrefix": "Apakah Anda yakin ingin menghapus",
+			"confirmSuffix": "?",
+			"warning": "Tindakan ini tidak dapat dikembalikan.",
+			"submit": "Hapus"
+		}
+	}
+}

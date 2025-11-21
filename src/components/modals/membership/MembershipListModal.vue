@@ -6,7 +6,7 @@
         <!-- Modal Header -->
         <div class="modal-header">
           <h5 class="modal-title">
-            {{ entityType === 'account' ? 'Account Members' : entityType === 'team' ? 'Team Members' : 'Organization Members' }}
+            {{ t('components.membership.list.title', { entity: entityLabel }) }}
           </h5>
           <div class="d-flex align-items-center">
             <!-- Add Member Button -->
@@ -16,7 +16,7 @@
               @click="showAddMemberModal"
             >
               <i class="ki-duotone ki-plus fs-2 me-1"></i>
-              Add Member
+              {{ t('components.membership.list.buttons.add') }}
             </button>
             
             <!-- Close Button -->
@@ -34,7 +34,9 @@
           <!-- Search and Filter Controls -->
           <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">Items:</label>
+              <label class="form-label me-3 mb-0 fw-semibold">
+                {{ t('components.membership.list.filters.itemsLabel') }}
+              </label>
               <select
                 v-model="perPage"
                 @change="onPerPageChange"
@@ -56,7 +58,7 @@
                 type="text"
                 v-model="searchQuery"
                 class="form-control form-control-solid w-250px ps-12"
-                placeholder="Search members..."
+                :placeholder="t('components.membership.list.filters.searchPlaceholder')"
               />
             </div>
           </div>
@@ -66,24 +68,28 @@
             <table class="table table-rounded table-striped border gy-7 gs-7">
               <thead>
                 <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                  <th>Member</th>
-                  <th>Role</th>
-                  <th>Joined</th>
-                  <th class="text-end">Actions</th>
+                  <th>{{ t('components.membership.list.table.headers.member') }}</th>
+                  <th>{{ t('components.membership.list.table.headers.role') }}</th>
+                  <th>{{ t('components.membership.list.table.headers.joined') }}</th>
+                  <th class="text-end">{{ t('components.membership.list.table.headers.actions') }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-if="loading">
                   <td colspan="4" class="text-center py-4">
                     <div class="spinner-border spinner-border-sm text-primary" role="status">
-                      <span class="visually-hidden">Loading...</span>
+                      <span class="visually-hidden">{{ t('components.membership.list.table.loadingLabel') }}</span>
                     </div>
-                    <span class="ms-2">Loading members...</span>
+                    <span class="ms-2">{{ t('components.membership.list.table.loadingMessage') }}</span>
                   </td>
                 </tr>
                 <tr v-else-if="filteredMembers.length === 0">
                   <td colspan="4" class="text-center py-4 text-muted">
-                    {{ searchQuery ? `No members found matching "${searchQuery}"` : 'No members found' }}
+                    {{
+                      searchQuery
+                        ? t('components.membership.list.table.emptySearch', { query: searchQuery })
+                        : t('components.membership.list.table.empty')
+                    }}
                   </td>
                 </tr>
                 <tr v-else v-for="member in paginatedMembers" :key="member.uid">
@@ -97,10 +103,10 @@
                       </div>
                       <div>
                         <span class="text-dark fw-bold d-block fs-6">
-                          {{ member.email || 'Unknown User' }}
+                          {{ member.email || t('components.membership.list.table.unknownUser') }}
                         </span>
                         <span class="text-muted fw-semibold d-block fs-7">
-                          Role: {{ member.role }}
+                          {{ t('components.membership.list.table.rolePrefix', { role: getRoleLabel(member.role) }) }}
                         </span>
                       </div>
                     </div>
@@ -111,7 +117,7 @@
                     <span 
                       :class="`badge badge-light-${getRoleBadgeColor(member.role)} fs-7 fw-bold`"
                     >
-                      {{ member.role }}
+                      {{ getRoleLabel(member.role) }}
                     </span>
                   </td>
 
@@ -128,7 +134,7 @@
                       <button
                         class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
                         @click="editMember(member)"
-                        title="Edit Member Role"
+                        :title="t('components.membership.list.actions.edit')"
                       >
                         <i class="ki-duotone ki-pencil fs-2">
                           <span class="path1"></span>
@@ -138,7 +144,7 @@
                       <button
                         class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
                         @click="deleteMember(member)"
-                        title="Remove Member"
+                        :title="t('components.membership.list.actions.remove')"
                         :disabled="member.role === 'OWNER'"
                       >
                         <i class="ki-duotone ki-trash fs-2">
@@ -162,7 +168,7 @@
               <ul class="pagination">
                 <li class="page-item" :class="{ disabled: currentPage === 1 }">
                   <button class="page-link" @click="goToPage(currentPage - 1)" :disabled="currentPage === 1">
-                    Previous
+                    {{ t('components.membership.list.pagination.previous') }}
                   </button>
                 </li>
                 <li
@@ -177,7 +183,7 @@
                 </li>
                 <li class="page-item" :class="{ disabled: currentPage === totalPages }">
                   <button class="page-link" @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages">
-                    Next
+                    {{ t('components.membership.list.pagination.next') }}
                   </button>
                 </li>
               </ul>
@@ -188,7 +194,7 @@
         <!-- Modal Footer -->
         <div class="modal-footer">
           <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-            Close
+            {{ t('components.membership.list.buttons.close') }}
           </button>
         </div>
       </div>
@@ -205,10 +211,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
-import { Modal } from 'bootstrap';
-import ApiService from '@/core/services/ApiService';
-import AddEditMemberModal from '@/components/modals/membership/AddEditMemberModal.vue';
+import { ref, computed, watch } from "vue";
+import { Modal } from "bootstrap";
+import { useI18n } from "vue-i18n";
+import ApiService from "@/core/services/ApiService";
+import AddEditMemberModal from "@/components/modals/membership/AddEditMemberModal.vue";
 
 // Props
 interface Props {
@@ -247,6 +254,8 @@ interface Member {
 }
 
 // Reactive data
+const { t, locale } = useI18n();
+
 const members = ref<Member[]>([]);
 const loading = ref(false);
 const searchQuery = ref('');
@@ -256,6 +265,26 @@ const perPage = ref(10);
 // Modal references
 const addEditMemberModalRef = ref();
 let modalInstance: Modal | null = null;
+
+const entityLabel = computed(() => t(`components.membership.common.entity.${props.entityType}`));
+const entityLabelLower = computed(() => t(`components.membership.common.entityLower.${props.entityType}`));
+const dateFormatter = computed(() =>
+  new Intl.DateTimeFormat(locale.value, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  })
+);
+
+const getRoleLabel = (role?: string) => {
+  if (!role) {
+    return "";
+  }
+  const key = role.toLowerCase();
+  const translationKey = `components.membership.common.roles.${key}`;
+  const translated = t(translationKey);
+  return translated !== translationKey ? translated : role;
+};
 
 // Computed properties
 const filteredMembers = computed(() => {
@@ -366,24 +395,29 @@ const editMember = (member: Member) => {
 };
 
 const deleteMember = async (member: Member) => {
-  if (member.role === 'OWNER') {
-    alert('Cannot remove the owner from membership.');
+  if (member.role === "OWNER") {
+    alert(t("components.membership.list.alerts.cannotRemoveOwner"));
     return;
   }
 
-  const memberName = member.email || 'this member';
-  if (!confirm(`Are you sure you want to remove ${memberName} from the ${props.entityType}?`)) {
+  const memberName = member.email || t("components.membership.list.table.unknownUser");
+  const confirmMessage = t("components.membership.list.alerts.confirmRemove", {
+    member: memberName,
+    entity: entityLabelLower.value,
+  });
+
+  if (!confirm(confirmMessage)) {
     return;
   }
 
   loading.value = true;
   try {
     let endpoint = '';
-    if (props.entityType === 'account') {
+    if (props.entityType === "account") {
       endpoint = `accounts/${props.entityUid}/memberships/${member.uid}`;
-    } else if (props.entityType === 'team') {
+    } else if (props.entityType === "team") {
       endpoint = `teams/${props.entityUid}/memberships/${member.uid}`;
-    } else if (props.entityType === 'organization') {
+    } else if (props.entityType === "organization") {
       endpoint = `organizations/${props.entityUid}/memberships/${member.uid}`;
     }
     
@@ -398,7 +432,7 @@ const deleteMember = async (member: Member) => {
     }
   } catch (error) {
     console.error('Error removing member:', error);
-    alert('Failed to remove member. Please try again.');
+    alert(t('components.membership.list.alerts.removeFailed'));
   } finally {
     loading.value = false;
   }
@@ -421,29 +455,30 @@ const goToPage = (page: number) => {
 
 const getRoleBadgeColor = (role: string): string => {
   switch (role) {
-    case 'OWNER':
-      return 'danger';
-    case 'ADMIN':
-      return 'warning';
-    case 'MEMBER':
-      return 'primary';
+    case "OWNER":
+      return "danger";
+    case "ADMIN":
+      return "warning";
+    case "MEMBER":
+      return "primary";
     default:
-      return 'secondary';
+      return "secondary";
   }
 };
 
 const formatDate = (dateString: string): string => {
-  if (!dateString) return 'Unknown';
-  
+  if (!dateString) {
+    return t('components.membership.list.table.unknownDate');
+  }
+
   try {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    if (Number.isNaN(date.getTime())) {
+      return t('components.membership.list.table.invalidDate');
+    }
+    return dateFormatter.value.format(date);
   } catch (error) {
-    return 'Invalid date';
+    return t('components.membership.list.table.invalidDate');
   }
 };
 

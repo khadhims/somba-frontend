@@ -1,0 +1,105 @@
+{
+	"overview": {
+		"title": "Monitoring Center",
+		"subtitle": "Centralized monitoring and analytics dashboard"
+	},
+	"filters": {
+		"siteLabel": "Site:",
+		"siteAll": "All Sites",
+		"timeRangeLabel": "Time Range:",
+		"options": {
+			"lastHour": "Last Hour",
+			"last24h": "Last 24 Hours",
+			"last7d": "Last 7 Days",
+			"last30d": "Last 30 Days"
+		}
+	},
+	"cards": {
+		"systemHealth": {
+			"title": "System Health",
+			"progress": "{online}/{total} Online"
+		},
+		"activeAlerts": {
+			"title": "Active Alerts",
+			"progress": "{count} Critical"
+		},
+		"storageUsage": {
+			"title": "Storage Usage",
+			"progress": "{used}GB Used"
+		},
+		"bandwidthUsage": {
+			"title": "Bandwidth Usage",
+			"progress": "{percent}% of limit"
+		}
+	},
+	"charts": {
+		"title": "System Performance",
+		"metrics": {
+			"cpu": "CPU",
+			"memory": "Memory",
+			"storage": "Storage",
+			"network": "Network"
+		},
+		"placeholder": "{metric} Performance Chart",
+		"comingSoon": "Chart implementation coming soon"
+	},
+	"activities": {
+		"title": "Recent Activities"
+	},
+	"deviceStatus": {
+		"title": "Device Status",
+		"table": {
+			"columns": {
+				"name": "Device",
+				"status": "Status",
+				"lastSeen": "Last Seen",
+				"actions": "Actions"
+			},
+			"empty": "No devices found",
+			"actions": {
+				"view": "View Details",
+				"restart": "Restart Device"
+			},
+			"status": {
+				"online": "Online",
+				"offline": "Offline",
+				"warning": "Warning",
+				"unknown": "Unknown"
+			}
+		},
+		"types": {
+			"camera": "Camera",
+			"nvr": "NVR",
+			"sensor": "Sensor",
+			"controller": "Controller",
+			"default": "Device"
+		}
+	},
+	"alertSummary": {
+		"title": "Alert Summary",
+		"table": {
+			"columns": {
+				"severity": "Severity",
+				"message": "Message",
+				"time": "Time",
+				"actions": "Actions"
+			},
+			"empty": "No active alerts",
+			"actions": {
+				"acknowledge": "Acknowledge"
+			},
+			"severity": {
+				"critical": "Critical",
+				"high": "High",
+				"medium": "Medium",
+				"low": "Low",
+				"unknown": "Unknown"
+			}
+		}
+	},
+	"time": {
+		"justNow": "Just now",
+		"minutesAgo": "{count}m ago",
+		"hoursAgo": "{count}h ago"
+	}
+}
