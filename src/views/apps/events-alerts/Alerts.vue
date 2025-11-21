@@ -4,22 +4,22 @@
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col-md-4">
-          <h4 class="card-title mb-0">{{ t('appsEventsAlerts.overview.title') }}</h4>
+          <h4 class="card-title mb-0">{{ t('appsEventsAlerts.alerts.title') }}</h4>
           <p class="text-muted mb-0">
-            {{ currentSite ? t('appsEventsAlerts.overview.subtitleSite', { site: currentSite.name }) : t('appsEventsAlerts.overview.subtitleAll') }}
+            {{ currentSite ? t('appsEventsAlerts.alerts.subtitleSite', { site: currentSite.name }) : t('appsEventsAlerts.alerts.subtitleAll') }}
           </p>
         </div>
         <div class="col-md-8">
           <div class="d-flex justify-content-end gap-3">
             <div class="me-3 d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsEventsAlerts.filters.siteLabel') }}</label>
+              <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsEventsAlerts.alertsFilters.siteLabel') }}</label>
               <select
                 v-model="selectedSiteFilter"
                 class="form-select form-select-solid w-200px"
                 :disabled="loadingSites"
                 @change="onFilterSiteChange"
               >
-                <option value="">{{ t('appsEventsAlerts.filters.siteAll') }}</option>
+                <option value="">{{ t('appsEventsAlerts.alertsFilters.siteAll') }}</option>
                 <option
                   v-for="site in sites"
                   :key="site.uid"
@@ -36,11 +36,11 @@
                 @change="filterEvents"
                 class="form-select form-select-solid w-150px"
               >
-                <option value="">{{ t('appsEventsAlerts.filters.typeAll') }}</option>
-                <option value="motion">{{ t('appsEventsAlerts.table.types.motion') }}</option>
-                <option value="intrusion">{{ t('appsEventsAlerts.table.types.intrusion') }}</option>
-                <option value="system">{{ t('appsEventsAlerts.table.types.system') }}</option>
-                <option value="camera_offline">{{ t('appsEventsAlerts.table.types.cameraOffline') }}</option>
+                <option value="">{{ t('appsEventsAlerts.alertsFilters.typeAll') }}</option>
+                <option value="security">{{ t('appsEventsAlerts.alertsTable.types.security') }}</option>
+                <option value="technical">{{ t('appsEventsAlerts.alertsTable.types.technical') }}</option>
+                <option value="system">{{ t('appsEventsAlerts.alertsTable.types.system') }}</option>
+                <option value="maintenance">{{ t('appsEventsAlerts.alertsTable.types.maintenance') }}</option>
               </select>
             </div>
 
@@ -50,17 +50,17 @@
                 @change="filterEvents"
                 class="form-select form-select-solid w-150px"
               >
-                <option value="">{{ t('appsEventsAlerts.filters.severityAll') }}</option>
-                <option value="low">{{ t('appsEventsAlerts.table.severity.low') }}</option>
-                <option value="medium">{{ t('appsEventsAlerts.table.severity.medium') }}</option>
-                <option value="high">{{ t('appsEventsAlerts.table.severity.high') }}</option>
-                <option value="critical">{{ t('appsEventsAlerts.table.severity.critical') }}</option>
+                <option value="">{{ t('appsEventsAlerts.alertsFilters.severityAll') }}</option>
+                <option value="low">{{ t('appsEventsAlerts.alertsTable.severity.low') }}</option>
+                <option value="medium">{{ t('appsEventsAlerts.alertsTable.severity.medium') }}</option>
+                <option value="high">{{ t('appsEventsAlerts.alertsTable.severity.high') }}</option>
+                <option value="critical">{{ t('appsEventsAlerts.alertsTable.severity.critical') }}</option>
               </select>
             </div>
 
             <button @click="refreshEvents" class="btn btn-sm btn-light-primary">
               <i class="ki-duotone ki-arrows-circle fs-2"></i>
-              {{ t('appsEventsAlerts.filters.refresh') }}
+              {{ t('appsEventsAlerts.alertsFilters.refresh') }}
             </button>
           </div>
           <!--end::Card toolbar-->
@@ -80,7 +80,7 @@
         :sort-label="sortLabel"
         :sort-order="sortOrder"
         @on-sort="handleSort"
-        :empty-table-text="t('appsEventsAlerts.table.empty')"
+        :empty-table-text="t('appsEventsAlerts.alertsTable.empty')"
       >
         <template v-slot:event_name="{ row }">
           <div style="max-width: 200px; min-width: 180px;">
@@ -90,11 +90,20 @@
           </div>
         </template>
 
+        <template v-slot:severity="{ row }">
+          <span
+            class="badge"
+            :class="getSeverityBadgeClass(row.severity)"
+          >
+            {{ getSeverityLabel(row.severity) }}
+          </span>
+        </template>
+
         <template v-slot:camera_name="{ row }">
           <div class="d-flex align-items-center" style="max-width: 200px; min-width: 180px;">
             <div class="d-flex justify-content-start flex-column">
               <span class="text-dark fw-bold fs-6" style="word-break: break-all;">{{ row.camera_name }}</span>
-              <span class="text-muted fw-semibold d-block fs-7">{{ row.location || t('appsEventsAlerts.table.noLocation') }}</span>
+              <span class="text-muted fw-semibold d-block fs-7">{{ row.location || t('appsEventsAlerts.alertsTable.noAssignee') }}</span>
             </div>
           </div>
         </template>
@@ -133,42 +142,14 @@
         <template v-slot:actions="{ row }">
           <div class="d-flex justify-content-end flex-shrink-0">
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              @click="viewEventDetails(row)"
-              :title="t('appsEventsAlerts.table.actions.view')"
+              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm"
+              @click="viewAndEditEvent(row)"
+              :title="t('appsEventsAlerts.table.actions.viewEdit')"
             >
               <i class="ki-duotone ki-eye fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
-              </i>
-            </button>
-            <button
-              v-if="row.status === 'active'"
-              class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
-              @click="acknowledgeEvent(row)"
-              :title="t('appsEventsAlerts.table.actions.acknowledge')"
-            >
-              <i class="ki-duotone ki-check fs-2"></i>
-            </button>
-            <button
-              v-if="row.status === 'acknowledged'"
-              class="btn btn-icon btn-bg-light btn-active-color-info btn-sm me-1"
-              @click="resolveEvent(row)"
-              :title="t('appsEventsAlerts.table.actions.resolve')"
-            >
-              <i class="ki-duotone ki-check-circle fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-            </button>
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm"
-              @click="editEvent(row)"
-              :title="t('appsEventsAlerts.table.actions.edit')"
-            >
-              <i class="ki-duotone ki-pencil fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
+                <span class="path3"></span>
               </i>
             </button>
           </div>
@@ -178,7 +159,7 @@
       <!--begin::Pagination-->
       <div class="d-flex flex-stack flex-wrap pt-10">
         <div class="fs-6 fw-semibold text-gray-700">
-          {{ t('appsEventsAlerts.table.pagination', {
+          {{ t('appsEventsAlerts.alertsTable.pagination', {
             start: ((currentPage - 1) * itemsPerPage) + 1,
             end: Math.min(currentPage * itemsPerPage, totalItems),
             total: totalItems
@@ -224,7 +205,7 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 class="modal-title fw-bold" id="eventDetailsModalLabel">{{ t('appsEventsAlerts.modals.details.title') }}</h3>
+          <h3 class="modal-title fw-bold" id="eventDetailsModalLabel">{{ t('appsEventsAlerts.alertsModals.details.title') }}</h3>
           <button type="button" class="btn-close" @click="closeModal" :aria-label="t('appsEventsAlerts.actions.close')"></button>
         </div>
         <div class="modal-body" v-if="selectedEvent">
@@ -250,17 +231,17 @@
             <!--begin::Left Column-->
             <div class="col-md-6">
               <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.details.eventId') }}</label>
-                <p class="text-gray-800 mb-0 fs-4 font-monospace">{{ selectedEvent.uid }}</p>
+                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.alertName') }}</label>
+                <p class="text-gray-800 mb-0 fs-4 font-monospace">{{ selectedEvent.event_name }}</p>
               </div>
               
               <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.details.cameraUuid') }}</label>
+                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.cameraUuid') }}</label>
                 <p class="text-gray-800 mb-0 fs-4 font-monospace">{{ selectedEvent.camera_name }}</p>
               </div>
               
               <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.details.status') }}</label>
+                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.status') }}</label>
                 <div>
                   <span class="badge fs-5" :class="getStatusBadgeClass(selectedEvent.status)" style="padding: 8px 12px;">
                     {{ getStatusLabel(selectedEvent.status) }}
@@ -269,7 +250,7 @@
               </div>
 
               <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.details.description') }}</label>
+                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.description') }}</label>
                 <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.description }}</p>
               </div>
             </div>
@@ -278,28 +259,31 @@
             <!--begin::Right Column-->
             <div class="col-md-6">
               <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.details.startTime') }}</label>
+                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.triggeredTime') }}</label>
                 <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.startTime) }}</p>
               </div>
               
               <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.details.endTime') }}</label>
+                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.acknowledgedTime') }}</label>
                 <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.endTime) }}</p>
               </div>
               
               <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.details.duration') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ formatDuration(selectedEvent.duration) }}</p>
+                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.resolvedTime') }}</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.startTime) }}</p>
               </div>
 
               <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.details.totalMinutes') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ formatDuration(selectedEvent.total_minutes) }}</p>
+                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.severity') }}</label>
+                <div>
+                  <span class="badge fs-5" :class="getSeverityBadgeClass(selectedEvent.severity)" style="padding: 8px 12px;">
+                    {{ getSeverityLabel(selectedEvent.severity) }}
+                  </span>
+                </div>
               </div>
-
               <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.details.avgDetection') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ formatSecondsLong(selectedEvent.avg_seconds_with_detection) }}</p>
+                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.responseTime') }}</label>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.avg_seconds_with_detection }}</p>
               </div>
             </div>
             <!--end::Right Column-->
@@ -310,7 +294,7 @@
           <div class="row mt-6" v-if="selectedEvent.comment">
             <div class="col-12">
               <div class="bg-light-info p-4 rounded">
-                <label class="fw-semibold fs-4 text-gray-700 mb-2 d-block">{{ t('appsEventsAlerts.modals.details.comments') }}</label>
+                <label class="fw-semibold fs-4 text-gray-700 mb-2 d-block">{{ t('appsEventsAlerts.alertsModals.details.comments') }}</label>
                 <p class="text-gray-800 mb-0 fs-5" style="white-space: pre-wrap;">{{ selectedEvent.comment }}</p>
               </div>
             </div>
@@ -321,25 +305,47 @@
           <div class="row mt-6">
             <div class="col-12">
               <div class="bg-light p-4 rounded">
-                <label class="fw-semibold fs-5 text-gray-600 mb-1">{{ t('appsEventsAlerts.modals.details.eventIdHint') }}</label>
+                <label class="fw-semibold fs-5 text-gray-600 mb-1">{{ t('appsEventsAlerts.alertsModals.details.alertIdHint') }}</label>
                 <p class="text-gray-800 mb-0 font-monospace fs-6">{{ selectedEvent.uid }}</p>
               </div>
             </div>
           </div>
           <!--end::Event UID-->
+
+          <!--begin::Edit Fields-->
+          <div class="row mt-6">
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-dark">Status</label>
+              <select class="form-select" v-model="editStatus">
+                <option value="">{{ t('appsEventsAlerts.form.selectStatus') }}</option>
+                <option value="active">{{ t('appsEventsAlerts.alertsTable.status.active') }}</option>
+                <option value="acknowledged">{{ t('appsEventsAlerts.alertsTable.status.acknowledged') }}</option>
+                <option value="resolved">{{ t('appsEventsAlerts.alertsTable.status.resolved') }}</option>
+              </select>
+            </div>
+            <div class="col-12 mt-3">
+              <label class="form-label fw-bold text-dark">{{ t('appsEventsAlerts.alertsModals.details.comment') }}</label>
+              <textarea 
+                class="form-control" 
+                rows="3" 
+                v-model="editComment"
+                :placeholder="t('appsEventsAlerts.alertsModals.details.commentPlaceholder')"
+              ></textarea>
+            </div>
+          </div>
+          <!--end::Edit Fields-->
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary fs-5 px-4 py-2" @click="closeModal">{{ t('appsEventsAlerts.actions.close') }}</button>
-          <button type="button" class="btn btn-primary fs-5 px-4 py-2" v-if="selectedEvent && selectedEvent.status === 'active'" @click="acknowledgeEventFromModal">
-            <i class="ki-duotone ki-check fs-2 me-2"></i>
-            {{ t('appsEventsAlerts.actions.acknowledge') }}
-          </button>
-          <button type="button" class="btn btn-success fs-5 px-4 py-2" v-if="selectedEvent && selectedEvent.status === 'acknowledged'" @click="resolveEventFromModal">
-            <i class="ki-duotone ki-check-circle fs-2 me-2">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            {{ t('appsEventsAlerts.actions.resolve') }}
+          <button 
+            type="button" 
+            class="btn btn-primary fs-5 px-4 py-2" 
+            v-if="hasChanges" 
+            @click="saveEventChanges" 
+            :disabled="isModalLoading"
+          >
+            <span v-if="isModalLoading" class="spinner-border spinner-border-sm me-2"></span>
+            {{ t('appsEventsAlerts.actions.update') }}
           </button>
         </div>
       </div>
@@ -347,148 +353,7 @@
   </div>
   <!--end::Event Details Modal-->
 
-  <!--begin::Edit Event Modal-->
-  <div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="modal-title fw-bold" id="editEventModalLabel">{{ t('appsEventsAlerts.modals.edit.title') }}</h3>
-          <button type="button" class="btn-close" @click="closeEditModal" :aria-label="t('appsEventsAlerts.actions.close')"></button>
-        </div>
-        <div class="modal-body" v-if="selectedEventForEdit">
-          <!--begin::Event Image-->
-          <div class="row mb-6" v-if="selectedEventForEdit.image_path">
-            <div class="col-12">
-              <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.details.image') }}</label>
-              <div class="text-center">
-                <img 
-                  :src="selectedEventForEdit.image_path" 
-                  :alt="selectedEventForEdit.description"
-                  class="img-fluid rounded border"
-                  style="max-height: 300px; object-fit: contain;"
-                  @error="handleImageError"
-                />
-              </div>
-            </div>
-          </div>
-          <!--end::Event Image-->
 
-          <!--begin::Event Info Grid-->
-          <div class="row g-6">
-            <!--begin::Left Column-->
-            <div class="col-md-6">
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.edit.eventType') }}</label>
-                <div>
-                  <span class="badge fs-5" :class="getEventTypeBadgeClass(selectedEventForEdit.type)" style="padding: 8px 12px;">
-                    {{ getEventTypeLabel(selectedEventForEdit.type) }}
-                  </span>
-                </div>
-              </div>
-              
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.edit.severity') }}</label>
-                <div>
-                  <span class="badge fs-5" :class="getSeverityBadgeClass(selectedEventForEdit.severity)" style="padding: 8px 12px;">
-                    {{ getSeverityLabel(selectedEventForEdit.severity) }}
-                  </span>
-                </div>
-              </div>
-              
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.edit.currentStatus') }}</label>
-                <div>
-                  <span class="badge fs-5" :class="getStatusBadgeClass(selectedEventForEdit.status)" style="padding: 8px 12px;">
-                    {{ getStatusLabel(selectedEventForEdit.status) }}
-                  </span>
-                </div>
-              </div>
-
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.edit.process') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ selectedEventForEdit.description }}</p>
-              </div>
-            </div>
-            <!--end::Left Column-->
-
-            <!--begin::Right Column-->
-            <div class="col-md-6">
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.edit.startTime') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEventForEdit.startTime) }}</p>
-              </div>
-              
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.edit.endTime') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEventForEdit.endTime) }}</p>
-              </div>
-              
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.edit.duration') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ formatDuration(selectedEventForEdit.duration) }}</p>
-              </div>
-
-              <div class="mb-4" v-if="selectedEventForEdit.camera_name">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.edit.camera') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ selectedEventForEdit.camera_name }}</p>
-              </div>
-
-              <div class="mb-4" v-if="selectedEventForEdit.location">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.edit.location') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ selectedEventForEdit.location }}</p>
-              </div>
-            </div>
-            <!--end::Right Column-->
-          </div>
-          <!--end::Event Info Grid-->
-
-          <!--begin::Edit Fields-->
-          <div class="row mt-6">
-            <div class="col-12">
-              <div class="bg-light p-4 rounded">
-                <div class="row g-4">
-                  <div class="col-md-6">
-                    <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.edit.updateStatus') }}</label>
-                    <select v-model="editStatus" class="form-select form-select-solid fs-5">
-                      <option value="">{{ t('appsEventsAlerts.modals.edit.selectStatus') }}</option>
-                      <option value="resolved">{{ t('appsEventsAlerts.form.statusOptions.resolved') }}</option>
-                      <option value="not resolved">{{ t('appsEventsAlerts.form.statusOptions.notResolved') }}</option>
-                      <option value="false detection">{{ t('appsEventsAlerts.form.statusOptions.falseDetection') }}</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.edit.eventId') }}</label>
-                    <p class="text-gray-800 mb-0 font-monospace fs-6">{{ selectedEventForEdit.uid }}</p>
-                  </div>
-                </div>
-                <div class="row mt-4">
-                  <div class="col-12">
-                    <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.edit.comment') }}</label>
-                    <textarea 
-                      v-model="editComment" 
-                      class="form-control form-control-solid fs-5" 
-                      rows="4" 
-                      :placeholder="t('appsEventsAlerts.modals.edit.commentPlaceholder')"
-                    ></textarea>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!--end::Edit Fields-->
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary fs-5 px-4 py-2" @click="closeEditModal" :disabled="isEditModalLoading">{{ t('appsEventsAlerts.actions.cancel') }}</button>
-          <button type="button" class="btn btn-primary fs-5 px-4 py-2" @click="saveEventEdit" :disabled="!editStatus || isEditModalLoading">
-            <span v-if="isEditModalLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
-            <i v-else class="ki-duotone ki-check fs-2 me-2"></i>
-            {{ isEditModalLoading ? t('appsEventsAlerts.actions.saving') : t('appsEventsAlerts.actions.save') }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--end::Edit Event Modal-->
 </template>
 
 <script setup lang="ts">
@@ -556,51 +421,44 @@ const totalItems = ref(0);
 const totalPages = ref(0);
 // Modal state
 const selectedEvent = ref<any>(null);
-const selectedEventForEdit = ref<any>(null);
 const editStatus = ref('');
 const editComment = ref('');
-const isEditModalLoading = ref(false);
+const isModalLoading = ref(false);
 
 // Table header configuration
 const tableHeader = computed(() => [
   {
-    columnName: t('appsEventsAlerts.table.columns.event'),
+    columnName: t('appsEventsAlerts.alertsTable.columns.alert'),
     columnLabel: 'event_name',
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: t('appsEventsAlerts.table.columns.camera'),
+    columnName: t('appsEventsAlerts.alertsTable.columns.severity'),
+    columnLabel: 'severity',
+    sortEnabled: true,
+    searchable: false,
+  },
+  {
+    columnName: t('appsEventsAlerts.alertsTable.columns.camera'),
     columnLabel: 'camera_name',
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: t('appsEventsAlerts.table.columns.timestamp'),
+    columnName: t('appsEventsAlerts.alertsTable.columns.timestamp'),
     columnLabel: 'startTime',
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('appsEventsAlerts.table.columns.duration'),
-    columnLabel: 'duration',
-    sortEnabled: true,
-    searchable: false,
-  },
-  {
-    columnName: t('appsEventsAlerts.table.columns.avgDetection'),
-    columnLabel: 'avg_seconds_with_detection',
-    sortEnabled: true,
-    searchable: false,
-  },
-  {
-    columnName: t('appsEventsAlerts.table.columns.status'),
+    columnName: t('appsEventsAlerts.alertsTable.columns.status'),
     columnLabel: 'status',
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('appsEventsAlerts.table.columns.actions'),
+    columnName: t('appsEventsAlerts.alertsTable.columns.actions'),
     columnLabel: 'actions',
     sortEnabled: false,
     searchable: false,
@@ -645,7 +503,7 @@ const fetchEvents = async () => {
         uid: item.event_id || `evt-${idx}-${Date.now()}`,
         type: 'motion', // default type - adjust if API provides type later
         severity: 'medium', // default severity based on detection activity
-        description: t('appsEventsAlerts.table.generatedDescription', {
+        description: t('appsEventsAlerts.alertsTable.generatedDescription', {
           seconds: Math.round(item.avg_seconds_with_detection || 0),
         }),
         event_name: item.event_name || '',
@@ -856,12 +714,12 @@ const getStatusBadgeClass = (status: string) => {
 
 const getStatusLabel = (status: string) => {
   const key = statusKeyMap[normalizeKey(status)];
-  return key ? t(`appsEventsAlerts.table.status.${key}`) : status;
+  return key ? t(`appsEventsAlerts.alertsTable.status.${key}`) : status;
 };
 
 const getSeverityLabel = (severity: string) => {
   const key = severityKeyMap[normalizeKey(severity)];
-  return key ? t(`appsEventsAlerts.table.severity.${key}`) : severity;
+  return key ? t(`appsEventsAlerts.alertsTable.severity.${key}`) : severity;
 };
 
 const getEventTypeLabel = (type: string) => {
@@ -1006,6 +864,16 @@ const resolvedTodayPercentage = computed(() =>
 
 const responseTimePercentage = computed(() => 75); // Mock data
 
+// Check if there are changes to enable update button
+const hasChanges = computed(() => {
+  if (!selectedEvent.value) return false;
+  
+  const originalStatus = selectedEvent.value.status || '';
+  const originalComment = selectedEvent.value.comment || '';
+  
+  return editStatus.value !== originalStatus || editComment.value !== originalComment;
+});
+
 // Pagination computed properties
 const visiblePages = computed(() => {
   const pages = [];
@@ -1030,29 +898,21 @@ const goToPage = (page: number) => {
   }
 };
 
-const editEvent = async (event: Event) => {
-  try {
-    isEditModalLoading.value = true;
-    
-    // TODO: Fetch event details dari API
-    // const response = await ApiService.get(`events/${event.uid}`);
-    // selectedEventForEdit.value = response.data;
-    
-    // Untuk sementara gunakan data yang ada
-    selectedEventForEdit.value = { ...event };
-    editStatus.value = '';
-    editComment.value = '';
-    
-    // Show edit modal
-    const modalElement = document.getElementById('editEventModal');
-    if (modalElement) {
+const viewAndEditEvent = (event: Event) => {
+  selectedEvent.value = event;
+  // Initialize edit fields with current values
+  editStatus.value = event.status || '';
+  editComment.value = event.comment || '';
+  
+  // Show modal using Bootstrap 5
+  const modalElement = document.getElementById('eventDetailsModal');
+  if (modalElement) {
+    try {
       const modal = new Modal(modalElement);
       modal.show();
+    } catch (error) {
+      console.error('Error showing modal:', error);
     }
-  } catch (error) {
-    console.error("Error fetching event details:", error);
-  } finally {
-    isEditModalLoading.value = false;
   }
 };
 
@@ -1068,16 +928,16 @@ const closeEditModal = () => {
       console.error('Error hiding edit modal:', error);
     }
   }
-  selectedEventForEdit.value = null;
+
   editStatus.value = '';
   editComment.value = '';
 };
 
-const saveEventEdit = async () => {
-  if (!editStatus.value) return;
+const saveEventChanges = async () => {
+  if (!editStatus.value || !selectedEvent.value) return;
   
   try {
-    isEditModalLoading.value = true;
+    isModalLoading.value = true;
     
     const updateData = {
       status: editStatus.value,
@@ -1085,22 +945,29 @@ const saveEventEdit = async () => {
     };
     
     // TODO: API call untuk update event
-    // await ApiService.put(`events/${selectedEventForEdit.value.uid}`, updateData);
+    // await ApiService.put(`events/${selectedEvent.value.uid}`, updateData);
     
     // Update local state
-    const index = events.value.findIndex(e => e.uid === selectedEventForEdit.value.uid);
+    const index = events.value.findIndex(e => e.uid === selectedEvent.value!.uid);
     if (index !== -1) {
       events.value[index].status = editStatus.value;
-      // Bisa tambahkan field comment jika diperlukan
+      if (editComment.value) {
+        events.value[index].comment = editComment.value;
+      }
+    }
+    
+    // Update selectedEvent for display
+    selectedEvent.value.status = editStatus.value;
+    if (editComment.value) {
+      selectedEvent.value.comment = editComment.value;
     }
     
     console.log('Event updated:', updateData);
-    closeEditModal();
     
   } catch (error) {
     console.error("Error updating event:", error);
   } finally {
-    isEditModalLoading.value = false;
+    isModalLoading.value = false;
   }
 };
 
@@ -1172,6 +1039,8 @@ const closeModal = () => {
     }
   }
   selectedEvent.value = null;
+  editStatus.value = '';
+  editComment.value = '';
 };
 
 const acknowledgeEventFromModal = async () => {

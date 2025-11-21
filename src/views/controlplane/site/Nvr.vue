@@ -99,7 +99,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
+                  <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.nvr.form.fields.room.label") }}
                   </label>
                   <!--end::Label-->
@@ -257,7 +257,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
+                  <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.nvr.form.fields.username.label") }}
                   </label>
                   <!--end::Label-->
@@ -275,7 +275,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
+                  <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.nvr.form.fields.password.label") }}
                   </label>
                   <!--end::Label-->

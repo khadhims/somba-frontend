@@ -26,9 +26,14 @@
 		},
 		"fullscreen": "Layar Penuh",
 		"recordings": "Rekaman",
-		"empty": "Tidak ada kamera"
+		"empty": "Tidak ada kamera",
+		"cameraLimitInfo": "Menampilkan {shown} dari {total} kamera tersedia dalam grid {grid}"
 	},
 	"sidebar": {
 		"cameraCount": "{count} kamera"
+	},
+	"availableCameras": {
+		"title": "Kamera Tersedia",
+		"subtitle": "Drag kamera ke grid untuk mengganti kamera yang sedang ditampilkan"
 	}
 }

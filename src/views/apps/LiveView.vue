@@ -50,6 +50,7 @@
             class="btn btn-sm"
             :class="gridView === '1x1' ? 'btn-primary' : 'btn-light'"
             @click="setGridView('1x1')"
+            :title="`1x1 (max 1 camera)`"
           >
             1x1
           </button>
@@ -58,6 +59,7 @@
             class="btn btn-sm"
             :class="gridView === '2x2' ? 'btn-primary' : 'btn-light'"
             @click="setGridView('2x2')"
+            :title="`2x2 (max 4 cameras)`"
           >
             2x2
           </button>
@@ -66,6 +68,7 @@
             class="btn btn-sm"
             :class="gridView === '3x3' ? 'btn-primary' : 'btn-light'"
             @click="setGridView('3x3')"
+            :title="`3x3 (max 9 cameras)`"
           >
             3x3
           </button>
@@ -74,6 +77,7 @@
             class="btn btn-sm"
             :class="gridView === '4x4' ? 'btn-primary' : 'btn-light'"
             @click="setGridView('4x4')"
+            :title="`4x4 (max 16 cameras)`"
           >
             4x4
           </button>
@@ -87,6 +91,9 @@
     <div class="col-xl-9">
       <div class="card">
         <div class="card-body py-3">
+          <!-- Camera count indicator -->
+
+
           <div class="row g-3" :class="gridClasses">
             <div 
               v-for="(camera, index) in filteredCameras" 
@@ -181,19 +188,32 @@
         </div>
         <div class="card-body p-0">
           <ul class="list-group list-group-flush">
-            <li v-for="cam in siteCameras" :key="cam.uid" class="list-group-item d-flex justify-content-between align-items-center">
-              <div>
+            <li 
+              v-for="cam in siteCameras" 
+              :key="cam.uid" 
+              class="list-group-item d-flex justify-content-between align-items-center cursor-grab sidebar-camera-item"
+              :class="{ 'dragging': draggedCamera?.uid === cam.uid }"
+              draggable="true"
+              @dragstart="onDragStartFromSidebar($event, cam)"
+              @dragend="onDragEnd"
+            >
+              <div class="flex-grow-1">
                 <div class="fw-semibold">{{ cam.room }}</div>
                 <div class="text-muted small">{{ cam.name }}</div>
               </div>
-              <!-- <div>
-                <span :class="['badge', cam.status === 'online' ? 'bg-success' : 'bg-secondary']" style="width:10px; height:10px; border-radius:50%; display:inline-block;"></span>
+              <!-- <div class="d-flex align-items-center">
+                <i class="ki-duotone ki-arrows-circle fs-5 text-muted drag-handle">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
               </div> -->
             </li>
           </ul>
         </div>
       </div>
     </div>
+
+
   </div>
 </template>
 
@@ -786,9 +806,14 @@ watch(selectedSiteId, (nv, ov) => {
 
 // Grid view management
 const setGridView = async (view: string) => {
+  // Clean up existing streams before changing grid
+  detachAllStreams();
   gridView.value = view;
   await nextTick();
+  // Re-setup streams for the new grid layout
+  try { await loadHlsCdn(); } catch {}
   setupVideoObservers();
+  console.log(`Grid view changed to ${view}, showing max ${maxCamerasForGrid.value} cameras`);
 };
 
 // Computed properties
@@ -822,6 +847,21 @@ const availableHeaderNvrs = computed(() => {
   );
 });
 
+const maxCamerasForGrid = computed(() => {
+  switch (gridView.value) {
+    case '1x1':
+      return 1;
+    case '2x2':
+      return 4;
+    case '3x3':
+      return 9;
+    case '4x4':
+      return 16;
+    default:
+      return 9;
+  }
+});
+
 const filteredCameras = computed(() => {
   let filtered = cameras.value;
 
@@ -846,7 +886,9 @@ const filteredCameras = computed(() => {
     );
   }
 
-  return filtered;
+  // Limit cameras based on grid view
+  const maxCameras = maxCamerasForGrid.value;
+  return filtered.slice(0, maxCameras);
 });
 
 // Debug watcher: log filter changes and counts to help diagnose missing cameras
@@ -887,6 +929,8 @@ const alertsResolvedPercentage = computed(() =>
     : 0
 );
 
+
+
 // Sidebar helpers
 const selectedSiteName = computed(() => {
   const site = sites.value.find(s => s.uid === selectedSiteId.value);
@@ -918,6 +962,16 @@ const onDragStart = (event: DragEvent, camera: Camera, index: number) => {
   }
 };
 
+const onDragStartFromSidebar = (event: DragEvent, camera: Camera) => {
+  draggedCamera.value = camera;
+  isDragging.value = true;
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', camera.uid);
+  }
+  console.log(`Started dragging ${camera.name} from sidebar`);
+};
+
 const onDragEnd = () => {
   draggedCamera.value = null;
   dragOverIndex.value = -1;
@@ -941,38 +995,61 @@ const onDrop = (event: DragEvent, targetIndex: number) => {
   
   if (!draggedCamera.value) return;
   
-  const draggedIndex = filteredCameras.value.findIndex(c => c.uid === draggedCamera.value!.uid);
-  if (draggedIndex === -1 || draggedIndex === targetIndex) return;
+  // Check if we're dropping a camera from the sidebar (not currently displayed)
+  const isFromSidebar = !filteredCameras.value.some(c => c.uid === draggedCamera.value!.uid);
   
-  // Create a new array with reordered cameras
-  const reorderedCameras = [...filteredCameras.value];
-  const [draggedItem] = reorderedCameras.splice(draggedIndex, 1);
-  reorderedCameras.splice(targetIndex, 0, draggedItem);
-  
-  // Update the main cameras array while preserving the original order for non-filtered items
-  const newCamerasOrder = [...cameras.value];
-  
-  // Remove filtered cameras from their current positions
-  filteredCameras.value.forEach(camera => {
-    const index = newCamerasOrder.findIndex(c => c.uid === camera.uid);
-    if (index !== -1) {
-      newCamerasOrder.splice(index, 1);
+  if (isFromSidebar) {
+    // Replace the camera at targetIndex with the dragged camera
+    const targetCamera = filteredCameras.value[targetIndex];
+    const draggedCameraData = draggedCamera.value;
+    
+    // Find both cameras in the main array and swap their positions
+    const targetIndexInMain = cameras.value.findIndex(c => c.uid === targetCamera.uid);
+    const draggedIndexInMain = cameras.value.findIndex(c => c.uid === draggedCameraData.uid);
+    
+    if (targetIndexInMain !== -1 && draggedIndexInMain !== -1) {
+      // Swap the cameras
+      const temp = cameras.value[targetIndexInMain];
+      cameras.value[targetIndexInMain] = cameras.value[draggedIndexInMain];
+      cameras.value[draggedIndexInMain] = temp;
+      
+      console.log(`Replaced ${targetCamera.name} with ${draggedCameraData.name}`);
     }
-  });
-  
-  // Insert reordered cameras at the beginning (or you could insert at original position)
-  reorderedCameras.forEach((camera, index) => {
-    newCamerasOrder.splice(index, 0, camera);
-  });
-  
-  cameras.value = newCamerasOrder;
+  } else {
+    // Original reordering logic for cameras already displayed
+    const draggedIndex = filteredCameras.value.findIndex(c => c.uid === draggedCamera.value!.uid);
+    if (draggedIndex === -1 || draggedIndex === targetIndex) return;
+    
+    // Create a new array with reordered cameras
+    const reorderedCameras = [...filteredCameras.value];
+    const [draggedItem] = reorderedCameras.splice(draggedIndex, 1);
+    reorderedCameras.splice(targetIndex, 0, draggedItem);
+    
+    // Update the main cameras array while preserving the original order for non-filtered items
+    const newCamerasOrder = [...cameras.value];
+    
+    // Remove filtered cameras from their current positions
+    filteredCameras.value.forEach(camera => {
+      const index = newCamerasOrder.findIndex(c => c.uid === camera.uid);
+      if (index !== -1) {
+        newCamerasOrder.splice(index, 1);
+      }
+    });
+    
+    // Insert reordered cameras at the beginning
+    reorderedCameras.forEach((camera, index) => {
+      newCamerasOrder.splice(index, 0, camera);
+    });
+    
+    cameras.value = newCamerasOrder;
+  }
   
   // Reset drag state
   draggedCamera.value = null;
   dragOverIndex.value = -1;
   isDragging.value = false;
   
-  // Re-setup video observers after reordering
+  // Re-setup video observers after changes
   nextTick(() => {
     setupVideoObservers();
   });
@@ -994,6 +1071,93 @@ onMounted(() => {
   display: block;
   object-fit: cover;
   background: #000;
+}
+
+/* Drag and drop styles */
+.camera-card {
+  transition: all 0.2s ease;
+  cursor: grab;
+}
+
+.camera-card:active {
+  cursor: grabbing;
+}
+
+.camera-card.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg);
+  z-index: 1000;
+}
+
+.camera-card.drag-over {
+  border: 2px dashed #009ef7;
+  background-color: rgba(0, 158, 247, 0.05);
+  transform: scale(1.02);
+}
+
+.drag-handle {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.camera-card:hover .drag-handle {
+  opacity: 1;
+}
+
+.cursor-move {
+  cursor: move;
+}
+
+.camera-drag-item {
+  transition: all 0.2s ease;
+  cursor: grab;
+  min-width: 120px;
+  border: 2px solid #e4e6ef;
+}
+
+.camera-drag-item:hover {
+  border-color: #009ef7;
+  box-shadow: 0 0 0 0.1rem rgba(0, 158, 247, 0.25);
+  transform: translateY(-2px);
+}
+
+.camera-drag-item:active {
+  cursor: grabbing;
+}
+
+.camera-drag-item.dragging {
+  opacity: 0.5;
+  transform: rotate(3deg) scale(0.95);
+  z-index: 1000;
+}
+
+.sidebar-camera-item {
+  transition: all 0.2s ease;
+  cursor: grab;
+}
+
+.sidebar-camera-item:hover {
+  background-color: rgba(0, 158, 247, 0.05);
+  transform: translateX(2px);
+}
+
+.sidebar-camera-item:active {
+  cursor: grabbing;
+}
+
+.sidebar-camera-item.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+  z-index: 1000;
+}
+
+.sidebar-camera-item .drag-handle {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-camera-item:hover .drag-handle {
+  opacity: 1;
 }
 
 /* Drag and drop styles */

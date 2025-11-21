@@ -134,7 +134,7 @@
                 <!--begin::Col-->
                 <div class="col-md-4">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
+                  <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.room.label") }}
                   </label>
                   <!--end::Label-->
