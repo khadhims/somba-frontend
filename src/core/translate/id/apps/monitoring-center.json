@@ -1,0 +1,322 @@
+{
+	"overview": {
+		"header": {
+			"title": "Pusat Pemantauan",
+			"subtitle": "Dashbor terpusat untuk pemantauan dan analitik",
+			"filters": {
+				"siteLabel": "Situs:",
+				"siteAll": "Semua Situs",
+				"timeRangeLabel": "Rentang Waktu:",
+				"timeRanges": {
+					"1h": "1 Jam Terakhir",
+					"24h": "24 Jam Terakhir",
+					"7d": "7 Hari Terakhir",
+					"30d": "30 Hari Terakhir"
+				}
+			}
+		},
+		"widgets": {
+			"systemHealth": {
+				"title": "Kesehatan Sistem",
+				"progress": "{online}/{total} Terhubung"
+			},
+			"activeAlerts": {
+				"title": "Peringatan Aktif",
+				"progress": "{count} Kritis"
+			},
+			"storageUsage": {
+				"title": "Penggunaan Penyimpanan",
+				"progress": "{used}GB Terpakai"
+			},
+			"bandwidthUsage": {
+				"title": "Penggunaan Bandwidth",
+				"progress": "{percentage}% dari batas"
+			}
+		},
+		"charts": {
+			"systemPerformance": {
+				"title": "Performa Sistem",
+				"metrics": {
+					"cpu": "CPU",
+					"memory": "Memori",
+					"storage": "Penyimpanan",
+					"network": "Jaringan"
+				},
+				"placeholder": {
+					"chart": "Grafik Performa {metric}",
+					"comingSoon": "Implementasi grafik akan segera hadir"
+				}
+			},
+			"recentActivities": {
+				"title": "Aktivitas Terbaru",
+				"empty": "Tidak ada aktivitas terbaru"
+			}
+		},
+		"tables": {
+			"deviceStatus": {
+				"title": "Status Perangkat",
+				"empty": "Tidak ada perangkat ditemukan",
+				"columns": {
+					"device": "Perangkat",
+					"status": "Status",
+					"lastSeen": "Terakhir Dilihat",
+					"actions": "Tindakan"
+				},
+				"status": {
+					"online": "Aktif",
+					"offline": "Non Aktif",
+					"warning": "Peringatan"
+				},
+				"deviceTypes": {
+					"camera": "Kamera",
+					"nvr": "NVR",
+					"sensor": "Sensor",
+					"controller": "Kontroler"
+				},
+				"actions": {
+					"viewDetails": "Lihat Detail",
+					"restart": "Restart Perangkat"
+				}
+			},
+			"alertSummary": {
+				"title": "Ringkasan Peringatan",
+				"empty": "Tidak ada peringatan muncul",
+				"columns": {
+					"severity": "Tingkat",
+					"message": "Pesan",
+					"time": "Waktu",
+					"actions": "Aksi"
+				},
+				"severity": {
+					"low": "Rendah",
+					"medium": "Sedang",
+					"high": "Tinggi",
+					"critical": "Kritis"
+				},
+				"actions": {
+					"acknowledge": "Akui"
+				}
+			}
+		},
+		"activities": {
+			"types": {
+				"event": "Kejadian",
+				"system": "Sistem",
+				"user": "Pengguna",
+				"maintenance": "Pemeliharaan"
+			},
+			"timeFormat": {
+				"justNow": "Baru saja",
+				"minutesAgo": "{minutes}m yang lalu",
+				"hoursAgo": "{hours}j yang lalu"
+			}
+		}
+	},
+	"settings": {
+		"header": {
+			"title": "Pengaturan Pusat Pemantauan",
+			"subtitle": "Konfigurasi threshold pemantauan dan preferensi dasbor"
+		},
+		"monitoring": {
+			"title": "Ambang Batas Pemantauan Sistem",
+			"thresholds": {
+				"cpu": {
+					"label": "Peringatan Ambang Batas Penggunaan CPU (%)",
+					"warning": "Tingkat peringatan",
+					"critical": "Tingkat kritis"
+				},
+				"memory": {
+					"label": "Peringatan Ambang Batas Penggunaan Memori (%)",
+					"warning": "Tingkat peringatan",
+					"critical": "Tingkat kritis"
+				},
+				"storage": {
+					"label": "Peringatan Ambang Batas Penggunaan Penyimpanan (%)",
+					"warning": "Tingkat peringatan",
+					"critical": "Tingkat kritis"
+				},
+				"bandwidth": {
+					"label": "Peringatan Ambang Batas Bandwidth Jaringan (%)",
+					"warning": "Tingkat peringatan",
+					"critical": "Tingkat kritis"
+				}
+			},
+			"deviceMonitoring": {
+				"title": "Pemantauan Kesehatan Perangkat",
+				"cameraOfflineAlert": "Peringatan ketika kamera offline",
+				"nvrHealthCheck": "Pemantauan kesehatan sistem NVR",
+				"offlineTimeout": {
+					"label": "Timeout Offline Perangkat (menit)",
+					"help": "Durasi yang diperlukan untuk menganggap perangkat offline"
+				}
+			},
+			"actions": {
+				"save": "Simpan Pengaturan Pemantauan",
+				"saving": "Menyimpan..."
+			}
+		},
+		"dashboard": {
+			"title": "Preferensi Dasbor",
+			"refreshInterval": {
+				"label": "Selang Auto-refresh",
+				"help": "Seberapa sering memperbarui data dasbor",
+				"options": {
+					"5s": "5 detik",
+					"10s": "10 detik",
+					"30s": "30 detik",
+					"1m": "1 menit",
+					"5m": "5 menit",
+					"manual": "Manual saja"
+				}
+			},
+			"defaultTimeRange": {
+				"label": "Rentang Waktu Bawaan",
+				"help": "Rentang waktu bawaan untuk grafik dan statistik",
+				"options": {
+					"1h": "1 Jam Terakhir",
+					"24h": "24 Jam Terakhir",
+					"7d": "7 Hari Terakhir",
+					"30d": "30 Hari Terakhir"
+				}
+			},
+			"widgets": {
+				"title": "Widget yang Terlihat",
+				"systemHealth": "Kesehatan Sistem",
+				"performanceCharts": "Grafik Performa",
+				"deviceStatus": "Tabel Status Perangkat",
+				"alertSummary": "Ringkasan Peringatan",
+				"recentActivities": "Aktivitas Terbaru"
+			},
+			"chartSettings": {
+				"title": "Pengaturan Grafik",
+				"defaultType": {
+					"label": "Tipe Grafik Bawaan",
+					"options": {
+						"line": "Grafik Garis",
+						"area": "Grafik Area",
+						"bar": "Grafik Batang"
+					}
+				},
+				"dataPoints": {
+					"label": "Titik Data untuk Ditampilkan",
+					"options": {
+						"20": "20 titik",
+						"50": "50 titik",
+						"100": "100 titik",
+						"200": "200 titik"
+					}
+				},
+				"showGridLines": "Tampilkan garis grid",
+				"animateOnLoad": "Animasi grafik saat memuat"
+			},
+			"actions": {
+				"save": "Simpan Pengaturan Dasbor",
+				"saving": "Menyimpan..."
+			}
+		},
+		"reporting": {
+			"title": "Ekspor Data & Pelaporan",
+			"automated": {
+				"title": "Laporan Otomatis",
+				"enabled": "Aktifkan Laporan Otomatis",
+				"enabledHelp": "Buat dan kirim laporan secara otomatis",
+				"frequency": {
+					"label": "Frekuensi Laporan",
+					"options": {
+						"daily": "Harian",
+						"weekly": "Mingguan",
+						"monthly": "Bulanan"
+					}
+				},
+				"reportTypes": {
+					"label": "Jenis Laporan",
+					"systemHealth": "Ringkasan Kesehatan Sistem",
+					"alertSummary": "Ringkasan Peringatan",
+					"deviceStatus": "Status Perangkat"
+				},
+				"emailRecipients": {
+					"label": "Penerima Email",
+					"placeholder": "Masukkan alamat email, satu per baris"
+				}
+			},
+			"manual": {
+				"title": "Ekspor Manual",
+				"format": {
+					"label": "Format Ekspor",
+					"options": {
+						"pdf": "Laporan PDF",
+						"excel": "Spreadsheet Excel",
+						"csv": "Data CSV",
+						"json": "Data JSON"
+					}
+				},
+				"dateRange": {
+					"label": "Rentang Data",
+					"options": {
+						"24h": "24 Jam Terakhir",
+						"7d": "7 Hari Terakhir",
+						"30d": "30 Hari Terakhir",
+						"custom": "Rentang Kustom"
+					}
+				},
+				"customRange": {
+					"startDate": "Tanggal Mulai",
+					"endDate": "Tanggal Selesai"
+				},
+				"includeData": {
+					"label": "Sertakan Data",
+					"performanceMetrics": "Metrik Performa",
+					"alertHistory": "Riwayat Peringatan",
+					"deviceLogs": "Log Perangkat"
+				},
+				"actions": {
+					"export": "Ekspor Data",
+					"exporting": "Mengekspor...",
+					"preview": "Pratinjau"
+				}
+			},
+			"actions": {
+				"save": "Simpan Pengaturan Pelaporan",
+				"saving": "Menyimpan..."
+			}
+		},
+		"messages": {
+			"monitoringSettingsSaved": "Pengaturan pengawasan berhasil disimpan",
+			"dashboardSettingsSaved": "Pengaturan dasbor berhasil disimpan",
+			"reportingSettingsSaved": "Pengaturan pelaporan berhasil disimpan",
+			"dataExported": "Data berhasil diekspor!",
+			"errorSaving": "Terjadi kesalahan saat menyimpan pengaturan",
+			"errorExporting": "Terjadi kesalahan saat mengekspor data"
+		}
+	},
+	"common": {
+		"loading": "Memuat...",
+		"noData": "Tidak ada data",
+		"refresh": "Muat Ulang",
+		"save": "Simpan",
+		"cancel": "Batal",
+		"confirm": "Konfirmasi",
+		"delete": "Hapus",
+		"edit": "Edit",
+		"view": "Lihat",
+		"search": "Cari...",
+		"filter": "Filter",
+		"export": "Ekspor",
+		"import": "Impor",
+		"settings": "Pengaturan",
+		"help": "Bantuan",
+		"close": "Tutup"
+	},
+	"format": {
+		"notAvailable": "Tidak tersedia",
+		"percentage": "{value}%",
+		"storage": "{value} {unit}",
+		"bandwidth": "{value}Mbps",
+		"timeAgo": {
+			"justNow": "Baru saja",
+			"minutesAgo": "{count} menit yang lalu",
+			"hoursAgo": "{count} jam yang lalu",
+			"daysAgo": "{count} hari yang lalu"
+		}
+	}
+}

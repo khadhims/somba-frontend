@@ -4,12 +4,12 @@
     <!--begin::Header-->
     <div class="card-header border-0 pt-5">
       <h3 class="card-title align-items-start flex-column">
-        <span class="card-label fw-bold fs-3 mb-1">Recent Activity</span>
-        <span class="text-muted mt-1 fw-semibold fs-7">Latest system activities</span>
+        <span class="card-label fw-bold fs-3 mb-1">{{ t('dashboard.recentActivity.title') }}</span>
+        <span class="text-muted mt-1 fw-semibold fs-7">{{ t('dashboard.recentActivity.subtitle') }}</span>
       </h3>
       <div class="card-toolbar">
         <router-link to="/apps/monitoring-center/overview" class="btn btn-sm btn-light">
-          View All
+          {{ t('dashboard.recentActivity.viewAll') }}
         </router-link>
       </div>
     </div>
@@ -36,10 +36,10 @@
           <div class="timeline-content mb-10 mt-n1">
             <!--begin::Timeline heading-->
             <div class="pe-3 mb-5">
-              <div class="fs-5 fw-semibold mb-2">{{ activity.title }}</div>
+              <div class="fs-5 fw-semibold mb-2">{{ t(`dashboard.recentActivity.activities.${activity.titleKey}`) }}</div>
               <div class="d-flex align-items-center mt-1 fs-6">
                 <div class="text-muted me-2 fs-7">{{ activity.time }}</div>
-                <div class="text-gray-900 fw-bold fs-6">{{ activity.location }}</div>
+                <div class="text-gray-900 fw-bold fs-6">{{ t(`dashboard.recentActivity.locations.${activity.locationKey}`) }}</div>
               </div>
             </div>
             <!--end::Timeline heading-->
@@ -47,10 +47,10 @@
             <!--begin::Timeline details-->
             <div class="overflow-auto pb-5">
               <div class="text-muted fw-semibold text-break fs-7">
-                {{ activity.description }}
+                {{ t(`dashboard.recentActivity.descriptions.${activity.descriptionKey}`) }}
               </div>
-              <div v-if="activity.details" class="mt-2">
-                <span class="badge" :class="`badge-light-${activity.color}`">{{ activity.details }}</span>
+              <div v-if="activity.detailsKey" class="mt-2">
+                <span class="badge" :class="`badge-light-${activity.color}`">{{ t(`dashboard.recentActivity.statuses.${activity.detailsKey}`) }}</span>
               </div>
             </div>
             <!--end::Timeline details-->
@@ -67,6 +67,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "RecentActivityWidget",
@@ -74,60 +75,63 @@ export default defineComponent({
     widgetClasses: String,
   },
   setup() {
+    const { t } = useI18n();
+    
     const activities = ref([
       {
         id: 1,
-        title: "System Backup Completed",
-        description: "Automatic system backup completed successfully. All video data and configurations have been backed up to secure storage.",
+        titleKey: "systemBackupCompleted",
+        descriptionKey: "backupCompleted",
         time: "10 min ago",
-        location: "System",
+        locationKey: "system",
         icon: "check-circle",
         color: "success",
-        details: "Success"
+        detailsKey: "success"
       },
       {
         id: 2,
-        title: "New User Login",
-        description: "Security operator logged into the system from workstation in control room.",
+        titleKey: "newUserLogin",
+        descriptionKey: "operatorLogin",
         time: "25 min ago",
-        location: "Control Room",
+        locationKey: "controlRoom",
         icon: "profile-user",
         color: "info",
-        details: "Authenticated"
+        detailsKey: "authenticated"
       },
       {
         id: 3,
-        title: "Motion Alert Triggered",
-        description: "Motion detection activated in restricted area. Event has been automatically recorded for review.",
+        titleKey: "motionAlertTriggered",
+        descriptionKey: "motionDetected",
         time: "1 hour ago",
-        location: "Zone 3 - Camera 15",
+        locationKey: "zone3Camera15",
         icon: "security-user",
         color: "warning",
-        details: "Investigating"
+        detailsKey: "investigating"
       },
       {
         id: 4,
-        title: "Camera Maintenance",
-        description: "Scheduled maintenance completed on outdoor surveillance cameras. All systems are now operational.",
+        titleKey: "cameraMaintenance",
+        descriptionKey: "maintenanceCompleted",
         time: "2 hours ago",
-        location: "Perimeter Cameras",
+        locationKey: "perimeterCameras",
         icon: "setting-3",
         color: "primary",
-        details: "Completed"
+        detailsKey: "completed"
       },
       {
         id: 5,
-        title: "Storage Cleanup",
-        description: "Old recording files removed to free up storage space. Retained important footage as per policy.",
+        titleKey: "storageCleanup",
+        descriptionKey: "filesRemoved",
         time: "3 hours ago",
-        location: "Storage Server",
+        locationKey: "storageServer",
         icon: "folder",
         color: "info",
-        details: "Optimized"
+        detailsKey: "optimized"
       }
     ]);
 
     return {
+      t,
       activities,
     };
   },

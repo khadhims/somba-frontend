@@ -4,9 +4,9 @@
     <div class="card-body d-flex align-items-center justify-content-between">
       <div>
         <h4 class="card-title mb-0">{{ t('appsLiveView.header.title') }}</h4>
-        <div class="small text-muted">
+        <!-- <div class="small text-muted">
           <span class="text-success me-2">●</span>{{ t('appsLiveView.header.status', { count: activeCameras }) }}
-        </div>
+        </div> -->
       </div>
 
       <div class="d-flex align-items-center gap-2">
@@ -88,12 +88,35 @@
       <div class="card">
         <div class="card-body py-3">
           <div class="row g-3" :class="gridClasses">
-            <div v-for="camera in filteredCameras" :key="camera.uid" :class="cameraColClass">
-              <div class="card">
+            <div 
+              v-for="(camera, index) in filteredCameras" 
+              :key="camera.uid" 
+              :class="cameraColClass"
+              @dragover="onDragOver($event, index)"
+              @dragleave="onDragLeave"
+              @drop="onDrop($event, index)"
+            >
+              <div 
+                class="card camera-card"
+                :class="{
+                  'dragging': isDragging && draggedCamera?.uid === camera.uid,
+                  'drag-over': dragOverIndex === index && draggedCamera?.uid !== camera.uid
+                }"
+                draggable="true"
+                @dragstart="onDragStart($event, camera, index)"
+                @dragend="onDragEnd"
+              >
                 <div class="card-body p-3">
+                  <!-- Drag handle -->
+                  <div class="drag-handle position-absolute" style="top: 8px; right: 8px; z-index: 10;">
+                    <i class="ki-duotone ki-menu fs-4 text-muted cursor-move">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                  </div>
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <h6 class="card-title mb-0">{{ camera.room }}</h6>
-                    <span class="badge" :class="camera.status === 'online' ? 'badge-light-success' : 'badge-light-danger'">{{ getStatusLabel(camera.status) }}</span>
+                    <!-- <span class="badge" :class="camera.status === 'online' ? 'badge-light-success' : 'badge-light-danger'">{{ getStatusLabel(camera.status) }}</span> -->
                   </div>
 
                   <div
@@ -163,9 +186,9 @@
                 <div class="fw-semibold">{{ cam.room }}</div>
                 <div class="text-muted small">{{ cam.name }}</div>
               </div>
-              <div>
+              <!-- <div>
                 <span :class="['badge', cam.status === 'online' ? 'bg-success' : 'bg-secondary']" style="width:10px; height:10px; border-radius:50%; display:inline-block;"></span>
-              </div>
+              </div> -->
             </li>
           </ul>
         </div>
@@ -248,6 +271,11 @@ const selectedNvrId = ref(""); // Keep for internal use
 const selectedSiteFilter = ref<string>("");
 const selectedNvrFilter = ref<string>("");
 const gridView = ref("3x3");
+
+// Drag and drop state
+const draggedCamera = ref<Camera | null>(null);
+const dragOverIndex = ref<number>(-1);
+const isDragging = ref(false);
 
 const normalizeStatusKey = (status?: string) => (status ?? "").toLowerCase();
 
@@ -880,6 +908,76 @@ const viewRecordings = (camera: Camera) => {
   // TODO: Navigate to recordings view
 };
 
+// Drag and drop methods
+const onDragStart = (event: DragEvent, camera: Camera, index: number) => {
+  draggedCamera.value = camera;
+  isDragging.value = true;
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', camera.uid);
+  }
+};
+
+const onDragEnd = () => {
+  draggedCamera.value = null;
+  dragOverIndex.value = -1;
+  isDragging.value = false;
+};
+
+const onDragOver = (event: DragEvent, index: number) => {
+  event.preventDefault();
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = 'move';
+  }
+  dragOverIndex.value = index;
+};
+
+const onDragLeave = () => {
+  dragOverIndex.value = -1;
+};
+
+const onDrop = (event: DragEvent, targetIndex: number) => {
+  event.preventDefault();
+  
+  if (!draggedCamera.value) return;
+  
+  const draggedIndex = filteredCameras.value.findIndex(c => c.uid === draggedCamera.value!.uid);
+  if (draggedIndex === -1 || draggedIndex === targetIndex) return;
+  
+  // Create a new array with reordered cameras
+  const reorderedCameras = [...filteredCameras.value];
+  const [draggedItem] = reorderedCameras.splice(draggedIndex, 1);
+  reorderedCameras.splice(targetIndex, 0, draggedItem);
+  
+  // Update the main cameras array while preserving the original order for non-filtered items
+  const newCamerasOrder = [...cameras.value];
+  
+  // Remove filtered cameras from their current positions
+  filteredCameras.value.forEach(camera => {
+    const index = newCamerasOrder.findIndex(c => c.uid === camera.uid);
+    if (index !== -1) {
+      newCamerasOrder.splice(index, 1);
+    }
+  });
+  
+  // Insert reordered cameras at the beginning (or you could insert at original position)
+  reorderedCameras.forEach((camera, index) => {
+    newCamerasOrder.splice(index, 0, camera);
+  });
+  
+  cameras.value = newCamerasOrder;
+  
+  // Reset drag state
+  draggedCamera.value = null;
+  dragOverIndex.value = -1;
+  isDragging.value = false;
+  
+  // Re-setup video observers after reordering
+  nextTick(() => {
+    setupVideoObservers();
+  });
+};
+
 // Initialize data on component mount
 onMounted(() => {
   fetchSites();
@@ -896,5 +994,40 @@ onMounted(() => {
   display: block;
   object-fit: cover;
   background: #000;
+}
+
+/* Drag and drop styles */
+.camera-card {
+  transition: all 0.2s ease;
+  cursor: grab;
+}
+
+.camera-card:active {
+  cursor: grabbing;
+}
+
+.camera-card.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg);
+  z-index: 1000;
+}
+
+.camera-card.drag-over {
+  border: 2px dashed #009ef7;
+  background-color: rgba(0, 158, 247, 0.05);
+  transform: scale(1.02);
+}
+
+.drag-handle {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.camera-card:hover .drag-handle {
+  opacity: 1;
+}
+
+.cursor-move {
+  cursor: move;
 }
 </style>

@@ -4,12 +4,12 @@
     <!--begin::Header-->
     <div class="card-header border-0 pt-5">
       <h3 class="card-title align-items-start flex-column">
-        <span class="card-label fw-bold fs-3 mb-1">Camera Status</span>
-        <span class="text-muted mt-1 fw-semibold fs-7">Real-time camera monitoring</span>
+        <span class="card-label fw-bold fs-3 mb-1">{{ t('dashboard.cameraStatus.title') }}</span>
+        <span class="text-muted mt-1 fw-semibold fs-7">{{ t('dashboard.cameraStatus.subtitle') }}</span>
       </h3>
       <div class="card-toolbar">
         <div class="btn-group">
-          <button class="btn btn-sm btn-primary">View All</button>
+          <button class="btn btn-sm btn-primary">{{ t('dashboard.cameraStatus.viewAll') }}</button>
         </div>
       </div>
     </div>
@@ -33,11 +33,11 @@
             <div class="flex-grow-1">
               <div class="d-flex justify-content-between align-items-start">
                 <div>
-                  <span class="fw-bold text-gray-800 fs-6">{{ camera.name }}</span>
-                  <div class="text-muted fs-7">{{ camera.location }}</div>
+                  <span class="fw-bold text-gray-800 fs-6">{{ t(`dashboard.cameraStatus.cameras.${camera.nameKey}`) }}</span>
+                  <div class="text-muted fs-7">{{ t(`dashboard.cameraStatus.cameraLocations.${camera.locationKey}`) }}</div>
                 </div>
                 <div class="text-end">
-                  <span class="badge" :class="`badge-light-${camera.statusColor}`">{{ camera.status }}</span>
+                  <span class="badge" :class="`badge-light-${camera.statusColor}`">{{ t(`dashboard.cameraStatus.statuses.${camera.statusKey}`) }}</span>
                   <div class="text-muted fs-8 mt-1">{{ camera.resolution }}</div>
                 </div>
               </div>
@@ -45,7 +45,7 @@
               <!--begin::Progress-->
               <div class="mt-2">
                 <div class="d-flex justify-content-between text-muted fs-8 mb-1">
-                  <span>Signal Quality</span>
+                  <span>{{ t('dashboard.cameraStatus.signalQuality') }}</span>
                   <span>{{ camera.signalQuality }}%</span>
                 </div>
                 <div class="progress h-6px">
@@ -67,7 +67,7 @@
       <!--begin::View All Link-->
       <div class="text-center mt-4">
         <router-link to="/apps/live-view" class="btn btn-link btn-color-muted btn-active-color-primary">
-          View All Cameras 
+          {{ t('dashboard.cameraStatus.viewAllCameras') }} 
           <KTIcon icon-name="arrow-right" icon-class="fs-5" />
         </router-link>
       </div>
@@ -80,6 +80,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "CameraStatusWidget",
@@ -87,48 +88,50 @@ export default defineComponent({
     widgetClasses: String,
   },
   setup() {
+    const { t } = useI18n();
+    
     const cameras = ref([
       {
         id: 1,
-        name: "Main Entrance",
-        location: "Building A - Front Door",
-        status: "Online",
+        nameKey: "mainEntrance",
+        locationKey: "buildingAFront",
+        statusKey: "online",
         statusColor: "success",
         resolution: "1080p",
         signalQuality: 95
       },
       {
         id: 2,
-        name: "Parking Area",
-        location: "Outdoor - West Side",
-        status: "Recording",
+        nameKey: "parkingArea",
+        locationKey: "outdoorWest",
+        statusKey: "recording",
         statusColor: "primary",
         resolution: "4K",
         signalQuality: 88
       },
       {
         id: 3,
-        name: "Server Room",
-        location: "Floor 2 - Room 201",
-        status: "Online",
+        nameKey: "serverRoom",
+        locationKey: "floor2Room201",
+        statusKey: "online",
         statusColor: "success",
         resolution: "1080p",
         signalQuality: 92
       },
       {
         id: 4,
-        name: "Reception Area",
-        location: "Ground Floor - Lobby",
-        status: "Warning",
+        nameKey: "receptionArea",
+        locationKey: "groundFloorLobby",
+        statusKey: "warning",
         statusColor: "warning",
         resolution: "720p",
         signalQuality: 67
       },
       {
         id: 5,
-        name: "Emergency Exit",
-        location: "Building B - Back Exit",
-        status: "Offline",
+        nameKey: "emergencyExit",
+        locationKey: "buildingBBack",
+        statusKey: "offline",
         statusColor: "danger",
         resolution: "N/A",
         signalQuality: 0
@@ -136,6 +139,7 @@ export default defineComponent({
     ]);
 
     return {
+      t,
       cameras,
     };
   },

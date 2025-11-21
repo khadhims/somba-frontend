@@ -4,8 +4,8 @@
     <!--begin::Header-->
     <div class="card-header border-0 pt-5">
       <h3 class="card-title align-items-start flex-column">
-        <span class="card-label fw-bold fs-3 mb-1">System Health</span>
-        <span class="text-muted mt-1 fw-semibold fs-7">Real-time system monitoring</span>
+        <span class="card-label fw-bold fs-3 mb-1">{{ t('dashboard.systemHealth.title') }}</span>
+        <span class="text-muted mt-1 fw-semibold fs-7">{{ t('dashboard.systemHealth.subtitle') }}</span>
       </h3>
     </div>
     <!--end::Header-->
@@ -23,7 +23,7 @@
           </div>
           <div class="flex-grow-1">
             <div class="d-flex justify-content-between align-items-center mb-1">
-              <span class="fw-semibold text-gray-800">CPU Usage</span>
+              <span class="fw-semibold text-gray-800">{{ t('dashboard.systemHealth.metrics.cpuUsage') }}</span>
               <span class="fw-bold text-gray-900">{{ systemMetrics.cpu }}%</span>
             </div>
             <div class="progress h-6px">
@@ -45,7 +45,7 @@
           </div>
           <div class="flex-grow-1">
             <div class="d-flex justify-content-between align-items-center mb-1">
-              <span class="fw-semibold text-gray-800">Memory Usage</span>
+              <span class="fw-semibold text-gray-800">{{ t('dashboard.systemHealth.metrics.memoryUsage') }}</span>
               <span class="fw-bold text-gray-900">{{ systemMetrics.memory }}%</span>
             </div>
             <div class="progress h-6px">
@@ -67,7 +67,7 @@
           </div>
           <div class="flex-grow-1">
             <div class="d-flex justify-content-between align-items-center mb-1">
-              <span class="fw-semibold text-gray-800">Storage Usage</span>
+              <span class="fw-semibold text-gray-800">{{ t('dashboard.systemHealth.metrics.storageUsage') }}</span>
               <span class="fw-bold text-gray-900">{{ systemMetrics.storage }}%</span>
             </div>
             <div class="progress h-6px">
@@ -89,7 +89,7 @@
           </div>
           <div class="flex-grow-1">
             <div class="d-flex justify-content-between align-items-center mb-1">
-              <span class="fw-semibold text-gray-800">Network Traffic</span>
+              <span class="fw-semibold text-gray-800">{{ t('dashboard.systemHealth.metrics.networkTraffic') }}</span>
               <span class="fw-bold text-gray-900">{{ systemMetrics.network }} Mbps</span>
             </div>
             <div class="progress h-6px">
@@ -109,13 +109,13 @@
       <div class="row g-3">
         <div class="col-6">
           <div class="text-center">
-            <div class="fw-bold text-gray-800">System Uptime</div>
+            <div class="fw-bold text-gray-800">{{ t('dashboard.systemHealth.status.systemUptime') }}</div>
             <div class="text-primary fs-2 fw-bold">{{ systemUptime }}</div>
           </div>
         </div>
         <div class="col-6">
           <div class="text-center">
-            <div class="fw-bold text-gray-800">Last Backup</div>
+            <div class="fw-bold text-gray-800">{{ t('dashboard.systemHealth.status.lastBackup') }}</div>
             <div class="text-success fs-7 fw-semibold">{{ lastBackup }}</div>
           </div>
         </div>
@@ -129,6 +129,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "SystemHealthWidget",
@@ -136,6 +137,8 @@ export default defineComponent({
     widgetClasses: String,
   },
   setup() {
+    const { t } = useI18n();
+    
     const systemMetrics = ref({
       cpu: 45,
       memory: 62,
@@ -168,6 +171,7 @@ export default defineComponent({
     });
 
     return {
+      t,
       systemMetrics,
       systemUptime,
       lastBackup,

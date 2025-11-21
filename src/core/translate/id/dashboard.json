@@ -1,0 +1,163 @@
+{
+	"statistics": {
+		"activeCameras": "Kamera Aktif Online",
+		"currentlyRecording": "Sedang Merekam",
+		"activeSecurityAlerts": "Peringatan Keamanan Aktif", 
+		"storageUtilization": "Penggunaan Penyimpanan"
+	},
+	"securityEvents": {
+		"title": "Event Keamanan Terbaru",
+		"subtitle": "Peringatan dan insiden terkini",
+		"tabs": {
+			"today": "Hari Ini",
+			"week": "Minggu",
+			"month": "Bulan"
+		},
+		"table": {
+			"event": "Event", 
+			"location": "Lokasi",
+			"time": "Waktu",
+			"status": "Status"
+		},
+		"eventTypes": {
+			"motionDetection": "Deteksi Gerakan",
+			"doorAccess": "Akses Pintu",
+			"cameraOffline": "Kamera Offline", 
+			"faceRecognition": "Pengenalan Wajah",
+			"perimeterBreach": "Pelanggaran Perimeter"
+		},
+		"descriptions": {
+			"unauthorizedMovement": "Gerakan tidak sah terdeteksi",
+			"accessCardAfterHours": "Kartu akses digunakan di luar jam kerja",
+			"connectionLost": "Koneksi kamera terputus",
+			"unknownPerson": "Orang tidak dikenal terdeteksi",
+			"fenceCrossing": "Penyeberangan pagar terdeteksi"
+		},
+		"statuses": {
+			"active": "Aktif",
+			"investigating": "Menyelidiki", 
+			"resolved": "Terselesaikan",
+			"reviewing": "Meninjau",
+			"falseAlarm": "Alarm Palsu"
+		},
+		"locations": {
+			"mainEntranceCamera01": "Pintu Masuk Utama - Kamera 01",
+			"serverRoomDoor05": "Ruang Server - Pintu 05",
+			"parkingLotCamera12": "Area Parkir - Kamera 12",
+			"receptionCamera03": "Resepsi - Kamera 03", 
+			"northPerimeterCamera08": "Perimeter Utara - Kamera 08"
+		}
+	},
+	"cameraStatus": {
+		"title": "Status Kamera",
+		"subtitle": "Pemantauan kamera real-time",
+		"viewAll": "Lihat Semua",
+		"signalQuality": "Kualitas Sinyal",
+		"viewAllCameras": "Lihat Semua Kamera",
+		"statuses": {
+			"online": "Online",
+			"recording": "Merekam", 
+			"warning": "Peringatan",
+			"offline": "Offline"
+		},
+		"cameras": {
+			"mainEntrance": "Pintu Masuk Utama",
+			"parkingArea": "Area Parkir",
+			"serverRoom": "Ruang Server",
+			"receptionArea": "Area Resepsi",
+			"emergencyExit": "Pintu Darurat"
+		},
+		"cameraLocations": {
+			"buildingAFront": "Gedung A - Pintu Depan",
+			"outdoorWest": "Outdoor - Sisi Barat", 
+			"floor2Room201": "Lantai 2 - Ruang 201",
+			"groundFloorLobby": "Lantai Dasar - Lobi",
+			"buildingBBack": "Gedung B - Pintu Belakang"
+		}
+	},
+	"systemHealth": {
+		"title": "Kesehatan Sistem",
+		"subtitle": "Pemantauan sistem real-time",
+		"metrics": {
+			"cpuUsage": "Penggunaan CPU",
+			"memoryUsage": "Penggunaan Memori",
+			"storageUsage": "Penggunaan Penyimpanan", 
+			"networkTraffic": "Lalu Lintas Jaringan"
+		},
+		"status": {
+			"systemUptime": "Waktu Hidup Sistem",
+			"lastBackup": "Backup Terakhir"
+		},
+		"values": {
+			"hoursAgo": "jam yang lalu"
+		}
+	},
+	"recentActivity": {
+		"title": "Aktivitas Terbaru",
+		"subtitle": "Aktivitas sistem terkini", 
+		"viewAll": "Lihat Semua",
+		"activities": {
+			"systemBackupCompleted": "Backup Sistem Selesai",
+			"newUserLogin": "Login Pengguna Baru",
+			"motionAlertTriggered": "Peringatan Gerakan Dipicu",
+			"cameraMaintenance": "Pemeliharaan Kamera",
+			"storageCleanup": "Pembersihan Penyimpanan"
+		},
+		"descriptions": {
+			"backupCompleted": "Backup sistem otomatis berhasil diselesaikan. Semua data video dan konfigurasi telah di-backup ke penyimpanan aman.",
+			"operatorLogin": "Operator keamanan masuk ke sistem dari workstation di ruang kontrol.", 
+			"motionDetected": "Deteksi gerakan diaktifkan di area terbatas. Event telah direkam secara otomatis untuk ditinjau.",
+			"maintenanceCompleted": "Pemeliharaan terjadwal selesai pada kamera surveilans outdoor. Semua sistem sekarang beroperasi.",
+			"filesRemoved": "File rekaman lama dihapus untuk membebaskan ruang penyimpanan. Rekaman penting dipertahankan sesuai kebijakan."
+		},
+		"locations": {
+			"system": "Sistem",
+			"controlRoom": "Ruang Kontrol", 
+			"zone3Camera15": "Zona 3 - Kamera 15",
+			"perimeterCameras": "Kamera Perimeter",
+			"storageServer": "Server Penyimpanan"
+		},
+		"statuses": {
+			"success": "Berhasil",
+			"authenticated": "Terotentikasi",
+			"investigating": "Menyelidiki",
+			"completed": "Selesai", 
+			"optimized": "Dioptimalkan"
+		}
+	},
+	"recordingStatus": {
+		"title": "Status Rekaman",
+		"subtitle": "Ringkasan rekaman aktif",
+		"viewAll": "Lihat Semua",
+		"summary": {
+			"activeRecordings": "Rekaman Aktif",
+			"storedFiles": "File Tersimpan"
+		},
+		"currentRecordings": "Rekaman Saat Ini", 
+		"storageUsage": "Penggunaan Penyimpanan",
+		"estimatedDays": "Perkiraan {days} hari tersisa pada penggunaan saat ini",
+		"stopRecording": "Hentikan Rekaman",
+		"cameras": {
+			"mainEntrance": "Pintu Masuk Utama",
+			"parkingArea": "Area Parkir",
+			"serverRoom": "Ruang Server",
+			"receptionArea": "Area Resepsi"
+		},
+		"cameraLocations": {
+			"buildingAFront": "Gedung A - Depan",
+			"outdoorWest": "Outdoor - Barat", 
+			"floor2Room201": "Lantai 2 - Ruang 201",
+			"groundFloor": "Lantai Dasar"
+		},
+		"recordingTypes": {
+			"continuous": "Berkelanjutan",
+			"motionTriggered": "Dipicu Gerakan",
+			"eventBased": "Berbasis Event"
+		}
+	},
+	"timeFormats": {
+		"minAgo": "{min} menit yang lalu",
+		"hourAgo": "{hour} jam yang lalu", 
+		"hoursAgo": "{hours} jam yang lalu"
+	}
+}

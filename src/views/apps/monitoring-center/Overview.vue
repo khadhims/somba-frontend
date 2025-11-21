@@ -4,22 +4,22 @@
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col-md-4">
-          <h4 class="card-title mb-0">Monitoring Center</h4>
+          <h4 class="card-title mb-0">{{ t('appsMonitoringCenter.overview.header.title') }}</h4>
           <p class="text-muted mb-0">
-            Centralized monitoring and analytics dashboard
+            {{ t('appsMonitoringCenter.overview.header.subtitle') }}
           </p>
         </div>
         <div class="col-md-8">
           <div class="d-flex justify-content-end gap-3">
             <div class="d-flex align-items-center" v-if="sites.length > 0">
-              <label class="form-label me-3 mb-0 fw-semibold">Site:</label>
+              <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsMonitoringCenter.overview.header.filters.siteLabel') }}</label>
               <select
                 v-model="selectedSiteId"
                 @change="switchSite"
                 class="form-select form-select-solid w-200px"
                 :disabled="loadingSites"
               >
-                <option value="">All Sites</option>
+                <option value="">{{ t('appsMonitoringCenter.overview.header.filters.siteAll') }}</option>
                 <option
                   v-for="site in sites"
                   :key="site.uid"
@@ -30,16 +30,16 @@
               </select>
             </div>
             <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">Time Range:</label>
+              <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsMonitoringCenter.overview.header.filters.timeRangeLabel') }}</label>
               <select
                 v-model="selectedTimeRange"
                 @change="updateTimeRange"
                 class="form-select form-select-solid w-150px"
               >
-                <option value="1h">Last Hour</option>
-                <option value="24h">Last 24 Hours</option>
-                <option value="7d">Last 7 Days</option>
-                <option value="30d">Last 30 Days</option>
+                <option value="1h">{{ t('appsMonitoringCenter.overview.header.filters.timeRanges.1h') }}</option>
+                <option value="24h">{{ t('appsMonitoringCenter.overview.header.filters.timeRanges.24h') }}</option>
+                <option value="7d">{{ t('appsMonitoringCenter.overview.header.filters.timeRanges.7d') }}</option>
+                <option value="30d">{{ t('appsMonitoringCenter.overview.header.filters.timeRanges.30d') }}</option>
               </select>
             </div>
           </div>
@@ -52,9 +52,9 @@
     <!--begin::System Health Cards-->
     <div class="col-xl-3">
       <Widget1
-        :description="'System Health'"
+        :description="t('appsMonitoringCenter.overview.widgets.systemHealth.title')"
         :value="`${systemHealthPercentage}%`"
-        :progress-text="`${onlineDevices}/${totalDevices} Online`"
+        :progress-text="t('appsMonitoringCenter.overview.widgets.systemHealth.progress', { online: onlineDevices, total: totalDevices })"
         :progress-value="systemHealthPercentage"
         bg-color="#17C653"
         text-color="white"
@@ -63,9 +63,9 @@
 
     <div class="col-xl-3">
       <Widget1
-        :description="'Active Alerts'"
+        :description="t('appsMonitoringCenter.overview.widgets.activeAlerts.title')"
         :value="activeAlerts"
-        :progress-text="`${criticalAlerts} Critical`"
+        :progress-text="t('appsMonitoringCenter.overview.widgets.activeAlerts.progress', { count: criticalAlerts })"
         :progress-value="criticalAlertsPercentage"
         bg-color="#F1416C"
         text-color="white"
@@ -74,9 +74,9 @@
 
     <div class="col-xl-3">
       <Widget1
-        :description="'Storage Usage'"
+        :description="t('appsMonitoringCenter.overview.widgets.storageUsage.title')"
         :value="`${storageUsedPercentage}%`"
-        :progress-text="`${usedStorageGB}GB Used`"
+        :progress-text="t('appsMonitoringCenter.overview.widgets.storageUsage.progress', { used: usedStorageGB })"
         :progress-value="storageUsedPercentage"
         bg-color="#FFA800"
         text-color="white"
@@ -85,9 +85,9 @@
 
     <div class="col-xl-3">
       <Widget1
-        :description="'Bandwidth Usage'"
+        :description="t('appsMonitoringCenter.overview.widgets.bandwidthUsage.title')"
         :value="`${currentBandwidthMbps}Mbps`"
-        :progress-text="`${bandwidthUsagePercentage}% of limit`"
+        :progress-text="t('appsMonitoringCenter.overview.widgets.bandwidthUsage.progress', { percentage: bandwidthUsagePercentage })"
         :progress-value="bandwidthUsagePercentage"
         bg-color="#3699FF"
         text-color="white"
@@ -102,7 +102,7 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title">
-            <h3 class="fw-bold">System Performance</h3>
+            <h3 class="fw-bold">{{ t('appsMonitoringCenter.overview.charts.systemPerformance.title') }}</h3>
           </div>
           <div class="card-toolbar">
             <div class="btn-group" role="group">
@@ -112,7 +112,7 @@
                 :class="{ 'btn-primary': chartMetric === 'cpu', 'btn-light': chartMetric !== 'cpu' }"
                 @click="setChartMetric('cpu')"
               >
-                CPU
+                {{ t('appsMonitoringCenter.overview.charts.systemPerformance.metrics.cpu') }}
               </button>
               <button
                 type="button"
@@ -120,7 +120,7 @@
                 :class="{ 'btn-primary': chartMetric === 'memory', 'btn-light': chartMetric !== 'memory' }"
                 @click="setChartMetric('memory')"
               >
-                Memory
+                {{ t('appsMonitoringCenter.overview.charts.systemPerformance.metrics.memory') }}
               </button>
               <button
                 type="button"
@@ -128,7 +128,7 @@
                 :class="{ 'btn-primary': chartMetric === 'storage', 'btn-light': chartMetric !== 'storage' }"
                 @click="setChartMetric('storage')"
               >
-                Storage
+                {{ t('appsMonitoringCenter.overview.charts.systemPerformance.metrics.storage') }}
               </button>
               <button
                 type="button"
@@ -136,7 +136,7 @@
                 :class="{ 'btn-primary': chartMetric === 'network', 'btn-light': chartMetric !== 'network' }"
                 @click="setChartMetric('network')"
               >
-                Network
+                {{ t('appsMonitoringCenter.overview.charts.systemPerformance.metrics.network') }}
               </button>
             </div>
           </div>
@@ -149,8 +149,8 @@
                   <span class="path1"></span>
                   <span class="path2"></span>
                 </i>
-                <p class="text-gray-500">{{ chartMetric.toUpperCase() }} Performance Chart</p>
-                <small class="text-muted">Chart implementation coming soon</small>
+                <p class="text-gray-500">{{ t('appsMonitoringCenter.overview.charts.systemPerformance.placeholder.chart', { metric: chartMetric.toUpperCase() }) }}</p>
+                <small class="text-muted">{{ t('appsMonitoringCenter.overview.charts.systemPerformance.placeholder.comingSoon') }}</small>
               </div>
             </div>
           </div>
@@ -162,7 +162,7 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title">
-            <h3 class="fw-bold">Recent Activities</h3>
+            <h3 class="fw-bold">{{ t('appsMonitoringCenter.overview.charts.recentActivities.title') }}</h3>
           </div>
         </div>
         <div class="card-body" style="max-height: 350px; overflow-y: auto;">
@@ -201,7 +201,7 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title">
-            <h3 class="fw-bold">Device Status</h3>
+            <h3 class="fw-bold">{{ t('appsMonitoringCenter.overview.tables.deviceStatus.title') }}</h3>
           </div>
         </div>
         <div class="card-body">
@@ -212,7 +212,7 @@
             :enable-items-per-page-dropdown="false"
             :items-per-page="10"
             :loading="loadingDevices"
-            empty-table-text="No devices found"
+            :empty-table-text="t('appsMonitoringCenter.overview.tables.deviceStatus.empty')"
           >
             <template v-slot:name="{ row }">
               <div class="d-flex align-items-center">
@@ -226,7 +226,7 @@
                     row.name
                   }}</span>
                   <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-                    row.type
+                    getDeviceTypeText(row.type)
                   }}</span>
                 </div>
               </div>
@@ -237,7 +237,7 @@
                 class="badge"
                 :class="getDeviceStatusBadgeClass(row.status)"
               >
-                {{ row.status }}
+                {{ getDeviceStatusText(row.status) }}
               </span>
             </template>
 
@@ -252,7 +252,7 @@
                 <button
                   class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
                   @click="viewDeviceDetails(row)"
-                  title="View Details"
+                  :title="t('appsMonitoringCenter.overview.tables.deviceStatus.actions.viewDetails')"
                 >
                   <i class="ki-duotone ki-eye fs-2">
                     <span class="path1"></span>
@@ -263,7 +263,7 @@
                   v-if="row.status === 'offline'"
                   class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm"
                   @click="restartDevice(row)"
-                  title="Restart Device"
+                  :title="t('appsMonitoringCenter.overview.tables.deviceStatus.actions.restart')"
                 >
                   <i class="ki-duotone ki-arrows-circle fs-2">
                     <span class="path1"></span>
@@ -282,7 +282,7 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title">
-            <h3 class="fw-bold">Alert Summary</h3>
+            <h3 class="fw-bold">{{ t('appsMonitoringCenter.overview.tables.alertSummary.title') }}</h3>
           </div>
         </div>
         <div class="card-body">
@@ -293,14 +293,14 @@
             :enable-items-per-page-dropdown="false"
             :items-per-page="10"
             :loading="loadingAlerts"
-            empty-table-text="No active alerts"
+            :empty-table-text="t('appsMonitoringCenter.overview.tables.alertSummary.empty')"
           >
             <template v-slot:severity="{ row }">
               <span
                 class="badge"
                 :class="getSeverityBadgeClass(row.severity)"
               >
-                {{ row.severity }}
+                {{ getSeverityText(row.severity) }}
               </span>
             </template>
 
@@ -324,7 +324,7 @@
                 <button
                   class="btn btn-icon btn-bg-light btn-active-color-success btn-sm"
                   @click="acknowledgeAlert(row)"
-                  title="Acknowledge"
+                  :title="t('appsMonitoringCenter.overview.tables.alertSummary.actions.acknowledge')"
                 >
                   <i class="ki-duotone ki-check fs-2"></i>
                 </button>
@@ -340,9 +340,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
+
+const { t } = useI18n();
 
 // Interface definitions
 interface Device {
@@ -389,54 +392,54 @@ const selectedTimeRange = ref("24h");
 const chartMetric = ref("cpu");
 
 // Table headers
-const deviceTableHeader = ref([
+const deviceTableHeader = computed(() => [
   {
-    columnName: "Device",
+    columnName: t('appsMonitoringCenter.overview.tables.deviceStatus.columns.device'),
     columnLabel: "name",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Status",
+    columnName: t('appsMonitoringCenter.overview.tables.deviceStatus.columns.status'),
     columnLabel: "status",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: "Last Seen",
+    columnName: t('appsMonitoringCenter.overview.tables.deviceStatus.columns.lastSeen'),
     columnLabel: "last_seen",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: "Actions",
+    columnName: t('appsMonitoringCenter.overview.tables.deviceStatus.columns.actions'),
     columnLabel: "actions",
     sortEnabled: false,
     searchable: false,
   },
 ]);
 
-const alertTableHeader = ref([
+const alertTableHeader = computed(() => [
   {
-    columnName: "Severity",
+    columnName: t('appsMonitoringCenter.overview.tables.alertSummary.columns.severity'),
     columnLabel: "severity",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: "Message",
+    columnName: t('appsMonitoringCenter.overview.tables.alertSummary.columns.message'),
     columnLabel: "message",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Time",
+    columnName: t('appsMonitoringCenter.overview.tables.alertSummary.columns.time'),
     columnLabel: "timestamp",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: "Actions",
+    columnName: t('appsMonitoringCenter.overview.tables.alertSummary.columns.actions'),
     columnLabel: "actions",
     sortEnabled: false,
     searchable: false,
@@ -622,9 +625,9 @@ const formatTime = (timestamp: string): string => {
   const time = new Date(timestamp);
   const diffMinutes = Math.floor((now.getTime() - time.getTime()) / (1000 * 60));
   
-  if (diffMinutes < 1) return 'Just now';
-  if (diffMinutes < 60) return `${diffMinutes}m ago`;
-  if (diffMinutes < 1440) return `${Math.floor(diffMinutes / 60)}h ago`;
+  if (diffMinutes < 1) return t('appsMonitoringCenter.overview.activities.timeFormat.justNow');
+  if (diffMinutes < 60) return t('appsMonitoringCenter.overview.activities.timeFormat.minutesAgo', { minutes: diffMinutes });
+  if (diffMinutes < 1440) return t('appsMonitoringCenter.overview.activities.timeFormat.hoursAgo', { hours: Math.floor(diffMinutes / 60) });
   return time.toLocaleDateString();
 };
 
@@ -646,6 +649,19 @@ const getDeviceStatusBadgeClass = (status: string) => {
   }
 };
 
+const getDeviceStatusText = (status: string) => {
+  switch (status) {
+    case 'online':
+      return t('appsMonitoringCenter.overview.tables.deviceStatus.status.online');
+    case 'offline':
+      return t('appsMonitoringCenter.overview.tables.deviceStatus.status.offline');
+    case 'warning':
+      return t('appsMonitoringCenter.overview.tables.deviceStatus.status.warning');
+    default:
+      return status;
+  }
+};
+
 const getSeverityBadgeClass = (severity: string) => {
   switch (severity) {
     case 'critical':
@@ -658,6 +674,21 @@ const getSeverityBadgeClass = (severity: string) => {
       return 'badge-success';
     default:
       return 'badge-secondary';
+  }
+};
+
+const getSeverityText = (severity: string) => {
+  switch (severity) {
+    case 'critical':
+      return t('appsMonitoringCenter.overview.tables.alertSummary.severity.critical');
+    case 'high':
+      return t('appsMonitoringCenter.overview.tables.alertSummary.severity.high');
+    case 'medium':
+      return t('appsMonitoringCenter.overview.tables.alertSummary.severity.medium');
+    case 'low':
+      return t('appsMonitoringCenter.overview.tables.alertSummary.severity.low');
+    default:
+      return severity;
   }
 };
 
@@ -688,6 +719,21 @@ const getDeviceTypeIconClass = (type: string) => {
       return 'bg-light-info text-info';
     default:
       return 'bg-light-secondary text-secondary';
+  }
+};
+
+const getDeviceTypeText = (type: string) => {
+  switch (type) {
+    case 'camera':
+      return t('appsMonitoringCenter.overview.tables.deviceStatus.deviceTypes.camera');
+    case 'nvr':
+      return t('appsMonitoringCenter.overview.tables.deviceStatus.deviceTypes.nvr');
+    case 'sensor':
+      return t('appsMonitoringCenter.overview.tables.deviceStatus.deviceTypes.sensor');
+    case 'controller':
+      return t('appsMonitoringCenter.overview.tables.deviceStatus.deviceTypes.controller');
+    default:
+      return type;
   }
 };
 
