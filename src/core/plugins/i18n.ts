@@ -13,8 +13,12 @@ import enAppsEventsAlerts from "@/core/translate/en/apps/events-alerts.json";
 import idAppsEventsAlerts from "@/core/translate/id/apps/events-alerts.json";
 import enAppsRecordingPlayback from "@/core/translate/en/apps/records-playback.json";
 import idAppsRecordingPlayback from "@/core/translate/id/apps/records-playback.json";
+import enAppsMonitoringCenter from "@/core/translate/en/apps/monitoring-center.json";
+import idAppsMonitoringCenter from "@/core/translate/id/apps/monitoring-center.json";
 import enComponentsMembership from "@/core/translate/en/components/membership.json";
 import idComponentsMembership from "@/core/translate/id/components/membership.json";
+import enDashboard from "@/core/translate/en/dashboard.json";
+import idDashboard from "@/core/translate/id/dashboard.json";
 
 export const APP_LOCALE_STORAGE_KEY = "app_locale";
 const LEGACY_LOCALE_STORAGE_KEY = "lang";
@@ -177,6 +181,48 @@ const messages = {
     roomManagement: "Room Management",
     nvrSystems: "NVR Systems",
     cameraManagement: "Camera Management",
+    // Page titles
+    "Dashboard": "Dashboard",
+    "Layout Builder": "Layout Builder",
+    "Overview": "Overview",
+    "Projects": "Projects",
+    "Campaigns": "Campaigns",
+    "Documents": "Documents",
+    "Connections": "Connections",
+    "Activity": "Activity",
+    "Horizontal": "Horizontal",
+    "Vertical": "Vertical",
+    "Room": "Room",
+    "NVR": "NVR",
+    "Camera": "Camera",
+    "Settings": "Settings",
+    "Live View": "Live View",
+    "Events & Alerts Overview": "Events & Alerts Overview",
+    "Events & Alerts Settings": "Events & Alerts Settings",
+    "Recording & Playback Overview": "Recording & Playback Overview",
+    "Recording & Playback Settings": "Recording & Playback Settings",
+    "Monitoring Center Overview": "Monitoring Center Overview",
+    "Monitoring Center Settings": "Monitoring Center Settings",
+    "Sign In": "Sign In",
+    "Sign Up": "Sign Up",
+    "Password reset": "Password Reset",
+    "Error 404": "Error 404",
+    "Error 500": "Error 500",
+    // Breadcrumbs
+    "Home": "Home",
+    "Apps": "Apps",
+    "Site": "Site",
+    "Account": "Account",
+    "Organization": "Organization",
+    "Team": "Team",
+    "Pages": "Pages",
+    "Profile": "Profile",
+    "Wizard": "Wizard",
+    "Layout": "Layout",
+    "Dashboards": "Dashboards",
+    "Events & Alerts": "Events & Alerts",
+    "Recording & Playback": "Recording & Playback",
+    "Monitoring Center": "Monitoring Center",
   selectOrganization: "Select Organization",
   loadingOrganizations: "Loading organizations...",
   selectAccount: "Select Account",
@@ -346,6 +392,48 @@ const messages = {
     roomManagement: "Manajemen Ruangan",
     nvrSystems: "Sistem NVR",
     cameraManagement: "Manajemen Kamera",
+    // Page titles
+    "Dashboard": "Dasbor",
+    "Layout Builder": "Pembuat Tata Letak",
+    "Overview": "Ikhtisar",
+    "Projects": "Proyek",
+    "Campaigns": "Kampanye",
+    "Documents": "Dokumen",
+    "Connections": "Koneksi",
+    "Activity": "Aktivitas",
+    "Horizontal": "Horizontal",
+    "Vertical": "Vertikal",
+    "Room": "Ruangan",
+    "NVR": "NVR",
+    "Camera": "Kamera",
+    "Settings": "Pengaturan",
+    "Live View": "Tampilan Langsung",
+    "Events & Alerts Overview": "Ikhtisar Event & Peringatan",
+    "Events & Alerts Settings": "Pengaturan Event & Peringatan",
+    "Recording & Playback Overview": "Ikhtisar Rekaman & Putar Ulang",
+    "Recording & Playback Settings": "Pengaturan Rekaman & Putar Ulang",
+    "Monitoring Center Overview": "Ikhtisar Pusat Monitoring",
+    "Monitoring Center Settings": "Pengaturan Pusat Monitoring",
+    "Sign In": "Masuk",
+    "Sign Up": "Daftar",
+    "Password reset": "Reset Kata Sandi",
+    "Error 404": "Error 404",
+    "Error 500": "Error 500",
+    // Breadcrumbs
+    "Home": "Beranda",
+    "Apps": "Aplikasi",
+    "Site": "Situs",
+    "Account": "Akun",
+    "Organization": "Organisasi",
+    "Team": "Tim",
+    "Pages": "Halaman",
+    "Profile": "Profil",
+    "Wizard": "Panduan",
+    "Layout": "Tata Letak",
+    "Dashboards": "Dasbor",
+    "Events & Alerts": "Event & Peringatan",
+    "Recording & Playback": "Rekaman & Putar Ulang",
+    "Monitoring Center": "Pusat Monitoring",
   selectOrganization: "Pilih Organisasi",
   loadingOrganizations: "Memuat organisasi...",
   selectAccount: "Pilih Akun",
@@ -442,8 +530,12 @@ mergeDeep(messages.en, { appsEventsAlerts: enAppsEventsAlerts });
 mergeDeep(messages.id, { appsEventsAlerts: idAppsEventsAlerts });
 mergeDeep(messages.en, { appsRecordingPlayback: enAppsRecordingPlayback });
 mergeDeep(messages.id, { appsRecordingPlayback: idAppsRecordingPlayback });
+mergeDeep(messages.en, { appsMonitoringCenter: enAppsMonitoringCenter });
+mergeDeep(messages.id, { appsMonitoringCenter: idAppsMonitoringCenter });
 mergeDeep(messages.en, { components: { membership: enComponentsMembership } });
 mergeDeep(messages.id, { components: { membership: idComponentsMembership } });
+mergeDeep(messages.en, { dashboard: enDashboard });
+mergeDeep(messages.id, { dashboard: idDashboard });
 
 const defaultLocale = readStoredLocale();
 

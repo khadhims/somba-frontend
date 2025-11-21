@@ -227,9 +227,9 @@
 	"format": {
 		"notAvailable": "Tidak tersedia",
 		"duration": {
-			"hoursMinutesSeconds": "{hours}jam {minutes}menit {seconds}detik",
-			"minutesSeconds": "{minutes}menit {seconds}detik",
-			"seconds": "{seconds}detik"
+			"hoursMinutesSeconds": "{hours}j {minutes}m {seconds}d",
+			"minutesSeconds": "{minutes}m {seconds}d",
+			"seconds": "{seconds}d"
 		},
 		"fileSize": "{value} {unit}"
 	}

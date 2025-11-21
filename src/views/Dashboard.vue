@@ -10,7 +10,7 @@
         color="success"
         icon-color="white"
         :title="connectedCameras.toString()"
-        description="Active Cameras Online"
+        :description="t('dashboard.statistics.activeCameras')"
       />
     </div>
 
@@ -21,7 +21,7 @@
         color="danger"
         icon-color="white"
         :title="recordingCameras.toString()"
-        description="Currently Recording"
+        :description="t('dashboard.statistics.currentlyRecording')"
       />
     </div>
 
@@ -32,7 +32,7 @@
         color="warning"
         icon-color="white"
         :title="activeAlerts.toString()"
-        description="Active Security Alerts"
+        :description="t('dashboard.statistics.activeSecurityAlerts')"
       />
     </div>
 
@@ -43,7 +43,7 @@
         color="info"
         icon-color="white"
         :title="storageUsage + '%'"
-        description="Storage Utilization"
+        :description="t('dashboard.statistics.storageUtilization')"
       />
     </div>
   </div>
@@ -93,6 +93,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted } from "vue";
+import { useI18n } from "vue-i18n";
 import StatisticsWidget5 from "@/components/widgets/statsistics/Widget5.vue";
 import ChartsWidget1 from "@/components/widgets/charts/Widget1.vue";
 import SecurityEventsWidget from "@/components/widgets/security/SecurityEventsWidget.vue";
@@ -113,6 +114,8 @@ export default defineComponent({
     RecordingStatusWidget,
   },
   setup() {
+    const { t } = useI18n();
+    
     // VMS Dashboard Statistics
     const connectedCameras = ref(42);
     const recordingCameras = ref(18);
@@ -142,6 +145,7 @@ export default defineComponent({
     });
 
     return {
+      t,
       connectedCameras,
       recordingCameras,
       activeAlerts,

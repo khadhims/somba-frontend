@@ -236,7 +236,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
+                  <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.brand.label") }}
                   </label>
                   <!--end::Label-->
@@ -244,7 +244,6 @@
                   <select
                     v-model="cameraForm.brand"
                     class="form-select form-select-solid"
-                    required
                   >
                     <option value="">
                       {{ t("controlplane.site.camera.form.fields.brand.placeholder") }}
@@ -275,7 +274,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
+                  <label class="required fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.model.label") }}
                   </label>
                   <!--end::Label-->
@@ -285,6 +284,7 @@
                     v-model="cameraForm.model"
                     class="form-control form-control-solid"
                     :placeholder="t('controlplane.site.camera.form.fields.model.placeholder')"
+                    required
                   />
                   <!--end::Input-->
                 </div>
@@ -297,7 +297,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
+                  <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.type.label") }}
                   </label>
                   <!--end::Label-->
@@ -305,7 +305,6 @@
                   <select
                     v-model="cameraForm.type"
                     class="form-select form-select-solid"
-                    required
                   >
                     <option value="Dome">
                       {{ t("controlplane.site.camera.form.fields.type.options.dome") }}
@@ -330,7 +329,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
+                  <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.resolution.label") }}
                   </label>
                   <!--end::Label-->
@@ -338,7 +337,6 @@
                   <select
                     v-model="cameraForm.resolution"
                     class="form-select form-select-solid"
-                    required
                   >
                     <option value="1080P (2MP)">
                       {{ t("controlplane.site.camera.form.fields.resolution.options.1080p") }}

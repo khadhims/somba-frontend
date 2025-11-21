@@ -36,7 +36,7 @@
 	"table": {
 		"title": "Recent Events & Alerts",
 		"columns": {
-			"uid": "Event Name",
+			"event": "Event Name",
 			"camera": "Camera Name",
 			"timestamp": "Timestamp",
 			"duration": "Duration (min)",
@@ -129,10 +129,6 @@
 		}
 	},
 	"format": {
-		"minutesShort": "{value} min",
-		"secondsShort": "{value}s",
-		"minutesLong": "{value} minutes",
-		"secondsLong": "{value} seconds",
 		"notAvailable": "N/A"
 	},
 	"settings": {

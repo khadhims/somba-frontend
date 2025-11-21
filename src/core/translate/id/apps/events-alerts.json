@@ -36,7 +36,7 @@
 	"table": {
 		"title": "Event & Peringatan Terbaru",
 		"columns": {
-			"uid": "Nama Event",
+			"event": "Nama Event",
 			"camera": "Nama Kamera",
 			"timestamp": "Waktu",
 			"duration": "Durasi (menit)",
@@ -129,10 +129,6 @@
 		}
 	},
 	"format": {
-		"minutesShort": "{value} mnt",
-		"secondsShort": "{value} dtk",
-		"minutesLong": "{value} menit",
-		"secondsLong": "{value} detik",
 		"notAvailable": "Tidak tersedia"
 	},
 	"settings": {

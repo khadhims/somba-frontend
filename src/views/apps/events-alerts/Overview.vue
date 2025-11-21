@@ -82,10 +82,10 @@
         @on-sort="handleSort"
         :empty-table-text="t('appsEventsAlerts.table.empty')"
       >
-        <template v-slot:uid="{ row }">
+        <template v-slot:event_name="{ row }">
           <div style="max-width: 200px; min-width: 180px;">
             <span class="text-dark fw-bold text-hover-primary fs-6" style="word-break: break-all;">
-              {{ row.uid }}
+              {{ row.event_name }}
             </span>
           </div>
         </template>
@@ -111,13 +111,13 @@
 
         <template v-slot:duration="{ row }">
           <span class="text-dark fw-bold fs-6">
-            {{ formatMinutesShort(row.duration ?? 0) }}
+            {{ row.duration ?? t('appsEventsAlerts.format.notAvailable') }}
           </span>
         </template>
 
         <template v-slot:avg_seconds_with_detection="{ row }">
           <span class="text-dark fw-bold fs-6">
-            {{ formatSecondsShort(row.avg_seconds_with_detection) }}
+            {{ row.avg_seconds_with_detection }}
           </span>
         </template>
 
@@ -564,8 +564,8 @@ const isEditModalLoading = ref(false);
 // Table header configuration
 const tableHeader = computed(() => [
   {
-    columnName: t('appsEventsAlerts.table.columns.uid'),
-    columnLabel: 'uid',
+    columnName: t('appsEventsAlerts.table.columns.event'),
+    columnLabel: 'event_name',
     sortEnabled: true,
     searchable: true,
   },
@@ -612,7 +612,7 @@ const fetchEvents = async () => {
   loading.value = true;
   try {
     // Determine site uid to request - prefer selectedSiteFilter, fallback to first loaded site
-    let siteUid = selectedSiteFilter.value || (sites.value.length ? sites.value[0].uid : "");
+    let siteUid = selectedSiteFilter.value || (sites.value.length ? sites.value[0].uid : "") || "fff0f3a7-cea8-4383-a0de-c7d9041a2519";
     if (!siteUid) {
       console.warn("No site selected and no sites available - skipping list-activity call");
       events.value = [];
@@ -641,7 +641,6 @@ const fetchEvents = async () => {
 
     // Map response data items to internal event structure
     events.value = results.map((item: any, idx: number) => {
-      const camName = (camerasCache.value[siteUid] && camerasCache.value[siteUid][item.camera_uuid]) || item.camera_uuid || '';
       return {
         uid: item.event_id || `evt-${idx}-${Date.now()}`,
         type: 'motion', // default type - adjust if API provides type later
@@ -649,7 +648,8 @@ const fetchEvents = async () => {
         description: t('appsEventsAlerts.table.generatedDescription', {
           seconds: Math.round(item.avg_seconds_with_detection || 0),
         }),
-        camera_name: camName,
+        event_name: item.event_name || '',
+        camera_name: item.camera_name || '',
         location: '',
         timestamp: item.event_start || item.event_end || new Date().toISOString(),
         status: 'resolved', // default status
