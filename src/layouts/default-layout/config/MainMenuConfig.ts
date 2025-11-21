@@ -177,8 +177,12 @@ const MainMenuConfig: Array<MenuItem> = [
         bootstrapIcon: "bi-bell",
         sub: [
           {
-            heading: "overview",
-            route: "/apps/events-alerts/overview",
+            heading: "events",
+            route: "/apps/events-alerts/Events",
+          },
+          {
+            heading: "alerts",
+            route: "/apps/events-alerts/Alerts",
           },
           {
             heading: "settings",

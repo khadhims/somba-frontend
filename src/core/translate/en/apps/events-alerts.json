@@ -1,10 +1,15 @@
 {
-	"overview": {
-		"title": "Events & Alerts Management",
+	"events": {
+		"title": "Events Management",
 		"subtitleAll": "Monitor and manage security events across all sites",
 		"subtitleSite": "Monitor and manage security events for {site}"
 	},
-	"filters": {
+	"alerts": {
+		"title": "Alerts Management",
+		"subtitleAll": "Monitor and manage security alerts across all sites",
+		"subtitleSite": "Monitor and manage security alerts for {site}"
+	},
+	"eventsFilters": {
 		"siteLabel": "Site:",
 		"siteAll": "All Sites",
 		"sampleSite": "Site A",
@@ -13,12 +18,31 @@
 		"typeAll": "All Types",
 		"severityLabel": "Level:",
 		"severityAll": "All Levels",
+		"statusLabel": "Status:",
+		"statusAll": "All Status",
 		"refresh": "Refresh"
 	},
-	"cards": {
-		"activeAlerts": {
-			"title": "Active Alerts",
-			"progress": "{count} Critical"
+	"alertsFilters": {
+		"siteLabel": "Site:",
+		"siteAll": "All Sites",
+		"sampleSite": "Site A",
+		"searchPlaceholder": "Search alerts...",
+		"typeLabel": "Type:",
+		"typeAll": "All Types",
+		"severityLabel": "Severity Level:",
+		"severityAll": "All Levels",
+		"statusLabel": "Status:",
+		"statusAll": "All Status",
+		"assigneeLabel": "Assignee:",
+		"assigneeAll": "All Assignees",
+		"priorityLabel": "Priority:",
+		"priorityAll": "All Priorities",
+		"refresh": "Refresh"
+	},
+	"eventsCards": {
+		"totalEvents": {
+			"title": "Total Events",
+			"progress": "Last 24h"
 		},
 		"motionEvents": {
 			"title": "Motion Events",
@@ -28,13 +52,31 @@
 			"title": "Resolved Today",
 			"progress": "{count} Total"
 		},
+		"avgDuration": {
+			"title": "Avg Duration",
+			"progress": "Minutes"
+		}
+	},
+	"alertsCards": {
+		"activeAlerts": {
+			"title": "Active Alerts",
+			"progress": "{count} Critical"
+		},
+		"highPriority": {
+			"title": "High Priority",
+			"progress": "Needs Action"
+		},
+		"acknowledgedToday": {
+			"title": "Acknowledged Today",
+			"progress": "{count} Total"
+		},
 		"responseTime": {
 			"title": "Response Time",
 			"progress": "Average"
 		}
 	},
-	"table": {
-		"title": "Recent Events & Alerts",
+	"eventsTable": {
+		"title": "Recent Events",
 		"columns": {
 			"event": "Event Name",
 			"camera": "Camera Name",
@@ -50,13 +92,11 @@
 		"pagination": "Showing {start} to {end} of {total} entries",
 		"actions": {
 			"view": "View Details",
-			"acknowledge": "Acknowledge",
 			"resolve": "Resolve",
 			"edit": "Edit"
 		},
 		"status": {
 			"active": "Active",
-			"acknowledged": "Acknowledged",
 			"resolved": "Resolved",
 			"unresolved": "Unresolved",
 			"notResolved": "Not Resolved",
@@ -78,15 +118,70 @@
 			"unknown": "Unknown"
 		}
 	},
+	"alertsTable": {
+		"title": "Active Alerts",
+		"columns": {
+			"alert": "Alert Name",
+			"camera": "Camera Name",
+			"timestamp": "Triggered Time",
+			"severity": "Severity",
+			"responseTime": "Response Time",
+			"assignedTo": "Assigned To",
+			"status": "Status",
+			"actions": "Actions"
+		},
+		"empty": "No alerts found",
+		"noAssignee": "Unassigned",
+		"generatedDescription": "Alert triggered - {severity} severity",
+		"pagination": "Showing {start} to {end} of {total} entries",
+		"actions": {
+			"view": "View Details",
+			"acknowledge": "Acknowledge",
+			"resolve": "Resolve",
+			"escalate": "Escalate",
+			"assign": "Assign"
+		},
+		"status": {
+			"active": "Active",
+			"acknowledged": "Acknowledged",
+			"resolved": "Resolved",
+			"escalated": "Escalated",
+			"dismissed": "Dismissed",
+			"unknown": "Unknown"
+		},
+		"types": {
+			"security": "Security",
+			"technical": "Technical",
+			"system": "System",
+			"maintenance": "Maintenance",
+			"unknown": "Unknown"
+		},
+		"severity": {
+			"low": "Low",
+			"medium": "Medium",
+			"high": "High",
+			"critical": "Critical",
+			"unknown": "Unknown"
+		}
+	},
 	"actions": {
 		"close": "Close",
 		"acknowledge": "Acknowledge",
 		"resolve": "Resolve",
 		"cancel": "Cancel",
 		"save": "Save Changes",
-		"saving": "Saving..."
+		"saving": "Saving...",
+		"update": "Update"
 	},
-	"modals": {
+	"table": {
+		"actions": {
+			"viewEdit": "View & Edit"
+		}
+	},
+	"form": {
+		"selectStatus": "Select status..."
+	},
+	"eventsModals": {
 		"details": {
 			"title": "Event Details",
 			"image": "Event Image:",
@@ -98,8 +193,10 @@
 			"endTime": "End Time:",
 			"duration": "Duration:",
 			"totalMinutes": "Total Minutes:",
-			"avgDetection": "Avg Detection Time:",
+			"avgDetection": "Average Detection Time:",
 			"comments": "Comments:",
+			"comment": "Comment",
+			"commentPlaceholder": "Leave a comment about this event...",
 			"eventIdHint": "Event ID:",
 			"imageFallback": "Image not available"
 		},
@@ -121,11 +218,117 @@
 			"eventId": "Event ID:"
 		}
 	},
-	"form": {
+	"alertsModals": {
+		"details": {
+			"title": "Alert Details",
+			"image": "Alert Image:",
+			"alertId": "Alert ID:",
+			"cameraUuid": "Camera UUID:",
+			"status": "Status:",
+			"description": "Description:",
+			"triggeredTime": "Triggered Time:",
+			"acknowledgedTime": "Acknowledged Time:",
+			"resolvedTime": "Resolved Time:",
+			"severity": "Severity:",
+			"responseTime": "Response Time:",
+			"assignedTo": "Assigned To:",
+			"comments": "Comments:",
+			"comment": "Comment",
+			"commentPlaceholder": "Leave a comment about this alert...",
+			"alertIdHint": "Alert ID:",
+			"imageFallback": "Image not available"
+		},
+		"edit": {
+			"title": "Edit Alert",
+			"alertType": "Alert Type:",
+			"severity": "Severity Level:",
+			"currentStatus": "Current Status:",
+			"assignedTo": "Assigned To:",
+			"priority": "Priority:",
+			"camera": "Camera:",
+			"location": "Location:",
+			"updateStatus": "Update Status:",
+			"selectStatus": "Select new status...",
+			"selectAssignee": "Select assignee...",
+			"comment": "Comment:",
+			"commentPlaceholder": "Leave a comment about this alert...",
+			"alertId": "Alert ID:"
+		}
+	},
+	"eventsForm": {
 		"statusOptions": {
 			"resolved": "Resolved",
 			"notResolved": "Not Resolved",
 			"falseDetection": "False Detection"
+		}
+	},
+	"alertsForm": {
+		"statusOptions": {
+			"acknowledged": "Acknowledged",
+			"resolved": "Resolved",
+			"escalated": "Escalated",
+			"dismissed": "Dismissed"
+		},
+		"priorityOptions": {
+			"low": "Low",
+			"medium": "Medium",
+			"high": "High",
+			"critical": "Critical"
+		}
+	},
+	"eventsBulkActions": {
+		"selectedItems": "{{count}} events selected",
+		"deleteSelected": "Delete Selected Events",
+		"markAsResolved": "Mark as Resolved",
+		"markAsUnresolved": "Mark as Unresolved",
+		"exportSelected": "Export Selected Events",
+		"batchProcess": "Batch Process Events"
+	},
+	"alertsBulkActions": {
+		"selectedItems": "{{count}} alerts selected",
+		"deleteSelected": "Delete Selected Alerts",
+		"markAsAcknowledged": "Mark as Acknowledged",
+		"markAsResolved": "Mark as Resolved",
+		"escalateSelected": "Escalate Selected",
+		"assignTo": "Assign To",
+		"exportSelected": "Export Selected Alerts"
+	},
+	"eventsToast": {
+		"success": {
+			"created": "Event created successfully",
+			"updated": "Event updated successfully",
+			"deleted": "Event deleted successfully",
+			"bulkDeleted": "{{count}} events deleted successfully",
+			"statusUpdated": "Event status updated successfully",
+			"exported": "{{count}} events exported successfully"
+		},
+		"error": {
+			"createFailed": "Failed to create event",
+			"updateFailed": "Failed to update event",
+			"deleteFailed": "Failed to delete event",
+			"loadFailed": "Failed to load event data",
+			"exportFailed": "Failed to export events"
+		}
+	},
+	"alertsToast": {
+		"success": {
+			"acknowledged": "Alert acknowledged successfully",
+			"resolved": "Alert resolved successfully",
+			"escalated": "Alert escalated successfully",
+			"assigned": "Alert assigned successfully",
+			"deleted": "Alert deleted successfully",
+			"bulkDeleted": "{{count}} alerts deleted successfully",
+			"statusUpdated": "Alert status updated successfully",
+			"exported": "{{count}} alerts exported successfully"
+		},
+		"error": {
+			"acknowledgeFailed": "Failed to acknowledge alert",
+			"resolveFailed": "Failed to resolve alert",
+			"escalateFailed": "Failed to escalate alert",
+			"assignFailed": "Failed to assign alert",
+			"deleteFailed": "Failed to delete alert",
+			"loadFailed": "Failed to load alert data",
+			"exportFailed": "Failed to export alerts"
 		}
 	},
 	"format": {

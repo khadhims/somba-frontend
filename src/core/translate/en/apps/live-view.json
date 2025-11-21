@@ -26,9 +26,14 @@
 		},
 		"fullscreen": "Fullscreen",
 		"recordings": "Recordings",
-		"empty": "No cameras found"
+		"empty": "No cameras found",
+		"cameraLimitInfo": "Showing {shown} of {total} available cameras in {grid} grid"
 	},
 	"sidebar": {
 		"cameraCount": "{count} cameras"
+	},
+	"availableCameras": {
+		"title": "Available Cameras",
+		"subtitle": "Drag cameras to the grid to replace currently displayed cameras"
 	}
 }

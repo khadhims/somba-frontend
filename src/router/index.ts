@@ -251,10 +251,6 @@ const routes: Array<RouteRecordRaw> = [
           },
         ],
       },
-
-
-
-
       {
         path: "/apps/live-view",
         name: "apps-live-view",
@@ -264,12 +260,26 @@ const routes: Array<RouteRecordRaw> = [
           breadcrumbs: ["Apps"],
         },
       },
+      // Events & Alerts routes
       {
-        path: "/apps/events-alerts/overview",
-        name: "apps-events-alerts-overview",
-        component: () => import("@/views/apps/events-alerts/Overview.vue"),
+        path: "/apps/events-alerts",
+        redirect: "/apps/events-alerts/events",
+      },
+      {
+        path: "/apps/events-alerts/events",
+        name: "apps-events-alerts-events",
+        component: () => import("@/views/apps/events-alerts/Events.vue"),
         meta: {
-          pageTitle: "Events & Alerts Overview",
+          pageTitle: "Events Management",
+          breadcrumbs: ["Apps", "Events & Alerts"],
+        },
+      },
+      {
+        path: "/apps/events-alerts/alerts",
+        name: "apps-events-alerts-alerts",
+        component: () => import("@/views/apps/events-alerts/Alerts.vue"),
+        meta: {
+          pageTitle: "Alerts Management",
           breadcrumbs: ["Apps", "Events & Alerts"],
         },
       },
@@ -282,6 +292,7 @@ const routes: Array<RouteRecordRaw> = [
           breadcrumbs: ["Apps", "Events & Alerts"],
         },
       },
+
       {
         path: "/apps/recording-playback/overview",
         name: "apps-recording-playback-overview",

@@ -1,24 +1,48 @@
 {
-	"overview": {
-		"title": "Manajemen Event & Peringatan",
-		"subtitleAll": "Pantau dan kelola event keamanan di semua situs",
-		"subtitleSite": "Pantau dan kelola event keamanan untuk {site}"
+	"events": {
+		"title": "Manajemen Kejadian",
+		"subtitleAll": "Pantau dan kelola kejadian keamanan di semua situs",
+		"subtitleSite": "Pantau dan kelola kejadian keamanan untuk {site}"
 	},
-	"filters": {
+	"alerts": {
+		"title": "Manajemen Peringatan",
+		"subtitleAll": "Pantau dan kelola peringatan keamanan di semua situs",
+		"subtitleSite": "Pantau dan kelola peringatan keamanan untuk {site}"
+	},
+	"eventsFilters": {
 		"siteLabel": "Situs:",
 		"siteAll": "Semua Situs",
-		"sampleSite": "Site A",
-		"searchPlaceholder": "Cari event...",
+		"sampleSite": "Situs A",
+		"searchPlaceholder": "Cari kejadian...",
 		"typeLabel": "Tipe:",
 		"typeAll": "Semua Tipe",
 		"severityLabel": "Level:",
 		"severityAll": "Semua Level",
-		"refresh": "Muat Ulang"
+		"statusLabel": "Status:",
+		"statusAll": "Semua Status",
+		"refresh": "Refresh"
 	},
-	"cards": {
-		"activeAlerts": {
-			"title": "Peringatan Aktif",
-			"progress": "{count} Kritis"
+	"alertsFilters": {
+		"siteLabel": "Situs:",
+		"siteAll": "Semua Situs",
+		"sampleSite": "Situs A",
+		"searchPlaceholder": "Cari peringatan...",
+		"typeLabel": "Tipe:",
+		"typeAll": "Semua Tipe",
+		"severityLabel": "Level Keparahan:",
+		"severityAll": "Semua Level",
+		"statusLabel": "Status:",
+		"statusAll": "Semua Status",
+		"assigneeLabel": "Petugas:",
+		"assigneeAll": "Semua Petugas",
+		"priorityLabel": "Prioritas:",
+		"priorityAll": "Semua Prioritas",
+		"refresh": "Refresh"
+	},
+	"eventsCards": {
+		"totalEvents": {
+			"title": "Total Event",
+			"progress": "{count} Event"
 		},
 		"motionEvents": {
 			"title": "Event Gerakan",
@@ -28,13 +52,31 @@
 			"title": "Selesai Hari Ini",
 			"progress": "{count} Total"
 		},
+		"avgDuration": {
+			"title": "Durasi Rata-rata",
+			"progress": "{minutes} Menit"
+		}
+	},
+	"alertsCards": {
+		"activeAlerts": {
+			"title": "Peringatan Aktif",
+			"progress": "{count} Kritis"
+		},
+		"criticalAlerts": {
+			"title": "Peringatan Kritis",
+			"progress": "Perlu Tindakan"
+		},
+		"acknowledgedAlerts": {
+			"title": "Peringatan Diakui",
+			"progress": "{count} Tertangani"
+		},
 		"responseTime": {
 			"title": "Waktu Respon",
 			"progress": "Rata-rata"
 		}
 	},
-	"table": {
-		"title": "Event & Peringatan Terbaru",
+	"eventsTable": {
+		"title": "Event Terbaru",
 		"columns": {
 			"event": "Nama Event",
 			"camera": "Nama Kamera",
@@ -42,7 +84,7 @@
 			"duration": "Durasi (menit)",
 			"avgDetection": "Rata-rata Deteksi (dtk)",
 			"status": "Status",
-			"actions": "Tindakan"
+			"actions": "Aksi"
 		},
 		"empty": "Tidak ada event",
 		"noLocation": "Tanpa lokasi",
@@ -78,34 +120,89 @@
 			"unknown": "Tidak diketahui"
 		}
 	},
+	"alertsTable": {
+		"title": "Peringatan Terbaru",
+		"columns": {
+			"alert": "Nama Peringatan",
+			"camera": "Nama Kamera",
+			"timestamp": "Waktu",
+			"severity": "Level Keparahan",
+			"status": "Status",
+			"responseTime": "Waktu Respon",
+			"actions": "Aksi"
+		},
+		"empty": "Tidak ada peringatan",
+		"noLocation": "Tanpa lokasi",
+		"generatedDescription": "Peringatan dipicu - level {severity}",
+		"pagination": "Menampilkan {start} sampai {end} dari {total} entri",
+		"actions": {
+			"view": "Lihat Detail",
+			"acknowledge": "Tandai Diketahui",
+			"resolve": "Selesaikan",
+			"escalate": "Eskalasi"
+		},
+		"status": {
+			"active": "Aktif",
+			"acknowledged": "Diakui",
+			"resolved": "Selesai",
+			"escalated": "Dieskalasi",
+			"dismissed": "Diabaikan",
+			"unknown": "Tidak diketahui"
+		},
+		"types": {
+			"security": "Keamanan",
+			"technical": "Teknis",
+			"system": "Sistem",
+			"maintenance": "Pemeliharaan",
+			"unknown": "Tidak diketahui"
+		},
+		"severity": {
+			"low": "Rendah",
+			"medium": "Sedang",
+			"high": "Tinggi",
+			"critical": "Kritis",
+			"unknown": "Tidak diketahui"
+		}
+	},
 	"actions": {
 		"close": "Tutup",
 		"acknowledge": "Tandai Diketahui",
 		"resolve": "Selesaikan",
 		"cancel": "Batal",
 		"save": "Simpan Perubahan",
-		"saving": "Menyimpan..."
+		"saving": "Menyimpan...",
+		"update": "Perbarui"
 	},
-	"modals": {
+	"table": {
+		"actions": {
+			"viewEdit": "Lihat & Ubah"
+		}
+	},
+	"form": {
+		"selectStatus": "Pilih status..."
+	},
+	"eventsModals": {
 		"details": {
-			"title": "Detail Event",
-			"image": "Gambar Event:",
-			"eventId": "ID Event:",
+			"title": "Detail Kejadian",
+			"image": "Gambar Kejadian:",
+			"eventName": "Nama Kejadian:",
 			"cameraUuid": "UUID Kamera:",
 			"status": "Status:",
 			"description": "Deskripsi:",
 			"startTime": "Waktu Mulai:",
 			"endTime": "Waktu Selesai:",
-			"duration": "Durasi:",
+			"duration": "Durasi (menit):",
 			"totalMinutes": "Total Menit:",
-			"avgDetection": "Rata-rata Waktu Deteksi:",
+			"avgDetection": "Rata-rata Waktu Deteksi (detik):",
 			"comments": "Komentar:",
-			"eventIdHint": "ID Event:",
+			"comment": "Komentar",
+			"commentPlaceholder": "Tulis catatan untuk Kejadian ini...",
+			"eventIdHint": "ID Kejadian:",
 			"imageFallback": "Gambar tidak tersedia"
 		},
 		"edit": {
-			"title": "Ubah Event",
-			"eventType": "Tipe Event:",
+			"title": "Ubah Kejadian",
+			"eventType": "Tipe Kejadian:",
 			"severity": "Level:",
 			"currentStatus": "Status Saat Ini:",
 			"process": "Proses:",
@@ -117,15 +214,121 @@
 			"updateStatus": "Perbarui Status:",
 			"selectStatus": "Pilih status baru...",
 			"comment": "Komentar:",
-			"commentPlaceholder": "Tulis catatan untuk event ini...",
-			"eventId": "ID Event:"
+			"commentPlaceholder": "Tulis catatan untuk Kejadian ini...",
+			"eventId": "ID Kejadian:"
 		}
 	},
-	"form": {
+	"alertsModals": {
+		"details": {
+			"title": "Detail Peringatan",
+			"image": "Gambar Peringatan:",
+			"alertName": "Nama Peringatan:",
+			"cameraUuid": "UUID Kamera:",
+			"status": "Status:",
+			"description": "Deskripsi:",
+			"triggeredTime": "Waktu Dipicu:",
+			"acknowledgedTime": "Waktu Diakui:",
+			"resolvedTime": "Waktu Selesai:",
+			"severity": "Level Keparahan:",
+			"responseTime": "Waktu Respon (detik):",
+			"assignedTo": "Ditugaskan Ke:",
+			"comments": "Komentar:",
+			"comment": "Komentar",
+			"commentPlaceholder": "Tulis catatan untuk peringatan ini...",
+			"alertIdHint": "ID Peringatan:",
+			"imageFallback": "Gambar tidak tersedia"
+		},
+		"edit": {
+			"title": "Ubah Peringatan",
+			"alertType": "Tipe Peringatan:",
+			"severity": "Level Keparahan:",
+			"currentStatus": "Status Saat Ini:",
+			"assignedTo": "Ditugaskan Ke:",
+			"priority": "Prioritas:",
+			"camera": "Kamera:",
+			"location": "Situs:",
+			"updateStatus": "Perbarui Status:",
+			"selectStatus": "Pilih status baru...",
+			"selectAssignee": "Pilih petugas...",
+			"comment": "Komentar:",
+			"commentPlaceholder": "Tulis catatan untuk peringatan ini...",
+			"alertId": "ID Peringatan:"
+		}
+	},
+	"eventsForm": {
 		"statusOptions": {
 			"resolved": "Selesai",
 			"notResolved": "Belum Selesai",
 			"falseDetection": "Deteksi Salah"
+		}
+	},
+	"alertsForm": {
+		"statusOptions": {
+			"acknowledged": "Diakui",
+			"resolved": "Selesai",
+			"escalated": "Dieskalasi",
+			"dismissed": "Diabaikan"
+		},
+		"priorityOptions": {
+			"low": "Rendah",
+			"medium": "Sedang",
+			"high": "Tinggi",
+			"critical": "Kritis"
+		}
+	},
+	"eventsBulkActions": {
+		"selectedItems": "{{count}} event dipilih",
+		"deleteSelected": "Hapus Event Yang Dipilih",
+		"markAsResolved": "Tandai Sebagai Selesai",
+		"markAsUnresolved": "Tandai Sebagai Belum Selesai",
+		"exportSelected": "Ekspor Event Yang Dipilih",
+		"batchProcess": "Proses Batch Event"
+	},
+	"alertsBulkActions": {
+		"selectedItems": "{{count}} peringatan dipilih",
+		"deleteSelected": "Hapus Peringatan Yang Dipilih",
+		"markAsAcknowledged": "Tandai Sebagai Diakui",
+		"markAsResolved": "Tandai Sebagai Selesai",
+		"escalateSelected": "Eskalasi Yang Dipilih",
+		"assignTo": "Tugaskan Ke",
+		"exportSelected": "Ekspor Peringatan Yang Dipilih"
+	},
+	"eventsToast": {
+		"success": {
+			"created": "Event berhasil dibuat",
+			"updated": "Event berhasil diperbarui",
+			"deleted": "Event berhasil dihapus",
+			"bulkDeleted": "{{count}} event berhasil dihapus",
+			"statusUpdated": "Status event berhasil diperbarui",
+			"exported": "{{count}} event berhasil diekspor"
+		},
+		"error": {
+			"createFailed": "Gagal membuat event",
+			"updateFailed": "Gagal memperbarui event",
+			"deleteFailed": "Gagal menghapus event",
+			"loadFailed": "Gagal memuat data event",
+			"exportFailed": "Gagal mengekspor event"
+		}
+	},
+	"alertsToast": {
+		"success": {
+			"acknowledged": "Peringatan berhasil diakui",
+			"resolved": "Peringatan berhasil diselesaikan",
+			"escalated": "Peringatan berhasil dieskalasi",
+			"assigned": "Peringatan berhasil ditugaskan",
+			"deleted": "Peringatan berhasil dihapus",
+			"bulkDeleted": "{{count}} peringatan berhasil dihapus",
+			"statusUpdated": "Status peringatan berhasil diperbarui",
+			"exported": "{{count}} peringatan berhasil diekspor"
+		},
+		"error": {
+			"acknowledgeFailed": "Gagal mengakui peringatan",
+			"resolveFailed": "Gagal menyelesaikan peringatan",
+			"escalateFailed": "Gagal mengeskaloasi peringatan",
+			"assignFailed": "Gagal menugaskan peringatan",
+			"deleteFailed": "Gagal menghapus peringatan",
+			"loadFailed": "Gagal memuat data peringatan",
+			"exportFailed": "Gagal mengekspor peringatan"
 		}
 	},
 	"format": {
