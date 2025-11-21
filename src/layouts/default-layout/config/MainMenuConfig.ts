@@ -30,46 +30,20 @@ const MainMenuConfig: Array<MenuItem> = [
       {
         heading: "team",
         route: "/controlplane/team/overview",
-        keenthemesIcon: "profile-circle",
+        keenthemesIcon: "people",
         bootstrapIcon: "bi-people",
       },
       {
-        sectionTitle: "siteManagement",
-        route: "/site",
+        heading: "site",
+        route: "/controlplane/site/overview",
         keenthemesIcon: "home-2",
         bootstrapIcon: "bi-map",
-        sub: [
-          {
-            heading: "overview",
-            route: "/controlplane/site/overview",
-            keenthemesIcon: "chart-simple",
-            bootstrapIcon: "bi-graph-up",
-          },
-          // {
-          //   heading: "siteConfiguration",
-          //   route: "/controlplane/site/settings",
-          //   keenthemesIcon: "setting-2",
-          //   bootstrapIcon: "bi-gear",
-          // },
-          // {
-          //   heading: "roomManagement",
-          //   route: "/controlplane/site/room",
-          //   keenthemesIcon: "home-3",
-          //   bootstrapIcon: "bi-door-open",
-          // },
-          // {
-          //   heading: "nvrSystems",
-          //   route: "/controlplane/site/nvr",
-          //   keenthemesIcon: "router",
-          //   bootstrapIcon: "bi-hdd-network",
-          // },
-          {
-            heading: "cameraManagement",
-            route: "/controlplane/site/camera",
-            keenthemesIcon: "security-user",
-            bootstrapIcon: "bi-camera-video",
-          },
-        ],
+      },
+      {
+        heading: "camera",
+        route: "/controlplane/site/camera",
+        keenthemesIcon: "instagram",
+        bootstrapIcon: "bi-camera-video",
       },
       {
         sectionTitle: "pages",

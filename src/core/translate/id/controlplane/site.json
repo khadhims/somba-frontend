@@ -4,9 +4,9 @@
 		"unknown": "Tidak diketahui"
 	},
 	"header": {
-		"title": "Manajemen Situs",
-		"subtitleDefault": "Kelola situs untuk tim Anda",
-		"subtitleWithTeam": "Kelola situs untuk tim {name}"
+		"title": "Manajemen Lokasi",
+		"subtitleDefault": "Kelola Lokasi untuk tim Anda",
+		"subtitleWithTeam": "Kelola Lokasi untuk tim {name}"
 	},
 	"filters": {
 		"organizationLabel": "Organisasi",
@@ -24,13 +24,13 @@
 		"teamRequiresAccount": "Pilih akun terlebih dahulu"
 	},
 	"toolbar": {
-		"title": "Ringkasan Situs",
+		"title": "Ringkasan Lokasi",
 		"itemsLabel": "Item:",
-		"searchPlaceholder": "Cari situs...",
-		"addButton": "Tambah Situs"
+		"searchPlaceholder": "Cari Lokasi...",
+		"addButton": "Tambah Lokasi"
 	},
 	"table": {
-		"siteName": "Nama Situs",
+		"siteName": "Nama Lokasi",
 		"description": "Deskripsi",
 		"createdBy": "Dibuat Oleh",
 		"createdAt": "Dibuat Pada Tanggal",
@@ -38,22 +38,22 @@
 	},
 	"modals": {
 		"add": {
-			"title": "Tambah Situs Baru",
-			"submit": "Buat Situs"
+			"title": "Tambah Lokasi Baru",
+			"submit": "Buat Lokasi"
 		},
 		"edit": {
-			"title": "Ubah Situs",
-			"submit": "Perbarui Situs"
+			"title": "Ubah Lokasi",
+			"submit": "Perbarui Lokasi"
 		},
 		"form": {
 			"name": {
-				"label": "Nama Situs",
-				"placeholder": "Masukkan nama situs",
-				"required": "Nama situs wajib diisi"
+				"label": "Nama Lokasi",
+				"placeholder": "Masukkan nama Lokasi",
+				"required": "Nama Lokasi wajib diisi"
 			},
 			"description": {
 				"label": "Deskripsi",
-				"placeholder": "Masukkan deskripsi situs"
+				"placeholder": "Masukkan deskripsi Lokasi"
 			}
 		},
 		"actions": {
@@ -61,27 +61,27 @@
 			"loading": "Mohon tunggu..."
 		},
 		"alerts": {
-			"selectTeam": "Pilih tim untuk menambahkan situs."
+			"selectTeam": "Pilih tim untuk menambahkan Lokasi."
 		}
 	},
 	"actions": {
-		"viewDetails": "Lihat Detail Situs",
-		"edit": "Ubah Situs",
-		"delete": "Hapus Situs"
+		"viewDetails": "Lihat Detail Lokasi",
+		"edit": "Ubah Lokasi",
+		"delete": "Hapus Lokasi"
 	},
 	"empty": {
-		"selectOrganization": "Silakan pilih organisasi untuk melihat situs",
-		"selectAccount": "Silakan pilih akun untuk melihat situs",
-		"selectTeam": "Silakan pilih tim untuk melihat situs",
-		"loading": "Memuat daftar situs...",
-		"searchNoResults": "Tidak ada situs yang cocok dengan \"{query}\"",
-		"noResults": "Tidak ada situs untuk tim ini"
+		"selectOrganization": "Silakan pilih organisasi untuk melihat Lokasi",
+		"selectAccount": "Silakan pilih akun untuk melihat Lokasi",
+		"selectTeam": "Silakan pilih tim untuk melihat Lokasi",
+		"loading": "Memuat daftar Lokasi...",
+		"searchNoResults": "Tidak ada Lokasi yang cocok dengan \"{query}\"",
+		"noResults": "Tidak ada Lokasi untuk tim ini"
 	},
 	"notifications": {
-		"deleteFailed": "Gagal menghapus situs. Silakan coba lagi."
+		"deleteFailed": "Gagal menghapus Lokasi. Silakan coba lagi."
 	},
 	"dialogs": {
-		"confirmDelete": "Apakah Anda yakin ingin menghapus situs \"{name}\"? Tindakan ini tidak dapat dikembalikan."
+		"confirmDelete": "Apakah Anda yakin ingin menghapus Lokasi \"{name}\"? Tindakan ini tidak dapat dikembalikan."
 	},
 	"pagination": {
 		"showingEntries": "Menampilkan {from} hingga {to} dari {total} entri"
@@ -89,19 +89,19 @@
 	"camera": {
 		"title": "Manajemen Kamera",
 		"filters": {
-			"siteLabel": "Situs:",
-			"siteAll": "Semua Situs",
+			"siteLabel": "Lokasi:",
+			"siteAll": "Semua Lokasi",
 			"nvrLabel": "NVR:",
 			"nvrAll": "Semua NVR",
-			"nvrRequiresSite": "Pilih situs terlebih dahulu"
+			"nvrRequiresSite": "Pilih Lokasi terlebih dahulu"
 		},
 		"form": {
 			"titleCreate": "Tambah Kamera",
 			"titleEdit": "Ubah Kamera",
 			"fields": {
 				"site": {
-					"label": "Situs",
-					"placeholder": "Pilih Situs"
+					"label": "Lokasi",
+					"placeholder": "Pilih Lokasi"
 				},
 				"room": {
 					"label": "Ruangan",
@@ -182,7 +182,7 @@
 		},
 		"table": {
 			"name": "Nama Kamera",
-			"location": "Situs",
+			"location": "Lokasi",
 			"specs": "Spesifikasi",
 			"nvr": "NVR",
 			"status": "Status",
@@ -204,7 +204,7 @@
 			"deleteConfirm": "Apakah Anda yakin ingin menghapus kamera ini?"
 		},
 		"fallback": {
-			"unknownSite": "Situs Tidak Dikenal",
+			"unknownSite": "Lokasi Tidak Dikenal",
 			"unknownRoom": "Ruangan Tidak Dikenal",
 			"unknownNvr": "NVR Tidak Dikenal"
 		}
@@ -212,16 +212,16 @@
 	"nvr": {
 		"title": "Manajemen NVR",
 		"filters": {
-			"siteLabel": "Situs:",
-			"sitePlaceholder": "Semua Situs"
+			"siteLabel": "Lokasi:",
+			"sitePlaceholder": "Semua Lokasi"
 		},
 		"form": {
 			"titleCreate": "Tambah NVR",
 			"titleEdit": "Ubah NVR",
 			"fields": {
 				"site": {
-					"label": "Situs",
-					"placeholder": "Pilih Situs"
+					"label": "Lokasi",
+					"placeholder": "Pilih Lokasi"
 				},
 				"room": {
 					"label": "Ruangan",
@@ -316,25 +316,25 @@
 			"deleteConfirm": "Apakah Anda yakin ingin menghapus NVR ini?"
 		},
 		"fallback": {
-			"unknownSite": "Situs Tidak Dikenal",
+			"unknownSite": "Lokasi Tidak Dikenal",
 			"unknownRoom": "Ruangan Tidak Dikenal"
 		}
 	},
 	"settings": {
-		"title": "Konfigurasi Situs",
+		"title": "Konfigurasi Lokasi",
 		"form": {
 			"fields": {
 				"name": {
-					"label": "Nama Situs",
-					"placeholder": "Masukkan nama situs"
+					"label": "Nama Lokasi",
+					"placeholder": "Masukkan nama Lokasi"
 				},
 				"code": {
-					"label": "Kode Situs",
-					"placeholder": "Kode situs (dibuat otomatis)"
+					"label": "Kode Lokasi",
+					"placeholder": "Kode Lokasi (dibuat otomatis)"
 				},
 				"description": {
 					"label": "Deskripsi",
-					"placeholder": "Deskripsi situs"
+					"placeholder": "Deskripsi Lokasi"
 				},
 				"address": {
 					"label": "Alamat",
@@ -375,8 +375,8 @@
 			"actions": {
 				"reset": "Atur Ulang",
 				"loading": "Mohon tunggu...",
-				"create": "Buat Situs",
-				"update": "Perbarui Situs"
+				"create": "Buat Lokasi",
+				"update": "Perbarui Lokasi"
 			}
 		}
 	},
@@ -387,8 +387,8 @@
 			"titleEdit": "Ubah Ruangan",
 			"fields": {
 				"site": {
-					"label": "Situs",
-					"placeholder": "Pilih Situs"
+					"label": "Lokasi",
+					"placeholder": "Pilih Lokasi"
 				},
 				"name": {
 					"label": "Nama Ruangan",
@@ -428,7 +428,7 @@
 		},
 		"table": {
 			"name": "Nama Ruangan",
-			"site": "Situs",
+			"site": "Lokasi",
 			"type": "Jenis",
 			"floor": "Lantai",
 			"actions": "Aksi",
@@ -443,7 +443,7 @@
 			"deleteConfirm": "Apakah Anda yakin ingin menghapus ruangan ini?"
 		},
 		"fallback": {
-			"unknownSite": "Situs Tidak Dikenal"
+			"unknownSite": "Lokasi Tidak Dikenal"
 		}
 	}
 }

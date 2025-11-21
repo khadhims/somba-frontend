@@ -283,7 +283,7 @@
               @click="viewSiteDetails(row)"
               :title="t('controlplane.site.actions.viewDetails')"
             >
-              <i class="ki-duotone ki-element-11 fs-2">
+              <i class="ki-duotone ki-instagram fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
                 <span class="path3"></span>
