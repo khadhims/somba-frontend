@@ -5,15 +5,16 @@
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col-md-4">
-          <h4 class="card-title mb-0">Team Management</h4>
+          <h4 class="card-title mb-0">{{ t('controlplane.team.header.title') }}</h4>
           <p class="text-muted mb-0">
-            Manage teams {{ currentAccount ? `for ${currentAccount.name}` : 'for your account' }}
+            <span v-if="currentAccount">{{ t('controlplane.team.header.subtitleWithAccount', { name: currentAccount.name }) }}</span>
+            <span v-else>{{ t('controlplane.team.header.subtitleDefault') }}</span>
           </p>
         </div>
         <div class="col-md-8">
           <div class="d-flex justify-content-end gap-3">
             <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">Organization:</label>
+              <label class="form-label me-3 mb-0 fw-semibold">{{ t('controlplane.team.filters.organizationLabel') }}:</label>
               <select
                 v-model="selectedOrganizationId"
                 @change="switchOrganization"
@@ -21,7 +22,11 @@
                 :disabled="loadingOrganizations"
               >
                 <option value="" disabled>
-                  {{ loadingOrganizations ? 'Loading organizations...' : 'Select Organization' }}
+                  {{
+                    loadingOrganizations
+                      ? t('controlplane.team.filters.organizationLoading')
+                      : t('controlplane.team.filters.organizationPlaceholder')
+                  }}
                 </option>
                 <option
                   v-for="org in organizations"
@@ -35,13 +40,13 @@
               <!-- Loading spinner for organizations -->
               <div v-if="loadingOrganizations" class="ms-2">
                 <div class="spinner-border spinner-border-sm text-primary" role="status">
-                  <span class="visually-hidden">Loading...</span>
+                  <span class="visually-hidden">{{ t('controlplane.team.filters.organizationLoading') }}</span>
                 </div>
               </div>
             </div>
             
             <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">Account:</label>
+              <label class="form-label me-3 mb-0 fw-semibold">{{ t('controlplane.team.filters.accountLabel') }}:</label>
               <select
                 v-model="selectedAccountId"
                 @change="switchAccount"
@@ -49,10 +54,10 @@
                 :disabled="loadingAccounts || !selectedOrganizationId || accounts.length === 0"
               >
                 <option value="" disabled>
-                  <span v-if="!selectedOrganizationId">Select organization first</span>
-                  <span v-else-if="loadingAccounts">Loading accounts...</span>
-                  <span v-else-if="accounts.length === 0">No accounts available</span>
-                  <span v-else>Select Account</span>
+                  <span v-if="!selectedOrganizationId">{{ t('controlplane.team.filters.accountRequiresOrganization') }}</span>
+                  <span v-else-if="loadingAccounts">{{ t('controlplane.team.filters.accountLoading') }}</span>
+                  <span v-else-if="accounts.length === 0">{{ t('controlplane.team.filters.accountEmpty') }}</span>
+                  <span v-else>{{ t('controlplane.team.filters.accountPlaceholder') }}</span>
                 </option>
                 <option
                   v-for="account in accounts"
@@ -66,7 +71,7 @@
               <!-- Loading spinner for accounts -->
               <div v-if="loadingAccounts" class="ms-2">
                 <div class="spinner-border spinner-border-sm text-primary" role="status">
-                  <span class="visually-hidden">Loading...</span>
+                  <span class="visually-hidden">{{ t('controlplane.team.filters.accountLoading') }}</span>
                 </div>
               </div>
             </div>
@@ -84,7 +89,7 @@
       <span class="path2"></span>
     </i>
     <div class="d-flex flex-column">
-      <h5 class="mb-1">Error Loading Data</h5>
+      <h5 class="mb-1">{{ t('controlplane.team.error.title') }}</h5>
       <span>{{ error }}</span>
     </div>
     <button 
@@ -96,8 +101,7 @@
   </div>
   <!--end::Error Alert-->
 
-  <div class="row g-5 g-xl-8 mb-8">
-    <!--begin::Summary Cards-->
+  <!-- <div class="row g-5 g-xl-8 mb-8">
     <div class="col-xl-3">
       <Widget1
         :description="'Total Teams'"
@@ -141,7 +145,7 @@
         text-color="white"
       />
     </div>
-  </div>
+  </div> -->
   <!--end::Summary Cards-->
 
   <!--begin::Teams List-->
@@ -150,7 +154,7 @@
     <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
       <div class="card-title">
-        <h3 class="fw-bold m-0">Teams Overview</h3>
+  <h3 class="fw-bold m-0">{{ t('controlplane.team.toolbar.title') }}</h3>
       </div>
       <!--end::Card title-->
 
@@ -158,7 +162,7 @@
       <div class="card-toolbar">
         <!--begin::Items per page-->
         <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">Items:</label>
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('controlplane.team.toolbar.itemsLabel') }}</label>
           <select 
             class="form-select form-select-sm w-auto" 
             v-model.number="pagination.per_page"
@@ -183,7 +187,7 @@
             type="text"
             v-model="searchQuery"
             class="form-control form-control-solid w-250px ps-12"
-            placeholder="Search teams..."
+            :placeholder="t('controlplane.team.toolbar.searchPlaceholder')"
           />
         </div>
         <!--end::Search-->
@@ -194,7 +198,7 @@
           :disabled="!selectedAccountId"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
-          Add Team
+          {{ t('controlplane.team.toolbar.addButton') }}
         </button>
       </div>
       <!--end::Card toolbar-->
@@ -233,7 +237,7 @@
 
         <template v-slot:created_by="{ row }">
           <span class="text-dark fw-bold d-block fs-6">
-            {{ row.created_by?.username || 'Unknown' }}
+            {{ row.created_by?.username || t('controlplane.team.common.unknown') }}
           </span>
           <span class="text-muted fw-semibold text-muted d-block fs-7">
             {{ row.created_by?.email || '' }}
@@ -251,7 +255,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
               @click="showTeamMembers(row)"
-              title="Manage Members"
+              :title="t('controlplane.team.actions.viewMembers')"
             >
               <i class="ki-duotone ki-people fs-2">
                 <span class="path1"></span>
@@ -264,7 +268,7 @@
             <router-link
               :to="{ name: 'site-overview', query: { account_id: selectedAccountId } }"
               class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
-              title="Add Site"
+              :title="t('controlplane.team.actions.addSite')"
             >
               <i class="ki-duotone ki-home fs-2">
                 <span class="path1"></span>
@@ -274,7 +278,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="editTeam(row)"
-              title="Edit Team Name"
+              :title="t('controlplane.team.actions.edit')"
             >
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
@@ -284,7 +288,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
               @click="deleteTeam(row)"
-              title="Delete Team"
+              :title="t('controlplane.team.actions.delete')"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -315,23 +319,23 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Add Team</h5>
+          <h5 class="modal-title">{{ t('controlplane.team.modals.add.title') }}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <form @submit.prevent="createTeam">
           <div class="modal-body">
             <div class="row">
               <div class="col-md-12 mb-3">
-                <label class="form-label">Team Name *</label>
+                <label class="form-label">{{ t('controlplane.team.modals.add.nameLabel') }}</label>
                 <input type="text" class="form-control" v-model="newTeam.name" required>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ t('controlplane.team.modals.add.cancel') }}</button>
             <button type="submit" class="btn btn-primary" :disabled="creating">
               <span v-if="creating" class="spinner-border spinner-border-sm me-2"></span>
-              Create Team
+              {{ t('controlplane.team.modals.add.submit') }}
             </button>
           </div>
         </form>
@@ -344,23 +348,23 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Edit Team</h5>
+          <h5 class="modal-title">{{ t('controlplane.team.modals.edit.title') }}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="teamToEdit = null"></button>
         </div>
         <form @submit.prevent="updateTeam" v-if="teamToEdit">
           <div class="modal-body">
             <div class="row">
               <div class="col-md-12 mb-3">
-                <label class="form-label">Team Name *</label>
+                <label class="form-label">{{ t('controlplane.team.modals.edit.nameLabel') }}</label>
                 <input type="text" class="form-control" v-model="teamToEdit.name" required>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal" @click="teamToEdit = null">Cancel</button>
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal" @click="teamToEdit = null">{{ t('controlplane.team.modals.edit.cancel') }}</button>
             <button type="submit" class="btn btn-primary" :disabled="editing">
               <span v-if="editing" class="spinner-border spinner-border-sm me-2"></span>
-              Update Team
+              {{ t('controlplane.team.modals.edit.submit') }}
             </button>
           </div>
         </form>
@@ -373,18 +377,21 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Delete Team</h5>
+          <h5 class="modal-title">{{ t('controlplane.team.modals.delete.title') }}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>Are you sure you want to delete team <strong>{{ teamToDelete?.name }}</strong>?</p>
-          <p class="text-muted">This action cannot be undone.</p>
+          <p>
+            {{ t('controlplane.team.modals.delete.confirmPrefix') }}
+            <strong>{{ teamToDelete?.name }}</strong>{{ t('controlplane.team.modals.delete.confirmSuffix') }}
+          </p>
+          <p class="text-muted">{{ t('controlplane.team.modals.delete.warning') }}</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ t('controlplane.team.modals.delete.cancel') }}</button>
           <button type="button" class="btn btn-danger" @click="confirmDelete" :disabled="deleting">
             <span v-if="deleting" class="spinner-border spinner-border-sm me-2"></span>
-            Delete
+            {{ t('controlplane.team.modals.delete.submit') }}
           </button>
         </div>
       </div>
@@ -403,6 +410,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { Modal } from 'bootstrap'
 import Widget1 from '@/components/dashboard-default-widgets/Widget1.vue'
 import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
@@ -498,15 +506,37 @@ const teamMembershipModalRef = ref()
 const selectedTeamUid = ref('')
 
 // Table header configuration
-const tableHeader = ref([
-  { columnName: 'Team Name', columnLabel: 'name', sortEnabled: true, searchable: true },
-  { columnName: 'Created By', columnLabel: 'created_by', sortEnabled: false, searchable: false },
-  { columnName: 'Created', columnLabel: 'created_at', sortEnabled: true, searchable: false },
-  { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false, searchable: false }
+const tableHeader = computed(() => [
+  {
+    columnName: t('controlplane.team.table.teamName'),
+    columnLabel: 'name',
+    sortEnabled: true,
+    searchable: true,
+  },
+  {
+    columnName: t('controlplane.team.table.createdBy'),
+    columnLabel: 'created_by',
+    sortEnabled: false,
+    searchable: false,
+  },
+  {
+    columnName: t('controlplane.team.table.createdAt'),
+    columnLabel: 'created_at',
+    sortEnabled: true,
+    searchable: false,
+  },
+  {
+    columnName: t('controlplane.team.table.actions'),
+    columnLabel: 'actions',
+    sortEnabled: false,
+    searchable: false,
+  },
 ])
 
 // Get route instance to read query parameters
 const route = useRoute()
+
+const { t } = useI18n()
 
 // Organization-related functions
 const saveLastSelectedOrganization = (orgId: string) => {
@@ -784,7 +814,7 @@ const fetchTeams = async (page: number = 1) => {
     }
   } catch (e: any) {
     console.error('❌ Error fetching teams:', e)
-    error.value = e?.response?.data?.message || e.message || "Failed to load teams"
+    error.value = e?.response?.data?.message || e.message || t('controlplane.team.notifications.loadFailed')
   } finally {
     loading.value = false
     console.log("📋 Teams fetch complete. Total teams:", teams.value.length);
@@ -860,7 +890,7 @@ const createTeam = async () => {
       }
     }
   } catch (e: any) {
-    error.value = e?.response?.data?.message || e.message || "Failed to create team"
+    error.value = e?.response?.data?.message || e.message || t('controlplane.team.notifications.createFailed')
   } finally {
     creating.value = false
   }
@@ -892,7 +922,7 @@ const confirmDelete = async () => {
     }
     teamToDelete.value = null
   } catch (e: any) {
-    error.value = e?.response?.data?.message || e.message || "Failed to delete team"
+    error.value = e?.response?.data?.message || e.message || t('controlplane.team.notifications.deleteFailed')
   } finally {
     deleting.value = false
   }
@@ -934,7 +964,7 @@ const updateTeam = async () => {
       teamToEdit.value = null
     }
   } catch (e: any) {
-    error.value = e?.response?.data?.message || e.message || "Failed to update team"
+    error.value = e?.response?.data?.message || e.message || t('controlplane.team.notifications.updateFailed')
   } finally {
     editing.value = false
   }
@@ -1037,18 +1067,18 @@ const visiblePages = computed((): number[] => {
 // Empty table message based on current state
 const emptyTableMessage = computed(() => {
   if (!selectedOrganizationId.value) {
-    return "Please select an organization to view teams"
+    return t('controlplane.team.empty.selectOrganization')
   }
   if (!selectedAccountId.value) {
-    return "Please select an account to view teams"
+    return t('controlplane.team.empty.selectAccount')
   }
   if (loading.value) {
-    return "Loading teams..."
+    return t('controlplane.team.empty.loading')
   }
   if (searchQuery.value.trim()) {
-    return `No teams found matching "${searchQuery.value}"`
+    return t('controlplane.team.empty.searchNoResults', { query: searchQuery.value })
   }
-  return "No teams found for this account"
+  return t('controlplane.team.empty.noResults')
 })
 
 // Initialize

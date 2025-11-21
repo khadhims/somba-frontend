@@ -1,0 +1,77 @@
+{
+	"common": {
+		"unknown": "Unknown",
+		"loading": "Loading..."
+	},
+	"header": {
+		"title": "Team Management",
+		"subtitleDefault": "Manage teams for your account",
+		"subtitleWithAccount": "Manage teams for {name}"
+	},
+	"filters": {
+		"organizationLabel": "Organization",
+		"organizationPlaceholder": "Select Organization",
+		"organizationLoading": "Loading organizations...",
+		"accountLabel": "Account",
+		"accountPlaceholder": "Select Account",
+		"accountLoading": "Loading accounts...",
+		"accountEmpty": "No accounts available",
+		"accountRequiresOrganization": "Select organization first"
+	},
+	"toolbar": {
+		"title": "Teams Overview",
+		"itemsLabel": "Items:",
+		"searchPlaceholder": "Search teams...",
+		"addButton": "Add Team"
+	},
+	"table": {
+		"teamName": "Team Name",
+		"createdBy": "Created By",
+		"createdAt": "Created",
+		"actions": "Actions"
+	},
+	"actions": {
+		"viewMembers": "Manage Members",
+		"addSite": "Add Site",
+		"edit": "Edit Team Name",
+		"delete": "Delete Team"
+	},
+	"empty": {
+		"selectOrganization": "Please select an organization to view teams",
+		"selectAccount": "Please select an account to view teams",
+		"loading": "Loading teams...",
+		"searchNoResults": "No teams found matching \"{query}\"",
+		"noResults": "No teams found for this account"
+	},
+	"error": {
+		"title": "Error Loading Data"
+	},
+	"modals": {
+		"add": {
+			"title": "Add Team",
+			"nameLabel": "Team Name *",
+			"cancel": "Cancel",
+			"submit": "Create Team"
+		},
+		"edit": {
+			"title": "Edit Team",
+			"nameLabel": "Team Name *",
+			"cancel": "Cancel",
+			"submit": "Update Team"
+		},
+		"delete": {
+			"title": "Delete Team",
+			"confirmPrefix": "Are you sure you want to delete team",
+			"confirmSuffix": "?",
+			"warning": "This action cannot be undone.",
+			"cancel": "Cancel",
+			"submit": "Delete"
+		}
+	},
+	"notifications": {
+		"loadFailed": "Failed to load teams.",
+		"createFailed": "Failed to create team.",
+		"updateFailed": "Failed to update team.",
+		"deleteFailed": "Failed to delete team."
+	}
+}

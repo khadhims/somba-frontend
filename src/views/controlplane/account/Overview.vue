@@ -5,18 +5,18 @@
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col-md-6">
-          <h4 class="card-title mb-0">Payment Account Management</h4>
+          <h4 class="card-title mb-0">{{ t('controlplane.account.header.title') }}</h4>
           <p class="text-muted mb-0">
-            <span v-if="loadingOrganizations">Loading organization details...</span>
-            <span v-else-if="currentOrganization">Manage payment accounts for {{ currentOrganization.name }}</span>
-            <span v-else-if="organizations.length === 0">No organizations available</span>
-            <span v-else>Select an organization to manage payment accounts</span>
+            <span v-if="loadingOrganizations">{{ t('controlplane.account.header.subtitleLoading') }}</span>
+            <span v-else-if="currentOrganization">{{ t('controlplane.account.header.subtitleWithOrganization', { name: currentOrganization.name }) }}</span>
+            <span v-else-if="organizations.length === 0">{{ t('controlplane.account.header.subtitleNoOrganizations') }}</span>
+            <span v-else>{{ t('controlplane.account.header.subtitleSelect') }}</span>
           </p>
         </div>
         <div class="col-md-6">
           <div class="d-flex justify-content-end">
             <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">Organization:</label>
+              <label class="form-label me-3 mb-0 fw-semibold">{{ t('controlplane.account.filters.organizationLabel') }}:</label>
               <select
                 v-model="selectedOrganizationId"
                 @change="switchOrganization"
@@ -24,7 +24,11 @@
                 :disabled="loadingOrganizations"
               >
                 <option value="" disabled>
-                  {{ loadingOrganizations ? 'Loading organizations...' : 'Select Organization' }}
+                  {{
+                    loadingOrganizations
+                      ? t('controlplane.account.filters.organizationLoading')
+                      : t('controlplane.account.filters.organizationPlaceholder')
+                  }}
                 </option>
                 <option
                   v-for="org in organizations"
@@ -38,7 +42,7 @@
               <!-- Loading spinner -->
               <div v-if="loadingOrganizations" class="ms-2">
                 <div class="spinner-border spinner-border-sm text-primary" role="status">
-                  <span class="visually-hidden">Loading...</span>
+                  <span class="visually-hidden">{{ t('controlplane.account.filters.organizationLoading') }}</span>
                 </div>
               </div>
             </div>
@@ -49,8 +53,7 @@
   </div>
   <!--end::Organization Switcher-->
 
-  <div class="row g-5 g-xl-8 mb-8">
-    <!--begin::Summary Cards-->
+  <!-- <div class="row g-5 g-xl-8 mb-8">
     <div class="col-xl-3">
       <Widget1
         :description="'Total Payment Accounts'"
@@ -94,8 +97,7 @@
         text-color="white"
       />
     </div>
-  </div>
-  <!--end::Summary Cards-->
+  </div> -->
 
   <!--begin::Error Alert-->
   <div v-if="error" class="alert alert-danger d-flex align-items-center mb-5">
@@ -104,7 +106,7 @@
       <span class="path2"></span>
     </i>
     <div class="d-flex flex-column">
-      <h5 class="mb-1">Connection Error</h5>
+      <h5 class="mb-1">{{ t('controlplane.account.error.title') }}</h5>
       <span>{{ error }}</span>
     </div>
     <button 
@@ -132,7 +134,7 @@
     <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
       <div class="card-title">
-        <h3 class="fw-bold m-0">Payment Accounts Overview</h3>
+        <h3 class="fw-bold m-0">{{ t('controlplane.account.toolbar.title') }}</h3>
       </div>
       <!--end::Card title-->
 
@@ -140,7 +142,7 @@
       <div class="card-toolbar">
         <!--begin::Items per page-->
         <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">Items:</label>
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('controlplane.account.toolbar.itemsLabel') }}</label>
           <select 
             class="form-select form-select-sm w-auto" 
             v-model.number="pagination.per_page"
@@ -165,7 +167,7 @@
             type="text"
             v-model="searchQuery"
             class="form-control form-control-solid w-250px ps-12"
-            placeholder="Search payment accounts..."
+            :placeholder="t('controlplane.account.toolbar.searchPlaceholder')"
           />
         </div>
         <!--end::Search-->
@@ -181,7 +183,7 @@
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
-          {{ loading ? 'Retrying...' : 'Retry' }}
+          {{ loading ? t('controlplane.account.toolbar.retrying') : t('controlplane.account.toolbar.retry') }}
         </button>
 
         <button
@@ -190,7 +192,7 @@
           :disabled="loading || loadingOrganizations || !selectedOrganizationId"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
-          Add Payment Account
+          {{ t('controlplane.account.toolbar.addButton') }}
         </button>
       </div>
       <!--end::Card toolbar-->
@@ -206,8 +208,8 @@
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
-          <h3 class="fw-semibold text-gray-500 mb-2">No Organization Selected</h3>
-          <p class="text-muted fs-6">Please select an organization from the dropdown above to view payment accounts.</p>
+          <h3 class="fw-semibold text-gray-500 mb-2">{{ t('controlplane.account.emptyState.title') }}</h3>
+          <p class="text-muted fs-6">{{ t('controlplane.account.emptyState.description') }}</p>
         </div>
       </div>
       
@@ -226,7 +228,7 @@
         @on-sort="handleSort"
         @page-change="goToPage"
         @on-items-per-page-change="(val) => { pagination.per_page = val; changeItemsPerPage(); }"
-        empty-table-text="No payment accounts found"
+        :empty-table-text="emptyTableMessage"
       >
         <template v-slot:name="{ row }">
           <div class="d-flex align-items-center">
@@ -243,7 +245,7 @@
 
         <template v-slot:created_by="{ row }">
           <span class="text-dark fw-bold d-block fs-6">
-            {{ row.created_by?.username || 'Unknown' }}
+            {{ row.created_by?.username || t('controlplane.account.common.unknown') }}
           </span>
           <span class="text-muted fw-semibold text-muted d-block fs-7">
             {{ row.created_by?.email || '' }}
@@ -261,7 +263,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
               @click="showAccountMembers(row)"
-              title="Manage Members"
+              :title="t('controlplane.account.actions.viewMembers')"
             >
               <i class="ki-duotone ki-people fs-2">
                 <span class="path1"></span>
@@ -274,7 +276,7 @@
             <router-link
               :to="{ name: 'team-overview', query: { orgId: selectedOrganizationId, accountId: row.uid } }"
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              title="Add Team"
+              :title="t('controlplane.account.actions.addTeam')"
             >
               <i class="ki-duotone ki-profile-user fs-2">
                 <span class="path1"></span>
@@ -284,7 +286,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="editAccount(row)"
-              title="Edit Account"
+              :title="t('controlplane.account.actions.edit')"
             >
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
@@ -294,7 +296,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
               @click="deleteAccount(row)"
-              title="Delete Account"
+              :title="t('controlplane.account.actions.delete')"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -326,23 +328,23 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Add Payment Account</h5>
+          <h5 class="modal-title">{{ t('controlplane.account.modals.add.title') }}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <form @submit.prevent="createAccount">
           <div class="modal-body">
             <div class="row">
               <div class="col-md-12 mb-3">
-                <label class="form-label">Account Name *</label>
+                <label class="form-label">{{ t('controlplane.account.modals.add.nameLabel') }}</label>
                 <input type="text" class="form-control" v-model="newAccount.name" required>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ t('controlplane.account.modals.add.cancel') }}</button>
             <button type="submit" class="btn btn-primary" :disabled="creating">
               <span v-if="creating" class="spinner-border spinner-border-sm me-2"></span>
-              Create Account
+              {{ t('controlplane.account.modals.add.submit') }}
             </button>
           </div>
         </form>
@@ -355,18 +357,21 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Delete Payment Account</h5>
+          <h5 class="modal-title">{{ t('controlplane.account.modals.delete.title') }}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>Are you sure you want to delete payment account <strong>{{ accountToDelete?.name }}</strong>?</p>
-          <p class="text-muted">This action cannot be undone.</p>
+          <p>
+            {{ t('controlplane.account.modals.delete.confirmPrefix') }}
+            <strong>{{ accountToDelete?.name }}</strong>{{ t('controlplane.account.modals.delete.confirmSuffix') }}
+          </p>
+          <p class="text-muted">{{ t('controlplane.account.modals.delete.warning') }}</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ t('controlplane.account.modals.delete.cancel') }}</button>
           <button type="button" class="btn btn-danger" @click="confirmDelete" :disabled="deleting">
             <span v-if="deleting" class="spinner-border spinner-border-sm me-2"></span>
-            Delete
+            {{ t('controlplane.account.modals.delete.submit') }}
           </button>
         </div>
       </div>
@@ -378,23 +383,23 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Edit Payment Account</h5>
+          <h5 class="modal-title">{{ t('controlplane.account.modals.edit.title') }}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="accountToEdit = null"></button>
         </div>
         <form @submit.prevent="updateAccount" v-if="accountToEdit">
           <div class="modal-body">
             <div class="row">
               <div class="col-md-12 mb-3">
-                <label class="form-label">Account Name *</label>
+                <label class="form-label">{{ t('controlplane.account.modals.edit.nameLabel') }}</label>
                 <input type="text" class="form-control" v-model="accountToEdit.name" required>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal" @click="accountToEdit = null">Cancel</button>
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal" @click="accountToEdit = null">{{ t('controlplane.account.modals.edit.cancel') }}</button>
             <button type="submit" class="btn btn-primary" :disabled="editing">
               <span v-if="editing" class="spinner-border spinner-border-sm me-2"></span>
-              Update Account
+              {{ t('controlplane.account.modals.edit.submit') }}
             </button>
           </div>
         </form>
@@ -414,6 +419,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { Modal } from 'bootstrap'
 import Widget1 from '@/components/dashboard-default-widgets/Widget1.vue'
 import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
@@ -491,13 +497,31 @@ const accountToDelete = ref<Account | null>(null)
 const accountMembershipModalRef = ref()
 const selectedAccountUid = ref('')
 
+const { t } = useI18n()
+
 // Table header configuration
-const tableHeader = ref([
-  { columnName: 'Account Name', columnLabel: 'name', sortEnabled: true, searchable: true },
-  { columnName: 'Created By', columnLabel: 'created_by', sortEnabled: false, searchable: false },
-  { columnName: 'Created', columnLabel: 'created_at', sortEnabled: true, searchable: false },
-  { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false, searchable: false }
+const tableHeader = computed(() => [
+  { columnName: t('controlplane.account.table.accountName'), columnLabel: 'name', sortEnabled: true, searchable: true },
+  { columnName: t('controlplane.account.table.createdBy'), columnLabel: 'created_by', sortEnabled: false, searchable: false },
+  { columnName: t('controlplane.account.table.createdAt'), columnLabel: 'created_at', sortEnabled: true, searchable: false },
+  { columnName: t('controlplane.account.table.actions'), columnLabel: 'actions', sortEnabled: false, searchable: false },
 ])
+
+const emptyTableMessage = computed(() => {
+  if (loadingOrganizations.value) {
+    return t('controlplane.account.filters.organizationLoading')
+  }
+  if (!selectedOrganizationId.value) {
+    return t('controlplane.account.empty.selectOrganization')
+  }
+  if (loading.value) {
+    return t('controlplane.account.empty.loading')
+  }
+  if (searchQuery.value.trim()) {
+    return t('controlplane.account.empty.searchNoResults', { query: searchQuery.value })
+  }
+  return t('controlplane.account.empty.noResults')
+})
 
 // Fetch accounts from API
 const fetchAccounts = async (page: number = 1) => {
@@ -591,7 +615,7 @@ const fetchAccounts = async (page: number = 1) => {
     }
   } catch (e: any) {
     console.error("💥 Error fetching accounts:", e);
-    error.value = e?.response?.data?.message || e.message || "Failed to load accounts"
+    error.value = e?.response?.data?.message || e.message || t('controlplane.account.error.loadFailed')
   } finally {
     loading.value = false
   }
@@ -729,7 +753,7 @@ const createAccount = async () => {
       }
     }
   } catch (e: any) {
-    error.value = e?.response?.data?.message || e.message || "Failed to create account"
+    error.value = e?.response?.data?.message || e.message || t('controlplane.account.error.createFailed')
   } finally {
     creating.value = false
   }
@@ -763,7 +787,7 @@ const confirmDelete = async () => {
     }
     accountToDelete.value = null
   } catch (e: any) {
-    error.value = e?.response?.data?.message || e.message || "Failed to delete account"
+    error.value = e?.response?.data?.message || e.message || t('controlplane.account.error.deleteFailed')
   } finally {
     deleting.value = false
   }
@@ -800,7 +824,7 @@ const updateAccount = async () => {
       accountToEdit.value = null
     }
   } catch (e: any) {
-    error.value = e?.response?.data?.message || e.message || "Failed to update account"
+    error.value = e?.response?.data?.message || e.message || t('controlplane.account.error.updateFailed')
   } finally {
     editing.value = false
   }
@@ -921,7 +945,7 @@ const fetchOrganizations = async () => {
     }
   } catch (e: any) {
     console.error('Failed to load organizations:', e)
-    error.value = "Failed to load organizations. Please refresh the page."
+    error.value = t('controlplane.account.error.organizationsFailed')
   } finally {
     loadingOrganizations.value = false
   }

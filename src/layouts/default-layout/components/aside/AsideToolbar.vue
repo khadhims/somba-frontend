@@ -17,7 +17,7 @@
         <div class="flex-grow-1 me-2">
           <!--begin::Username-->
           <a href="#" class="text-white text-hover-primary fs-6 fw-semibold"
-            >Paul Melone</a
+            >User</a
           >
           <!--end::Username-->
 

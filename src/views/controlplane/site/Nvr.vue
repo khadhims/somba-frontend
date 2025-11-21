@@ -5,7 +5,7 @@
     <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
       <div class="card-title">
-        <h3 class="fw-bold m-0">NVR Management</h3>
+        <h3 class="fw-bold m-0">{{ t("controlplane.site.nvr.title") }}</h3>
       </div>
       <!--end::Card title-->
 
@@ -14,13 +14,17 @@
         <!-- per-page select moved to pagination area below the table -->
 
         <div class="me-3 d-flex align-items-center">
-          <label class="form-label me-3 mb-0 fw-semibold">Site:</label>
+          <label class="form-label me-3 mb-0 fw-semibold">
+            {{ t("controlplane.site.nvr.filters.siteLabel") }}
+          </label>
           <select
             v-model="selectedSiteFilter"
             @change="onFilterSiteChange"
             class="form-select form-select-solid w-200px"
           >
-            <option value="">All Sites</option>
+            <option value="">
+              {{ t("controlplane.site.nvr.filters.sitePlaceholder") }}
+            </option>
             <option v-for="site in sites" :key="site.uid" :value="site.uid">
               {{ site.name }}
             </option>
@@ -39,7 +43,13 @@
       <div v-if="showNvrForm" class="mb-10">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">{{ isEdit ? "Edit NVR" : "Add NVR" }}</h3>
+            <h3 class="card-title">
+              {{
+                isEdit
+                  ? t("controlplane.site.nvr.form.titleEdit")
+                  : t("controlplane.site.nvr.form.titleCreate")
+              }}
+            </h3>
             <div class="card-toolbar">
               <button
                 type="button"
@@ -60,7 +70,9 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">Site</label>
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.nvr.form.fields.site.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Select-->
                   <select
@@ -69,7 +81,9 @@
                     class="form-select form-select-solid"
                     required
                   >
-                    <option value="">Select Site</option>
+                    <option value="">
+                      {{ t("controlplane.site.nvr.form.fields.site.placeholder") }}
+                    </option>
                     <option
                       v-for="site in sites"
                       :key="site.uid"
@@ -85,14 +99,18 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">Room</label>
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.nvr.form.fields.room.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Select-->
                   <select
                     v-model="nvrForm.roomId"
                     class="form-select form-select-solid"
                   >
-                    <option value="">Select Room</option>
+                    <option value="">
+                      {{ t("controlplane.site.nvr.form.fields.room.placeholder") }}
+                    </option>
                     <option
                       v-for="room in availableRooms"
                       :key="room.id"
@@ -112,14 +130,16 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">NVR Name</label>
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.nvr.form.fields.name.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
                     type="text"
                     v-model="nvrForm.name"
                     class="form-control form-control-solid"
-                    placeholder="Enter NVR name"
+                    :placeholder="t('controlplane.site.nvr.form.fields.name.placeholder')"
                     required
                   />
                   <!--end::Input-->
@@ -129,16 +149,16 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2"
-                    >Endpoint URL</label
-                  >
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.nvr.form.fields.endpoint.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
                     type="text"
                     v-model="nvrForm.public_endpoint_url"
                     class="form-control form-control-solid"
-                    placeholder="192.168.1.100"
+                    :placeholder="t('controlplane.site.nvr.form.fields.endpoint.placeholder')"
                     required
                   />
                   <!--end::Input-->
@@ -152,7 +172,9 @@
                 <!--begin::Col-->
                 <div class="col-md-4">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">Type</label>
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.nvr.form.fields.type.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Select-->
                   <select
@@ -160,9 +182,15 @@
                     class="form-select form-select-solid"
                     required
                   >
-                    <option value="NVR">NVR</option>
-                    <option value="DVR">DVR</option>
-                    <option value="HYBRID">HYBRID</option>
+                    <option value="NVR">
+                      {{ t("controlplane.site.nvr.form.fields.type.options.nvr") }}
+                    </option>
+                    <option value="DVR">
+                      {{ t("controlplane.site.nvr.form.fields.type.options.dvr") }}
+                    </option>
+                    <option value="HYBRID">
+                      {{ t("controlplane.site.nvr.form.fields.type.options.hybrid") }}
+                    </option>
                   </select>
                   <!--end::Select-->
                 </div>
@@ -171,7 +199,9 @@
                 <!--begin::Col-->
                 <div class="col-md-4">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">Brand</label>
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.nvr.form.fields.brand.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Select-->
                   <select
@@ -179,12 +209,24 @@
                     class="form-select form-select-solid"
                     required
                   >
-                    <option value="">Select Brand</option>
-                    <option value="Hikvision">Hikvision</option>
-                    <option value="Dahua">Dahua</option>
-                    <option value="Uniview">Uniview</option>
-                    <option value="Tiandy">Tiandy</option>
-                    <option value="Other">Other</option>
+                    <option value="">
+                      {{ t("controlplane.site.nvr.form.fields.brand.placeholder") }}
+                    </option>
+                    <option value="Hikvision">
+                      {{ t("controlplane.site.nvr.form.fields.brand.options.hikvision") }}
+                    </option>
+                    <option value="Dahua">
+                      {{ t("controlplane.site.nvr.form.fields.brand.options.dahua") }}
+                    </option>
+                    <option value="Uniview">
+                      {{ t("controlplane.site.nvr.form.fields.brand.options.uniview") }}
+                    </option>
+                    <option value="Tiandy">
+                      {{ t("controlplane.site.nvr.form.fields.brand.options.tiandy") }}
+                    </option>
+                    <option value="Other">
+                      {{ t("controlplane.site.nvr.form.fields.brand.options.other") }}
+                    </option>
                   </select>
                   <!--end::Select-->
                 </div>
@@ -193,14 +235,16 @@
                 <!--begin::Col-->
                 <div class="col-md-4">
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">Model</label>
+                  <label class="fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.nvr.form.fields.model.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
                     type="text"
                     v-model="nvrForm.model"
                     class="form-control form-control-solid"
-                    placeholder="Model number"
+                    :placeholder="t('controlplane.site.nvr.form.fields.model.placeholder')"
                   />
                   <!--end::Input-->
                 </div>
@@ -213,14 +257,16 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">Username</label>
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.nvr.form.fields.username.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
                     type="text"
                     v-model="nvrForm.username"
                     class="form-control form-control-solid"
-                    placeholder="Username"
+                    :placeholder="t('controlplane.site.nvr.form.fields.username.placeholder')"
                   />
                   <!--end::Input-->
                 </div>
@@ -229,14 +275,16 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">Password</label>
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.nvr.form.fields.password.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
                     type="password"
                     v-model="nvrForm.password"
                     class="form-control form-control-solid"
-                    placeholder="Password"
+                    :placeholder="t('controlplane.site.nvr.form.fields.password.placeholder')"
                   />
                   <!--end::Input-->
                 </div>
@@ -251,14 +299,16 @@
                 <!--begin::Col-->
                 <div class="col-md-4">
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">Port</label>
+                  <label class="fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.nvr.form.fields.port.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
                     type="number"
                     v-model="nvrForm.port"
                     class="form-control form-control-solid"
-                    placeholder="8000"
+                    :placeholder="t('controlplane.site.nvr.form.fields.port.placeholder')"
                     min="1"
                     max="65535"
                   />
@@ -269,14 +319,16 @@
                 <!--begin::Col-->
                 <div class="col-md-4">
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">Channels</label>
+                  <label class="fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.nvr.form.fields.channels.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
                     type="number"
                     v-model="nvrForm.channels"
                     class="form-control form-control-solid"
-                    placeholder="16"
+                    :placeholder="t('controlplane.site.nvr.form.fields.channels.placeholder')"
                     min="1"
                     max="64"
                   />
@@ -287,11 +339,17 @@
                 <!--begin::Col-->
                 <div class="col-md-4">
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">Status</label>
+                  <label class="fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.nvr.form.fields.status.label") }}
+                  </label>
                   <!--end::Label-->
                   <select v-model="nvrForm.is_active" class="form-select form-select-solid">
-                    <option :value="true">Active</option>
-                    <option :value="false">Inactive</option>
+                    <option :value="true">
+                      {{ t("controlplane.site.nvr.form.fields.status.options.active") }}
+                    </option>
+                    <option :value="false">
+                      {{ t("controlplane.site.nvr.form.fields.status.options.inactive") }}
+                    </option>
                   </select>
                 </div>
                 <!--end::Col-->
@@ -305,7 +363,7 @@
                   class="btn btn-light me-3"
                   @click="closeForm"
                 >
-                  Cancel
+                  {{ t("controlplane.site.nvr.form.actions.cancel") }}
                 </button>
                 <button
                   type="submit"
@@ -313,13 +371,17 @@
                   :disabled="isLoading"
                 >
                   <span v-if="isLoading" class="indicator-progress">
-                    Please wait...
+                    {{ t("controlplane.site.nvr.form.actions.loading") }}
                     <span
                       class="spinner-border spinner-border-sm align-middle ms-2"
                     ></span>
                   </span>
                   <span v-else class="indicator-label">
-                    {{ isEdit ? "Update NVR" : "Save NVR" }}
+                    {{
+                      isEdit
+                        ? t("controlplane.site.nvr.form.actions.update")
+                        : t("controlplane.site.nvr.form.actions.create")
+                    }}
                   </span>
                 </button>
               </div>
@@ -333,7 +395,9 @@
       <!--begin::Controls (below form, above table) -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center">
-          <span class="me-2">Items:</span>
+          <span class="me-2">
+            {{ t("controlplane.site.nvr.toolbar.itemsLabel") }}
+          </span>
           <select v-model="perPage" @change="onPerPageChange" class="form-select form-select-solid w-75px">
             <option :value="1">1</option>
             <option :value="5">5</option>
@@ -353,7 +417,7 @@
               type="text"
               v-model="searchQuery"
               class="form-control form-control-solid w-250px ps-12"
-              placeholder="Search NVRs..."
+              :placeholder="t('controlplane.site.nvr.toolbar.searchPlaceholder')"
             />
           </div>
 
@@ -363,7 +427,7 @@
               @click="showNvrForm = true"
             >
               <i class="ki-duotone ki-plus fs-2 me-1"></i>
-              Add NVR
+              {{ t("controlplane.site.nvr.toolbar.addButton") }}
             </button>
           </div>
         </div>
@@ -380,7 +444,7 @@
         :sort-label="sortLabel"
         :sort-order="sortOrder"
         @on-sort="handleSort"
-        empty-table-text="No NVRs found"
+        :empty-table-text="t('controlplane.site.nvr.table.empty')"
       >
         <template v-slot:name="{ row }">
           <div class="d-flex align-items-center">
@@ -426,11 +490,9 @@
 
         <template v-slot:status="{ row }">
           <span
-            :class="`badge badge-light-${
-              row.is_active ? 'success' : 'danger'
-            } fs-7 fw-bold`"
+            :class="`badge badge-light-${statusBadgeVariant(row.is_active)} fs-7 fw-bold`"
           >
-            {{ row.is_active ? 'Active' : 'Inactive' }}
+            {{ resolveStatusLabel(row.is_active) }}
           </span>
         </template>
 
@@ -439,7 +501,7 @@
             <router-link
               :to="`/controlplane/site/camera?nvrId=${row.uid}`"
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              title="Manage Cameras"
+              :title="t('controlplane.site.nvr.actions.manageCameras')"
             >
               <i class="ki-duotone ki-picture fs-2">
                 <span class="path1"></span>
@@ -449,7 +511,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="editNvr(row)"
-              title="Edit NVR"
+              :title="t('controlplane.site.nvr.actions.edit')"
             >
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
@@ -459,7 +521,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
               @click="deleteNvr(row.uid)"
-              title="Delete NVR"
+              :title="t('controlplane.site.nvr.actions.delete')"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -495,6 +557,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import Pagination from '@/components/common/Pagination.vue';
 import ApiService from '@/core/services/ApiService';
@@ -549,6 +612,8 @@ interface NvrForm {
 // Router
 const route = useRoute();
 
+const { t } = useI18n();
+
 // Reactive data
 const isLoading = ref(false);
 const showNvrForm = ref(false);
@@ -584,44 +649,50 @@ const nvrForm = ref<NvrForm>({
 });
 
 // Table header configuration
-const tableHeader = ref([
+const tableHeader = computed(() => [
   {
-    columnName: "NVR Name",
+    columnName: t("controlplane.site.nvr.table.name"),
     columnLabel: "name",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Location",
+    columnName: t("controlplane.site.nvr.table.location"),
     columnLabel: "location",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Brand",
+    columnName: t("controlplane.site.nvr.table.brand"),
     columnLabel: "brand",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Channels",
+    columnName: t("controlplane.site.nvr.table.channels"),
     columnLabel: "channels",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: "Status",
+    columnName: t("controlplane.site.nvr.table.status"),
     columnLabel: "status",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Actions",
+    columnName: t("controlplane.site.nvr.table.actions"),
     columnLabel: "actions",
     sortEnabled: false,
     searchable: false,
   },
 ]);
+
+const statusBadgeVariant = (isActive?: boolean) =>
+  isActive ? "success" : "danger";
+
+const resolveStatusLabel = (isActive?: boolean) =>
+  t(`controlplane.site.nvr.status.${isActive ? "active" : "inactive"}`);
 
 // Computed
 const availableRooms = computed(() => {
@@ -678,12 +749,12 @@ const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
 // Methods
 const getSiteName = (siteId: string): string => {
   const site = sites.value.find((s) => s.uid === siteId);
-  return site ? site.name : "Unknown Site";
+  return site ? site.name : t("controlplane.site.nvr.fallback.unknownSite");
 };
 
 const getRoomName = (roomId: number): string => {
   const room = rooms.value.find((r) => r.id === roomId);
-  return room ? room.name : "Unknown Room";
+  return room ? room.name : t("controlplane.site.nvr.fallback.unknownRoom");
 };
 
 const onSiteChange = () => {
@@ -949,7 +1020,7 @@ const editNvr = async (nvr: Nvr) => {
 };
 
 const deleteNvr = async (nvrUid: string) => {
-  if (!confirm("Are you sure you want to delete this NVR?")) return;
+  if (!confirm(t("controlplane.site.nvr.notifications.deleteConfirm"))) return;
 
   isLoading.value = true;
 

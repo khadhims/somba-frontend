@@ -4,22 +4,26 @@
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col-md-4">
-          <h4 class="card-title mb-0">Recording & Playback</h4>
+          <h4 class="card-title mb-0">{{ t('appsRecordingPlayback.overview.title') }}</h4>
           <p class="text-muted mb-0">
-            Manage recordings {{ currentSite ? `for ${currentSite.name}` : 'across all sites' }}
+            {{
+              currentSite
+                ? t('appsRecordingPlayback.overview.subtitleSite', { site: currentSite.name })
+                : t('appsRecordingPlayback.overview.subtitleAll')
+            }}
           </p>
         </div>
         <div class="col-md-8">
           <div class="d-flex justify-content-end gap-3">
             <div class="d-flex align-items-center" v-if="sites.length > 0">
-              <label class="form-label me-3 mb-0 fw-semibold">Site:</label>
+              <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsRecordingPlayback.filters.siteLabel') }}</label>
               <select
                 v-model="selectedSiteId"
                 @change="switchSite"
                 class="form-select form-select-solid w-200px"
                 :disabled="loadingSites"
               >
-                <option value="">All Sites</option>
+                <option value="">{{ t('appsRecordingPlayback.filters.siteAll') }}</option>
                 <option
                   v-for="site in sites"
                   :key="site.uid"
@@ -39,9 +43,9 @@
     <!--begin::Summary Cards-->
     <div class="col-xl-3">
       <Widget1
-        :description="'Total Storage'"
-        :value="`${totalStorageGB}GB`"
-        :progress-text="`${usedStorageGB}GB Used`"
+        :description="t('appsRecordingPlayback.cards.totalStorage.title')"
+        :value="totalStorageValue"
+        :progress-text="totalStorageProgress"
         :progress-value="storageUsedPercentage"
         bg-color="#1B84FF"
         text-color="white"
@@ -50,9 +54,9 @@
 
     <div class="col-xl-3">
       <Widget1
-        :description="'Recording Cameras'"
-        :value="recordingCameras"
-        :progress-text="`${totalCameras} Total`"
+        :description="t('appsRecordingPlayback.cards.recordingCameras.title')"
+        :value="recordingCamerasValue"
+        :progress-text="recordingCamerasProgress"
         :progress-value="recordingPercentage"
         bg-color="#17C653"
         text-color="white"
@@ -61,9 +65,9 @@
 
     <div class="col-xl-3">
       <Widget1
-        :description="'Recordings Today'"
-        :value="recordingsToday"
-        :progress-text="`${totalRecordings} Total`"
+        :description="t('appsRecordingPlayback.cards.recordingsToday.title')"
+        :value="recordingsTodayValue"
+        :progress-text="recordingsTodayProgress"
         :progress-value="recordingsTodayPercentage"
         bg-color="#3699FF"
         text-color="white"
@@ -72,9 +76,9 @@
 
     <div class="col-xl-3">
       <Widget1
-        :description="'Average Duration'"
-        :value="`${avgDurationMinutes}m`"
-        :progress-text="`Per Recording`"
+        :description="t('appsRecordingPlayback.cards.averageDuration.title')"
+        :value="avgDurationValue"
+        :progress-text="t('appsRecordingPlayback.cards.averageDuration.progress')"
         :progress-value="100"
         bg-color="#FFA800"
         text-color="white"
@@ -87,16 +91,16 @@
   <div class="card mb-5">
     <div class="card-header">
       <div class="card-title">
-        <h3 class="fw-bold">Recording Controls</h3>
+        <h3 class="fw-bold">{{ t('appsRecordingPlayback.controls.title') }}</h3>
       </div>
       <div class="card-toolbar">
         <button @click="startAllRecording" class="btn btn-sm btn-success me-2">
           <i class="ki-duotone ki-play fs-2"></i>
-          Start All
+          {{ t('appsRecordingPlayback.controls.startAll') }}
         </button>
         <button @click="stopAllRecording" class="btn btn-sm btn-danger">
           <i class="ki-duotone ki-stop fs-2"></i>
-          Stop All
+          {{ t('appsRecordingPlayback.controls.stopAll') }}
         </button>
       </div>
     </div>
@@ -115,7 +119,11 @@
                   class="badge"
                   :class="camera.recording ? 'badge-success' : 'badge-secondary'"
                 >
-                  {{ camera.recording ? 'Recording' : 'Stopped' }}
+                  {{
+                    camera.recording
+                      ? t('appsRecordingPlayback.controls.status.recording')
+                      : t('appsRecordingPlayback.controls.status.stopped')
+                  }}
                 </span>
               </div>
               <div class="text-muted mb-3">{{ camera.room }}</div>
@@ -126,7 +134,7 @@
                   class="btn btn-sm btn-success flex-fill"
                 >
                   <i class="ki-duotone ki-play fs-6"></i>
-                  Start
+                  {{ t('appsRecordingPlayback.controls.buttons.start') }}
                 </button>
                 <button
                   v-else
@@ -134,14 +142,14 @@
                   class="btn btn-sm btn-danger flex-fill"
                 >
                   <i class="ki-duotone ki-stop fs-6"></i>
-                  Stop
+                  {{ t('appsRecordingPlayback.controls.buttons.stop') }}
                 </button>
                 <button
                   @click="viewLive(camera)"
                   class="btn btn-sm btn-primary flex-fill"
                 >
                   <i class="ki-duotone ki-eye fs-6"></i>
-                  Live
+                  {{ t('appsRecordingPlayback.controls.buttons.live') }}
                 </button>
               </div>
             </div>
@@ -158,7 +166,7 @@
     <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
       <div class="card-title">
-        <h3 class="fw-bold m-0">Recorded Videos</h3>
+        <h3 class="fw-bold m-0">{{ t('appsRecordingPlayback.list.title') }}</h3>
       </div>
       <!--end::Card title-->
 
@@ -174,7 +182,7 @@
             type="text"
             v-model="searchQuery"
             class="form-control form-control-solid w-250px ps-12"
-            placeholder="Search recordings..."
+            :placeholder="t('appsRecordingPlayback.list.searchPlaceholder')"
           />
         </div>
         <!--end::Search-->
@@ -196,7 +204,7 @@
             @change="filterByCamera"
             class="form-select form-select-solid w-150px"
           >
-            <option value="">All Cameras</option>
+            <option value="">{{ t('appsRecordingPlayback.list.cameraFilterAll') }}</option>
             <option
               v-for="camera in cameras"
               :key="camera.uid"
@@ -209,7 +217,7 @@
 
         <button @click="refreshRecordings" class="btn btn-sm btn-light-primary">
           <i class="ki-duotone ki-arrows-circle fs-2"></i>
-          Refresh
+          {{ t('appsRecordingPlayback.list.refresh') }}
         </button>
       </div>
       <!--end::Card toolbar-->
@@ -229,7 +237,7 @@
         :sort-order="sortOrder"
         @on-sort="handleSort"
         @on-items-select="handleItemsSelect"
-        empty-table-text="No recordings found"
+        :empty-table-text="t('appsRecordingPlayback.list.table.empty')"
       >
         <template v-slot:camera="{ row }">
           <div class="d-flex align-items-center">
@@ -275,7 +283,7 @@
             class="badge"
             :class="getRecordingTypeBadgeClass(row.type)"
           >
-            {{ row.type }}
+            {{ getRecordingTypeLabel(row.type) }}
           </span>
         </template>
 
@@ -284,14 +292,14 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="playRecording(row)"
-              title="Play Recording"
+              :title="t('appsRecordingPlayback.list.table.actions.play')"
             >
               <i class="ki-duotone ki-play fs-2"></i>
             </button>
             <button
               class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
               @click="downloadRecording(row)"
-              title="Download"
+              :title="t('appsRecordingPlayback.list.table.actions.download')"
             >
               <i class="ki-duotone ki-download fs-2">
                 <span class="path1"></span>
@@ -301,7 +309,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
               @click="deleteRecording(row)"
-              title="Delete Recording"
+              :title="t('appsRecordingPlayback.list.table.actions.delete')"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -321,7 +329,7 @@
           <div class="card-body py-3">
             <div class="d-flex align-items-center justify-content-between">
               <span class="fw-bold">
-                {{ selectedRecordings.length }} recording(s) selected
+                {{ t('appsRecordingPlayback.list.bulk.selected', { count: selectedRecordings.length }) }}
               </span>
               <div class="d-flex gap-2">
                 <button
@@ -329,14 +337,14 @@
                   class="btn btn-sm btn-success"
                 >
                   <i class="ki-duotone ki-download fs-6"></i>
-                  Download Selected
+                  {{ t('appsRecordingPlayback.list.bulk.download') }}
                 </button>
                 <button
                   @click="bulkDelete"
                   class="btn btn-sm btn-danger"
                 >
                   <i class="ki-duotone ki-trash fs-6"></i>
-                  Delete Selected
+                  {{ t('appsRecordingPlayback.list.bulk.delete') }}
                 </button>
               </div>
             </div>
@@ -355,6 +363,7 @@ import { ref, computed, onMounted } from "vue";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
+import { useI18n } from "vue-i18n";
 
 // Interface definitions
 interface Recording {
@@ -384,6 +393,14 @@ interface Site {
   name: string;
 }
 
+const { t } = useI18n();
+
+const formatNumber = (value: number, maximumFractionDigits = 0) =>
+  new Intl.NumberFormat(undefined, {
+    maximumFractionDigits,
+    minimumFractionDigits: 0,
+  }).format(value);
+
 // Reactive data
 const recordings = ref<Recording[]>([]);
 const cameras = ref<Camera[]>([]);
@@ -400,39 +417,39 @@ const currentSite = ref<Site | null>(null);
 const selectedRecordings = ref<Recording[]>([]);
 
 // Table header configuration
-const tableHeader = ref([
+const tableHeader = computed(() => [
   {
-    columnName: "Camera",
+    columnName: t('appsRecordingPlayback.list.table.columns.camera'),
     columnLabel: "camera",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Start Time",
+    columnName: t('appsRecordingPlayback.list.table.columns.startTime'),
     columnLabel: "start_time",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: "Duration",
+    columnName: t('appsRecordingPlayback.list.table.columns.duration'),
     columnLabel: "duration",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: "File Size",
+    columnName: t('appsRecordingPlayback.list.table.columns.fileSize'),
     columnLabel: "file_size",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: "Type",
+    columnName: t('appsRecordingPlayback.list.table.columns.type'),
     columnLabel: "type",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: "Actions",
+    columnName: t('appsRecordingPlayback.list.table.columns.actions'),
     columnLabel: "actions",
     sortEnabled: false,
     searchable: false,
@@ -628,7 +645,7 @@ const downloadRecording = (recording: Recording) => {
 };
 
 const deleteRecording = async (recording: Recording) => {
-  if (confirm(`Are you sure you want to delete this recording?`)) {
+  if (confirm(t('appsRecordingPlayback.list.bulk.confirmSingle'))) {
     try {
       // TODO: API call to delete recording
       // await ApiService.delete(`/recordings/${recording.uid}`);
@@ -655,7 +672,7 @@ const bulkDownload = () => {
 };
 
 const bulkDelete = async () => {
-  if (confirm(`Are you sure you want to delete ${selectedRecordings.value.length} recording(s)?`)) {
+  if (confirm(t('appsRecordingPlayback.list.bulk.confirmMultiple', { count: selectedRecordings.value.length }))) {
     try {
       for (const recording of selectedRecordings.value) {
         // TODO: API call to delete recording
@@ -676,28 +693,62 @@ const bulkDelete = async () => {
 
 // Utility methods
 const formatDuration = (seconds: number): string => {
+  if (!Number.isFinite(seconds) || seconds < 0) {
+    return t('appsRecordingPlayback.format.notAvailable');
+  }
+
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-  
+  const secs = Math.floor(seconds % 60);
+
   if (hours > 0) {
-    return `${hours}h ${minutes}m ${secs}s`;
-  } else if (minutes > 0) {
-    return `${minutes}m ${secs}s`;
-  } else {
-    return `${secs}s`;
+    return t('appsRecordingPlayback.format.duration.hoursMinutesSeconds', {
+      hours,
+      minutes,
+      seconds: secs,
+    });
   }
+
+  if (minutes > 0) {
+    return t('appsRecordingPlayback.format.duration.minutesSeconds', {
+      minutes,
+      seconds: secs,
+    });
+  }
+
+  return t('appsRecordingPlayback.format.duration.seconds', { seconds: secs });
 };
 
 const formatFileSize = (bytes: number): string => {
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-  if (bytes === 0) return '0 B';
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${Math.round(bytes / Math.pow(1024, i) * 100) / 100} ${sizes[i]}`;
+  if (!Number.isFinite(bytes) || bytes <= 0) {
+    return t('appsRecordingPlayback.format.fileSize', { value: '0', unit: 'B' });
+  }
+
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  const value = bytes / Math.pow(1024, index);
+  const formatted = new Intl.NumberFormat(undefined, {
+    maximumFractionDigits: value >= 10 ? 1 : 2,
+    minimumFractionDigits: 0,
+  }).format(value);
+
+  return t('appsRecordingPlayback.format.fileSize', {
+    value: formatted,
+    unit: units[index],
+  });
+};
+
+const normalizeKey = (value?: string) => (value ?? '').toLowerCase().replace(/[\s_-]/g, '');
+
+const typeKeyMap: Record<string, string> = {
+  scheduled: 'scheduled',
+  motion: 'motion',
+  manual: 'manual',
+  unknown: 'unknown',
 };
 
 const getRecordingTypeBadgeClass = (type: string) => {
-  switch (type) {
+  switch (normalizeKey(type)) {
     case 'scheduled':
       return 'badge-light-primary';
     case 'motion':
@@ -707,6 +758,11 @@ const getRecordingTypeBadgeClass = (type: string) => {
     default:
       return 'badge-light-secondary';
   }
+};
+
+const getRecordingTypeLabel = (type: string) => {
+  const key = typeKeyMap[normalizeKey(type)];
+  return key ? t(`appsRecordingPlayback.list.table.types.${key}`) : type;
 };
 
 // Computed properties
@@ -720,7 +776,8 @@ const filteredAndSortedRecordings = computed(() => {
       (recording) =>
         recording.camera_name.toLowerCase().includes(query) ||
         recording.room.toLowerCase().includes(query) ||
-        recording.type.toLowerCase().includes(query)
+        recording.type.toLowerCase().includes(query) ||
+        getRecordingTypeLabel(recording.type).toLowerCase().includes(query)
     );
   }
 
@@ -796,6 +853,49 @@ const recordingPercentage = computed(() =>
 
 const recordingsTodayPercentage = computed(() =>
   totalRecordings.value > 0 ? Math.round((recordingsToday.value / totalRecordings.value) * 100) : 0
+);
+
+const totalStorageValue = computed(() =>
+  t('appsRecordingPlayback.cards.totalStorage.value', {
+    total: formatNumber(totalStorageGB.value, 0),
+  })
+);
+
+const totalStorageProgress = computed(() =>
+  t('appsRecordingPlayback.cards.totalStorage.progress', {
+    used: formatNumber(usedStorageGB.value, 0),
+    total: formatNumber(totalStorageGB.value, 0),
+  })
+);
+
+const recordingCamerasValue = computed(() =>
+  t('appsRecordingPlayback.cards.recordingCameras.value', {
+    count: formatNumber(recordingCameras.value, 0),
+  })
+);
+
+const recordingCamerasProgress = computed(() =>
+  t('appsRecordingPlayback.cards.recordingCameras.progress', {
+    total: formatNumber(totalCameras.value, 0),
+  })
+);
+
+const recordingsTodayValue = computed(() =>
+  t('appsRecordingPlayback.cards.recordingsToday.value', {
+    count: formatNumber(recordingsToday.value, 0),
+  })
+);
+
+const recordingsTodayProgress = computed(() =>
+  t('appsRecordingPlayback.cards.recordingsToday.progress', {
+    total: formatNumber(totalRecordings.value, 0),
+  })
+);
+
+const avgDurationValue = computed(() =>
+  t('appsRecordingPlayback.cards.averageDuration.value', {
+    value: formatNumber(avgDurationMinutes.value, 0),
+  })
 );
 
 // Methods

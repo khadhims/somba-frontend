@@ -4,9 +4,9 @@
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col-md-4">
-          <h4 class="card-title mb-0">Recording & Playback Settings</h4>
+          <h4 class="card-title mb-0">{{ t('appsRecordingPlayback.settings.header.title') }}</h4>
           <p class="text-muted mb-0">
-            Configure recording schedules and storage settings
+            {{ t('appsRecordingPlayback.settings.header.description') }}
           </p>
         </div>
       </div>
@@ -19,70 +19,84 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title">
-            <h3 class="fw-bold">Recording Configuration</h3>
+            <h3 class="fw-bold">{{ t('appsRecordingPlayback.settings.recording.title') }}</h3>
           </div>
         </div>
         <div class="card-body">
           <form @submit.prevent="saveRecordingSettings">
             <!--begin::Recording Mode-->
             <div class="mb-7">
-              <label class="form-label">Recording Mode</label>
+              <label class="form-label">{{ t('appsRecordingPlayback.settings.recording.mode.label') }}</label>
               <select
                 v-model="recordingSettings.mode"
                 class="form-select form-select-solid"
               >
-                <option value="continuous">Continuous Recording</option>
-                <option value="scheduled">Scheduled Recording</option>
-                <option value="motion">Motion-Based Recording</option>
-                <option value="hybrid">Hybrid (Motion + Scheduled)</option>
+                <option
+                  v-for="option in recordingModeOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ t(option.labelKey) }}
+                </option>
               </select>
-              <div class="text-muted fs-7">Choose how recordings are triggered</div>
+              <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.recording.mode.help') }}</div>
             </div>
             <!--end::Recording Mode-->
 
             <!--begin::Video Quality-->
             <div class="mb-7">
-              <label class="form-label">Video Quality</label>
+              <label class="form-label">{{ t('appsRecordingPlayback.settings.recording.quality.label') }}</label>
               <select
                 v-model="recordingSettings.quality"
                 class="form-select form-select-solid"
               >
-                <option value="720p">720p (Standard)</option>
-                <option value="1080p">1080p (High)</option>
-                <option value="4k">4K (Ultra High)</option>
+                <option
+                  v-for="option in recordingQualityOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ t(option.labelKey) }}
+                </option>
               </select>
-              <div class="text-muted fs-7">Higher quality uses more storage space</div>
+              <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.recording.quality.help') }}</div>
             </div>
             <!--end::Video Quality-->
 
             <!--begin::Frame Rate-->
             <div class="mb-7">
-              <label class="form-label">Frame Rate (FPS)</label>
+              <label class="form-label">{{ t('appsRecordingPlayback.settings.recording.frameRate.label') }}</label>
               <select
-                v-model="recordingSettings.frameRate"
+                v-model.number="recordingSettings.frameRate"
                 class="form-select form-select-solid"
               >
-                <option value="15">15 FPS</option>
-                <option value="25">25 FPS</option>
-                <option value="30">30 FPS</option>
-                <option value="60">60 FPS</option>
+                <option
+                  v-for="option in frameRateOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ t(option.labelKey) }}
+                </option>
               </select>
-              <div class="text-muted fs-7">Higher frame rates provide smoother video</div>
+              <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.recording.frameRate.help') }}</div>
             </div>
             <!--end::Frame Rate-->
 
             <!--begin::Compression-->
             <div class="mb-7">
-              <label class="form-label">Video Compression</label>
+              <label class="form-label">{{ t('appsRecordingPlayback.settings.recording.compression.label') }}</label>
               <select
                 v-model="recordingSettings.compression"
                 class="form-select form-select-solid"
               >
-                <option value="h264">H.264 (Standard)</option>
-                <option value="h265">H.265 (Efficient)</option>
-                <option value="mjpeg">MJPEG (High Quality)</option>
+                <option
+                  v-for="option in compressionOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ t(option.labelKey) }}
+                </option>
               </select>
-              <div class="text-muted fs-7">H.265 provides better compression but requires more processing</div>
+              <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.recording.compression.help') }}</div>
             </div>
             <!--end::Compression-->
 
@@ -90,28 +104,28 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="mb-7">
-                  <label class="form-label">Pre-Recording (seconds)</label>
+                  <label class="form-label">{{ t('appsRecordingPlayback.settings.recording.preRecording.label') }}</label>
                   <input
                     type="number"
                     class="form-control form-control-solid"
-                    v-model="recordingSettings.preRecordingSeconds"
+                    v-model.number="recordingSettings.preRecordingSeconds"
                     min="0"
                     max="60"
                   />
-                  <div class="text-muted fs-7">Record before motion trigger</div>
+                  <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.recording.preRecording.help') }}</div>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="mb-7">
-                  <label class="form-label">Post-Recording (seconds)</label>
+                  <label class="form-label">{{ t('appsRecordingPlayback.settings.recording.postRecording.label') }}</label>
                   <input
                     type="number"
                     class="form-control form-control-solid"
-                    v-model="recordingSettings.postRecordingSeconds"
+                    v-model.number="recordingSettings.postRecordingSeconds"
                     min="0"
                     max="300"
                   />
-                  <div class="text-muted fs-7">Record after motion ends</div>
+                  <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.recording.postRecording.help') }}</div>
                 </div>
               </div>
             </div>
@@ -120,7 +134,11 @@
             <div class="d-flex justify-content-end">
               <button type="submit" class="btn btn-primary" :disabled="savingRecordingSettings">
                 <span v-if="savingRecordingSettings" class="spinner-border spinner-border-sm me-2"></span>
-                Save Recording Settings
+                {{
+                  savingRecordingSettings
+                    ? t('appsRecordingPlayback.settings.actions.saving')
+                    : t('appsRecordingPlayback.settings.actions.saveRecording')
+                }}
               </button>
             </div>
           </form>
@@ -134,14 +152,14 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title">
-            <h3 class="fw-bold">Storage Management</h3>
+            <h3 class="fw-bold">{{ t('appsRecordingPlayback.settings.storage.title') }}</h3>
           </div>
         </div>
         <div class="card-body">
           <form @submit.prevent="saveStorageSettings">
             <!--begin::Storage Location-->
             <div class="mb-7">
-              <label class="form-label">Storage Location</label>
+              <label class="form-label">{{ t('appsRecordingPlayback.settings.storage.location.label') }}</label>
               <div class="input-group">
                 <input
                   type="text"
@@ -154,48 +172,49 @@
                   class="btn btn-outline btn-outline-primary"
                   @click="selectStorageLocation"
                 >
-                  Browse
+                  {{ t('appsRecordingPlayback.settings.storage.location.browse') }}
                 </button>
               </div>
-              <div class="text-muted fs-7">Default location for recorded videos</div>
+              <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.storage.location.help') }}</div>
             </div>
             <!--end::Storage Location-->
 
             <!--begin::Retention Policy-->
             <div class="mb-7">
-              <label class="form-label">Auto-Delete Policy</label>
+              <label class="form-label">{{ t('appsRecordingPlayback.settings.storage.retention.label') }}</label>
               <select
                 v-model="storageSettings.retentionPolicy"
                 class="form-select form-select-solid"
               >
-                <option value="never">Never delete</option>
-                <option value="7days">Delete after 7 days</option>
-                <option value="30days">Delete after 30 days</option>
-                <option value="90days">Delete after 90 days</option>
-                <option value="1year">Delete after 1 year</option>
-                <option value="storage_full">Delete when storage full</option>
+                <option
+                  v-for="option in retentionOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ t(option.labelKey) }}
+                </option>
               </select>
-              <div class="text-muted fs-7">Automatically manage storage space</div>
+              <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.storage.retention.help') }}</div>
             </div>
             <!--end::Retention Policy-->
 
             <!--begin::Storage Limit-->
             <div class="mb-7">
-              <label class="form-label">Maximum Storage (GB)</label>
+              <label class="form-label">{{ t('appsRecordingPlayback.settings.storage.limit.label') }}</label>
               <input
                 type="number"
                 class="form-control form-control-solid"
-                v-model="storageSettings.maxStorageGB"
+                v-model.number="storageSettings.maxStorageGB"
                 min="100"
                 max="10000"
               />
-              <div class="text-muted fs-7">Maximum space to use for recordings</div>
+              <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.storage.limit.help') }}</div>
             </div>
             <!--end::Storage Limit-->
 
             <!--begin::Current Storage Usage-->
             <div class="mb-7">
-              <label class="form-label">Current Storage Usage</label>
+              <label class="form-label">{{ t('appsRecordingPlayback.settings.storage.usage.label') }}</label>
               <div class="progress" style="height: 20px;">
                 <div
                   class="progress-bar"
@@ -206,8 +225,12 @@
                 </div>
               </div>
               <div class="d-flex justify-content-between mt-2">
-                <span class="text-muted fs-7">{{ usedStorageGB }}GB used</span>
-                <span class="text-muted fs-7">{{ storageSettings.maxStorageGB }}GB total</span>
+                <span class="text-muted fs-7">
+                  {{ t('appsRecordingPlayback.settings.storage.usage.used', { value: formatNumber(usedStorageGB) }) }}
+                </span>
+                <span class="text-muted fs-7">
+                  {{ t('appsRecordingPlayback.settings.storage.usage.total', { value: formatNumber(storageSettings.maxStorageGB) }) }}
+                </span>
               </div>
             </div>
             <!--end::Current Storage Usage-->
@@ -221,37 +244,43 @@
                   v-model="storageSettings.backup.enabled"
                 />
                 <span class="form-check-label fw-semibold text-gray-800">
-                  Enable Cloud Backup
+                  {{ t('appsRecordingPlayback.settings.storage.backup.label') }}
                 </span>
               </label>
               <div class="text-muted fs-7">
-                Automatically backup recordings to cloud storage
+                {{ t('appsRecordingPlayback.settings.storage.backup.help') }}
               </div>
 
               <div v-if="storageSettings.backup.enabled" class="mt-4">
                 <div class="mb-4">
-                  <label class="form-label">Backup Provider</label>
+                  <label class="form-label">{{ t('appsRecordingPlayback.settings.storage.backup.provider.label') }}</label>
                   <select
                     v-model="storageSettings.backup.provider"
                     class="form-select form-select-solid"
                   >
-                    <option value="aws_s3">Amazon S3</option>
-                    <option value="google_cloud">Google Cloud Storage</option>
-                    <option value="azure_blob">Azure Blob Storage</option>
-                    <option value="ftp">FTP Server</option>
+                    <option
+                      v-for="option in backupProviderOptions"
+                      :key="option.value"
+                      :value="option.value"
+                    >
+                      {{ t(option.labelKey) }}
+                    </option>
                   </select>
                 </div>
 
                 <div class="mb-4">
-                  <label class="form-label">Backup Schedule</label>
+                  <label class="form-label">{{ t('appsRecordingPlayback.settings.storage.backup.schedule.label') }}</label>
                   <select
                     v-model="storageSettings.backup.schedule"
                     class="form-select form-select-solid"
                   >
-                    <option value="immediately">Immediately after recording</option>
-                    <option value="hourly">Every hour</option>
-                    <option value="daily">Daily at midnight</option>
-                    <option value="weekly">Weekly on Sunday</option>
+                    <option
+                      v-for="option in backupScheduleOptions"
+                      :key="option.value"
+                      :value="option.value"
+                    >
+                      {{ t(option.labelKey) }}
+                    </option>
                   </select>
                 </div>
               </div>
@@ -261,7 +290,11 @@
             <div class="d-flex justify-content-end">
               <button type="submit" class="btn btn-primary" :disabled="savingStorageSettings">
                 <span v-if="savingStorageSettings" class="spinner-border spinner-border-sm me-2"></span>
-                Save Storage Settings
+                {{
+                  savingStorageSettings
+                    ? t('appsRecordingPlayback.settings.actions.saving')
+                    : t('appsRecordingPlayback.settings.actions.saveStorage')
+                }}
               </button>
             </div>
           </form>
@@ -277,12 +310,12 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title">
-            <h3 class="fw-bold">Recording Schedule</h3>
+            <h3 class="fw-bold">{{ t('appsRecordingPlayback.settings.schedule.title') }}</h3>
           </div>
           <div class="card-toolbar">
             <button @click="addSchedule" class="btn btn-sm btn-primary">
               <i class="ki-duotone ki-plus fs-2"></i>
-              Add Schedule
+              {{ t('appsRecordingPlayback.settings.schedule.actions.add') }}
             </button>
           </div>
         </div>
@@ -291,12 +324,12 @@
             <table class="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3">
               <thead>
                 <tr class="fw-bold text-muted">
-                  <th class="min-w-150px">Camera</th>
-                  <th class="min-w-120px">Days</th>
-                  <th class="min-w-120px">Start Time</th>
-                  <th class="min-w-120px">End Time</th>
-                  <th class="min-w-100px">Status</th>
-                  <th class="min-w-100px text-end">Actions</th>
+                  <th class="min-w-150px">{{ t('appsRecordingPlayback.settings.schedule.table.camera') }}</th>
+                  <th class="min-w-120px">{{ t('appsRecordingPlayback.settings.schedule.table.days') }}</th>
+                  <th class="min-w-120px">{{ t('appsRecordingPlayback.settings.schedule.table.start') }}</th>
+                  <th class="min-w-120px">{{ t('appsRecordingPlayback.settings.schedule.table.end') }}</th>
+                  <th class="min-w-100px">{{ t('appsRecordingPlayback.settings.schedule.table.status') }}</th>
+                  <th class="min-w-100px text-end">{{ t('appsRecordingPlayback.settings.schedule.table.actions') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -313,7 +346,7 @@
                         :key="day"
                         class="badge badge-light-primary"
                       >
-                        {{ day }}
+                        {{ getScheduleDayLabel(day) }}
                       </span>
                     </div>
                   </td>
@@ -328,14 +361,14 @@
                       class="badge"
                       :class="schedule.enabled ? 'badge-light-success' : 'badge-light-secondary'"
                     >
-                      {{ schedule.enabled ? 'Active' : 'Inactive' }}
+                      {{ schedule.enabled ? t('appsRecordingPlayback.settings.schedule.status.active') : t('appsRecordingPlayback.settings.schedule.status.inactive') }}
                     </span>
                   </td>
                   <td class="text-end">
                     <button
                       class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
                       @click="editSchedule(schedule)"
-                      title="Edit Schedule"
+                      :title="t('appsRecordingPlayback.settings.schedule.actions.edit')"
                     >
                       <i class="ki-duotone ki-pencil fs-2">
                         <span class="path1"></span>
@@ -345,7 +378,7 @@
                     <button
                       class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
                       @click="deleteSchedule(schedule)"
-                      title="Delete Schedule"
+                      :title="t('appsRecordingPlayback.settings.schedule.actions.delete')"
                     >
                       <i class="ki-duotone ki-trash fs-2">
                         <span class="path1"></span>
@@ -370,7 +403,7 @@
               <span class="path5"></span>
               <span class="path6"></span>
             </i>
-            <p class="text-gray-500">No recording schedules configured</p>
+            <p class="text-gray-500">{{ t('appsRecordingPlayback.settings.schedule.table.empty') }}</p>
           </div>
         </div>
       </div>
@@ -381,6 +414,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import ApiService from "@/core/services/ApiService";
 
 // Interface definitions
@@ -418,6 +452,78 @@ interface Camera {
   name: string;
 }
 
+const { t } = useI18n();
+
+const formatNumber = (value: number, maximumFractionDigits = 0) =>
+  new Intl.NumberFormat(undefined, {
+    maximumFractionDigits,
+    minimumFractionDigits: 0,
+  }).format(value);
+
+const recordingModeOptions = [
+  { value: 'continuous', labelKey: 'appsRecordingPlayback.settings.recording.mode.options.continuous' },
+  { value: 'scheduled', labelKey: 'appsRecordingPlayback.settings.recording.mode.options.scheduled' },
+  { value: 'motion', labelKey: 'appsRecordingPlayback.settings.recording.mode.options.motion' },
+  { value: 'hybrid', labelKey: 'appsRecordingPlayback.settings.recording.mode.options.hybrid' },
+];
+
+const recordingQualityOptions = [
+  { value: '720p', labelKey: 'appsRecordingPlayback.settings.recording.quality.options.720p' },
+  { value: '1080p', labelKey: 'appsRecordingPlayback.settings.recording.quality.options.1080p' },
+  { value: '4k', labelKey: 'appsRecordingPlayback.settings.recording.quality.options.4k' },
+];
+
+const frameRateOptions = [
+  { value: 15, labelKey: 'appsRecordingPlayback.settings.recording.frameRate.options.fps15' },
+  { value: 25, labelKey: 'appsRecordingPlayback.settings.recording.frameRate.options.fps25' },
+  { value: 30, labelKey: 'appsRecordingPlayback.settings.recording.frameRate.options.fps30' },
+  { value: 60, labelKey: 'appsRecordingPlayback.settings.recording.frameRate.options.fps60' },
+];
+
+const compressionOptions = [
+  { value: 'h264', labelKey: 'appsRecordingPlayback.settings.recording.compression.options.h264' },
+  { value: 'h265', labelKey: 'appsRecordingPlayback.settings.recording.compression.options.h265' },
+  { value: 'mjpeg', labelKey: 'appsRecordingPlayback.settings.recording.compression.options.mjpeg' },
+];
+
+const retentionOptions = [
+  { value: 'never', labelKey: 'appsRecordingPlayback.settings.storage.retention.options.never' },
+  { value: '7days', labelKey: 'appsRecordingPlayback.settings.storage.retention.options.7days' },
+  { value: '30days', labelKey: 'appsRecordingPlayback.settings.storage.retention.options.30days' },
+  { value: '90days', labelKey: 'appsRecordingPlayback.settings.storage.retention.options.90days' },
+  { value: '1year', labelKey: 'appsRecordingPlayback.settings.storage.retention.options.1year' },
+  { value: 'storage_full', labelKey: 'appsRecordingPlayback.settings.storage.retention.options.storageFull' },
+];
+
+const backupProviderOptions = [
+  { value: 'aws_s3', labelKey: 'appsRecordingPlayback.settings.storage.backup.provider.options.awsS3' },
+  { value: 'google_cloud', labelKey: 'appsRecordingPlayback.settings.storage.backup.provider.options.googleCloud' },
+  { value: 'azure_blob', labelKey: 'appsRecordingPlayback.settings.storage.backup.provider.options.azureBlob' },
+  { value: 'ftp', labelKey: 'appsRecordingPlayback.settings.storage.backup.provider.options.ftp' },
+];
+
+const backupScheduleOptions = [
+  { value: 'immediately', labelKey: 'appsRecordingPlayback.settings.storage.backup.schedule.options.immediately' },
+  { value: 'hourly', labelKey: 'appsRecordingPlayback.settings.storage.backup.schedule.options.hourly' },
+  { value: 'daily', labelKey: 'appsRecordingPlayback.settings.storage.backup.schedule.options.daily' },
+  { value: 'weekly', labelKey: 'appsRecordingPlayback.settings.storage.backup.schedule.options.weekly' },
+];
+
+const dayKeyMap: Record<string, string> = {
+  mon: 'mon',
+  tue: 'tue',
+  wed: 'wed',
+  thu: 'thu',
+  fri: 'fri',
+  sat: 'sat',
+  sun: 'sun',
+};
+
+const getScheduleDayLabel = (day: string) => {
+  const normalized = (day ?? '').toLowerCase().slice(0, 3);
+  const key = dayKeyMap[normalized];
+  return key ? t(`appsRecordingPlayback.settings.schedule.days.${key}`) : day;
+};
 // Reactive data
 const recordingSettings = ref<RecordingSettings>({
   mode: 'hybrid',
@@ -539,7 +645,7 @@ const getStorageUsageClass = () => {
 
 const getCameraName = (cameraUid: string): string => {
   const camera = cameras.value.find(c => c.uid === cameraUid);
-  return camera ? camera.name : 'Unknown Camera';
+  return camera ? camera.name : t('appsRecordingPlayback.settings.schedule.unknownCamera');
 };
 
 const addSchedule = () => {
@@ -553,7 +659,7 @@ const editSchedule = (schedule: RecordingSchedule) => {
 };
 
 const deleteSchedule = async (schedule: RecordingSchedule) => {
-  if (confirm('Are you sure you want to delete this schedule?')) {
+  if (confirm(t('appsRecordingPlayback.settings.messages.deleteScheduleConfirm'))) {
     try {
       // TODO: API call to delete schedule
       // await ApiService.delete(`/recording-schedules/${schedule.id}`);

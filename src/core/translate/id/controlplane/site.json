@@ -1,0 +1,449 @@
+{
+	"common": {
+		"noDescription": "Tidak ada deskripsi",
+		"unknown": "Tidak diketahui"
+	},
+	"header": {
+		"title": "Manajemen Situs",
+		"subtitleDefault": "Kelola situs untuk tim Anda",
+		"subtitleWithTeam": "Kelola situs untuk tim {name}"
+	},
+	"filters": {
+		"organizationLabel": "Organisasi",
+		"organizationPlaceholder": "Pilih Organisasi",
+		"organizationLoading": "Memuat organisasi...",
+		"accountLabel": "Akun",
+		"accountPlaceholder": "Pilih Akun",
+		"accountLoading": "Memuat akun...",
+		"accountEmpty": "Tidak ada akun tersedia",
+		"accountRequiresOrganization": "Pilih organisasi terlebih dahulu",
+		"teamLabel": "Tim",
+		"teamPlaceholder": "Pilih Tim",
+		"teamLoading": "Memuat tim...",
+		"teamEmpty": "Tidak ada tim tersedia",
+		"teamRequiresAccount": "Pilih akun terlebih dahulu"
+	},
+	"toolbar": {
+		"title": "Ringkasan Situs",
+		"itemsLabel": "Item:",
+		"searchPlaceholder": "Cari situs...",
+		"addButton": "Tambah Situs"
+	},
+	"table": {
+		"siteName": "Nama Situs",
+		"description": "Deskripsi",
+		"createdBy": "Dibuat Oleh",
+		"createdAt": "Dibuat Pada Tanggal",
+		"actions": "Aksi"
+	},
+	"modals": {
+		"add": {
+			"title": "Tambah Situs Baru",
+			"submit": "Buat Situs"
+		},
+		"edit": {
+			"title": "Ubah Situs",
+			"submit": "Perbarui Situs"
+		},
+		"form": {
+			"name": {
+				"label": "Nama Situs",
+				"placeholder": "Masukkan nama situs",
+				"required": "Nama situs wajib diisi"
+			},
+			"description": {
+				"label": "Deskripsi",
+				"placeholder": "Masukkan deskripsi situs"
+			}
+		},
+		"actions": {
+			"cancel": "Batal",
+			"loading": "Mohon tunggu..."
+		},
+		"alerts": {
+			"selectTeam": "Pilih tim untuk menambahkan situs."
+		}
+	},
+	"actions": {
+		"viewDetails": "Lihat Detail Situs",
+		"edit": "Ubah Situs",
+		"delete": "Hapus Situs"
+	},
+	"empty": {
+		"selectOrganization": "Silakan pilih organisasi untuk melihat situs",
+		"selectAccount": "Silakan pilih akun untuk melihat situs",
+		"selectTeam": "Silakan pilih tim untuk melihat situs",
+		"loading": "Memuat daftar situs...",
+		"searchNoResults": "Tidak ada situs yang cocok dengan \"{query}\"",
+		"noResults": "Tidak ada situs untuk tim ini"
+	},
+	"notifications": {
+		"deleteFailed": "Gagal menghapus situs. Silakan coba lagi."
+	},
+	"dialogs": {
+		"confirmDelete": "Apakah Anda yakin ingin menghapus situs \"{name}\"? Tindakan ini tidak dapat dikembalikan."
+	},
+	"pagination": {
+		"showingEntries": "Menampilkan {from} hingga {to} dari {total} entri"
+	},
+	"camera": {
+		"title": "Manajemen Kamera",
+		"filters": {
+			"siteLabel": "Situs:",
+			"siteAll": "Semua Situs",
+			"nvrLabel": "NVR:",
+			"nvrAll": "Semua NVR",
+			"nvrRequiresSite": "Pilih situs terlebih dahulu"
+		},
+		"form": {
+			"titleCreate": "Tambah Kamera",
+			"titleEdit": "Ubah Kamera",
+			"fields": {
+				"site": {
+					"label": "Situs",
+					"placeholder": "Pilih Situs"
+				},
+				"room": {
+					"label": "Ruangan",
+					"placeholder": "Pilih Ruangan"
+				},
+				"nvr": {
+					"label": "NVR",
+					"placeholder": "Pilih NVR"
+				},
+				"name": {
+					"label": "Nama Kamera",
+					"placeholder": "Masukkan nama kamera"
+				},
+				"ipAddress": {
+					"label": "Alamat IP",
+					"placeholder": "192.168.1.200"
+				},
+				"brand": {
+					"label": "Merek",
+					"placeholder": "Pilih Merek",
+					"options": {
+						"hikvision": "Hikvision",
+						"dahua": "Dahua",
+						"uniview": "Uniview",
+						"tiandy": "Tiandy",
+						"axis": "Axis",
+						"other": "Lainnya"
+					}
+				},
+				"model": {
+					"label": "Model",
+					"placeholder": "Nomor model"
+				},
+				"type": {
+					"label": "Jenis Kamera",
+					"options": {
+						"dome": "Dome",
+						"bullet": "Bullet",
+						"ptz": "PTZ",
+						"fisheye": "Fisheye",
+						"turret": "Turret"
+					}
+				},
+				"resolution": {
+					"label": "Resolusi",
+					"options": {
+						"1080p": "1080P (2MP)",
+						"4mp": "4MP",
+						"5mp": "5MP",
+						"4k": "4K (8MP)",
+						"12mp": "12MP"
+					}
+				},
+				"channel": {
+					"label": "Nomor Kanal",
+					"placeholder": "1"
+				},
+				"location": {
+					"label": "Lokasi",
+					"placeholder": "Deskripsi lokasi spesifik"
+				},
+				"description": {
+					"label": "Deskripsi",
+					"placeholder": "Deskripsi kamera"
+				}
+			},
+			"actions": {
+				"cancel": "Batal",
+				"loading": "Mohon tunggu...",
+				"create": "Simpan Kamera",
+				"update": "Perbarui Kamera"
+			}
+		},
+		"toolbar": {
+			"itemsLabel": "Item:",
+			"searchPlaceholder": "Cari kamera...",
+			"addButton": "Tambah Kamera"
+		},
+		"table": {
+			"name": "Nama Kamera",
+			"location": "Situs",
+			"specs": "Spesifikasi",
+			"nvr": "NVR",
+			"status": "Status",
+			"actions": "Aksi",
+			"empty": "Tidak ada kamera",
+			"channelPrefix": "Kanal"
+		},
+		"actions": {
+			"view": "Lihat Live Stream",
+			"edit": "Ubah Kamera",
+			"delete": "Hapus Kamera",
+			"viewAlert": "Streaming langsung untuk {name} akan ditampilkan di sini"
+		},
+		"status": {
+			"online": "Online",
+			"offline": "Offline"
+		},
+		"notifications": {
+			"deleteConfirm": "Apakah Anda yakin ingin menghapus kamera ini?"
+		},
+		"fallback": {
+			"unknownSite": "Situs Tidak Dikenal",
+			"unknownRoom": "Ruangan Tidak Dikenal",
+			"unknownNvr": "NVR Tidak Dikenal"
+		}
+	},
+	"nvr": {
+		"title": "Manajemen NVR",
+		"filters": {
+			"siteLabel": "Situs:",
+			"sitePlaceholder": "Semua Situs"
+		},
+		"form": {
+			"titleCreate": "Tambah NVR",
+			"titleEdit": "Ubah NVR",
+			"fields": {
+				"site": {
+					"label": "Situs",
+					"placeholder": "Pilih Situs"
+				},
+				"room": {
+					"label": "Ruangan",
+					"placeholder": "Pilih Ruangan"
+				},
+				"name": {
+					"label": "Nama NVR",
+					"placeholder": "Masukkan nama NVR"
+				},
+				"endpoint": {
+					"label": "URL Endpoint",
+					"placeholder": "192.168.1.100"
+				},
+				"type": {
+					"label": "Tipe",
+					"options": {
+						"nvr": "NVR",
+						"dvr": "DVR",
+						"hybrid": "HYBRID"
+					}
+				},
+				"brand": {
+					"label": "Merek",
+					"placeholder": "Pilih Merek",
+					"options": {
+						"hikvision": "Hikvision",
+						"dahua": "Dahua",
+						"uniview": "Uniview",
+						"tiandy": "Tiandy",
+						"other": "Lainnya"
+					}
+				},
+				"model": {
+					"label": "Model",
+					"placeholder": "Nomor model"
+				},
+				"username": {
+					"label": "Nama Pengguna",
+					"placeholder": "Nama pengguna"
+				},
+				"password": {
+					"label": "Kata Sandi",
+					"placeholder": "Kata sandi"
+				},
+				"port": {
+					"label": "Port",
+					"placeholder": "8000"
+				},
+				"channels": {
+					"label": "Kanal",
+					"placeholder": "16"
+				},
+				"status": {
+					"label": "Status",
+					"options": {
+						"active": "Aktif",
+						"inactive": "Nonaktif"
+					}
+				}
+			},
+			"actions": {
+				"cancel": "Batal",
+				"loading": "Mohon tunggu...",
+				"create": "Simpan NVR",
+				"update": "Perbarui NVR"
+			}
+		},
+		"toolbar": {
+			"itemsLabel": "Item:",
+			"searchPlaceholder": "Cari NVR...",
+			"addButton": "Tambah NVR"
+		},
+		"table": {
+			"name": "Nama NVR",
+			"location": "Lokasi",
+			"brand": "Merek",
+			"channels": "Kanal",
+			"status": "Status",
+			"actions": "Aksi",
+			"empty": "Tidak ada NVR"
+		},
+		"actions": {
+			"manageCameras": "Kelola Kamera",
+			"edit": "Ubah NVR",
+			"delete": "Hapus NVR"
+		},
+		"status": {
+			"active": "Aktif",
+			"inactive": "Nonaktif"
+		},
+		"notifications": {
+			"deleteConfirm": "Apakah Anda yakin ingin menghapus NVR ini?"
+		},
+		"fallback": {
+			"unknownSite": "Situs Tidak Dikenal",
+			"unknownRoom": "Ruangan Tidak Dikenal"
+		}
+	},
+	"settings": {
+		"title": "Konfigurasi Situs",
+		"form": {
+			"fields": {
+				"name": {
+					"label": "Nama Situs",
+					"placeholder": "Masukkan nama situs"
+				},
+				"code": {
+					"label": "Kode Situs",
+					"placeholder": "Kode situs (dibuat otomatis)"
+				},
+				"description": {
+					"label": "Deskripsi",
+					"placeholder": "Deskripsi situs"
+				},
+				"address": {
+					"label": "Alamat",
+					"placeholder": "Alamat lengkap"
+				},
+				"latitude": {
+					"label": "Lintang",
+					"placeholder": "Koordinat lintang"
+				},
+				"longitude": {
+					"label": "Bujur",
+					"placeholder": "Koordinat bujur"
+				},
+				"contactPerson": {
+					"label": "Nama Kontak",
+					"placeholder": "nama orang yang dapat dihubungi"
+				},
+				"contactPhone": {
+					"label": "Nomor Kontak",
+					"placeholder": "nomor hp yang dapat dihubungi"
+				},
+				"status": {
+					"label": "Status",
+					"options": {
+						"active": "Aktif",
+						"inactive": "Nonaktif"
+					}
+				},
+				"timezone": {
+					"label": "Zona Waktu",
+					"options": {
+						"wib": "Asia/Jakarta (WIB)",
+						"wita": "Asia/Makassar (WITA)",
+						"wit": "Asia/Jayapura (WIT)"
+					}
+				}
+			},
+			"actions": {
+				"reset": "Atur Ulang",
+				"loading": "Mohon tunggu...",
+				"create": "Buat Situs",
+				"update": "Perbarui Situs"
+			}
+		}
+	},
+	"room": {
+		"title": "Manajemen Ruangan",
+		"form": {
+			"titleCreate": "Tambah Ruangan",
+			"titleEdit": "Ubah Ruangan",
+			"fields": {
+				"site": {
+					"label": "Situs",
+					"placeholder": "Pilih Situs"
+				},
+				"name": {
+					"label": "Nama Ruangan",
+					"placeholder": "Masukkan nama ruangan"
+				},
+				"type": {
+					"label": "Jenis Ruangan",
+					"options": {
+						"office": "Kantor",
+						"meeting": "Ruang Rapat",
+						"lobby": "Lobi",
+						"warehouse": "Gudang",
+						"security": "Ruang Keamanan",
+						"other": "Lainnya"
+					}
+				},
+				"floor": {
+					"label": "Lantai",
+					"placeholder": "Nomor lantai"
+				},
+				"description": {
+					"label": "Deskripsi",
+					"placeholder": "Deskripsi ruangan"
+				}
+			},
+			"actions": {
+				"cancel": "Batal",
+				"loading": "Mohon tunggu...",
+				"create": "Simpan Ruangan",
+				"update": "Perbarui Ruangan"
+			}
+		},
+		"toolbar": {
+			"itemsLabel": "Item:",
+			"searchPlaceholder": "Cari ruangan...",
+			"addButton": "Tambah Ruangan"
+		},
+		"table": {
+			"name": "Nama Ruangan",
+			"site": "Situs",
+			"type": "Jenis",
+			"floor": "Lantai",
+			"actions": "Aksi",
+			"empty": "Tidak ada ruangan"
+		},
+		"actions": {
+			"manageNvrs": "Kelola NVR",
+			"edit": "Ubah Ruangan",
+			"delete": "Hapus Ruangan"
+		},
+		"notifications": {
+			"deleteConfirm": "Apakah Anda yakin ingin menghapus ruangan ini?"
+		},
+		"fallback": {
+			"unknownSite": "Situs Tidak Dikenal"
+		}
+	}
+}

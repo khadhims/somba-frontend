@@ -1,0 +1,87 @@
+{
+	"common": {
+		"unknown": "Unknown",
+		"loading": "Loading...",
+		"cancel": "Cancel",
+		"delete": "Delete"
+	},
+	"summary": {
+		"totalOrganizations": "Total Organizations",
+		"totalTeams": "Total Team",
+		"totalUsers": "Total Users",
+		"totalCameras": "Total Camera"
+	},
+	"toolbar": {
+		"title": "Organizations Overview",
+		"itemsLabel": "Items:",
+		"searchPlaceholder": "Search organizations...",
+		"retry": "Retry",
+		"retrying": "Retrying...",
+		"addButton": "Add Organization"
+	},
+	"table": {
+		"organizationName": "Organization Name",
+		"email": "Email",
+		"phone": "Phone",
+		"country": "Country",
+		"status": "Status",
+		"created": "Created",
+		"actions": "Actions",
+		"empty": "No organizations found",
+		"statusLabel": {
+			"active": "Active",
+			"inactive": "Inactive",
+			"pending": "Pending"
+		}
+	},
+	"actions": {
+		"viewMembers": "Manage Members",
+		"manageAccounts": "Manage Accounts",
+		"edit": "Edit Organization",
+		"delete": "Delete Organization"
+	},
+	"empty": {
+		"loading": "Loading organizations...",
+		"searchNoResults": "No organizations found matching \"{query}\"",
+		"noResults": "No organizations found"
+	},
+	"error": {
+		"title": "Connection Error",
+		"loadFailed": "Failed to load organizations.",
+		"createFailed": "Failed to create organization.",
+		"updateFailed": "Failed to update organization.",
+		"deleteFailed": "Failed to delete organization."
+	},
+	"form": {
+		"name": "Name *",
+		"legalName": "Legal Name",
+		"email": "Email *",
+		"phone": "Phone",
+		"website": "Website",
+		"country": "Country",
+		"address": "Address",
+		"status": "Status",
+		"statusOptions": {
+			"active": "Active",
+			"inactive": "Inactive",
+			"pending": "Pending"
+		}
+	},
+	"modals": {
+		"add": {
+			"title": "Add Organization",
+			"submit": "Create Organization"
+		},
+		"edit": {
+			"title": "Edit Organization",
+			"submit": "Update Organization"
+		},
+		"delete": {
+			"title": "Delete Organization",
+			"confirmPrefix": "Are you sure you want to delete",
+			"confirmSuffix": "?",
+			"warning": "This action cannot be undone.",
+			"submit": "Delete"
+		}
+	}
+}

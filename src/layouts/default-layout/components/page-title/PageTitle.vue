@@ -20,13 +20,13 @@
 
       <!--begin::Breadcrumb-->
       <ul
-        v-if="breadcrumbs && pageTitleBreadcrumbDisplay"
+        v-if="breadcrumbs && breadcrumbs.length && pageTitleBreadcrumbDisplay"
         class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1"
       >
         <!--begin::Item-->
         <li class="breadcrumb-item text-muted">
           <router-link to="/" class="text-muted text-hover-primary"
-            >Home</router-link
+            >{{ homeLabel }}</router-link
           >
         </li>
         <!--end::Item-->
@@ -56,20 +56,79 @@ import {
   pageTitleDisplay,
 } from "@/layouts/default-layout/config/helper";
 import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "layout-page-title",
   components: {},
   setup() {
     const route = useRoute();
+    const { t, te, locale } = useI18n();
+
+    const buildCandidateKeys = (value: string): string[] => {
+      const trimmed = value.trim();
+      if (!trimmed) {
+        return [];
+      }
+
+      const words = trimmed.split(/[^A-Za-z0-9]+/).filter(Boolean);
+      const camelCase = words
+        .map((word, index) =>
+          index === 0
+            ? word.toLowerCase()
+            : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join("");
+
+      const lower = trimmed.toLowerCase();
+      const joined = words.join("").toLowerCase();
+      const snake = words.join("_").toLowerCase();
+      const kebab = words.join("-").toLowerCase();
+
+      return Array.from(
+        new Set([
+          trimmed,
+          lower,
+          camelCase,
+          joined,
+          snake,
+          kebab,
+        ])
+      ).filter(Boolean);
+    };
+
+    const translateLabel = (label: unknown, _locale?: string): string => {
+      void _locale;
+      if (typeof label !== "string") {
+        return label ? String(label) : "";
+      }
+
+      const candidates = buildCandidateKeys(label);
+      for (const key of candidates) {
+        if (te(key)) {
+          return t(key);
+        }
+      }
+
+      return label;
+    };
 
     const pageTitle = computed(() => {
-      return route.meta.pageTitle;
+      return translateLabel(route.meta.pageTitle ?? "", locale.value);
     });
 
     const breadcrumbs = computed(() => {
-      return route.meta.breadcrumbs;
+      const raw = route.meta.breadcrumbs;
+      if (!Array.isArray(raw)) {
+        return null;
+      }
+
+      return raw
+        .map((item) => translateLabel(item, locale.value))
+        .filter((item): item is string => Boolean(item));
     });
+
+    const homeLabel = computed(() => translateLabel("Home", locale.value));
 
     return {
       pageTitle,
@@ -77,6 +136,7 @@ export default defineComponent({
       pageTitleDisplay,
       pageTitleBreadcrumbDisplay,
       pageTitleDirection,
+      homeLabel,
     };
   },
 });

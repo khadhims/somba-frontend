@@ -1,0 +1,77 @@
+{
+	"common": {
+		"unknown": "Tidak diketahui",
+		"loading": "Memuat..."
+	},
+	"header": {
+		"title": "Manajemen Tim",
+		"subtitleDefault": "Kelola Tim untuk Akun Anda",
+		"subtitleWithAccount": "Kelola Tim untuk Akun {name}"
+	},
+	"filters": {
+		"organizationLabel": "Organisasi",
+		"organizationPlaceholder": "Pilih Organisasi",
+		"organizationLoading": "Memuat organisasi...",
+		"accountLabel": "Akun",
+		"accountPlaceholder": "Pilih Akun",
+		"accountLoading": "Memuat akun...",
+		"accountEmpty": "Tidak ada akun tersedia",
+		"accountRequiresOrganization": "Pilih organisasi terlebih dahulu"
+	},
+	"toolbar": {
+		"title": "Ringkasan Tim",
+		"itemsLabel": "Item:",
+		"searchPlaceholder": "Cari tim...",
+		"addButton": "Tambah Tim"
+	},
+	"table": {
+		"teamName": "Nama Tim",
+		"createdBy": "Dibuat Oleh",
+		"createdAt": "Dibuat Pada Tanggal",
+		"actions": "Aksi"
+	},
+	"actions": {
+		"viewMembers": "Kelola Anggota",
+		"addSite": "Kelola Situs",
+		"edit": "Ubah Detail Tim",
+		"delete": "Hapus Tim"
+	},
+	"empty": {
+		"selectOrganization": "Silakan pilih organisasi untuk melihat tim",
+		"selectAccount": "Silakan pilih akun untuk melihat tim",
+		"loading": "Memuat daftar tim...",
+		"searchNoResults": "Tidak ada tim yang cocok dengan \"{query}\"",
+		"noResults": "Tidak ada tim untuk akun ini"
+	},
+	"error": {
+		"title": "Gagal Memuat Data"
+	},
+	"modals": {
+		"add": {
+			"title": "Tambah Tim",
+			"nameLabel": "Nama Tim *",
+			"cancel": "Batal",
+			"submit": "Buat Tim"
+		},
+		"edit": {
+			"title": "Ubah Detail Tim",
+			"nameLabel": "Nama Tim *",
+			"cancel": "Batal",
+			"submit": "Perbarui Tim"
+		},
+		"delete": {
+			"title": "Hapus Tim",
+			"confirmPrefix": "Apakah Anda yakin ingin menghapus tim",
+			"confirmSuffix": "?",
+			"warning": "Tindakan ini tidak dapat dikembalikan.",
+			"cancel": "Batal",
+			"submit": "Hapus"
+		}
+	},
+	"notifications": {
+		"loadFailed": "Gagal memuat tim.",
+		"createFailed": "Gagal membuat tim.",
+		"updateFailed": "Gagal memperbarui tim.",
+		"deleteFailed": "Gagal menghapus tim."
+	}
+}

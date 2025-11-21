@@ -1,0 +1,79 @@
+{
+	"common": {
+		"unknown": "Tidak diketahui",
+		"loading": "Memuat..."
+	},
+	"header": {
+		"title": "Manajemen Akun Pembayaran",
+		"subtitleLoading": "Memuat organisasi...",
+		"subtitleWithOrganization": "Kelola akun pembayaran untuk {name}",
+		"subtitleNoOrganizations": "Tidak ada organisasi tersedia",
+		"subtitleSelect": "Pilih organisasi untuk melihat akun pembayaran"
+	},
+	"filters": {
+		"organizationLabel": "Organisasi",
+		"organizationPlaceholder": "Pilih Organisasi",
+		"organizationLoading": "Memuat organisasi..."
+	},
+	"toolbar": {
+		"title": "Ringkasan Akun Pembayaran",
+		"itemsLabel": "Item:",
+		"searchPlaceholder": "Cari akun pembayaran...",
+		"retry": "Ulangi",
+		"retrying": "Mengulang...",
+		"addButton": "Tambah Akun Pembayaran"
+	},
+	"table": {
+		"accountName": "Nama Akun",
+		"createdBy": "Dibuat Oleh",
+		"createdAt": "Dibuat Pada",
+		"actions": "Aksi",
+		"empty": "Tidak ada akun pembayaran ditemukan"
+	},
+	"actions": {
+		"viewMembers": "Kelola Anggota",
+		"addTeam": "Tambah Tim",
+		"edit": "Ubah Akun",
+		"delete": "Hapus Akun"
+	},
+	"emptyState": {
+		"title": "Belum Ada Organisasi Dipilih",
+		"description": "Silakan pilih organisasi dari dropdown di atas untuk melihat akun pembayaran."
+	},
+	"empty": {
+		"loading": "Memuat akun pembayaran...",
+		"searchNoResults": "Tidak ada akun pembayaran yang cocok dengan \"{query}\"",
+		"noResults": "Tidak ada akun pembayaran",
+		"selectOrganization": "Silakan pilih organisasi untuk melihat akun pembayaran"
+	},
+	"error": {
+		"title": "Koneksi Gagal",
+		"loadFailed": "Gagal memuat akun.",
+		"createFailed": "Gagal membuat akun.",
+		"updateFailed": "Gagal memperbarui akun.",
+		"deleteFailed": "Gagal menghapus akun.",
+		"organizationsFailed": "Gagal memuat organisasi. Silakan muat ulang halaman."
+	},
+	"modals": {
+		"add": {
+			"title": "Tambah Akun Pembayaran",
+			"nameLabel": "Nama Akun *",
+			"cancel": "Batal",
+			"submit": "Buat Akun"
+		},
+		"edit": {
+			"title": "Ubah Akun Pembayaran",
+			"nameLabel": "Nama Akun *",
+			"cancel": "Batal",
+			"submit": "Perbarui Akun"
+		},
+		"delete": {
+			"title": "Hapus Akun Pembayaran",
+			"confirmPrefix": "Apakah Anda yakin ingin menghapus akun pembayaran",
+			"confirmSuffix": "?",
+			"warning": "Tindakan ini tidak dapat dikembalikan.",
+			"cancel": "Batal",
+			"submit": "Hapus"
+		}
+	}
+}

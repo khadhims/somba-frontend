@@ -1,0 +1,79 @@
+{
+	"common": {
+		"unknown": "Unknown",
+		"loading": "Loading..."
+	},
+	"header": {
+		"title": "Payment Account Management",
+		"subtitleLoading": "Loading organizations...",
+		"subtitleWithOrganization": "Manage payment accounts for {name}",
+		"subtitleNoOrganizations": "No organizations available",
+		"subtitleSelect": "Select an organization to view payment accounts"
+	},
+	"filters": {
+		"organizationLabel": "Organization",
+		"organizationPlaceholder": "Select Organization",
+		"organizationLoading": "Loading organizations..."
+	},
+	"toolbar": {
+		"title": "Payment Accounts Overview",
+		"itemsLabel": "Items:",
+		"searchPlaceholder": "Search payment accounts...",
+		"retry": "Retry",
+		"retrying": "Retrying...",
+		"addButton": "Add Payment Account"
+	},
+	"table": {
+		"accountName": "Account Name",
+		"createdBy": "Created By",
+		"createdAt": "Created",
+		"actions": "Actions",
+		"empty": "No payment accounts found"
+	},
+	"actions": {
+		"viewMembers": "Manage Members",
+		"addTeam": "Add Team",
+		"edit": "Edit Account",
+		"delete": "Delete Account"
+	},
+	"emptyState": {
+		"title": "No Organization Selected",
+		"description": "Please select an organization from the dropdown above to view payment accounts."
+	},
+	"empty": {
+		"loading": "Loading payment accounts...",
+		"searchNoResults": "No payment accounts found matching \"{query}\"",
+		"noResults": "No payment accounts found",
+		"selectOrganization": "Please select an organization to view payment accounts"
+	},
+	"error": {
+		"title": "Connection Error",
+		"loadFailed": "Failed to load accounts.",
+		"createFailed": "Failed to create account.",
+		"updateFailed": "Failed to update account.",
+		"deleteFailed": "Failed to delete account.",
+		"organizationsFailed": "Failed to load organizations. Please refresh the page."
+	},
+	"modals": {
+		"add": {
+			"title": "Add Payment Account",
+			"nameLabel": "Account Name *",
+			"cancel": "Cancel",
+			"submit": "Create Account"
+		},
+		"edit": {
+			"title": "Edit Payment Account",
+			"nameLabel": "Account Name *",
+			"cancel": "Cancel",
+			"submit": "Update Account"
+		},
+		"delete": {
+			"title": "Delete Payment Account",
+			"confirmPrefix": "Are you sure you want to delete payment account",
+			"confirmSuffix": "?",
+			"warning": "This action cannot be undone.",
+			"cancel": "Cancel",
+			"submit": "Delete"
+		}
+	}
+}

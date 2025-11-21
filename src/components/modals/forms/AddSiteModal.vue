@@ -13,7 +13,7 @@
         <!--begin::Modal header-->
         <div class="modal-header">
           <!--begin::Modal title-->
-          <h2 class="fw-bold">Add New Site</h2>
+          <h2 class="fw-bold">{{ t('controlplane.site.modals.add.title') }}</h2>
           <!--end::Modal title-->
 
           <!--begin::Close-->
@@ -39,13 +39,13 @@
               <!--begin::Input group-->
               <div class="fv-row mb-7">
                 <!--begin::Label-->
-                <label class="required fs-6 fw-semibold mb-2">Site Name</label>
+                <label class="required fs-6 fw-semibold mb-2">{{ t('controlplane.site.modals.form.name.label') }}</label>
                 <!--end::Label-->
                 <!--begin::Input-->
                 <input
                   type="text"
                   class="form-control form-control-solid"
-                  placeholder="Enter site name"
+                  :placeholder="t('controlplane.site.modals.form.name.placeholder')"
                   v-model="formData.name"
                   name="name"
                 />
@@ -61,13 +61,13 @@
               <!--begin::Input group-->
               <div class="fv-row mb-7">
                 <!--begin::Label-->
-                <label class="fs-6 fw-semibold mb-2">Description</label>
+                <label class="fs-6 fw-semibold mb-2">{{ t('controlplane.site.modals.form.description.label') }}</label>
                 <!--end::Label-->
                 <!--begin::Input-->
                 <textarea
                   class="form-control form-control-solid"
                   rows="3"
-                  placeholder="Enter site description"
+                  :placeholder="t('controlplane.site.modals.form.description.placeholder')"
                   v-model="formData.description"
                   name="description"
                 ></textarea>
@@ -87,15 +87,15 @@
               class="btn btn-light me-3"
               data-bs-dismiss="modal"
             >
-              Cancel
+              {{ t('controlplane.site.modals.actions.cancel') }}
             </button>
             <!--end::Button-->
 
             <!--begin::Button-->
             <button type="submit" class="btn btn-primary" :disabled="loading">
-              <span v-if="!loading" class="indicator-label">Add Site</span>
+              <span v-if="!loading" class="indicator-label">{{ t('controlplane.site.modals.add.submit') }}</span>
               <span v-if="loading" class="indicator-progress">
-                Please wait...
+                {{ t('controlplane.site.modals.actions.loading') }}
                 <span
                   class="spinner-border spinner-border-sm align-middle ms-2"
                 ></span>
@@ -118,7 +118,8 @@
 import { ref, reactive } from "vue";
 import { Modal } from "bootstrap";
 import { useRoute } from "vue-router";
-import ApiService from '@/core/services/ApiService'
+import ApiService from "@/core/services/ApiService";
+import { useI18n } from "vue-i18n";
 
 interface SiteFormData {
   name: string;
@@ -153,6 +154,8 @@ const errors = reactive({
   description: "",
 });
 
+const { t } = useI18n();
+
 // Validation
 const validateForm = (): boolean => {
   // Reset errors
@@ -162,7 +165,7 @@ const validateForm = (): boolean => {
   let isValid = true;
 
   if (!formData.name.trim()) {
-    errors.name = "Site name is required";
+    errors.name = t("controlplane.site.modals.form.name.required");
     isValid = false;
   }
 
@@ -183,7 +186,7 @@ const submitForm = async () => {
     if (!teamUid) {
       // user-friendly message and graceful return (don't throw)
       loading.value = false;
-      alert('Select a team to add the site to.');
+      alert(t("controlplane.site.modals.alerts.selectTeam"));
       return;
     }
 

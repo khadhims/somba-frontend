@@ -1,0 +1,89 @@
+{
+  "common": {
+    "entity": {
+      "account": "Akun Pembayaran",
+      "team": "Tim",
+      "organization": "Organisasi"
+    },
+    "entityLower": {
+      "account": "akun pembayaran",
+      "team": "tim",
+      "organization": "organisasi"
+    },
+    "roles": {
+      "owner": "Pemilik",
+      "admin": "Admin",
+      "member": "Anggota"
+    }
+  },
+  "addEdit": {
+    "title": {
+      "add": "Tambah Anggota ke {entity}",
+      "edit": "Ubah Peran Anggota"
+    },
+    "fields": {
+      "email": {
+        "label": "Alamat Email",
+        "placeholder": "Masukkan email anggota",
+        "help": "Pengguna akan diundang untuk bergabung dengan {entity} ini."
+      },
+      "role": {
+        "label": "Peran",
+        "placeholder": "Pilih Peran"
+      }
+    },
+    "currentMember": {
+      "unknown": "Pengguna Tidak Dikenal",
+      "currentRole": "Peran Saat Ini: {role}"
+    },
+    "actions": {
+      "cancel": "Batal",
+      "add": "Tambah Anggota",
+      "update": "Perbarui Peran",
+      "loading": "Mohon tunggu..."
+    },
+    "notifications": {
+      "error": "Gagal menyimpan anggota. Silakan coba lagi."
+    }
+  },
+  "list": {
+    "title": "Anggota {entity}",
+    "buttons": {
+      "add": "Tambah Anggota",
+      "close": "Tutup"
+    },
+    "filters": {
+      "itemsLabel": "Item:",
+      "searchPlaceholder": "Cari anggota..."
+    },
+    "table": {
+      "headers": {
+        "member": "Anggota",
+        "role": "Peran",
+        "joined": "Bergabung",
+        "actions": "Aksi"
+      },
+      "loadingLabel": "Memuat...",
+      "loadingMessage": "Memuat daftar anggota...",
+      "empty": "Belum ada anggota",
+      "emptySearch": "Tidak ditemukan anggota yang cocok dengan \"{query}\"",
+      "rolePrefix": "Peran: {role}",
+      "unknownUser": "Pengguna Tidak Dikenal",
+      "unknownDate": "Tidak diketahui",
+      "invalidDate": "Tanggal tidak valid"
+    },
+    "pagination": {
+      "previous": "Sebelumnya",
+      "next": "Berikutnya"
+    },
+    "actions": {
+      "edit": "Ubah Peran Anggota",
+      "remove": "Hapus Anggota"
+    },
+    "alerts": {
+      "cannotRemoveOwner": "Tidak dapat menghapus pemilik dari keanggotaan.",
+      "confirmRemove": "Apakah Anda yakin ingin menghapus {member} dari {entity}?",
+      "removeFailed": "Gagal menghapus anggota. Silakan coba lagi."
+    }
+  }
+}

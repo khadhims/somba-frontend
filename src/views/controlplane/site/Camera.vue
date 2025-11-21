@@ -5,7 +5,7 @@
     <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
       <div class="card-title">
-        <h3 class="fw-bold m-0">Camera Management</h3>
+        <h3 class="fw-bold m-0">{{ t("controlplane.site.camera.title") }}</h3>
       </div>
       <!--end::Card title-->
 
@@ -15,13 +15,17 @@
         <div class="d-flex align-items-center">
           <!--begin::Site Filter-->
           <div class="me-4 d-flex align-items-center">
-            <label class="form-label me-3 mb-0 fw-semibold">Site:</label>
+            <label class="form-label me-3 mb-0 fw-semibold">
+              {{ t("controlplane.site.camera.filters.siteLabel") }}
+            </label>
             <select
               v-model="selectedSiteFilter"
               @change="onHeaderSiteFilterChange"
               class="form-select form-select-solid w-200px"
             >
-              <option value="">All Sites</option>
+              <option value="">
+                {{ t("controlplane.site.camera.filters.siteAll") }}
+              </option>
               <option
                 v-for="site in sites"
                 :key="site.uid"
@@ -35,7 +39,9 @@
 
           <!--begin::NVR Filter-->
           <div class="d-flex align-items-center">
-            <label class="form-label me-3 mb-0 fw-semibold">NVR:</label>
+            <label class="form-label me-3 mb-0 fw-semibold">
+              {{ t("controlplane.site.camera.filters.nvrLabel") }}
+            </label>
             <select
               v-model="selectedNvrFilter"
               @change="onHeaderNvrFilterChange"
@@ -43,7 +49,11 @@
               :disabled="!selectedSiteFilter"
             >
               <option value="">
-                {{ selectedSiteFilter ? 'All NVRs' : 'Select Site First' }}
+                {{
+                  selectedSiteFilter
+                    ? t("controlplane.site.camera.filters.nvrAll")
+                    : t("controlplane.site.camera.filters.nvrRequiresSite")
+                }}
               </option>
               <option
                 v-for="nvr in availableHeaderNvrs"
@@ -69,7 +79,11 @@
         <div class="card">
           <div class="card-header">
             <h3 class="card-title">
-              {{ isEdit ? "Edit Camera" : "Add Camera" }}
+              {{
+                isEdit
+                  ? t("controlplane.site.camera.form.titleEdit")
+                  : t("controlplane.site.camera.form.titleCreate")
+              }}
             </h3>
             <div class="card-toolbar">
               <button
@@ -91,7 +105,9 @@
                 <!--begin::Col-->
                 <div class="col-md-4">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">Site</label>
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.site.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Select-->
                   <select
@@ -100,7 +116,9 @@
                     class="form-select form-select-solid"
                     required
                   >
-                    <option value="">Select Site</option>
+                    <option value="">
+                      {{ t("controlplane.site.camera.form.fields.site.placeholder") }}
+                    </option>
                     <option
                       v-for="site in sites"
                       :key="site.uid"
@@ -116,7 +134,9 @@
                 <!--begin::Col-->
                 <div class="col-md-4">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">Room</label>
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.room.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Select-->
                   <select
@@ -124,7 +144,9 @@
                     @change="onRoomChange"
                     class="form-select form-select-solid"
                   >
-                    <option value="">Select Room</option>
+                    <option value="">
+                      {{ t("controlplane.site.camera.form.fields.room.placeholder") }}
+                    </option>
                     <option
                       v-for="room in availableRooms"
                       :key="room.id"
@@ -140,7 +162,9 @@
                 <!--begin::Col-->
                 <div class="col-md-4">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">NVR</label>
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.nvr.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Select-->
                   <select
@@ -148,7 +172,9 @@
                     class="form-select form-select-solid"
                     required
                   >
-                    <option value="">Select NVR</option>
+                    <option value="">
+                      {{ t("controlplane.site.camera.form.fields.nvr.placeholder") }}
+                    </option>
                     <option
                       v-for="nvr in availableNvrs"
                       :key="nvr.uid"
@@ -168,16 +194,16 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2"
-                    >Camera Name</label
-                  >
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.name.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
                     type="text"
                     v-model="cameraForm.name"
                     class="form-control form-control-solid"
-                    placeholder="Enter camera name"
+                    :placeholder="t('controlplane.site.camera.form.fields.name.placeholder')"
                     required
                   />
                   <!--end::Input-->
@@ -187,16 +213,16 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2"
-                    >IP Address</label
-                  >
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.ipAddress.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
                     type="text"
                     v-model="cameraForm.ipAddress"
                     class="form-control form-control-solid"
-                    placeholder="192.168.1.200"
+                    :placeholder="t('controlplane.site.camera.form.fields.ipAddress.placeholder')"
                     required
                   />
                   <!--end::Input-->
@@ -210,7 +236,9 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">Brand</label>
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.brand.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Select-->
                   <select
@@ -218,13 +246,27 @@
                     class="form-select form-select-solid"
                     required
                   >
-                    <option value="">Select Brand</option>
-                    <option value="Hikvision">Hikvision</option>
-                    <option value="Dahua">Dahua</option>
-                    <option value="Uniview">Uniview</option>
-                    <option value="Tiandy">Tiandy</option>
-                    <option value="Axis">Axis</option>
-                    <option value="Other">Other</option>
+                    <option value="">
+                      {{ t("controlplane.site.camera.form.fields.brand.placeholder") }}
+                    </option>
+                    <option value="Hikvision">
+                      {{ t("controlplane.site.camera.form.fields.brand.options.hikvision") }}
+                    </option>
+                    <option value="Dahua">
+                      {{ t("controlplane.site.camera.form.fields.brand.options.dahua") }}
+                    </option>
+                    <option value="Uniview">
+                      {{ t("controlplane.site.camera.form.fields.brand.options.uniview") }}
+                    </option>
+                    <option value="Tiandy">
+                      {{ t("controlplane.site.camera.form.fields.brand.options.tiandy") }}
+                    </option>
+                    <option value="Axis">
+                      {{ t("controlplane.site.camera.form.fields.brand.options.axis") }}
+                    </option>
+                    <option value="Other">
+                      {{ t("controlplane.site.camera.form.fields.brand.options.other") }}
+                    </option>
                   </select>
                   <!--end::Select-->
                 </div>
@@ -233,14 +275,16 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">Model</label>
+                  <label class="fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.model.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
                     type="text"
                     v-model="cameraForm.model"
                     class="form-control form-control-solid"
-                    placeholder="Model number"
+                    :placeholder="t('controlplane.site.camera.form.fields.model.placeholder')"
                   />
                   <!--end::Input-->
                 </div>
@@ -253,9 +297,9 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2"
-                    >Camera Type</label
-                  >
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.type.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Select-->
                   <select
@@ -263,11 +307,21 @@
                     class="form-select form-select-solid"
                     required
                   >
-                    <option value="Dome">Dome</option>
-                    <option value="Bullet">Bullet</option>
-                    <option value="PTZ">PTZ</option>
-                    <option value="Fisheye">Fisheye</option>
-                    <option value="Turret">Turret</option>
+                    <option value="Dome">
+                      {{ t("controlplane.site.camera.form.fields.type.options.dome") }}
+                    </option>
+                    <option value="Bullet">
+                      {{ t("controlplane.site.camera.form.fields.type.options.bullet") }}
+                    </option>
+                    <option value="PTZ">
+                      {{ t("controlplane.site.camera.form.fields.type.options.ptz") }}
+                    </option>
+                    <option value="Fisheye">
+                      {{ t("controlplane.site.camera.form.fields.type.options.fisheye") }}
+                    </option>
+                    <option value="Turret">
+                      {{ t("controlplane.site.camera.form.fields.type.options.turret") }}
+                    </option>
                   </select>
                   <!--end::Select-->
                 </div>
@@ -276,9 +330,9 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2"
-                    >Resolution</label
-                  >
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.resolution.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Select-->
                   <select
@@ -286,11 +340,21 @@
                     class="form-select form-select-solid"
                     required
                   >
-                    <option value="1080P (2MP)">1080P (2MP)</option>
-                    <option value="4MP">4MP</option>
-                    <option value="5MP">5MP</option>
-                    <option value="4K (8MP)">4K (8MP)</option>
-                    <option value="12MP">12MP</option>
+                    <option value="1080P (2MP)">
+                      {{ t("controlplane.site.camera.form.fields.resolution.options.1080p") }}
+                    </option>
+                    <option value="4MP">
+                      {{ t("controlplane.site.camera.form.fields.resolution.options.4mp") }}
+                    </option>
+                    <option value="5MP">
+                      {{ t("controlplane.site.camera.form.fields.resolution.options.5mp") }}
+                    </option>
+                    <option value="4K (8MP)">
+                      {{ t("controlplane.site.camera.form.fields.resolution.options.4k") }}
+                    </option>
+                    <option value="12MP">
+                      {{ t("controlplane.site.camera.form.fields.resolution.options.12mp") }}
+                    </option>
                   </select>
                   <!--end::Select-->
                 </div>
@@ -303,14 +367,16 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">Channel Number</label>
+                  <label class="fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.channel.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
                     type="number"
                     v-model="cameraForm.channel"
                     class="form-control form-control-solid"
-                    placeholder="1"
+                    :placeholder="t('controlplane.site.camera.form.fields.channel.placeholder')"
                     min="1"
                     max="64"
                   />
@@ -321,14 +387,16 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">Location</label>
+                  <label class="fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.location.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
                     type="text"
                     v-model="cameraForm.location"
                     class="form-control form-control-solid"
-                    placeholder="Specific location description"
+                    :placeholder="t('controlplane.site.camera.form.fields.location.placeholder')"
                   />
                   <!--end::Input-->
                 </div>
@@ -341,14 +409,16 @@
                 <!--begin::Col-->
                 <div class="col-md-12">
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">Description</label>
+                  <label class="fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.description.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <textarea
                     v-model="cameraForm.description"
                     class="form-control form-control-solid"
                     rows="3"
-                    placeholder="Camera description"
+                    :placeholder="t('controlplane.site.camera.form.fields.description.placeholder')"
                   ></textarea>
                   <!--end::Input-->
                 </div>
@@ -363,7 +433,7 @@
                   class="btn btn-light me-3"
                   @click="closeForm"
                 >
-                  Cancel
+                  {{ t("controlplane.site.camera.form.actions.cancel") }}
                 </button>
                 <button
                   type="submit"
@@ -371,13 +441,17 @@
                   :disabled="isLoading"
                 >
                   <span v-if="isLoading" class="indicator-progress">
-                    Please wait...
+                    {{ t("controlplane.site.camera.form.actions.loading") }}
                     <span
                       class="spinner-border spinner-border-sm align-middle ms-2"
                     ></span>
                   </span>
                   <span v-else class="indicator-label">
-                    {{ isEdit ? "Update Camera" : "Save Camera" }}
+                    {{
+                      isEdit
+                        ? t("controlplane.site.camera.form.actions.update")
+                        : t("controlplane.site.camera.form.actions.create")
+                    }}
                   </span>
                 </button>
               </div>
@@ -391,7 +465,9 @@
       <!--begin::Controls (below form, above table) -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center">
-          <span class="me-2">Items:</span>
+          <span class="me-2">
+            {{ t("controlplane.site.camera.toolbar.itemsLabel") }}
+          </span>
           <select v-model="perPage" @change="onPerPageChange" class="form-select form-select-solid w-75px">
             <option :value="1">1</option>
             <option :value="5">5</option>
@@ -411,7 +487,7 @@
               type="text"
               v-model="searchQuery"
               class="form-control form-control-solid w-250px ps-12"
-              placeholder="Search cameras..."
+              :placeholder="t('controlplane.site.camera.toolbar.searchPlaceholder')"
             />
           </div>
 
@@ -420,7 +496,7 @@
             @click="showCameraForm = true"
           >
             <i class="ki-duotone ki-plus fs-2 me-1"></i>
-            Add Camera
+            {{ t("controlplane.site.camera.toolbar.addButton") }}
           </button>
         </div>
       </div>
@@ -436,7 +512,7 @@
         :sort-label="sortLabel"
         :sort-order="sortOrder"
         @on-sort="handleSort"
-        empty-table-text="No cameras found"
+        :empty-table-text="t('controlplane.site.camera.table.empty')"
       >
         <template v-slot:name="{ row }">
           <div class="d-flex align-items-center">
@@ -490,19 +566,18 @@
             <span class="text-dark fw-bold d-block fs-6">{{
               getNvrName(row.nvrId)
             }}</span>
-            <span class="text-muted fw-semibold d-block fs-7"
-              >Ch. {{ row.channel }}</span
-            >
+            <span class="text-muted fw-semibold d-block fs-7">
+              {{ t("controlplane.site.camera.table.channelPrefix") }}
+              {{ row.channel }}
+            </span>
           </div>
         </template>
 
         <template v-slot:status="{ row }">
           <span
-            :class="`badge badge-light-${
-              row.status === 'Online' ? 'success' : 'danger'
-            } fs-7 fw-bold`"
+            :class="`badge badge-light-${statusBadgeVariant(row.status)} fs-7 fw-bold`"
           >
-            {{ row.status }}
+            {{ resolveStatusLabel(row.status) }}
           </span>
         </template>
 
@@ -511,7 +586,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
               @click="viewCamera(row)"
-              title="View Live Stream"
+              :title="t('controlplane.site.camera.actions.view')"
             >
               <i class="ki-duotone ki-eye fs-2">
                 <span class="path1"></span>
@@ -522,7 +597,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="editCamera(row)"
-              title="Edit Camera"
+              :title="t('controlplane.site.camera.actions.edit')"
             >
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
@@ -532,7 +607,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
               @click="deleteCamera(row)"
-              title="Delete Camera"
+              :title="t('controlplane.site.camera.actions.delete')"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -568,6 +643,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import Pagination from '@/components/common/Pagination.vue';
 import ApiService from '@/core/services/ApiService';
@@ -606,7 +682,7 @@ interface Camera {
   channel: number;
   location?: string;
   description?: string;
-  status: "Online" | "Offline";
+  status: "online" | "offline";
   createdAt: string;
 }
 
@@ -627,7 +703,8 @@ interface CameraForm {
   description?: string;
 }
 
-// Router
+// i18n & Router
+const { t } = useI18n();
 const route = useRoute();
 
 // Reactive data
@@ -678,39 +755,39 @@ const onPageChange = (page: number) => {
 };
 
 // Table header configuration
-const tableHeader = ref([
+const tableHeader = computed(() => [
   {
-    columnName: "Camera Name",
+    columnName: t("controlplane.site.camera.table.name"),
     columnLabel: "name",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Location",
+    columnName: t("controlplane.site.camera.table.location"),
     columnLabel: "location",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Specifications",
+    columnName: t("controlplane.site.camera.table.specs"),
     columnLabel: "specs",
     sortEnabled: false,
     searchable: true,
   },
   {
-    columnName: "NVR",
+    columnName: t("controlplane.site.camera.table.nvr"),
     columnLabel: "nvr",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Status",
+    columnName: t("controlplane.site.camera.table.status"),
     columnLabel: "status",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Actions",
+    columnName: t("controlplane.site.camera.table.actions"),
     columnLabel: "actions",
     sortEnabled: false,
     searchable: false,
@@ -791,20 +868,48 @@ const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
   sortOrder.value = sort.order;
 };
 
+const normalizeStatusKey = (status?: unknown): "online" | "offline" => {
+  if (typeof status === "string") {
+    const normalized = status.toLowerCase();
+    if (["online", "active", "running", "enabled"].includes(normalized)) {
+      return "online";
+    }
+    if (["offline", "inactive", "down", "disabled"].includes(normalized)) {
+      return "offline";
+    }
+  }
+
+  if (typeof status === "boolean") {
+    return status ? "online" : "offline";
+  }
+
+  if (typeof status === "number") {
+    return status > 0 ? "online" : "offline";
+  }
+
+  return "offline";
+};
+
+const statusBadgeVariant = (status?: unknown): string =>
+  normalizeStatusKey(status) === "online" ? "success" : "danger";
+
+const resolveStatusLabel = (status?: unknown): string =>
+  t(`controlplane.site.camera.status.${normalizeStatusKey(status)}`);
+
 // Methods
 const getSiteName = (siteId: string): string => {
   const site = sites.value.find((s) => s.uid === siteId);
-  return site ? site.name : "Unknown Site";
+  return site ? site.name : t("controlplane.site.camera.fallback.unknownSite");
 };
 
 const getRoomName = (roomId: number): string => {
   const room = rooms.value.find((r) => r.id === roomId);
-  return room ? room.name : "Unknown Room";
+  return room ? room.name : t("controlplane.site.camera.fallback.unknownRoom");
 };
 
 const getNvrName = (nvrId: string): string => {
   const nvr = nvrs.value.find((n) => n.uid === nvrId);
-  return nvr ? nvr.name : "Unknown NVR";
+  return nvr ? nvr.name : t("controlplane.site.camera.fallback.unknownNvr");
 };
 
 const onSiteChange = () => {
@@ -823,6 +928,7 @@ const onRoomChange = () => {
 const onHeaderSiteFilterChange = () => {
   selectedNvrFilter.value = "";
   currentPage.value = 1;
+  localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || "");
   // Load cameras for the new selected site
   if (selectedSiteFilter.value) {
     loadCameras();
@@ -992,7 +1098,9 @@ const loadCameras = async () => {
         channel: camera.channels || camera.channel || 1,
         location: camera.location || "",
         description: camera.description || "",
-        status: camera.is_active !== false ? "Online" : "Offline",
+        status: normalizeStatusKey(
+          typeof camera.status !== "undefined" ? camera.status : camera.is_active
+        ),
         createdAt: camera.created_at || new Date().toISOString().split("T")[0],
       }));
     } else {
@@ -1082,7 +1190,7 @@ const saveCamera = async () => {
         channel: cameraForm.value.channel,
         location: cameraForm.value.location,
         description: cameraForm.value.description,
-        status: "Online",
+        status: "online",
         createdAt: new Date().toISOString().split("T")[0],
       };
       cameras.value.unshift(newCamera);
@@ -1211,7 +1319,7 @@ const editCamera = async (camera: Camera) => {
 };
 
 const deleteCamera = async (camera: Camera) => {
-  if (!confirm("Are you sure you want to delete this camera?")) return;
+  if (!confirm(t("controlplane.site.camera.notifications.deleteConfirm"))) return;
 
   isLoading.value = true;
 
@@ -1235,7 +1343,7 @@ const deleteCamera = async (camera: Camera) => {
 const viewCamera = (camera: Camera) => {
   console.log("Opening live stream for camera:", camera.name);
   // TODO: Implement live stream viewer
-  alert(`Live stream for ${camera.name} would open here`);
+  alert(t("controlplane.site.camera.actions.viewAlert", { name: camera.name }));
 };
 
 const closeForm = () => {
@@ -1266,8 +1374,9 @@ onMounted(async () => {
     
     // Initialize selected site filter from localStorage or first site
     selectedSiteFilter.value = localStorage.getItem('lastSelectedSite') as string || 
-                             (route.query.siteId as string) || 
-                             (sites.value[0] && sites.value[0].uid) || "";
+                 (route.query.siteId as string) || 
+                 (sites.value[0] && sites.value[0].uid) || "";
+    localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || "");
     
     await loadNvrs();
     

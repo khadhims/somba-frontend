@@ -5,7 +5,7 @@
     <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
       <div class="card-title">
-        <h3 class="fw-bold m-0">Room Management</h3>
+        <h3 class="fw-bold m-0">{{ t("controlplane.site.room.title") }}</h3>
       </div>
       <!--end::Card title-->
 
@@ -23,7 +23,13 @@
       <div v-if="showRoomForm" class="mb-10">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">{{ isEdit ? "Edit Room" : "Add Room" }}</h3>
+            <h3 class="card-title">
+              {{
+                isEdit
+                  ? t("controlplane.site.room.form.titleEdit")
+                  : t("controlplane.site.room.form.titleCreate")
+              }}
+            </h3>
             <div class="card-toolbar">
               <button
                 type="button"
@@ -44,7 +50,9 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">Site</label>
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.room.form.fields.site.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Select-->
                   <select
@@ -52,7 +60,9 @@
                     class="form-select form-select-solid"
                     required
                   >
-                    <option value="">Select Site</option>
+                    <option value="">
+                      {{ t("controlplane.site.room.form.fields.site.placeholder") }}
+                    </option>
                     <option
                       v-for="site in sites"
                       :key="site.id"
@@ -68,16 +78,16 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2"
-                    >Room Name</label
-                  >
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.room.form.fields.name.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
                     type="text"
                     v-model="roomForm.name"
                     class="form-control form-control-solid"
-                    placeholder="Enter room name"
+                    :placeholder="t('controlplane.site.room.form.fields.name.placeholder')"
                     required
                   />
                   <!--end::Input-->
@@ -91,19 +101,22 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">Room Type</label>
+                  <label class="fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.room.form.fields.type.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Select-->
                   <select
                     v-model="roomForm.type"
                     class="form-select form-select-solid"
                   >
-                    <option value="Office">Office</option>
-                    <option value="Meeting Room">Meeting Room</option>
-                    <option value="Lobby">Lobby</option>
-                    <option value="Warehouse">Warehouse</option>
-                    <option value="Security Room">Security Room</option>
-                    <option value="Other">Other</option>
+                    <option
+                      v-for="option in roomTypeOptions"
+                      :key="option.value"
+                      :value="option.value"
+                    >
+                      {{ t(`controlplane.site.room.form.fields.type.options.${option.key}`) }}
+                    </option>
                   </select>
                   <!--end::Select-->
                 </div>
@@ -112,14 +125,16 @@
                 <!--begin::Col-->
                 <div class="col-md-6">
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">Floor</label>
+                  <label class="fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.room.form.fields.floor.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
                     type="text"
                     v-model="roomForm.floor"
                     class="form-control form-control-solid"
-                    placeholder="Floor level"
+                    :placeholder="t('controlplane.site.room.form.fields.floor.placeholder')"
                   />
                   <!--end::Input-->
                 </div>
@@ -132,14 +147,16 @@
                 <!--begin::Col-->
                 <div class="col-md-12">
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">Description</label>
+                  <label class="fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.room.form.fields.description.label") }}
+                  </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <textarea
                     v-model="roomForm.description"
                     class="form-control form-control-solid"
                     rows="3"
-                    placeholder="Room description"
+                    :placeholder="t('controlplane.site.room.form.fields.description.placeholder')"
                   ></textarea>
                   <!--end::Input-->
                 </div>
@@ -154,7 +171,7 @@
                   class="btn btn-light me-3"
                   @click="closeForm"
                 >
-                  Cancel
+                  {{ t("controlplane.site.room.form.actions.cancel") }}
                 </button>
                 <button
                   type="submit"
@@ -162,13 +179,17 @@
                   :disabled="isLoading"
                 >
                   <span v-if="isLoading" class="indicator-progress">
-                    Please wait...
+                    {{ t("controlplane.site.room.form.actions.loading") }}
                     <span
                       class="spinner-border spinner-border-sm align-middle ms-2"
                     ></span>
                   </span>
                   <span v-else class="indicator-label">
-                    {{ isEdit ? "Update Room" : "Save Room" }}
+                    {{
+                      isEdit
+                        ? t("controlplane.site.room.form.actions.update")
+                        : t("controlplane.site.room.form.actions.create")
+                    }}
                   </span>
                 </button>
               </div>
@@ -182,7 +203,9 @@
       <!--begin::Controls (below form, above table) -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center">
-          <span class="me-2">Items:</span>
+          <span class="me-2">
+            {{ t("controlplane.site.room.toolbar.itemsLabel") }}
+          </span>
           <select v-model="perPage" @change="onPerPageChange" class="form-select form-select-solid w-75px">
             <option :value="1">1</option>
             <option :value="5">5</option>
@@ -202,7 +225,7 @@
               type="text"
               v-model="searchQuery"
               class="form-control form-control-solid w-250px ps-12"
-              placeholder="Search rooms..."
+              :placeholder="t('controlplane.site.room.toolbar.searchPlaceholder')"
             />
           </div>
 
@@ -211,7 +234,7 @@
             @click="showRoomForm = true"
           >
             <i class="ki-duotone ki-plus fs-2 me-1"></i>
-            Add Room
+            {{ t("controlplane.site.room.toolbar.addButton") }}
           </button>
         </div>
       </div>
@@ -227,7 +250,7 @@
         :sort-label="sortLabel"
         :sort-order="sortOrder"
         @on-sort="handleSort"
-        empty-table-text="No rooms found"
+        :empty-table-text="t('controlplane.site.room.table.empty')"
       >
         <template v-slot:name="{ row }">
           <div class="d-flex align-items-center">
@@ -254,9 +277,9 @@
         </template>
 
         <template v-slot:type="{ row }">
-          <span class="badge badge-light-primary fs-7 fw-bold">{{
-            row.type
-          }}</span>
+          <span class="badge badge-light-primary fs-7 fw-bold">
+            {{ resolveRoomTypeLabel(row.type) }}
+          </span>
         </template>
 
         <template v-slot:floor="{ row }">
@@ -270,7 +293,7 @@
             <router-link
               :to="`/controlplane/site/nvr?roomId=${row.id}`"
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              title="Manage NVRs"
+              :title="t('controlplane.site.room.actions.manageNvrs')"
             >
               <i class="ki-duotone ki-router fs-2">
                 <span class="path1"></span>
@@ -280,7 +303,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="editRoom(row)"
-              title="Edit Room"
+              :title="t('controlplane.site.room.actions.edit')"
             >
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
@@ -290,7 +313,7 @@
             <button
               class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
               @click="deleteRoom(row.id)"
-              title="Delete Room"
+              :title="t('controlplane.site.room.actions.delete')"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -326,6 +349,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import Pagination from '@/components/common/Pagination.vue';
 
@@ -357,6 +381,8 @@ interface RoomForm {
 // Router
 const route = useRoute();
 
+const { t } = useI18n();
+
 // Reactive data
 const isLoading = ref(false);
 const showRoomForm = ref(false);
@@ -382,34 +408,50 @@ const roomForm = ref<RoomForm>({
   description: "",
 });
 
+const roomTypeOptions = [
+  { value: "Office", key: "office" },
+  { value: "Meeting Room", key: "meeting" },
+  { value: "Lobby", key: "lobby" },
+  { value: "Warehouse", key: "warehouse" },
+  { value: "Security Room", key: "security" },
+  { value: "Other", key: "other" },
+];
+
+const resolveRoomTypeLabel = (type: string) => {
+  const option = roomTypeOptions.find((item) => item.value === type);
+  return option
+    ? t(`controlplane.site.room.form.fields.type.options.${option.key}`)
+    : type;
+};
+
 // Table header configuration
-const tableHeader = ref([
+const tableHeader = computed(() => [
   {
-    columnName: "Room Name",
+    columnName: t("controlplane.site.room.table.name"),
     columnLabel: "name",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Site",
+    columnName: t("controlplane.site.room.table.site"),
     columnLabel: "site",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Type",
+    columnName: t("controlplane.site.room.table.type"),
     columnLabel: "type",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: "Floor",
+    columnName: t("controlplane.site.room.table.floor"),
     columnLabel: "floor",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: "Actions",
+    columnName: t("controlplane.site.room.table.actions"),
     columnLabel: "actions",
     sortEnabled: false,
     searchable: false,
@@ -422,12 +464,15 @@ const filteredAndSortedRooms = computed(() => {
 
   if (searchQuery.value.trim()) {
     const q = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(
-      (room) =>
+    filtered = filtered.filter((room) => {
+      const typeLabel = resolveRoomTypeLabel(room.type).toLowerCase();
+      return (
         room.name.toLowerCase().includes(q) ||
         room.type.toLowerCase().includes(q) ||
+        typeLabel.includes(q) ||
         getSiteName(room.siteId).toLowerCase().includes(q)
-    );
+      );
+    });
   }
 
   if (sortLabel.value) {
@@ -462,7 +507,7 @@ const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
 // Methods
 const getSiteName = (siteId: number): string => {
   const site = sites.value.find((s) => s.id === siteId);
-  return site ? site.name : "Unknown Site";
+  return site ? site.name : t("controlplane.site.room.fallback.unknownSite");
 };
 
 const loadSites = async () => {
@@ -571,7 +616,7 @@ const editRoom = (room: Room) => {
 };
 
 const deleteRoom = async (roomId: number) => {
-  if (!confirm("Are you sure you want to delete this room?")) return;
+  if (!confirm(t("controlplane.site.room.notifications.deleteConfirm"))) return;
 
   isLoading.value = true;
 
