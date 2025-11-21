@@ -75,11 +75,12 @@
         :header="tableHeader"
         :checkbox-enabled="false"
         :enable-items-per-page-dropdown="true"
-        :items-per-page="15"
+        :items-per-page="itemsPerPage"
         :loading="loading"
         :sort-label="sortLabel"
         :sort-order="sortOrder"
         @on-sort="handleSort"
+        @on-items-per-page-change="handleItemsPerPageChange"
         :empty-table-text="t('appsEventsAlerts.eventsTable.empty')"
       >
         <template v-slot:event_name="{ row }">
@@ -394,7 +395,7 @@ const sortOrder = ref<"asc" | "desc">("desc");
 const currentSite = ref<Site | null>(null);
 // Pagination
 const currentPage = ref(1);
-const itemsPerPage = ref(15);
+const itemsPerPage = ref(10);
 const totalItems = ref(0);
 const totalPages = ref(0);
 // Modal state
@@ -465,8 +466,13 @@ const fetchEvents = async () => {
 
     await fetchCameras(siteUid);
 
-    // Call API: sites/{site_uid}/list-activity
-    const resp = await ApiService.get(`sites/${siteUid}/list-activity`);
+    // Call API: sites/{site_uid}/list-activity with pagination params
+    const resp = await ApiService.query(`sites/${siteUid}/list-activity`, {
+      params: {
+        page: currentPage.value,
+        per_page: itemsPerPage.value
+      }
+    });
     const payload = resp && resp.data ? resp.data : resp;
 
     // Handle API response structure: { status, code, message, data: [...], pagination: {...} }
@@ -509,6 +515,7 @@ const fetchEvents = async () => {
 
     // Use pagination from API response
     const pagination = payload?.pagination || {};
+    currentPage.value = typeof pagination.page === "number" ? pagination.page : currentPage.value;
     totalItems.value = typeof pagination.total_items === "number" ? pagination.total_items : events.value.length;
     itemsPerPage.value = typeof pagination.per_page === "number" && pagination.per_page > 0 ? pagination.per_page : itemsPerPage.value;
     totalPages.value = typeof pagination.total_pages === "number" && pagination.total_pages > 0
@@ -622,11 +629,14 @@ const onFilterSiteChange = () => {
   currentSite.value = sites.value.find(s => s.uid === selectedSiteFilter.value) || null;
   // reset NVR filter when site changes
   selectedNvrFilter.value = "";
+  // reset to first page when changing filters
+  currentPage.value = 1;
   fetchEvents();
 };
 
 const onFilterNvrChange = () => {
   // Changing NVR filter should reload events scoped to that NVR
+  currentPage.value = 1;
   fetchEvents();
 };
 
@@ -815,13 +825,9 @@ const filteredAndSortedEvents = computed(() => {
     });
   }
 
-  totalItems.value = filtered.length;
-  totalPages.value = Math.ceil(totalItems.value / itemsPerPage.value);
-
-  const startIndex = (currentPage.value - 1) * itemsPerPage.value;
-  const endIndex = startIndex + itemsPerPage.value;
-
-  return filtered.slice(startIndex, endIndex);
+  // Don't recalculate pagination here - use server-side pagination values
+  // Just return filtered/sorted events without slicing
+  return filtered;
 });
 
 // Statistics computed properties
@@ -876,9 +882,16 @@ const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
   sortOrder.value = sort.order;
 };
 
+const handleItemsPerPageChange = (newItemsPerPage: number) => {
+  itemsPerPage.value = newItemsPerPage;
+  currentPage.value = 1; // Reset to first page
+  fetchEvents(); // Fetch data with new page size
+};
+
 const goToPage = (page: number) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
+    fetchEvents(); // Fetch new page data from server
   }
 };
 
