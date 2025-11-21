@@ -45,24 +45,24 @@ const MainMenuConfig: Array<MenuItem> = [
             keenthemesIcon: "chart-simple",
             bootstrapIcon: "bi-graph-up",
           },
-          {
-            heading: "siteConfiguration",
-            route: "/controlplane/site/settings",
-            keenthemesIcon: "setting-2",
-            bootstrapIcon: "bi-gear",
-          },
-          {
-            heading: "roomManagement",
-            route: "/controlplane/site/room",
-            keenthemesIcon: "home-3",
-            bootstrapIcon: "bi-door-open",
-          },
-          {
-            heading: "nvrSystems",
-            route: "/controlplane/site/nvr",
-            keenthemesIcon: "router",
-            bootstrapIcon: "bi-hdd-network",
-          },
+          // {
+          //   heading: "siteConfiguration",
+          //   route: "/controlplane/site/settings",
+          //   keenthemesIcon: "setting-2",
+          //   bootstrapIcon: "bi-gear",
+          // },
+          // {
+          //   heading: "roomManagement",
+          //   route: "/controlplane/site/room",
+          //   keenthemesIcon: "home-3",
+          //   bootstrapIcon: "bi-door-open",
+          // },
+          // {
+          //   heading: "nvrSystems",
+          //   route: "/controlplane/site/nvr",
+          //   keenthemesIcon: "router",
+          //   bootstrapIcon: "bi-hdd-network",
+          // },
           {
             heading: "cameraManagement",
             route: "/controlplane/site/camera",

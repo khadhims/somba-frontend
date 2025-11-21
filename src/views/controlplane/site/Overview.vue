@@ -283,9 +283,11 @@
               @click="viewSiteDetails(row)"
               :title="t('controlplane.site.actions.viewDetails')"
             >
-              <i class="ki-duotone ki-eye fs-2">
+              <i class="ki-duotone ki-element-11 fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
               </i>
             </button>
             <button
@@ -1029,8 +1031,8 @@ const onSiteUpdated = (updatedSite: Site) => {
 };
 
 const viewSiteDetails = (site: Site) => {
-  // Navigate to the settings page and pass the site uid in query so Settings.vue will load it
-  router.push({ path: "/controlplane/site/settings", query: { id: site.uid } });
+  // Navigate to the camera management page
+  router.push({ path: "/controlplane/site/camera", query: { id: site.uid } });
 };
 
 const deleteSite = async (site: Site) => {
