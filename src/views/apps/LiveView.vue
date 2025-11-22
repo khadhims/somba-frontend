@@ -182,6 +182,7 @@
               draggable="true"
               @dragstart="onDragStartFromSidebar($event, cam)"
               @dragend="onDragEnd"
+              @click="onCameraClick(cam)"
             >
               <div class="d-flex align-items-center flex-grow-1 overflow-hidden">
                 <!-- Camera Initial Icon -->
@@ -849,7 +850,7 @@ const onDragStart = (event: DragEvent, camera: Camera, index: number) => {
   isDragging.value = true;
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', camera.uid);
+    event.dataTransfer.setData('text/plain', JSON.stringify({ uid: camera.uid, fromGrid: true, index }));
   }
 };
 
@@ -858,7 +859,7 @@ const onDragStartFromSidebar = (event: DragEvent, camera: Camera) => {
   isDragging.value = true;
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = 'copy';
-    event.dataTransfer.setData('text/plain', camera.uid);
+    event.dataTransfer.setData('text/plain', JSON.stringify({ uid: camera.uid, fromGrid: false }));
   }
 };
 
@@ -874,43 +875,65 @@ const onDragLeave = () => {
   dragOverIndex.value = -1;
 };
 
-const onDrop = (event: DragEvent, dropIndex: number) => {
+const onDrop = async (event: DragEvent, dropIndex: number) => {
   event.preventDefault();
   dragOverIndex.value = -1;
 
   if (!draggedCamera.value) return;
 
-  const draggedUid = draggedCamera.value.uid;
-  const draggedIndex = filteredCameras.value.findIndex(c => c.uid === draggedUid);
+  try {
+    const data = JSON.parse(event.dataTransfer?.getData('text/plain') || '{}');
+    const draggedUid = data.uid;
+    const fromGrid = data.fromGrid;
 
-  if (draggedIndex === -1) {
-    // Dragged from sidebar - replace the camera at dropIndex
-    const targetCamera = filteredCameras.value[dropIndex];
-    if (targetCamera) {
-      // Find in main cameras array and swap
-      const mainDraggedIndex = cameras.value.findIndex(c => c.uid === draggedUid);
-      const mainTargetIndex = cameras.value.findIndex(c => c.uid === targetCamera.uid);
+    if (fromGrid) {
+      // Reordering within grid
+      const draggedIndex = filteredCameras.value.findIndex(c => c.uid === draggedUid);
+      if (draggedIndex !== -1 && draggedIndex !== dropIndex) {
+        const newCameras = [...cameras.value];
+        const draggedCam = newCameras.find(c => c.uid === draggedUid);
+        const targetCam = filteredCameras.value[dropIndex];
+        
+        if (draggedCam && targetCam) {
+          const draggedMainIndex = newCameras.findIndex(c => c.uid === draggedUid);
+          const targetMainIndex = newCameras.findIndex(c => c.uid === targetCam.uid);
+          
+          // Swap positions
+          [newCameras[draggedMainIndex], newCameras[targetMainIndex]] = 
+          [newCameras[targetMainIndex], newCameras[draggedMainIndex]];
+          
+          cameras.value = newCameras;
+          
+          // Refresh video streams
+          detachAllStreams();
+          await nextTick();
+          setupVideoObservers();
+        }
+      }
+    } else {
+      // Dragged from sidebar - replace camera at dropIndex
+      const targetCamera = filteredCameras.value[dropIndex];
+      const sidebarCamera = cameras.value.find(c => c.uid === draggedUid);
       
-      if (mainDraggedIndex !== -1 && mainTargetIndex !== -1) {
+      if (targetCamera && sidebarCamera) {
+        const newCameras = [...cameras.value];
+        const targetMainIndex = newCameras.findIndex(c => c.uid === targetCamera.uid);
+        const sidebarMainIndex = newCameras.findIndex(c => c.uid === draggedUid);
+        
         // Swap positions
-        const temp = cameras.value[mainDraggedIndex];
-        cameras.value[mainDraggedIndex] = cameras.value[mainTargetIndex];
-        cameras.value[mainTargetIndex] = temp;
+        [newCameras[targetMainIndex], newCameras[sidebarMainIndex]] = 
+        [newCameras[sidebarMainIndex], newCameras[targetMainIndex]];
+        
+        cameras.value = newCameras;
+        
+        // Refresh video streams
+        detachAllStreams();
+        await nextTick();
+        setupVideoObservers();
       }
     }
-  } else if (draggedIndex !== dropIndex) {
-    // Reorder within grid
-    const items = [...filteredCameras.value];
-    const [removed] = items.splice(draggedIndex, 1);
-    items.splice(dropIndex, 0, removed);
-    
-    // Update main cameras array to reflect new order
-    items.forEach((cam, idx) => {
-      const mainIndex = cameras.value.findIndex(c => c.uid === cam.uid);
-      if (mainIndex !== -1) {
-        cameras.value[mainIndex] = cam;
-      }
-    });
+  } catch (error) {
+    console.error('Error during drop:', error);
   }
 };
 
@@ -918,6 +941,31 @@ const onDragEnd = () => {
   draggedCamera.value = null;
   isDragging.value = false;
   dragOverIndex.value = -1;
+};
+
+// Click handler for sidebar camera items
+const onCameraClick = async (camera: Camera) => {
+  // Don't trigger if currently dragging
+  if (isDragging.value) return;
+  
+  // Switch to 1x1 view
+  await setGridView('1x1');
+  
+  // Move clicked camera to the first position
+  const newCameras = [...cameras.value];
+  const clickedIndex = newCameras.findIndex(c => c.uid === camera.uid);
+  
+  if (clickedIndex !== -1 && clickedIndex !== 0) {
+    // Move to first position
+    const [clickedCam] = newCameras.splice(clickedIndex, 1);
+    newCameras.unshift(clickedCam);
+    cameras.value = newCameras;
+    
+    // Refresh video streams
+    detachAllStreams();
+    await nextTick();
+    setupVideoObservers();
+  }
 };
 
 // Initialize on mount
