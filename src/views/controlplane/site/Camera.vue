@@ -110,11 +110,8 @@
         <template v-slot:name="{ row }">
           <div class="d-flex align-items-center">
             <div class="symbol symbol-45px me-5">
-              <span class="symbol-label bg-light-success text-success fw-bold">
-                <i class="ki-duotone ki-picture fs-2">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
+              <span class="symbol-label bg-light-success text-success fw-bold fs-3">
+                {{ getInitial(row.name) }}
               </span>
             </div>
             <div class="d-flex justify-content-start flex-column">
@@ -608,7 +605,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
@@ -881,6 +878,12 @@ const getRoomName = (roomId: number): string => {
 const getNvrName = (nvrId: string): string => {
   const nvr = nvrs.value.find((n) => n.uid === nvrId);
   return nvr ? nvr.name : t("controlplane.site.camera.fallback.unknownNvr");
+};
+
+const getInitial = (name: string): string => {
+  if (!name) return "?";
+  const trimmed = name.trim();
+  return trimmed ? trimmed.charAt(0).toUpperCase() : "?";
 };
 
 const onSiteChange = () => {
@@ -1383,8 +1386,22 @@ onMounted(async () => {
     if (selectedSiteFilter.value) {
       await loadCameras();
     }
+
+    // Open add camera modal if query param present
+    if (route.query.addCamera === '1') {
+      showCameraForm.value = true;
+      isEdit.value = false;
+    }
   } catch (error) {
     console.error('Error initializing camera management:', error);
+  }
+});
+
+// Watch for changes to addCamera query param to open modal dynamically
+watch(() => route.query.addCamera, (val) => {
+  if (val === '1') {
+    showCameraForm.value = true;
+    isEdit.value = false;
   }
 });
 </script>

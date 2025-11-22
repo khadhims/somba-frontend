@@ -220,7 +220,10 @@ const actions = [
     icon: 'bi bi-plus-circle',
     iconColor: 'text-primary',
     iconBg: 'bg-light-primary',
-    action: () => { window.dispatchEvent(new CustomEvent('open-add-camera')); closeSearch(); },
+    action: () => {
+      // Navigate to camera management page with query param to open modal
+      router.push({ name: 'site-camera', query: { addCamera: '1' } });
+    },
   },
   {
     id: 'view-alerts',
@@ -386,9 +389,15 @@ const closeSearch = () => {
 
 // Keyboard shortcut handler
 const handleKeydown = (e: KeyboardEvent) => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+  // Normalize key detection for Ctrl+K across browsers
+  const isCtrlOrMeta = e.ctrlKey || e.metaKey;
+  const key = e.key?.toLowerCase();
+  if (isCtrlOrMeta && (key === 'k' || e.code === 'KeyK')) {
     e.preventDefault();
-    openSearch();
+    // Avoid reopening if already open
+    if (!isOpen.value) {
+      openSearch();
+    }
   }
 };
 
@@ -475,13 +484,14 @@ const fetchData = async () => {
 
 // Lifecycle
 onMounted(() => {
-  document.addEventListener('keydown', handleKeydown);
+  // Use capture to beat browser default (Chrome Ctrl+K quick search)
+  window.addEventListener('keydown', handleKeydown, { capture: true });
   window.addEventListener('open-global-search', handleOpenEvent);
   // Don't fetch data on mount - lazy load when search is opened
 });
 
 onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeydown);
+  window.removeEventListener('keydown', handleKeydown, { capture: true } as any);
   window.removeEventListener('open-global-search', handleOpenEvent);
 });
 
