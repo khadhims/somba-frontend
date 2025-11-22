@@ -1,6 +1,6 @@
 <template>
   <!--begin::Wrapper-->
-  <div class="w-lg-500px p-10">
+  <div class="w-lg-500px p-10" ref="signupWrapper">
     <!--begin::Form-->
     <VForm
       class="form w-100 fv-plugins-bootstrap5 fv-plugins-framework"
@@ -10,13 +10,13 @@
       :validation-schema="registration"
     >
       <!--begin::Heading-->
-      <div class="mb-10 text-center">
+      <div class="mb-10 text-center form-entrance">
         <!--begin::Title-->
-        <h1 class="text-gray-900 mb-3">Create an Account</h1>
+        <h1 class="text-white mb-3">Create an Account</h1>
         <!--end::Title-->
 
         <!--begin::Link-->
-        <div class="text-gray-500 fw-semibold fs-4">
+        <div class="fw-semibold fs-4" style="color: rgba(255,255,255,0.75)">
           Already have an account?
 
           <router-link to="/sign-in" class="link-primary fw-bold">
@@ -50,11 +50,9 @@
       <div class="row fv-row mb-7">
         <!--begin::Col-->
         <div class="col-xl-6">
-          <label class="form-label fw-bold text-gray-900 fs-6"
-            >First Name</label
-          >
+          <label class="form-label fw-bold text-white fs-6">First Name</label>
           <Field
-            class="form-control form-control-lg form-control-solid"
+            class="form-control form-control-lg custom-input"
             type="text"
             placeholder=""
             name="first_name"
@@ -70,9 +68,9 @@
 
         <!--begin::Col-->
         <div class="col-xl-6">
-          <label class="form-label fw-bold text-gray-900 fs-6">Last Name</label>
+          <label class="form-label fw-bold text-white fs-6">Last Name</label>
           <Field
-            class="form-control form-control-lg form-control-solid"
+            class="form-control form-control-lg custom-input"
             type="text"
             placeholder=""
             name="last_name"
@@ -90,9 +88,9 @@
 
       <!--begin::Input group-->
       <div class="fv-row mb-7">
-        <label class="form-label fw-bold text-gray-900 fs-6">Email</label>
+        <label class="form-label fw-bold text-white fs-6">Email</label>
         <Field
-          class="form-control form-control-lg form-control-solid"
+          class="form-control form-control-lg custom-input"
           type="email"
           placeholder=""
           name="email"
@@ -114,15 +112,13 @@
         <!--begin::Wrapper-->
         <div class="mb-1">
           <!--begin::Label-->
-          <label class="form-label fw-bold text-gray-900 fs-6">
-            Password
-          </label>
+          <label class="form-label fw-bold text-white fs-6">Password</label>
           <!--end::Label-->
 
           <!--begin::Input wrapper-->
           <div class="position-relative mb-3">
             <Field
-              class="form-control form-control-lg form-control-solid"
+              class="form-control form-control-lg custom-input"
               type="password"
               placeholder=""
               name="password"
@@ -166,11 +162,9 @@
 
       <!--begin::Input group-->
       <div class="fv-row mb-5">
-        <label class="form-label fw-bold text-gray-900 fs-6"
-          >Confirm Password</label
-        >
+        <label class="form-label fw-bold text-white fs-6">Confirm Password</label>
         <Field
-          class="form-control form-control-lg form-control-solid"
+          class="form-control form-control-lg custom-input"
           type="password"
           placeholder=""
           name="password_confirmation"
@@ -193,7 +187,7 @@
             name="toc"
             value="1"
           />
-          <span class="form-check-label fw-semibold text-gray-700 fs-6">
+          <span class="form-check-label fw-semibold text-white fs-6">
             I Agree &
             <a href="#" class="ms-1 link-primary">Terms and conditions</a>.
           </span>
@@ -207,7 +201,7 @@
           id="kt_sign_up_submit"
           ref="submitButton"
           type="submit"
-          class="btn btn-lg btn-primary"
+          class="btn btn-neon btn-lg w-100"
         >
           <span class="indicator-label"> Submit </span>
           <span class="indicator-progress">
@@ -267,6 +261,8 @@ export default defineComponent({
       });
     });
 
+    const signupWrapper = ref<HTMLElement | null>(null);
+
     const onSubmitRegister = async (values: any) => {
       values = values as User;
 
@@ -285,19 +281,21 @@ export default defineComponent({
         // Send signup request
         await store.register(values);
 
-        Swal.fire({
-          text: "You have successfully signed up! Please sign in to continue.",
-          icon: "success",
-          buttonsStyling: false,
-          confirmButtonText: "Ok, got it!",
-          heightAuto: false,
-          customClass: {
-            confirmButton: "btn fw-semibold btn-light-primary",
-          },
-        }).then(function () {
-          // Redirect to login page after successful signup
-          router.push({ name: "sign-in" });
+        // Apply a swipe-out transition to the signup card, fade/blur background,
+        // then navigate to the Sign In page.
+        try { document.body.classList.add('transitioning-to-dashboard'); } catch {}
+        if (signupWrapper.value) signupWrapper.value.classList.add('swipe-out');
+
+        await new Promise((resolve) => {
+          const el = signupWrapper.value as HTMLElement | null;
+          if (!el) return setTimeout(resolve, 700);
+          const onEnd = () => { el.removeEventListener('animationend', onEnd); resolve(null); };
+          el.addEventListener('animationend', onEnd, { once: true });
+          // safety timeout
+          setTimeout(resolve, 900);
         });
+
+        router.push({ name: 'sign-in' });
       } catch (error) {
         // Normalize and show server error inline if present
         const errObj = store.errors as any;
@@ -339,7 +337,95 @@ export default defineComponent({
       submitButton,
       getAssetPath,
       serverError,
+      signupWrapper,
     };
   },
 });
 </script>
+
+<style scoped>
+@keyframes foldAwaySignup {
+  0% { transform: translateY(0) rotateZ(0) scale(1); opacity: 1; }
+  30% { transform: translateY(-8vh) rotateZ(-6deg) scale(0.96); opacity: 0.9; }
+  60% { transform: translateY(-45vh) rotateZ(12deg) scale(0.5); opacity: 0.7; filter: blur(2px); }
+  100% { transform: translateY(-140vh) rotateZ(40deg) scale(0.08); opacity: 0; filter: blur(8px); }
+}
+
+.crumple {
+  animation: foldAwaySignup 1000ms cubic-bezier(0.2,0.9,0.3,1) forwards;
+  transform-origin: 50% 50%;
+}
+
+/* Swipe-out animation for signup -> sign-in transition */
+@keyframes swipeOutLeft {
+  0% { transform: translateX(0) scale(1); opacity: 1; }
+  40% { transform: translateX(-8%) scale(0.99); opacity: 0.95; }
+  100% { transform: translateX(-120%) scale(0.92); opacity: 0; filter: blur(6px); }
+}
+.swipe-out {
+  animation: swipeOutLeft 700ms cubic-bezier(0.2,0.9,0.25,1) forwards;
+  transform-origin: 50% 50%;
+}
+
+/* ensure the global background fade (body class) shows a smooth blur */
+.transitioning-to-dashboard .auth-layout-bg { transition: filter 1s ease, opacity 1s ease; filter: blur(10px); opacity: 0.45; }
+
+</style>
+
+<style scoped>
+/* Reuse SignIn visual styles for inputs and button */
+.custom-input {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid #334155 !important;
+  color: white !important;
+  border-radius: 12px !important;
+  padding: 12px 14px !important;
+  font-size: 1rem !important;
+  transition: all 0.25s ease !important;
+}
+.custom-input:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 6px rgba(59,130,246,0.08) !important;
+  background: rgba(15, 23, 42, 0.9) !important;
+}
+
+/* Neon button matching SignIn */
+.btn-neon {
+  background: linear-gradient(90deg, #2563eb, #4f46e5);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  box-shadow: 0 6px 22px rgba(37, 99, 235, 0.35);
+}
+.btn-neon:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(37,99,235,0.5); }
+.btn-neon::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  transition: 0.6s;
+}
+.btn-neon:hover::after { left: 100%; }
+
+/* Entrance animation for the heading/form groups */
+.form-entrance { opacity: 0; transform: translateY(8px); animation: fadeSlideIn 0.9s ease-out forwards; }
+@keyframes fadeSlideIn { to { opacity: 1; transform: translateY(0); } }
+
+/* Improve checkbox label contrast */
+.form-check-label { color: #cbd5e1 !important; }
+
+/* Ensure separators and helpers are visible */
+.d-flex .border-bottom { border-color: rgba(255,255,255,0.06) !important; }
+.fw-semobold, .text-muted { color: rgba(255,255,255,0.68) !important; }
+
+</style>

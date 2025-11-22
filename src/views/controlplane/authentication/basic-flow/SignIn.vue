@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container" @mousemove="handleMouseMove">
+  <div class="login-container" @mousemove="handleMouseMove" ref="containerRef">
     <!-- Background Elements for "Wow" factor -->
     <div class="ambient-light"></div>
     <div class="particles">
@@ -156,6 +156,7 @@ export default defineComponent({
     const submitButton = ref<HTMLButtonElement | null>(null);
     const cardRef = ref<HTMLElement | null>(null);
     const cameraHeadRef = ref<HTMLElement | null>(null);
+    const containerRef = ref<HTMLElement | null>(null);
 
     const login = Yup.object().shape({
       email: Yup.string().required().label("Username"),
@@ -208,18 +209,30 @@ export default defineComponent({
         const error = Object.values(store.errors);
 
         if (error.length === 0) {
-          Swal.fire({
-            text: "Access Granted. Welcome back!",
-            icon: "success",
-            buttonsStyling: false,
-            confirmButtonText: "Proceed",
-            heightAuto: false,
-            customClass: {
-              confirmButton: "btn fw-semibold btn-light-primary",
-            },
-          }).then(() => {
-            router.push({ name: "dashboard" });
-          });
+          // Fade/blur the background for a smoother transition
+          try { document.body.classList.add('transitioning-to-dashboard'); } catch {}
+          if (containerRef.value) containerRef.value.classList.add('fade-bg');
+
+          // Play a dramatic "crumple/fold away" animation on the login card
+          // then navigate to the dashboard. This replaces the success popup.
+          if (cardRef.value) {
+            // trigger animation
+            cardRef.value.classList.add("crumple");
+
+            // wait for animation to finish (or fallback after 1.4s)
+            await new Promise((resolve) => {
+              const el = cardRef.value as HTMLElement;
+              const onEnd = () => {
+                el.removeEventListener("animationend", onEnd);
+                resolve(null);
+              };
+              el.addEventListener("animationend", onEnd, { once: true });
+              // safety timeout
+              setTimeout(resolve, 1600);
+            });
+          }
+
+          router.push({ name: "dashboard" });
         } else {
           Swal.fire({
             text: error[0] as string,
@@ -315,6 +328,34 @@ export default defineComponent({
 @keyframes cardEntrance {
   from { opacity: 0; transform: translateY(50px) scale(0.9); }
   to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Crumple / Fold-away animation for successful login */
+@keyframes foldAway {
+  0% {
+    transform: translateY(0) rotateX(0) rotateY(0) scale(1);
+    opacity: 1;
+    filter: blur(0px) saturate(1);
+  }
+  25% {
+    transform: translateY(-10px) rotateZ(-6deg) scale(0.98) skew(-2deg, -1deg);
+    filter: blur(0.5px) saturate(1.05);
+  }
+  55% {
+    transform: translateY(-40vh) rotateZ(10deg) scale(0.45) skew(8deg, 4deg);
+    opacity: 0.75;
+    filter: blur(2px) saturate(0.9) contrast(0.95);
+  }
+  100% {
+    transform: translateY(-140vh) rotateZ(40deg) scale(0.08) skew(18deg, 10deg);
+    opacity: 0;
+    filter: blur(8px) saturate(0.6) contrast(0.9);
+  }
+}
+
+.login-card.crumple {
+  animation: foldAway 1000ms cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+  transform-origin: 50% 50%;
 }
 
 /* Brand Logo */
@@ -887,6 +928,26 @@ export default defineComponent({
   }
 
   .particles { display: none; }
+}
+</style>
+
+/* Global background fade/blur used during transition to dashboard */
+<style>
+.transitioning-to-dashboard .auth-layout-bg {
+  transition: filter 1s ease, background-color 1s ease, opacity 1s ease;
+  filter: blur(10px) saturate(0.9) brightness(0.9);
+  opacity: 0.45;
+}
+
+.transitioning-to-dashboard .login-container .ambient-light {
+  transition: opacity 1s ease, filter 1s ease;
+  opacity: 0 !important;
+  filter: blur(8px) !important;
+}
+
+.transitioning-to-dashboard .login-card {
+  /* subtle dim to focus on the crumple */
+  transition: opacity 1s ease;
 }
 </style>
 
