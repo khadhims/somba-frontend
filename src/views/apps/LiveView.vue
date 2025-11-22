@@ -3,45 +3,12 @@
   <div class="card mb-4">
     <div class="card-body d-flex align-items-center justify-content-between">
       <div>
-        <h4 class="card-title mb-0">{{ t('appsLiveView.header.title') }}</h4>
-        <!-- <div class="small text-muted">
-          <span class="text-success me-2">●</span>{{ t('appsLiveView.header.status', { count: activeCameras }) }}
-        </div> -->
+        <div class="d-flex align-items-center">
+          <h4 class="card-title mb-0 me-3">{{ t('appsLiveView.header.title') }}</h4>
+        </div>
       </div>
 
-      <div class="d-flex align-items-center gap-2">
-        <div class="d-flex align-items-center">
-          <label class="form-label me-2 mb-0 fw-semibold">{{ t('appsLiveView.header.filters.siteLabel') }}</label>
-          <select
-            v-model="selectedSiteFilter"
-            @change="onHeaderSiteFilterChange"
-            class="form-select form-select-solid w-200px"
-            :disabled="loadingSites"
-          >
-            <option v-if="loadingSites" value="">{{ t('appsLiveView.header.filters.site.loading') }}</option>
-            <option v-else-if="sites.length === 0" value="">{{ t('appsLiveView.header.filters.site.none') }}</option>
-            <option v-else value="" disabled>{{ t('appsLiveView.header.filters.site.placeholder') }}</option>
-            <option v-for="site in sites" :key="site.uid" :value="site.uid">{{ site.name }}</option>
-          </select>
-        </div>
-
-        <div class="d-flex align-items-center">
-          <label class="form-label me-2 mb-0 fw-semibold">{{ t('appsLiveView.header.filters.nvrLabel') }}</label>
-          <select
-            v-model="selectedNvrFilter"
-            @change="onHeaderNvrFilterChange"
-            class="form-select form-select-solid w-200px"
-            :disabled="loadingNvrs || !selectedSiteFilter"
-          >
-            <option v-if="loadingNvrs" value="">{{ t('appsLiveView.header.filters.nvr.loading') }}</option>
-            <option v-else-if="!selectedSiteFilter" value="">{{ t('appsLiveView.header.filters.nvr.requiresSite') }}</option>
-            <option v-else-if="availableHeaderNvrs.length === 0" value="">{{ t('appsLiveView.header.filters.nvr.none') }}</option>
-            <option v-else value="">{{ t('appsLiveView.header.filters.nvr.all') }}</option>
-            <option v-for="nvr in availableHeaderNvrs" :key="nvr.uid" :value="nvr.uid">{{ nvr.name }}</option>
-          </select>
-        </div>
-
-        <div class="btn-group" role="group">
+      <div class="btn-group" role="group">
           <button type="button" class="btn btn-sm" :class="{ 'btn-light': true }">
             <i class="bi-grid-fill"></i>
           </button>
@@ -81,7 +48,6 @@
           >
             4x4
           </button>
-        </div>
       </div>
     </div>
   </div>
@@ -92,7 +58,6 @@
       <div class="card">
         <div class="card-body py-3">
           <!-- Camera count indicator -->
-
 
           <div class="row g-3" :class="gridClasses">
             <div 
@@ -113,22 +78,18 @@
                 @dragstart="onDragStart($event, camera, index)"
                 @dragend="onDragEnd"
               >
-                <div class="card-body p-3">
-                  <!-- Drag handle -->
+                <div class="card-body p-0 position-relative">
+                  <!-- Drag handle overlay -->
                   <div class="drag-handle position-absolute" style="top: 8px; right: 8px; z-index: 10;">
-                    <i class="ki-duotone ki-menu fs-4 text-muted cursor-move">
+                    <i class="ki-duotone ki-menu fs-4 text-white cursor-move drop-shadow">
                       <span class="path1"></span>
                       <span class="path2"></span>
                     </i>
                   </div>
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="card-title mb-0">{{ camera.room }}</h6>
-                    <!-- <span class="badge" :class="camera.status === 'online' ? 'badge-light-success' : 'badge-light-danger'">{{ getStatusLabel(camera.status) }}</span> -->
-                  </div>
 
                   <div
-                    class="camera-feed-container bg-gray-300 rounded"
-                    :style="{ height: gridView === '1x1' ? '520px' : '160px', position: 'relative' }"
+                    class="camera-feed-container bg-black rounded overflow-hidden"
+                    :style="{ height: gridView === '1x1' ? '520px' : '200px', position: 'relative' }"
                   >
                     <video
                       v-if="camera.public_endpoint_url"
@@ -142,24 +103,20 @@
                       controls
                     ></video>
                     <div v-else class="d-flex align-items-center justify-content-center h-100">
-                      <i class="ki-duotone ki-security-user fs-3x text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+                      <i class="ki-duotone ki-security-user fs-3x text-gray-600"><span class="path1"></span><span class="path2"></span></i>
                     </div>
 
-                    <div class="position-absolute bottom-0 start-0 p-2">
-                      <small class="text-white bg-dark bg-opacity-75 px-2 py-1 rounded">{{ camera.name }}</small>
-                    </div>
-                  </div>
-
-                  <div class="mt-2">
-                    <div class="d-flex justify-content-between">
-                      <button class="btn btn-sm btn-light-primary" @click="viewFullscreen(camera)">
-                        <i class="ki-duotone ki-maximize fs-6"></i>
-                          {{ t('appsLiveView.grid.fullscreen') }}
-                      </button>
-                      <button class="btn btn-sm btn-light-info" @click="viewRecordings(camera)">
-                        <i class="ki-duotone ki-video fs-6"></i>
-                          {{ t('appsLiveView.grid.recordings') }}
-                      </button>
+                    <!-- Info Overlay -->
+                    <div class="position-absolute bottom-0 start-0 w-100 p-3" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
+                      <div class="d-flex justify-content-between align-items-end">
+                        <div>
+                          <div class="text-white fw-bold fs-6">{{ camera.room }}</div>
+                          <div class="d-flex align-items-center text-gray-400 fs-8">
+                            <span class="me-2">{{ camera.name }}</span>
+                            <span v-if="camera.model" class="badge badge-sm badge-light-primary bg-opacity-20 text-white border-0 px-1 py-0" style="font-size: 0.7rem;">{{ camera.model }}</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -176,43 +133,83 @@
     </div>
 
     <div class="col-xl-3">
-      <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <div>
-            <h3 class="fw-bold m-0">{{ selectedSiteName }}</h3>
-            <div class="small text-muted">{{ t('appsLiveView.sidebar.cameraCount', { count: totalCameras }) }}</div>
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center cursor-pointer" @click="toggleSiteList">
+          <div class="overflow-hidden">
+            <h3 class="fw-bold m-0 text-truncate">{{ selectedSiteName }}</h3>
+            <div class="small text-muted">({{ totalCameras }} cameras)</div>
           </div>
-          <div class="btn btn-sm btn-light">
-            <i class="bi-list"></i>
+          <div class="btn btn-sm btn-icon btn-light">
+            <i class="bi" :class="isSiteSelectionOpen ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
           </div>
         </div>
-        <div class="card-body p-0">
-          <ul class="list-group list-group-flush">
+        <div class="card-body p-0 overflow-auto" style="max-height: 80vh;">
+          <!-- Site List (Dropdown) -->
+          <div v-if="isSiteSelectionOpen">
+            <!-- Search Input -->
+            <div class="p-3 border-bottom">
+              <input 
+                type="text" 
+                v-model="siteSearchQuery"
+                class="form-control form-control-sm"
+                placeholder="Search sites..."
+                @click.stop
+              />
+            </div>
+            <ul class="list-group list-group-flush">
+              <li 
+                v-for="site in filteredSites" 
+                :key="site.uid" 
+                class="list-group-item list-group-item-action cursor-pointer"
+                :class="{ 'active': site.uid === selectedSiteId }"
+                @click.stop="selectSite(site)"
+              >
+                <div class="fw-semibold">{{ site.name }}</div>
+              </li>
+              <li v-if="filteredSites.length === 0" class="list-group-item text-muted text-center">
+                No sites found
+              </li>
+            </ul>
+          </div>
+
+          <!-- Camera List -->
+          <ul v-else class="list-group list-group-flush">
             <li 
               v-for="cam in siteCameras" 
               :key="cam.uid" 
-              class="list-group-item d-flex justify-content-between align-items-center cursor-grab sidebar-camera-item"
+              class="list-group-item border-0 py-3 px-4 d-flex justify-content-between align-items-center cursor-grab sidebar-camera-item"
               :class="{ 'dragging': draggedCamera?.uid === cam.uid }"
               draggable="true"
               @dragstart="onDragStartFromSidebar($event, cam)"
               @dragend="onDragEnd"
             >
-              <div class="flex-grow-1">
-                <div class="fw-semibold">{{ cam.room }}</div>
-                <div class="text-muted small">{{ cam.name }}</div>
+              <div class="d-flex align-items-center flex-grow-1 overflow-hidden">
+                <!-- Camera Initial Icon -->
+                <div class="d-flex justify-content-center align-items-center bg-light-primary rounded me-3 flex-shrink-0" style="width: 40px; height: 40px;">
+                  <span class="text-primary fs-3 fw-bold">
+                    {{ (cam.room || cam.name || '?').trim().charAt(0).toUpperCase() }}
+                  </span>
+                </div>
+
+                <div class="d-flex flex-column flex-grow-1 overflow-hidden">
+                  <div class="fw-bold text-gray-800 text-truncate fs-6">{{ cam.room }}</div>
+                  <div class="text-muted fs-7 text-truncate">{{ cam.name }}</div>
+                  <div v-if="cam.model" class="d-flex align-items-center mt-1">
+                    <span class="badge badge-light-info fs-8 px-2 py-1">
+                      <i class="bi bi-camera-video me-1"></i>{{ cam.model }}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <!-- <div class="d-flex align-items-center">
-                <i class="ki-duotone ki-arrows-circle fs-5 text-muted drag-handle">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </div> -->
+              
+              <div class="d-flex align-items-center ms-3 text-gray-400">
+                <i class="bi bi-grip-vertical fs-4"></i>
+              </div>
             </li>
           </ul>
         </div>
       </div>
     </div>
-
 
   </div>
 </template>
@@ -254,16 +251,11 @@ interface Camera {
   uid: string;
   name: string;
   room: string;
-  status: 'online' | 'offline' | 'connecting';
   recording: boolean;
   site_uid: string;
   nvr_uid?: string;
   public_endpoint_url?: string;
-  // runtime fields for status management
-  errorCount?: number;
-  offlineTimer?: any;
-  retryTimer?: any;
-  statusCheckPausedUntil?: number | null;
+  model?: string;
 }
 
 interface Site {
@@ -291,26 +283,15 @@ const selectedNvrId = ref(""); // Keep for internal use
 const selectedSiteFilter = ref<string>("");
 const selectedNvrFilter = ref<string>("");
 const gridView = ref("3x3");
+const isSiteSelectionOpen = ref(false);
+const siteSearchQuery = ref("");
 
 // Drag and drop state
 const draggedCamera = ref<Camera | null>(null);
 const dragOverIndex = ref<number>(-1);
 const isDragging = ref(false);
 
-const normalizeStatusKey = (status?: string) => (status ?? "").toLowerCase();
 
-const getStatusLabel = (status: string) => {
-  switch (normalizeStatusKey(status)) {
-    case "online":
-      return t('appsLiveView.grid.status.online');
-    case "offline":
-      return t('appsLiveView.grid.status.offline');
-    case "connecting":
-      return t('appsLiveView.grid.status.connecting');
-    default:
-      return status;
-  }
-};
 
 // Mock fallbacks to avoid compile/runtime errors when API fails
 const mockSites: Site[] = [];
@@ -318,19 +299,6 @@ const mockCameras: Camera[] = [];
 
 // Fetch cameras from API
 const hlsInstances = new Map<string, any>();
-const stallWatchers = new Map<string, number>();
-// Nudge playback to live-edge when too far behind or stalling
-const snapToLiveEdge = (videoEl: HTMLVideoElement, maxLagSec = 8, safetyBackSec = 2) => {
-  try {
-    if (!videoEl.seekable || videoEl.seekable.length === 0) return;
-    const end = videoEl.seekable.end(videoEl.seekable.length - 1);
-    const lag = end - videoEl.currentTime;
-    if (lag > maxLagSec) {
-      const target = Math.max(0, end - safetyBackSec);
-      videoEl.currentTime = target;
-    }
-  } catch {}
-};
 let videoObserver: IntersectionObserver | null = null;
 const attachedSet = new Set<string>();
 
@@ -345,18 +313,6 @@ const attachStreamToVideo = (cam: Camera) => {
     try { existing.destroy(); } catch(_) {}
     hlsInstances.delete(cam.uid);
   }
-  const existingWatch = stallWatchers.get(cam.uid);
-  if (existingWatch) {
-    clearInterval(existingWatch);
-    stallWatchers.delete(cam.uid);
-  }
-
-  // initialize status tracking
-  if (cam.offlineTimer) { try { clearTimeout(cam.offlineTimer); } catch {} cam.offlineTimer = null; }
-  cam.errorCount = 0;
-  cam.statusCheckPausedUntil = null;
-  // Set connecting while (re)initializing
-  cam.status = 'connecting';
 
   const HlsGlobal = (window as any).Hls;
   if (HlsGlobal && HlsGlobal.isSupported && HlsGlobal.isSupported()) {
@@ -391,97 +347,28 @@ const attachStreamToVideo = (cam: Camera) => {
       maxLiveSyncPlaybackRate: 2,
     });
 
-    // Helpful logs and live-edge management
-    const markOnline = () => {
-      cam.status = 'online';
-      cam.errorCount = 0;
-      if (cam.offlineTimer) { try { clearTimeout(cam.offlineTimer); } catch {} cam.offlineTimer = null; }
-      cam.statusCheckPausedUntil = Date.now() + 5 * 60 * 1000; // pause status flips for 5 minutes
-    };
-
-    hls.on(HlsGlobal.Events.LEVEL_LOADED, (_evt: any, data: any) => {
-      if ((import.meta as any)?.env?.DEV) {
-        console.log('[HLS] level loaded:', {
-          live: data?.details?.live,
-          targetduration: data?.details?.targetduration,
-          partTarget: data?.details?.partTarget,
-          totalduration: data?.details?.totalduration,
-        });
-      }
-    });
-
-    hls.on(HlsGlobal.Events.BUFFER_APPENDED, () => {
-      // keep near live edge, but not at exact end
-      snapToLiveEdge(videoEl, 12, 2);
-      // Optional: debug buffer length in dev
-      if ((import.meta as any)?.env?.DEV) {
-        try {
-          const b = videoEl.buffered;
-          if (b.length) {
-            const len = b.end(b.length - 1) - videoEl.currentTime;
-            console.log(`[HLS] buffer=${len.toFixed(2)}s for`, cam.uid);
-          }
-        } catch {}
-      }
-    });
-
-    hls.on(HlsGlobal.Events.FRAG_LOADED, () => {
-      if (cam.status !== 'online') markOnline();
-    });
     hls.on(HlsGlobal.Events.ERROR, (_evt: any, data: any) => {
-      // Respect pause window to avoid thrash for status flips, but still handle recovery
-      const inPause = cam.statusCheckPausedUntil && Date.now() < cam.statusCheckPausedUntil;
-      if (data && data.fatal === false) {
-        const details = (data.details || data.error || data.reason || '').toString().toLowerCase();
-        if (details.includes('buffer_stalled') || details.includes('buffer-stalled')) {
-          snapToLiveEdge(videoEl, 6, 1.5);
-          videoEl.play().catch(() => {});
+      if (data.fatal) {
+        switch (data.type) {
+          case HlsGlobal.ErrorTypes.NETWORK_ERROR:
+            hls.startLoad();
+            break;
+          case HlsGlobal.ErrorTypes.MEDIA_ERROR:
+            hls.recoverMediaError();
+            break;
+          default:
+            try { hls.destroy(); } catch {}
+            hls.loadSource(url);
+            hls.attachMedia(videoEl);
         }
-        cam.errorCount = (cam.errorCount || 0) + 1;
-        if (!inPause && cam.errorCount > 3 && !cam.offlineTimer) {
-          cam.offlineTimer = setTimeout(() => {
-            if ((cam.errorCount || 0) > 3) {
-              cam.status = 'offline';
-              cam.statusCheckPausedUntil = null;
-              if (!cam.retryTimer) {
-                cam.retryTimer = setInterval(() => {
-                  if (cam.statusCheckPausedUntil && Date.now() < cam.statusCheckPausedUntil) return;
-                  cam.errorCount = 0;
-                  cam.status = 'offline';
-                  const ex = hlsInstances.get(cam.uid);
-                  if (ex) { try { ex.destroy(); } catch {} hlsInstances.delete(cam.uid); }
-                  const ve = document.getElementById(`video-${cam.uid}`) as HTMLVideoElement | null;
-                  if (ve) attachStreamToVideo(cam);
-                }, 30000);
-              }
-            }
-            cam.offlineTimer = null;
-          }, 60000);
-        }
-        return;
-      }
-      if (!data || !('fatal' in data)) return;
-      // Fatal errors
-      switch (data.type) {
-        case HlsGlobal.ErrorTypes.NETWORK_ERROR:
-          hls.startLoad();
-          break;
-        case HlsGlobal.ErrorTypes.MEDIA_ERROR:
-          hls.recoverMediaError();
-          break;
-        default:
-          try { hls.destroy(); } catch {}
-          hls.loadSource(url);
-          hls.attachMedia(videoEl);
       }
     });
 
     hls.loadSource(url);
     hls.attachMedia(videoEl);
     hls.on(HlsGlobal.Events.MANIFEST_PARSED, () => {
-      markOnline();
       videoEl.play().catch(() => {
-        // Autoplay or readiness might delay playback; retry shortly without flipping status
+        // Autoplay or readiness might delay playback; retry shortly
         window.setTimeout(() => {
           try { videoEl.play().catch(() => {}); } catch {}
         }, 500);
@@ -491,14 +378,9 @@ const attachStreamToVideo = (cam: Camera) => {
   } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
     // native HLS (Safari)
     videoEl.src = url;
-    const onPlaying = () => {
-      cam.status = 'online';
-    };
-    videoEl.addEventListener('playing', onPlaying, { once: true });
     videoEl.addEventListener('loadeddata', () => {
       try {
         videoEl.play().catch(() => {
-          // Retry without changing status
           window.setTimeout(() => { try { videoEl.play().catch(() => {}); } catch {} }, 500);
         });
       } catch {}
@@ -508,17 +390,6 @@ const attachStreamToVideo = (cam: Camera) => {
     videoEl.src = url;
   }
 
-  // Simple stall detection and recovery for live
-  const watcher = window.setInterval(() => {
-    if (!videoEl) return;
-    const stalled = videoEl.readyState < 2 || videoEl.paused;
-    if (stalled) {
-      try {
-        videoEl.play().catch(() => {});
-      } catch {}
-    }
-  }, 5000);
-  stallWatchers.set(cam.uid, watcher);
   attachedSet.add(cam.uid);
 };
 
@@ -527,13 +398,6 @@ const detachAllStreams = () => {
     try { hls.destroy(); } catch(_) {}
   });
   hlsInstances.clear();
-  stallWatchers.forEach((id) => clearInterval(id));
-  stallWatchers.clear();
-  // clear camera timers
-  cameras.value.forEach((c) => {
-    if (c.retryTimer) { try { clearInterval(c.retryTimer); } catch {} c.retryTimer = null; }
-    if (c.offlineTimer) { try { clearTimeout(c.offlineTimer); } catch {} c.offlineTimer = null; }
-  });
   attachedSet.clear();
   if (videoObserver) {
     try { videoObserver.disconnect(); } catch {}
@@ -620,7 +484,6 @@ const fetchCameras = async () => {
         uid: it.uid ?? it.id?.toString() ?? (Math.random() * 1e9).toString(),
         name: it.name ?? it.camera_name ?? '',
         room: it.room_name ?? it.roomName ?? it.room ?? it.location ?? '',
-        status: (String(it.status || '').toLowerCase() === 'online') ? 'online' : 'offline',
         recording: Boolean(it.is_recording || it.recording),
         site_uid: (it.site_uid ?? it.site?.uid) || selectedSiteId.value,
         // Canonical field used across this component
@@ -630,6 +493,7 @@ const fetchCameras = async () => {
         nvrId: it.nvrId ?? it.nvr_id ?? undefined,
         nvr: it.nvr ?? undefined,
         public_endpoint_url: it.public_endpoint_url ?? it.publicEndpointUrl ?? it.ipAddress ?? it.url ?? undefined,
+        model: it.model ?? it.camera_model ?? it.modelName ?? undefined,
       });
     });
 
@@ -908,16 +772,35 @@ watch(selectedNvrFilter, (nv) => {
 });
 
 const totalCameras = computed(() => cameras.value.length);
-const activeCameras = computed(() => cameras.value.filter(c => c.status === 'online').length);
-const onlineCameras = computed(() => activeCameras.value);
+
+const filteredSites = computed(() => {
+  if (!siteSearchQuery.value.trim()) {
+    return sites.value;
+  }
+  const query = siteSearchQuery.value.toLowerCase();
+  return sites.value.filter(site => 
+    site.name.toLowerCase().includes(query)
+  );
+});
+
+const toggleSiteList = () => {
+  isSiteSelectionOpen.value = !isSiteSelectionOpen.value;
+  if (isSiteSelectionOpen.value) {
+    siteSearchQuery.value = ""; // Reset search when opening
+  }
+};
+
+const selectSite = (site: Site) => {
+  selectedSiteFilter.value = site.uid;
+  onHeaderSiteFilterChange();
+  isSiteSelectionOpen.value = false;
+};
 const recordingCameras = computed(() => cameras.value.filter(c => c.recording).length);
 const motionEvents = computed(() => 24); // Mock data
 const activeAlerts = computed(() => 3); // Mock data
 const resolvedAlerts = computed(() => 12); // Mock data
 
-const onlineCamerasPercentage = computed(() =>
-  totalCameras.value > 0 ? Math.round((onlineCameras.value / totalCameras.value) * 100) : 0
-);
+
 
 const recordingPercentage = computed(() =>
   totalCameras.value > 0 ? Math.round((recordingCameras.value / totalCameras.value) * 100) : 0
@@ -943,16 +826,24 @@ const siteCameras = computed(() => {
 
 // Methods
 const viewFullscreen = (camera: Camera) => {
-  console.log("View fullscreen for camera:", camera.name);
-  // TODO: Implement fullscreen view
+  const videoEl = document.getElementById(`video-${camera.uid}`) as HTMLVideoElement;
+  if (videoEl) {
+    if (videoEl.requestFullscreen) {
+      videoEl.requestFullscreen();
+    } else if ((videoEl as any).webkitRequestFullscreen) { /* Safari */
+      (videoEl as any).webkitRequestFullscreen();
+    } else if ((videoEl as any).msRequestFullscreen) { /* IE11 */
+      (videoEl as any).msRequestFullscreen();
+    }
+  }
 };
 
 const viewRecordings = (camera: Camera) => {
   console.log("View recordings for camera:", camera.name);
-  // TODO: Navigate to recordings view
+  // TODO: Navigate to recordings page with camera filter
 };
 
-// Drag and drop methods
+// Drag and drop handlers
 const onDragStart = (event: DragEvent, camera: Camera, index: number) => {
   draggedCamera.value = camera;
   isDragging.value = true;
@@ -966,16 +857,9 @@ const onDragStartFromSidebar = (event: DragEvent, camera: Camera) => {
   draggedCamera.value = camera;
   isDragging.value = true;
   if (event.dataTransfer) {
-    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.effectAllowed = 'copy';
     event.dataTransfer.setData('text/plain', camera.uid);
   }
-  console.log(`Started dragging ${camera.name} from sidebar`);
-};
-
-const onDragEnd = () => {
-  draggedCamera.value = null;
-  dragOverIndex.value = -1;
-  isDragging.value = false;
 };
 
 const onDragOver = (event: DragEvent, index: number) => {
@@ -990,208 +874,102 @@ const onDragLeave = () => {
   dragOverIndex.value = -1;
 };
 
-const onDrop = (event: DragEvent, targetIndex: number) => {
+const onDrop = (event: DragEvent, dropIndex: number) => {
   event.preventDefault();
-  
+  dragOverIndex.value = -1;
+
   if (!draggedCamera.value) return;
-  
-  // Check if we're dropping a camera from the sidebar (not currently displayed)
-  const isFromSidebar = !filteredCameras.value.some(c => c.uid === draggedCamera.value!.uid);
-  
-  if (isFromSidebar) {
-    // Replace the camera at targetIndex with the dragged camera
-    const targetCamera = filteredCameras.value[targetIndex];
-    const draggedCameraData = draggedCamera.value;
-    
-    // Find both cameras in the main array and swap their positions
-    const targetIndexInMain = cameras.value.findIndex(c => c.uid === targetCamera.uid);
-    const draggedIndexInMain = cameras.value.findIndex(c => c.uid === draggedCameraData.uid);
-    
-    if (targetIndexInMain !== -1 && draggedIndexInMain !== -1) {
-      // Swap the cameras
-      const temp = cameras.value[targetIndexInMain];
-      cameras.value[targetIndexInMain] = cameras.value[draggedIndexInMain];
-      cameras.value[draggedIndexInMain] = temp;
+
+  const draggedUid = draggedCamera.value.uid;
+  const draggedIndex = filteredCameras.value.findIndex(c => c.uid === draggedUid);
+
+  if (draggedIndex === -1) {
+    // Dragged from sidebar - replace the camera at dropIndex
+    const targetCamera = filteredCameras.value[dropIndex];
+    if (targetCamera) {
+      // Find in main cameras array and swap
+      const mainDraggedIndex = cameras.value.findIndex(c => c.uid === draggedUid);
+      const mainTargetIndex = cameras.value.findIndex(c => c.uid === targetCamera.uid);
       
-      console.log(`Replaced ${targetCamera.name} with ${draggedCameraData.name}`);
+      if (mainDraggedIndex !== -1 && mainTargetIndex !== -1) {
+        // Swap positions
+        const temp = cameras.value[mainDraggedIndex];
+        cameras.value[mainDraggedIndex] = cameras.value[mainTargetIndex];
+        cameras.value[mainTargetIndex] = temp;
+      }
     }
-  } else {
-    // Original reordering logic for cameras already displayed
-    const draggedIndex = filteredCameras.value.findIndex(c => c.uid === draggedCamera.value!.uid);
-    if (draggedIndex === -1 || draggedIndex === targetIndex) return;
+  } else if (draggedIndex !== dropIndex) {
+    // Reorder within grid
+    const items = [...filteredCameras.value];
+    const [removed] = items.splice(draggedIndex, 1);
+    items.splice(dropIndex, 0, removed);
     
-    // Create a new array with reordered cameras
-    const reorderedCameras = [...filteredCameras.value];
-    const [draggedItem] = reorderedCameras.splice(draggedIndex, 1);
-    reorderedCameras.splice(targetIndex, 0, draggedItem);
-    
-    // Update the main cameras array while preserving the original order for non-filtered items
-    const newCamerasOrder = [...cameras.value];
-    
-    // Remove filtered cameras from their current positions
-    filteredCameras.value.forEach(camera => {
-      const index = newCamerasOrder.findIndex(c => c.uid === camera.uid);
-      if (index !== -1) {
-        newCamerasOrder.splice(index, 1);
+    // Update main cameras array to reflect new order
+    items.forEach((cam, idx) => {
+      const mainIndex = cameras.value.findIndex(c => c.uid === cam.uid);
+      if (mainIndex !== -1) {
+        cameras.value[mainIndex] = cam;
       }
     });
-    
-    // Insert reordered cameras at the beginning
-    reorderedCameras.forEach((camera, index) => {
-      newCamerasOrder.splice(index, 0, camera);
-    });
-    
-    cameras.value = newCamerasOrder;
   }
-  
-  // Reset drag state
-  draggedCamera.value = null;
-  dragOverIndex.value = -1;
-  isDragging.value = false;
-  
-  // Re-setup video observers after changes
-  nextTick(() => {
-    setupVideoObservers();
-  });
 };
 
-// Initialize data on component mount
-onMounted(() => {
-  fetchSites();
+const onDragEnd = () => {
+  draggedCamera.value = null;
+  isDragging.value = false;
+  dragOverIndex.value = -1;
+};
+
+// Initialize on mount
+onMounted(async () => {
+  await fetchSites();
 });
 </script>
 
 <style scoped>
-.camera-feed-container {
-  border: 2px solid #e4e6ef;
-}
 .camera-video {
   width: 100%;
   height: 100%;
-  display: block;
   object-fit: cover;
-  background: #000;
 }
 
-/* Drag and drop styles */
 .camera-card {
   transition: all 0.2s ease;
-  cursor: grab;
-}
-
-.camera-card:active {
-  cursor: grabbing;
+  cursor: move;
 }
 
 .camera-card.dragging {
   opacity: 0.5;
-  transform: rotate(5deg);
-  z-index: 1000;
+  transform: scale(0.95);
 }
 
 .camera-card.drag-over {
-  border: 2px dashed #009ef7;
-  background-color: rgba(0, 158, 247, 0.05);
-  transform: scale(1.02);
-}
-
-.drag-handle {
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.camera-card:hover .drag-handle {
-  opacity: 1;
-}
-
-.cursor-move {
-  cursor: move;
-}
-
-.camera-drag-item {
-  transition: all 0.2s ease;
-  cursor: grab;
-  min-width: 120px;
-  border: 2px solid #e4e6ef;
-}
-
-.camera-drag-item:hover {
-  border-color: #009ef7;
-  box-shadow: 0 0 0 0.1rem rgba(0, 158, 247, 0.25);
-  transform: translateY(-2px);
-}
-
-.camera-drag-item:active {
-  cursor: grabbing;
-}
-
-.camera-drag-item.dragging {
-  opacity: 0.5;
-  transform: rotate(3deg) scale(0.95);
-  z-index: 1000;
+  border: 2px dashed #3699FF;
+  background-color: rgba(54, 153, 255, 0.1);
 }
 
 .sidebar-camera-item {
-  transition: all 0.2s ease;
-  cursor: grab;
+  transition: background-color 0.2s ease;
 }
 
-.sidebar-camera-item:hover {
-  background-color: rgba(0, 158, 247, 0.05);
-  transform: translateX(2px);
-}
-
-.sidebar-camera-item:active {
-  cursor: grabbing;
+.sidebar-camera-item:hover,
+.sidebar-camera-item.hover-bg-light:hover {
+  background-color: #f5f8fa !important;
 }
 
 .sidebar-camera-item.dragging {
   opacity: 0.5;
-  transform: scale(0.95);
-  z-index: 1000;
 }
 
-.sidebar-camera-item .drag-handle {
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.sidebar-camera-item:hover .drag-handle {
-  opacity: 1;
-}
-
-/* Drag and drop styles */
-.camera-card {
-  transition: all 0.2s ease;
+.cursor-grab {
   cursor: grab;
 }
 
-.camera-card:active {
+.cursor-grab:active {
   cursor: grabbing;
 }
 
-.camera-card.dragging {
-  opacity: 0.5;
-  transform: rotate(5deg);
-  z-index: 1000;
-}
-
-.camera-card.drag-over {
-  border: 2px dashed #009ef7;
-  background-color: rgba(0, 158, 247, 0.05);
-  transform: scale(1.02);
-}
-
-.drag-handle {
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.camera-card:hover .drag-handle {
-  opacity: 1;
-}
-
-.cursor-move {
-  cursor: move;
+.drop-shadow {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 </style>
