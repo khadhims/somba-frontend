@@ -144,29 +144,22 @@ const MainMenuConfig: Array<MenuItem> = [
         keenthemesIcon: "screen",
         bootstrapIcon: "bi-camera-video",
       },
+
       {
-        sectionTitle: "eventsAlerts",
-        route: "/events-alerts",
-        keenthemesIcon: "notification-bing",
-        bootstrapIcon: "bi-bell",
-        sub: [
-          {
-            heading: "events",
-            route: "/apps/events-alerts/Events",
-          },
-          {
-            heading: "alerts",
-            route: "/apps/events-alerts/Alerts",
-          },
-          {
-            heading: "settings",
-            route: "/apps/events-alerts/settings",
-          },
-        ],
+        heading: "events",
+        route: "/apps/events-alerts/Events",
+        keenthemesIcon: "calendar-tick",
+        bootstrapIcon: "bi-calendar-check",
+      },
+      {
+        heading: "alerts",
+        route: "/apps/events-alerts/Alerts",
+        keenthemesIcon: "notification-status",
+        bootstrapIcon: "bi-exclamation-triangle",
       },
       {
         sectionTitle: "recordingPlayback",
-        route: "/recording-playbook",
+        route: "/apps/recording-playback",
         keenthemesIcon: "screen",
         bootstrapIcon: "bi-play-circle",
         sub: [
@@ -182,7 +175,7 @@ const MainMenuConfig: Array<MenuItem> = [
       },
       {
         sectionTitle: "monitoringCenter",
-        route: "/monitoring-center",
+        route: "/apps/monitoring-center",
         keenthemesIcon: "monitor-mobile",
         bootstrapIcon: "bi-display",
         sub: [

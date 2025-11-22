@@ -6,19 +6,51 @@
       data-kt-menu-attach="parent"
       data-kt-menu-placement="bottom-end"
     >
-      <span class="fw-bold">{{ localeLabel }}</span>
+      <span class="symbol symbol-20px">
+        <img
+          class="rounded-1"
+          :src="currentLanguageFlag"
+          alt="flag"
+        />
+      </span>
     </div>
 
     <div
-      class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-150px"
+      class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-175px"
       data-kt-menu="true"
     >
-            <div class="menu-item px-3" @click="setLocale('en')">
-              <a class="menu-link px-5">English</a>
-            </div>
-            <div class="menu-item px-3" @click="setLocale('id')">
-              <a class="menu-link px-5">Bahasa Indonesia</a>
-            </div>
+      <div class="menu-item px-3">
+        <a
+          class="menu-link d-flex px-5"
+          :class="{ active: currentLanguage === 'en' }"
+          @click="setLocale('en')"
+        >
+          <span class="symbol symbol-20px me-4">
+            <img
+              class="rounded-1"
+              :src="getAssetPath('media/flags/united-kingdom.svg')"
+              alt="English"
+            />
+          </span>
+          English
+        </a>
+      </div>
+      <div class="menu-item px-3">
+        <a
+          class="menu-link d-flex px-5"
+          :class="{ active: currentLanguage === 'id' }"
+          @click="setLocale('id')"
+        >
+          <span class="symbol symbol-20px me-4">
+            <img
+              class="rounded-1"
+              :src="getAssetPath('media/flags/indonesia.svg')"
+              alt="Bahasa Indonesia"
+            />
+          </span>
+          Bahasa Indonesia
+        </a>
+      </div>
     </div>
   </div>
 </template>
@@ -26,6 +58,7 @@
 <script lang="ts">
 import { defineComponent, computed } from "vue";
 import { useI18n } from "vue-i18n";
+import { getAssetPath } from "@/core/helpers/assets";
 import {
   type AppLocale,
   setAppLocale,
@@ -36,15 +69,14 @@ export default defineComponent({
   setup() {
     const { locale } = useI18n();
 
-    const localeLabel = computed(() => {
-      const current = locale.value as AppLocale;
-      switch (current) {
-        case "id":
-          return "ID";
-        case "en":
-        default:
-          return current.toUpperCase();
-      }
+    const currentLanguage = computed(() => {
+      return locale.value as AppLocale;
+    });
+
+    const currentLanguageFlag = computed(() => {
+      return currentLanguage.value === "id"
+        ? getAssetPath("media/flags/indonesia.svg")
+        : getAssetPath("media/flags/united-kingdom.svg");
     });
 
     const setLocale = (target: AppLocale) => {
@@ -54,13 +86,12 @@ export default defineComponent({
     };
 
     return {
-      localeLabel,
+      currentLanguage,
+      currentLanguageFlag,
       setLocale,
+      getAssetPath,
     };
   },
 });
 </script>
 
-<style scoped>
-.menu { min-width: 160px; }
-</style>
