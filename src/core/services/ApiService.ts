@@ -18,6 +18,10 @@ class ApiService {
   private static refreshSubscribers: Array<(token: string) => void> = [];
   // default endpoint for token refresh — change if your backend uses a different path
   private static refreshEndpoint = "auth/refresh";
+  // active request counting to avoid loader getting stuck
+  private static activeRequests = 0;
+  private static watchdogTimer: any = null;
+  private static WATCHDOG_MS = 30000; // 30s fallback
 
   /**
    * @description initialize vue axios
@@ -54,10 +58,70 @@ class ApiService {
   }
 
   private static setupInterceptors() {
+    // show/hide global loading overlay via window events with active-request counting
+    ApiService.vueInstance.axios.interceptors.request.use(
+      (config: any) => {
+        try {
+          ApiService.activeRequests = Math.max(0, ApiService.activeRequests) + 1;
+          // dispatch start only when first request begins
+          if (ApiService.activeRequests === 1) {
+            window.dispatchEvent(new CustomEvent('loading:start'));
+          }
+
+          // reset watchdog each time a request starts
+          if (ApiService.watchdogTimer) clearTimeout(ApiService.watchdogTimer);
+          ApiService.watchdogTimer = setTimeout(() => {
+            ApiService.activeRequests = 0;
+            try { window.dispatchEvent(new CustomEvent('loading:stop')); } catch (e) {}
+          }, ApiService.WATCHDOG_MS);
+        } catch (e) {}
+
+        return config;
+      },
+      (error: any) => {
+        try {
+          ApiService.activeRequests = Math.max(0, ApiService.activeRequests - 1);
+          if (ApiService.activeRequests === 0) {
+            window.dispatchEvent(new CustomEvent('loading:stop'));
+          }
+          if (ApiService.watchdogTimer) {
+            clearTimeout(ApiService.watchdogTimer);
+            ApiService.watchdogTimer = null;
+          }
+        } catch (e) {}
+
+        return Promise.reject(error);
+      }
+    );
+
     // response interceptor to handle 401 and attempt refresh
     ApiService.vueInstance.axios.interceptors.response.use(
-      (response: any) => response,
+      (response: any) => {
+        try {
+          ApiService.activeRequests = Math.max(0, ApiService.activeRequests - 1);
+          if (ApiService.activeRequests === 0) {
+            window.dispatchEvent(new CustomEvent('loading:stop'));
+          }
+          if (ApiService.watchdogTimer) {
+            clearTimeout(ApiService.watchdogTimer);
+            ApiService.watchdogTimer = null;
+          }
+        } catch (e) {}
+
+        return response;
+      },
       async (error: any) => {
+        try {
+          ApiService.activeRequests = Math.max(0, ApiService.activeRequests - 1);
+          if (ApiService.activeRequests === 0) {
+            window.dispatchEvent(new CustomEvent('loading:stop'));
+          }
+          if (ApiService.watchdogTimer) {
+            clearTimeout(ApiService.watchdogTimer);
+            ApiService.watchdogTimer = null;
+          }
+        } catch (e) {}
+
         const { config, response } = error;
         const originalRequest = config;
 

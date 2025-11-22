@@ -1,4 +1,5 @@
 <template>
+  <FullScreenLoader />
   <RouterView />
 </template>
 
@@ -8,6 +9,8 @@ import { RouterView } from "vue-router";
 import { useConfigStore } from "@/stores/config";
 import { useThemeStore } from "@/stores/theme";
 import { useBodyStore } from "@/stores/body";
+import FullScreenLoader from '@/components/FullScreenLoader.vue';
+import { useLoadingStore } from '@/stores/loading';
 import { themeConfigValue } from "@/layouts/default-layout/config/helper";
 import { initializeComponents } from "@/core/plugins/keenthemes";
 
@@ -15,11 +18,13 @@ export default defineComponent({
   name: "app",
   components: {
     RouterView,
+    FullScreenLoader,
   },
   setup() {
     const configStore = useConfigStore();
     const themeStore = useThemeStore();
     const bodyStore = useBodyStore();
+    const loadingStore = useLoadingStore();
 
     onBeforeMount(() => {
       /**
@@ -37,10 +42,14 @@ export default defineComponent({
     onMounted(() => {
       nextTick(() => {
         initializeComponents();
-
+        // hide initial splash
         bodyStore.removeBodyClassName("page-loading");
         const splash = document.getElementById("splash-screen");
         if (splash) splash.style.display = "none";
+
+        // Sync global loading events with loading store
+        window.addEventListener('loading:start', () => loadingStore.show());
+        window.addEventListener('loading:stop', () => loadingStore.hide());
       });
     });
   },
