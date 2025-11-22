@@ -93,8 +93,6 @@
     <!--begin::Card body-->
     <div class="card-body py-3">
       <!-- Form is now in modal below, not inline -->
-      
-      <!--begin::Table-->s moved to header toolbar to match Site overview layout -->
 
       <!--begin::Table-->
       <KTDataTable

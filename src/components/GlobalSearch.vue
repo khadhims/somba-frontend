@@ -220,7 +220,7 @@ const actions = [
     icon: 'bi bi-plus-circle',
     iconColor: 'text-primary',
     iconBg: 'bg-light-primary',
-    action: () => router.push('/controlplane/site/camera?action=add')
+    action: () => { window.dispatchEvent(new CustomEvent('open-add-camera')); closeSearch(); },
   },
   {
     id: 'view-alerts',
