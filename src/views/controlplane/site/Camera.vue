@@ -28,22 +28,6 @@
                 <option v-for="site in sites" :key="site.uid" :value="site.uid">{{ site.name }}</option>
               </select>
             </div>
-
-            <!-- NVR Filter (depends on selected site) -->
-            <div class="me-4 d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">
-                {{ t("controlplane.site.camera.filters.nvrLabel") }}
-              </label>
-              <select
-                v-model="selectedNvrFilter"
-                @change="onHeaderNvrFilterChange"
-                class="form-select form-select-solid w-200px"
-                :disabled="!selectedSiteFilter"
-              >
-                <option value="">{{ t("controlplane.site.camera.filters.nvrAll") }}</option>
-                <option v-for="nvr in availableHeaderNvrs" :key="nvr.uid" :value="nvr.uid">{{ nvr.name }}</option>
-              </select>
-            </div>
           </div>
         </div>
       </div>

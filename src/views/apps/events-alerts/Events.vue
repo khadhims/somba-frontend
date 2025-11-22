@@ -10,8 +10,9 @@
           </p>
         </div>
         <div class="col-md-8">
-          <div class="d-flex justify-content-end gap-3">
-            <div class="me-3 d-flex align-items-center">
+          <div class="d-flex justify-content-end align-items-center">
+            <!-- Site Filter -->
+            <div class="d-flex align-items-center">
               <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsEventsAlerts.eventsFilters.siteLabel') }}</label>
               <select
                 v-model="selectedSiteFilter"
@@ -29,44 +30,95 @@
                 </option>
               </select>
             </div>
-
-            <div class="me-3">
-              <select
-                v-model="selectedEventType"
-                @change="filterEvents"
-                class="form-select form-select-solid w-150px"
-              >
-                <option value="">{{ t('appsEventsAlerts.eventsFilters.typeAll') }}</option>
-                <option value="motion">{{ t('appsEventsAlerts.eventsTable.types.motion') }}</option>
-                <option value="intrusion">{{ t('appsEventsAlerts.eventsTable.types.intrusion') }}</option>
-                <option value="system">{{ t('appsEventsAlerts.eventsTable.types.system') }}</option>
-                <option value="camera_offline">{{ t('appsEventsAlerts.eventsTable.types.cameraOffline') }}</option>
-              </select>
-            </div>
-
-            <div class="me-3">
-              <select
-                v-model="selectedSeverityType"
-                @change="filterEvents"
-                class="form-select form-select-solid w-150px"
-              >
-                <option value="">{{ t('appsEventsAlerts.eventsFilters.severityAll') }}</option>
-                <option value="low">{{ t('appsEventsAlerts.eventsTable.severity.low') }}</option>
-                <option value="medium">{{ t('appsEventsAlerts.eventsTable.severity.medium') }}</option>
-                <option value="high">{{ t('appsEventsAlerts.eventsTable.severity.high') }}</option>
-                <option value="critical">{{ t('appsEventsAlerts.eventsTable.severity.critical') }}</option>
-              </select>
-            </div>
-
-            <button @click="refreshEvents" class="btn btn-sm btn-light-primary">
-              <i class="ki-duotone ki-arrows-circle fs-2"></i>
-              {{ t('appsEventsAlerts.eventsFilters.refresh') }}
-            </button>
           </div>
-          <!--end::Card toolbar-->
         </div>
       </div>
     </div>
+  </div>
+
+  <!--begin::Events List-->
+  <div class="card">
+    <!--begin::Card header-->
+    <div class="card-header border-0 pt-5">
+      <!--begin::Card title-->
+      <div class="card-title">
+        <h3 class="fw-bold m-0">{{ t('appsEventsAlerts.events.title') }}</h3>
+      </div>
+      <!--end::Card title-->
+
+      <!--begin::Card toolbar-->
+      <div class="card-toolbar">
+        <!--begin::Items per page-->
+        <div class="d-flex align-items-center me-5">
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('appsEventsAlerts.eventsTable.pagination.itemsLabel') || 'Items per page' }}</label>
+          <select 
+            class="form-select form-select-sm w-auto" 
+            v-model.number="itemsPerPage"
+            >
+            <option :value="5">5</option>
+            <option :value="10">10</option>
+            <option :value="15">15</option>
+            <option :value="25">25</option>
+            <option :value="50">50</option>
+          </select>
+        </div>
+        <!--end::Items per page-->
+
+        <!-- Type Filter -->
+        <div class="me-3">
+          <select
+            v-model="selectedEventType"
+            @change="filterEvents"
+            class="form-select form-select-sm form-select-solid w-150px"
+          >
+            <option value="">{{ t('appsEventsAlerts.eventsFilters.typeAll') }}</option>
+            <option value="motion">{{ t('appsEventsAlerts.eventsTable.types.motion') }}</option>
+            <option value="intrusion">{{ t('appsEventsAlerts.eventsTable.types.intrusion') }}</option>
+            <option value="system">{{ t('appsEventsAlerts.eventsTable.types.system') }}</option>
+            <option value="camera_offline">{{ t('appsEventsAlerts.eventsTable.types.cameraOffline') }}</option>
+          </select>
+        </div>
+
+        <!-- Severity Filter -->
+        <div class="me-3">
+          <select
+            v-model="selectedSeverityType"
+            @change="filterEvents"
+            class="form-select form-select-sm form-select-solid w-150px"
+          >
+            <option value="">{{ t('appsEventsAlerts.eventsFilters.severityAll') }}</option>
+            <option value="low">{{ t('appsEventsAlerts.eventsTable.severity.low') }}</option>
+            <option value="medium">{{ t('appsEventsAlerts.eventsTable.severity.medium') }}</option>
+            <option value="high">{{ t('appsEventsAlerts.eventsTable.severity.high') }}</option>
+            <option value="critical">{{ t('appsEventsAlerts.eventsTable.severity.critical') }}</option>
+          </select>
+        </div>
+
+        <!--begin::Search-->
+        <div class="d-flex align-items-center position-relative my-1 me-3">
+          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          <input
+            type="text"
+            v-model="searchQuery"
+            class="form-control form-control-sm form-control-solid w-200px ps-12"
+            placeholder="Search"
+          />
+        </div>
+        <!--end::Search-->
+
+        <button @click="refreshEvents" class="btn btn-sm btn-light-primary btn-icon" title="Refresh">
+          <i class="ki-duotone ki-arrows-circle fs-2">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+        </button>
+      </div>
+      <!--end::Card toolbar-->
+    </div>
+    <!--end::Card header-->
 
     <!--begin::Card body-->
     <div class="card-body py-3">
@@ -74,13 +126,12 @@
         :data="filteredAndSortedEvents"
         :header="tableHeader"
         :checkbox-enabled="false"
-        :enable-items-per-page-dropdown="true"
+        :items-per-page-dropdown-enabled="false"
         :items-per-page="itemsPerPage"
         :loading="loading"
         :sort-label="sortLabel"
         :sort-order="sortOrder"
         @on-sort="handleSort"
-        @on-items-per-page-change="handleItemsPerPageChange"
         :empty-table-text="t('appsEventsAlerts.eventsTable.empty')"
       >
         <template v-slot:event_name="{ row }">
@@ -149,42 +200,14 @@
       </KTDataTable>
       
       <!--begin::Pagination-->
-      <div class="d-flex flex-stack flex-wrap pt-10">
-        <div class="fs-6 fw-semibold text-gray-700">
-          {{ t('appsEventsAlerts.eventsTable.pagination', {
-            start: ((currentPage - 1) * itemsPerPage) + 1,
-            end: Math.min(currentPage * itemsPerPage, totalItems),
-            total: totalItems
-          }) }}
-        </div>
-        <ul class="pagination">
-          <li class="page-item" :class="{ disabled: currentPage === 1 }">
-            <button 
-              class="page-link" 
-              @click="goToPage(currentPage - 1)"
-              :disabled="currentPage === 1"
-            >
-              <i class="previous"></i>
-            </button>
-          </li>
-          <li 
-            v-for="page in visiblePages" 
-            :key="page"
-            class="page-item" 
-            :class="{ active: page === currentPage }"
-          >
-            <button class="page-link" @click="goToPage(page)">{{ page }}</button>
-          </li>
-          <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-            <button 
-              class="page-link" 
-              @click="goToPage(currentPage + 1)"
-              :disabled="currentPage === totalPages"
-            >
-              <i class="next"></i>
-            </button>
-          </li>
-        </ul>
+      <div class="d-flex justify-content-end align-items-center mt-4">
+        <Pagination
+          :page="currentPage"
+          :per-page="itemsPerPage"
+          :total-items="totalItems"
+          :total-pages="totalPages"
+          @page-change="goToPage"
+        />
       </div>
       <!--end::Pagination-->
     </div>
@@ -331,16 +354,15 @@
     </div>
   </div>
   <!--end::Event Details Modal-->
-
-
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { Modal } from "bootstrap";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import Pagination from '@/components/common/Pagination.vue';
 import ApiService from "@/core/services/ApiService";
 
 const { t } = useI18n();
@@ -403,6 +425,17 @@ const selectedEvent = ref<any>(null);
 const editStatus = ref('');
 const editComment = ref('');
 const isModalLoading = ref(false);
+
+// Pagination handlers
+const goToPage = (page: number) => {
+  currentPage.value = page;
+  fetchEvents();
+};
+
+watch(itemsPerPage, () => {
+  currentPage.value = 1;
+  fetchEvents();
+});
 
 // Table header configuration
 const tableHeader = computed(() => [
@@ -882,19 +915,6 @@ const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
   sortOrder.value = sort.order;
 };
 
-const handleItemsPerPageChange = (newItemsPerPage: number) => {
-  itemsPerPage.value = newItemsPerPage;
-  currentPage.value = 1; // Reset to first page
-  fetchEvents(); // Fetch data with new page size
-};
-
-const goToPage = (page: number) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-    fetchEvents(); // Fetch new page data from server
-  }
-};
-
 const viewAndEditEvent = (event: Event) => {
   selectedEvent.value = event;
   // Initialize edit fields with current values
@@ -1039,6 +1059,7 @@ const formatDateTime = (dateTimeString?: string | null) => {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
+    hour12: false,
   }).format(date);
 };
 

@@ -89,7 +89,10 @@
 		"empty": "No events found",
 		"noLocation": "No location",
 		"generatedDescription": "Activity detected - {seconds}s avg detection",
-		"pagination": "Showing {start} to {end} of {total} entries",
+		"pagination": {
+			"info": "Showing {start} to {end} of {total} entries",
+			"itemsLabel": "Items per page"
+		},
 		"actions": {
 			"view": "View Details",
 			"resolve": "Resolve",
@@ -133,7 +136,10 @@
 		"empty": "No alerts found",
 		"noAssignee": "Unassigned",
 		"generatedDescription": "Alert triggered - {severity} severity",
-		"pagination": "Showing {start} to {end} of {total} entries",
+		"pagination": {
+			"info": "Showing {start} to {end} of {total} entries",
+			"itemsLabel": "Items per page"
+		},
 		"actions": {
 			"view": "View Details",
 			"acknowledge": "Acknowledge",

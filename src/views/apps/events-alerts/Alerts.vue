@@ -1,5 +1,5 @@
 <template>
-  <!--begin::Events & Alerts Overview-->
+  <!--begin::Alerts Overview-->
   <div class="card mb-5">
     <div class="card-body py-4">
       <div class="row align-items-center">
@@ -10,8 +10,9 @@
           </p>
         </div>
         <div class="col-md-8">
-          <div class="d-flex justify-content-end gap-3">
-            <div class="me-3 d-flex align-items-center">
+          <div class="d-flex justify-content-end align-items-center">
+            <!-- Site Filter -->
+            <div class="d-flex align-items-center">
               <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsEventsAlerts.alertsFilters.siteLabel') }}</label>
               <select
                 v-model="selectedSiteFilter"
@@ -29,44 +30,95 @@
                 </option>
               </select>
             </div>
-
-            <div class="me-3">
-              <select
-                v-model="selectedEventType"
-                @change="filterEvents"
-                class="form-select form-select-solid w-150px"
-              >
-                <option value="">{{ t('appsEventsAlerts.alertsFilters.typeAll') }}</option>
-                <option value="security">{{ t('appsEventsAlerts.alertsTable.types.security') }}</option>
-                <option value="technical">{{ t('appsEventsAlerts.alertsTable.types.technical') }}</option>
-                <option value="system">{{ t('appsEventsAlerts.alertsTable.types.system') }}</option>
-                <option value="maintenance">{{ t('appsEventsAlerts.alertsTable.types.maintenance') }}</option>
-              </select>
-            </div>
-
-            <div class="me-3">
-              <select
-                v-model="selectedSeverityType"
-                @change="filterEvents"
-                class="form-select form-select-solid w-150px"
-              >
-                <option value="">{{ t('appsEventsAlerts.alertsFilters.severityAll') }}</option>
-                <option value="low">{{ t('appsEventsAlerts.alertsTable.severity.low') }}</option>
-                <option value="medium">{{ t('appsEventsAlerts.alertsTable.severity.medium') }}</option>
-                <option value="high">{{ t('appsEventsAlerts.alertsTable.severity.high') }}</option>
-                <option value="critical">{{ t('appsEventsAlerts.alertsTable.severity.critical') }}</option>
-              </select>
-            </div>
-
-            <button @click="refreshEvents" class="btn btn-sm btn-light-primary">
-              <i class="ki-duotone ki-arrows-circle fs-2"></i>
-              {{ t('appsEventsAlerts.alertsFilters.refresh') }}
-            </button>
           </div>
-          <!--end::Card toolbar-->
         </div>
       </div>
     </div>
+  </div>
+
+  <!--begin::Alerts List-->
+  <div class="card">
+    <!--begin::Card header-->
+    <div class="card-header border-0 pt-5">
+      <!--begin::Card title-->
+      <div class="card-title">
+        <h3 class="fw-bold m-0">{{ t('appsEventsAlerts.alerts.title') }}</h3>
+      </div>
+      <!--end::Card title-->
+
+      <!--begin::Card toolbar-->
+      <div class="card-toolbar">
+        <!--begin::Items per page-->
+        <div class="d-flex align-items-center me-5">
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('appsEventsAlerts.alertsTable.pagination.itemsLabel') || 'Items per page' }}</label>
+          <select 
+            class="form-select form-select-sm w-auto" 
+            v-model.number="itemsPerPage"
+            >
+            <option :value="5">5</option>
+            <option :value="10">10</option>
+            <option :value="15">15</option>
+            <option :value="25">25</option>
+            <option :value="50">50</option>
+          </select>
+        </div>
+        <!--end::Items per page-->
+
+        <!-- Type Filter -->
+        <div class="me-3">
+          <select
+            v-model="selectedEventType"
+            @change="filterEvents"
+            class="form-select form-select-sm form-select-solid w-150px"
+          >
+            <option value="">{{ t('appsEventsAlerts.alertsFilters.typeAll') }}</option>
+            <option value="motion">{{ t('appsEventsAlerts.alertsTable.types.motion') }}</option>
+            <option value="intrusion">{{ t('appsEventsAlerts.alertsTable.types.intrusion') }}</option>
+            <option value="system">{{ t('appsEventsAlerts.alertsTable.types.system') }}</option>
+            <option value="camera_offline">{{ t('appsEventsAlerts.alertsTable.types.cameraOffline') }}</option>
+          </select>
+        </div>
+
+        <!-- Severity Filter -->
+        <div class="me-3">
+          <select
+            v-model="selectedSeverityType"
+            @change="filterEvents"
+            class="form-select form-select-sm form-select-solid w-150px"
+          >
+            <option value="">{{ t('appsEventsAlerts.alertsFilters.severityAll') }}</option>
+            <option value="low">{{ t('appsEventsAlerts.alertsTable.severity.low') }}</option>
+            <option value="medium">{{ t('appsEventsAlerts.alertsTable.severity.medium') }}</option>
+            <option value="high">{{ t('appsEventsAlerts.alertsTable.severity.high') }}</option>
+            <option value="critical">{{ t('appsEventsAlerts.alertsTable.severity.critical') }}</option>
+          </select>
+        </div>
+
+        <!--begin::Search-->
+        <div class="d-flex align-items-center position-relative my-1 me-3">
+          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          <input
+            type="text"
+            v-model="searchQuery"
+            class="form-control form-control-sm form-control-solid w-200px ps-12"
+            placeholder="Search"
+          />
+        </div>
+        <!--end::Search-->
+
+        <button @click="refreshEvents" class="btn btn-sm btn-light-primary btn-icon" title="Refresh">
+          <i class="ki-duotone ki-arrows-circle fs-2">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+        </button>
+      </div>
+      <!--end::Card toolbar-->
+    </div>
+    <!--end::Card header-->
 
     <!--begin::Card body-->
     <div class="card-body py-3">
@@ -74,8 +126,8 @@
         :data="filteredAndSortedEvents"
         :header="tableHeader"
         :checkbox-enabled="false"
-        :enable-items-per-page-dropdown="true"
-        :items-per-page="15"
+        :items-per-page-dropdown-enabled="false"
+        :items-per-page="itemsPerPage"
         :loading="loading"
         :sort-label="sortLabel"
         :sort-order="sortOrder"
@@ -87,14 +139,12 @@
             <span class="text-dark fw-bold text-hover-primary fs-6" style="word-break: break-all;">
               {{ row.event_name }}
             </span>
+            <span class="text-muted fw-semibold d-block fs-7">{{ row.description }}</span>
           </div>
         </template>
 
         <template v-slot:severity="{ row }">
-          <span
-            class="badge"
-            :class="getSeverityBadgeClass(row.severity)"
-          >
+          <span class="badge" :class="getSeverityBadgeClass(row.severity)">
             {{ getSeverityLabel(row.severity) }}
           </span>
         </template>
@@ -103,7 +153,7 @@
           <div class="d-flex align-items-center" style="max-width: 200px; min-width: 180px;">
             <div class="d-flex justify-content-start flex-column">
               <span class="text-dark fw-bold fs-6" style="word-break: break-all;">{{ row.camera_name }}</span>
-              <span class="text-muted fw-semibold d-block fs-7">{{ row.location || t('appsEventsAlerts.alertsTable.noAssignee') }}</span>
+              <span class="text-muted fw-semibold d-block fs-7">{{ row.location || t('appsEventsAlerts.alertsTable.noLocation') }}</span>
             </div>
           </div>
         </template>
@@ -114,19 +164,6 @@
           }}</span>
           <span class="text-muted fw-semibold d-block fs-7">
             {{ row.startTime ? new Date(row.startTime).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false }).substring(0, 5) : '-' }}
-            <span v-if="row.endTime"> - {{ new Date(row.endTime).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false }).substring(0, 5) }}</span>
-          </span>
-        </template>
-
-        <template v-slot:duration="{ row }">
-          <span class="text-dark fw-bold fs-6">
-            {{ row.duration ?? t('appsEventsAlerts.format.notAvailable') }}
-          </span>
-        </template>
-
-        <template v-slot:avg_seconds_with_detection="{ row }">
-          <span class="text-dark fw-bold fs-6">
-            {{ row.avg_seconds_with_detection }}
           </span>
         </template>
 
@@ -157,50 +194,22 @@
       </KTDataTable>
       
       <!--begin::Pagination-->
-      <div class="d-flex flex-stack flex-wrap pt-10">
-        <div class="fs-6 fw-semibold text-gray-700">
-          {{ t('appsEventsAlerts.alertsTable.pagination', {
-            start: ((currentPage - 1) * itemsPerPage) + 1,
-            end: Math.min(currentPage * itemsPerPage, totalItems),
-            total: totalItems
-          }) }}
-        </div>
-        <ul class="pagination">
-          <li class="page-item" :class="{ disabled: currentPage === 1 }">
-            <button 
-              class="page-link" 
-              @click="goToPage(currentPage - 1)"
-              :disabled="currentPage === 1"
-            >
-              <i class="previous"></i>
-            </button>
-          </li>
-          <li 
-            v-for="page in visiblePages" 
-            :key="page"
-            class="page-item" 
-            :class="{ active: page === currentPage }"
-          >
-            <button class="page-link" @click="goToPage(page)">{{ page }}</button>
-          </li>
-          <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-            <button 
-              class="page-link" 
-              @click="goToPage(currentPage + 1)"
-              :disabled="currentPage === totalPages"
-            >
-              <i class="next"></i>
-            </button>
-          </li>
-        </ul>
+      <div class="d-flex justify-content-end align-items-center mt-4">
+        <Pagination
+          :page="currentPage"
+          :per-page="itemsPerPage"
+          :total-items="totalItems"
+          :total-pages="totalPages"
+          @page-change="goToPage"
+        />
       </div>
       <!--end::Pagination-->
     </div>
     <!--end::Card body-->
   </div>
-  <!--end::Events List-->
+  <!--end::Alerts List-->
 
-  <!--begin::Event Details Modal-->
+  <!--begin::Alert Details Modal-->
   <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -351,17 +360,16 @@
       </div>
     </div>
   </div>
-  <!--end::Event Details Modal-->
-
-
+  <!--end::Alert Details Modal-->
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { Modal } from "bootstrap";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import Pagination from '@/components/common/Pagination.vue';
 import ApiService from "@/core/services/ApiService";
 
 const { t } = useI18n();
@@ -416,7 +424,7 @@ const sortOrder = ref<"asc" | "desc">("desc");
 const currentSite = ref<Site | null>(null);
 // Pagination
 const currentPage = ref(1);
-const itemsPerPage = ref(15);
+const itemsPerPage = ref(10);
 const totalItems = ref(0);
 const totalPages = ref(0);
 // Modal state
@@ -425,10 +433,21 @@ const editStatus = ref('');
 const editComment = ref('');
 const isModalLoading = ref(false);
 
+// Pagination handlers
+const goToPage = (page: number) => {
+  currentPage.value = page;
+  fetchEvents();
+};
+
+watch(itemsPerPage, () => {
+  currentPage.value = 1;
+  fetchEvents();
+});
+
 // Table header configuration
 const tableHeader = computed(() => [
   {
-    columnName: t('appsEventsAlerts.alertsTable.columns.alert'),
+    columnName: t('appsEventsAlerts.alertsTable.columns.alertName'),
     columnLabel: 'event_name',
     sortEnabled: true,
     searchable: true,
@@ -482,7 +501,12 @@ const fetchEvents = async () => {
     await fetchCameras(siteUid);
 
     // Call API: sites/{site_uid}/list-activity
-    const resp = await ApiService.get(`sites/${siteUid}/list-activity`);
+    const resp = await ApiService.query(`sites/${siteUid}/list-activity`, {
+      params: {
+        page: currentPage.value,
+        per_page: itemsPerPage.value
+      }
+    });
     const payload = resp && resp.data ? resp.data : resp;
 
     // Handle API response structure: { status, code, message, data: [...], pagination: {...} }
@@ -525,6 +549,7 @@ const fetchEvents = async () => {
 
     // Use pagination from API response
     const pagination = payload?.pagination || {};
+    currentPage.value = typeof pagination.page === "number" ? pagination.page : currentPage.value;
     totalItems.value = typeof pagination.total_items === "number" ? pagination.total_items : events.value.length;
     itemsPerPage.value = typeof pagination.per_page === "number" && pagination.per_page > 0 ? pagination.per_page : itemsPerPage.value;
     totalPages.value = typeof pagination.total_pages === "number" && pagination.total_pages > 0
@@ -638,11 +663,14 @@ const onFilterSiteChange = () => {
   currentSite.value = sites.value.find(s => s.uid === selectedSiteFilter.value) || null;
   // reset NVR filter when site changes
   selectedNvrFilter.value = "";
+  // reset to first page when changing filters
+  currentPage.value = 1;
   fetchEvents();
 };
 
 const onFilterNvrChange = () => {
   // Changing NVR filter should reload events scoped to that NVR
+  currentPage.value = 1;
   fetchEvents();
 };
 
@@ -724,7 +752,7 @@ const getSeverityLabel = (severity: string) => {
 
 const getEventTypeLabel = (type: string) => {
   const key = typeKeyMap[normalizeKey(type)];
-  return key ? t(`appsEventsAlerts.table.types.${key}`) : type;
+  return key ? t(`appsEventsAlerts.alertsTable.types.${key}`) : type;
 };
 
 const formatNumber = (value: number, maximumFractionDigits = 1) =>
@@ -831,13 +859,9 @@ const filteredAndSortedEvents = computed(() => {
     });
   }
 
-  totalItems.value = filtered.length;
-  totalPages.value = Math.ceil(totalItems.value / itemsPerPage.value);
-
-  const startIndex = (currentPage.value - 1) * itemsPerPage.value;
-  const endIndex = startIndex + itemsPerPage.value;
-
-  return filtered.slice(startIndex, endIndex);
+  // Don't recalculate pagination here - use server-side pagination values
+  // Just return filtered/sorted events without slicing
+  return filtered;
 });
 
 // Statistics computed properties
@@ -864,16 +888,6 @@ const resolvedTodayPercentage = computed(() =>
 
 const responseTimePercentage = computed(() => 75); // Mock data
 
-// Check if there are changes to enable update button
-const hasChanges = computed(() => {
-  if (!selectedEvent.value) return false;
-  
-  const originalStatus = selectedEvent.value.status || '';
-  const originalComment = selectedEvent.value.comment || '';
-  
-  return editStatus.value !== originalStatus || editComment.value !== originalComment;
-});
-
 // Pagination computed properties
 const visiblePages = computed(() => {
   const pages = [];
@@ -886,16 +900,20 @@ const visiblePages = computed(() => {
   return pages;
 });
 
+// Check if there are changes to enable update button
+const hasChanges = computed(() => {
+  if (!selectedEvent.value) return false;
+  
+  const originalStatus = selectedEvent.value.status || '';
+  const originalComment = selectedEvent.value.comment || '';
+  
+  return editStatus.value !== originalStatus || editComment.value !== originalComment;
+});
+
 // Methods
 const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
   sortLabel.value = sort.label;
   sortOrder.value = sort.order;
-};
-
-const goToPage = (page: number) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-  }
 };
 
 const viewAndEditEvent = (event: Event) => {
@@ -916,25 +934,8 @@ const viewAndEditEvent = (event: Event) => {
   }
 };
 
-const closeEditModal = () => {
-  const modalElement = document.getElementById('editEventModal');
-  if (modalElement) {
-    try {
-      const modal = Modal.getInstance(modalElement);
-      if (modal) {
-        modal.hide();
-      }
-    } catch (error) {
-      console.error('Error hiding edit modal:', error);
-    }
-  }
-
-  editStatus.value = '';
-  editComment.value = '';
-};
-
 const saveEventChanges = async () => {
-  if (!editStatus.value || !selectedEvent.value) return;
+  if (!selectedEvent.value) return;
   
   try {
     isModalLoading.value = true;
@@ -948,7 +949,7 @@ const saveEventChanges = async () => {
     // await ApiService.put(`events/${selectedEvent.value.uid}`, updateData);
     
     // Update local state
-    const index = events.value.findIndex(e => e.uid === selectedEvent.value!.uid);
+    const index = events.value.findIndex(e => e.uid === selectedEvent.value.uid);
     if (index !== -1) {
       events.value[index].status = editStatus.value;
       if (editComment.value) {
@@ -956,13 +957,14 @@ const saveEventChanges = async () => {
       }
     }
     
-    // Update selectedEvent for display
+    // Update selected event for immediate UI feedback
     selectedEvent.value.status = editStatus.value;
     if (editComment.value) {
       selectedEvent.value.comment = editComment.value;
     }
     
     console.log('Event updated:', updateData);
+    closeModal();
     
   } catch (error) {
     console.error("Error updating event:", error);
@@ -1043,23 +1045,7 @@ const closeModal = () => {
   editComment.value = '';
 };
 
-const acknowledgeEventFromModal = async () => {
-  if (selectedEvent.value) {
-    await acknowledgeEvent(selectedEvent.value);
-    // Update selected event status
-    selectedEvent.value.status = 'acknowledged';
-    closeModal();
-  }
-};
 
-const resolveEventFromModal = async () => {
-  if (selectedEvent.value) {
-    await resolveEvent(selectedEvent.value);
-    // Update selected event status
-    selectedEvent.value.status = 'resolved';
-    closeModal();
-  }
-};
 
 const formatDateTime = (dateTimeString?: string | null) => {
   if (!dateTimeString) return t('appsEventsAlerts.format.notAvailable');
@@ -1074,12 +1060,13 @@ const formatDateTime = (dateTimeString?: string | null) => {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
+    hour12: false,
   }).format(date);
 };
 
 const handleImageError = (event: any) => {
   event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMzUgNzVIMTY1VjEyNUgxMzVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMjAgMTA1TDE0MCA5MEwxNjAgMTEwTDE4MCA5MEwyMDAgMTEwVjEzNUgxMDBWMTEwTDEyMCAxMDVaIiBmaWxsPSIjQ0NDQ0NDIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE0cHgiPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+Cjwvc3ZnPgo=';
-  event.target.alt = t('appsEventsAlerts.modals.details.imageFallback');
+  event.target.alt = t('appsEventsAlerts.eventsModals.details.imageFallback');
 };
 
 const acknowledgeEvent = async (event: Event) => {
