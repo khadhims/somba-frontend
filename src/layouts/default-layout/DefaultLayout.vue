@@ -41,6 +41,9 @@
 
   <KTToolButtons />
   <KTHelpDrawer />
+  
+  <!-- Global Search (Ctrl+K) -->
+  <GlobalSearch />
 </template>
 
 <script lang="ts">
@@ -62,6 +65,7 @@ import KTInviteFriendsModal from "@/components/modals/general/InviteFriendsModal
 import KTHelpDrawer from "@/layouts/default-layout/components/extras/HelpDrawer.vue";
 import KTToolButtons from "@/layouts/default-layout/components/extras/ToolButtons.vue";
 import KTDrawerMessenger from "@/layouts/default-layout/components/extras/MessengerDrawer.vue";
+import GlobalSearch from "@/components/GlobalSearch.vue";
 import { reinitializeComponents } from "@/core/plugins/keenthemes";
 import {
   asideEnabled,
@@ -88,6 +92,7 @@ export default defineComponent({
     KTHelpDrawer,
     KTToolButtons,
     KTDrawerMessenger,
+    GlobalSearch,
   },
   setup() {
     const route = useRoute();
