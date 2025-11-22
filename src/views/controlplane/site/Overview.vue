@@ -1031,8 +1031,8 @@ const onSiteUpdated = (updatedSite: Site) => {
 };
 
 const viewSiteDetails = (site: Site) => {
-  // Navigate to the camera management page
-  router.push({ path: "/controlplane/site/camera", query: { id: site.uid } });
+  // Navigate to the camera management page and pass siteId so Camera.vue can pre-filter
+  router.push({ path: "/controlplane/site/camera", query: { siteId: site.uid } });
 };
 
 const deleteSite = async (site: Site) => {

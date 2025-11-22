@@ -1,5 +1,56 @@
 <template>
-  <!--begin::Camera Management-->
+  <!--begin::Camera Filters-->
+  <div class="card mb-5">
+    <div class="card-body py-4">
+      <div class="row align-items-center">
+        <!-- Left: Title + subtitle (matches Overview layout) -->
+        <div class="col-md-4">
+          <h4 class="card-title mb-0">{{ t('controlplane.site.camera.header.title') }}</h4>
+          <p class="text-muted mb-0">
+            <span>{{ t('controlplane.site.camera.header.subtitleDefault') }}</span>
+          </p>
+        </div>
+
+        <!-- Right: Filters -->
+        <div class="col-md-8">
+          <div class="d-flex justify-content-end align-items-center flex-wrap">
+            <!-- Site Filter -->
+            <div class="me-4 d-flex align-items-center">
+              <label class="form-label me-3 mb-0 fw-semibold">
+                {{ t("controlplane.site.camera.filters.siteLabel") }}
+              </label>
+              <select
+                v-model="selectedSiteFilter"
+                @change="onHeaderSiteFilterChange"
+                class="form-select form-select-solid w-200px"
+              >
+                <option value="">{{ t("controlplane.site.camera.filters.siteAll") }}</option>
+                <option v-for="site in sites" :key="site.uid" :value="site.uid">{{ site.name }}</option>
+              </select>
+            </div>
+
+            <!-- NVR Filter (depends on selected site) -->
+            <div class="me-4 d-flex align-items-center">
+              <label class="form-label me-3 mb-0 fw-semibold">
+                {{ t("controlplane.site.camera.filters.nvrLabel") }}
+              </label>
+              <select
+                v-model="selectedNvrFilter"
+                @change="onHeaderNvrFilterChange"
+                class="form-select form-select-solid w-200px"
+                :disabled="!selectedSiteFilter"
+              >
+                <option value="">{{ t("controlplane.site.camera.filters.nvrAll") }}</option>
+                <option v-for="nvr in availableHeaderNvrs" :key="nvr.uid" :value="nvr.uid">{{ nvr.name }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--begin::Camera List-->
   <div class="card">
     <!--begin::Card header-->
     <div class="card-header border-0 pt-5">
@@ -11,62 +62,45 @@
 
       <!--begin::Card toolbar-->
       <div class="card-toolbar">
-        <!--begin::Filter Controls-->
-        <div class="d-flex align-items-center">
-          <!--begin::Site Filter-->
-          <div class="me-4 d-flex align-items-center">
-            <label class="form-label me-3 mb-0 fw-semibold">
-              {{ t("controlplane.site.camera.filters.siteLabel") }}
-            </label>
-            <select
-              v-model="selectedSiteFilter"
-              @change="onHeaderSiteFilterChange"
-              class="form-select form-select-solid w-200px"
+        <!--begin::Items per page-->
+        <div class="d-flex align-items-center me-5">
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('controlplane.site.camera.toolbar.itemsLabel') }}</label>
+          <select 
+            class="form-select form-select-sm w-auto" 
+            v-model.number="perPage"
+            @change="onPerPageChange"
             >
-              <option value="">
-                {{ t("controlplane.site.camera.filters.siteAll") }}
-              </option>
-              <option
-                v-for="site in sites"
-                :key="site.uid"
-                :value="site.uid"
-              >
-                {{ site.name }}
-              </option>
-            </select>
-          </div>
-          <!--end::Site Filter-->
-
-          <!--begin::NVR Filter-->
-          <div class="d-flex align-items-center">
-            <label class="form-label me-3 mb-0 fw-semibold">
-              {{ t("controlplane.site.camera.filters.nvrLabel") }}
-            </label>
-            <select
-              v-model="selectedNvrFilter"
-              @change="onHeaderNvrFilterChange"
-              class="form-select form-select-solid w-200px"
-              :disabled="!selectedSiteFilter"
-            >
-              <option value="">
-                {{
-                  selectedSiteFilter
-                    ? t("controlplane.site.camera.filters.nvrAll")
-                    : t("controlplane.site.camera.filters.nvrRequiresSite")
-                }}
-              </option>
-              <option
-                v-for="nvr in availableHeaderNvrs"
-                :key="nvr.uid"
-                :value="nvr.uid"
-              >
-                {{ nvr.name }}
-              </option>
-            </select>
-          </div>
-          <!--end::NVR Filter-->
+            <option :value="1">1</option>
+            <option :value="5">5</option>
+            <option :value="10">10</option>
+            <option :value="25">25</option>
+            <option :value="50">50</option>
+          </select>
         </div>
-        <!--end::Filter Controls-->
+        <!--end::Items per page-->
+
+        <!--begin::Search-->
+        <div class="d-flex align-items-center position-relative my-1 me-5">
+          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          <input
+            type="text"
+            v-model="searchQuery"
+            class="form-control form-control-solid w-250px ps-12"
+            :placeholder="t('controlplane.site.camera.toolbar.searchPlaceholder')"
+          />
+        </div>
+        <!--end::Search-->
+
+        <button 
+          @click.prevent="showCameraForm = true" 
+          class="btn btn-sm btn-light-primary"
+        >
+          <i class="ki-duotone ki-plus fs-2 me-1"></i>
+          {{ t('controlplane.site.camera.toolbar.addButton') }}
+        </button>
       </div>
       <!--end::Card toolbar-->
     </div>
@@ -460,44 +494,7 @@
       </div>
       <!--end::Form Modal-->
 
-      <!--begin::Controls (below form, above table) -->
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="d-flex align-items-center">
-          <span class="me-2">
-            {{ t("controlplane.site.camera.toolbar.itemsLabel") }}
-          </span>
-          <select v-model="perPage" @change="onPerPageChange" class="form-select form-select-solid w-75px">
-            <option :value="1">1</option>
-            <option :value="5">5</option>
-            <option :value="10">10</option>
-            <option :value="25">25</option>
-            <option :value="50">50</option>
-          </select>
-        </div>
-
-        <div class="d-flex align-items-center">
-          <div class="me-3 d-flex align-items-center position-relative">
-            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            <input
-              type="text"
-              v-model="searchQuery"
-              class="form-control form-control-solid w-250px ps-12"
-              :placeholder="t('controlplane.site.camera.toolbar.searchPlaceholder')"
-            />
-          </div>
-
-          <button
-            class="btn btn-sm btn-light-primary"
-            @click="showCameraForm = true"
-          >
-            <i class="ki-duotone ki-plus fs-2 me-1"></i>
-            {{ t("controlplane.site.camera.toolbar.addButton") }}
-          </button>
-        </div>
-      </div>
+      <!-- Controls moved to header toolbar to match Site overview layout -->
 
       <!--begin::Table-->
       <KTDataTable
@@ -1370,10 +1367,9 @@ onMounted(async () => {
     await loadSites();
     await loadRooms();
     
-    // Initialize selected site filter from localStorage or first site
-    selectedSiteFilter.value = localStorage.getItem('lastSelectedSite') as string || 
-                 (route.query.siteId as string) || 
-                 (sites.value[0] && sites.value[0].uid) || "";
+  // Initialize selected site filter (prefer route param siteId or legacy id, then localStorage)
+  const siteFromRoute = (route.query.siteId as string) || (route.query.id as string);
+  selectedSiteFilter.value = siteFromRoute || localStorage.getItem('lastSelectedSite') as string || (sites.value[0] && sites.value[0].uid) || "";
     localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || "");
     
     await loadNvrs();

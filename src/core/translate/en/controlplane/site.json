@@ -88,6 +88,10 @@
 	},
 	"camera": {
 		"title": "Camera Management",
+		"header": {
+			"title": "Camera Management",
+			"subtitleDefault": "Manage cameras for your team"
+		},
 		"filters": {
 			"siteLabel": "Site:",
 			"siteAll": "All Sites",

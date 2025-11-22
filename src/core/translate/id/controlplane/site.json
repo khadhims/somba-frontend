@@ -88,6 +88,10 @@
 	},
 	"camera": {
 		"title": "Manajemen Kamera",
+		"header": {
+			"title": "Manajemen Kamera",
+			"subtitleDefault": "Kelola Kamera untuk tim Anda"
+		},
 		"filters": {
 			"siteLabel": "Lokasi:",
 			"siteAll": "Semua Lokasi",
