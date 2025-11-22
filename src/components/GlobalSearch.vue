@@ -46,8 +46,8 @@
                   <i class="bi bi-camera-video text-primary"></i>
                 </div>
                 <div class="result-content">
-                  <div class="result-title">{{ camera.room }}</div>
-                  <div class="result-subtitle">{{ camera.name }}</div>
+                  <div class="result-title">{{ camera.name }}</div>
+                  <div class="result-subtitle">{{ camera.site_name }} - {{ camera.room }}</div>
                 </div>
                 <i class="bi bi-arrow-return-left text-gray-400"></i>
               </div>
@@ -151,18 +151,23 @@
       </div>
     </Transition>
   </Teleport>
+
+  <!-- Camera Playback Modal -->
+  <CameraPlaybackModal ref="playbackModal" />
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import ApiService from '@/core/services/ApiService';
+import CameraPlaybackModal from '@/components/CameraPlaybackModal.vue';
 
 const router = useRouter();
 const isOpen = ref(false);
 const searchQuery = ref('');
 const searchInput = ref<HTMLInputElement | null>(null);
 const selectedIndex = ref(0);
+const playbackModal = ref<InstanceType<typeof CameraPlaybackModal> | null>(null);
 
 // Mock data - replace with actual API calls
 const cameras = ref<any[]>([]);
@@ -236,7 +241,8 @@ const filteredCameras = computed(() => {
     .filter(cam => 
       cam.name?.toLowerCase().includes(query) || 
       cam.room?.toLowerCase().includes(query) ||
-      cam.model?.toLowerCase().includes(query)
+      cam.model?.toLowerCase().includes(query) ||
+      cam.site_name?.toLowerCase().includes(query)
     )
     .slice(0, 5);
 });
@@ -304,9 +310,43 @@ const selectItem = () => {
 };
 
 // Navigation functions
-const navigateToCamera = (camera: any) => {
-  router.push(`/apps/live-view?camera=${camera.uid}`);
-  closeSearch();
+const navigateToCamera = async (camera: any) => {
+  // Fetch full camera details if needed
+  try {
+    const cameraData = {
+      uid: camera.uid,
+      name: camera.name,
+      room: camera.room || camera.site_name,
+      recording: true,
+      site_uid: camera.site_uid,
+      public_endpoint_url: camera.public_endpoint_url,
+      model: camera.model
+    };
+    
+    // If public_endpoint_url is missing, try to fetch it
+    if (!cameraData.public_endpoint_url && camera.site_uid) {
+      try {
+        const resp = await ApiService.query(`sites/${camera.site_uid}/cameras`, {});
+        const cameras = resp?.data?.data || resp?.data || [];
+        const fullCamera = cameras.find((c: any) => c.uid === camera.uid);
+        if (fullCamera?.public_endpoint_url) {
+          cameraData.public_endpoint_url = fullCamera.public_endpoint_url;
+        }
+      } catch (err) {
+        console.error('[GlobalSearch] Error fetching camera details:', err);
+      }
+    }
+    
+    closeSearch();
+    
+    // Open playback modal
+    if (playbackModal.value) {
+      playbackModal.value.openModal(cameraData);
+    }
+  } catch (error) {
+    console.error('[GlobalSearch] Error opening camera:', error);
+    closeSearch();
+  }
 };
 
 const navigateToSite = (site: any) => {
@@ -394,11 +434,10 @@ const fetchData = async () => {
       sites.value = sitesResp.data.data;
     }
 
-    // Fetch cameras from all sites (limit to first 3 sites to reduce load)
+    // Fetch cameras from all sites for comprehensive global search
     const allCameras: any[] = [];
-    const sitesToFetch = sites.value.slice(0, 3); // Only fetch from first 3 sites
     
-    for (const site of sitesToFetch) {
+    for (const site of sites.value) {
       try {
         const camerasResp = await ApiService.query(`sites/${site.uid}/cameras`, {});
         const cameraData = camerasResp?.data?.data || camerasResp?.data || [];
@@ -408,7 +447,8 @@ const fetchData = async () => {
           room: cam.room_name || cam.room || cam.location,
           model: cam.model || cam.camera_model,
           site_uid: site.uid,
-          site_name: site.name
+          site_name: site.name,
+          public_endpoint_url: cam.public_endpoint_url || ''
         }));
         allCameras.push(...normalizedCameras);
       } catch (err) {
@@ -425,7 +465,7 @@ const fetchData = async () => {
       timestamp: Date.now()
     };
 
-    console.log(`[GlobalSearch] Fetched ${allCameras.length} cameras from ${sitesToFetch.length} sites`);
+    console.log(`[GlobalSearch] Fetched ${allCameras.length} cameras from ${sites.value.length} sites`);
   } catch (error) {
     console.error('[GlobalSearch] Error fetching search data:', error);
   } finally {

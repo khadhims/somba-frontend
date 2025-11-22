@@ -92,36 +92,191 @@
 
     <!--begin::Card body-->
     <div class="card-body py-3">
-      <!--begin::Form Modal-->
-      <div v-if="showCameraForm" class="mb-10">
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">
+      <!-- Form is now in modal below, not inline -->
+      
+      <!--begin::Table-->s moved to header toolbar to match Site overview layout -->
+
+      <!--begin::Table-->
+      <KTDataTable
+        :data="filteredAndSortedCameras"
+        :header="tableHeader"
+        :checkbox-enabled="false"
+        :items-per-page-dropdown-enabled="false"
+        :items-per-page="perPage"
+        :loading="isLoading"
+        :sort-label="sortLabel"
+        :sort-order="sortOrder"
+        @on-sort="handleSort"
+        :empty-table-text="t('controlplane.site.camera.table.empty')"
+      >
+        <template v-slot:name="{ row }">
+          <div class="d-flex align-items-center">
+            <div class="symbol symbol-45px me-5">
+              <span class="symbol-label bg-light-success text-success fw-bold">
+                <i class="ki-duotone ki-picture fs-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </span>
+            </div>
+            <div class="d-flex justify-content-start flex-column">
+              <span class="text-dark fw-bold text-hover-primary fs-6">{{
+                row.name
+              }}</span>
+              <span class="text-muted fw-semibold text-muted d-block fs-7">{{
+                row.ipAddress
+              }}</span>
+            </div>
+          </div>
+        </template>
+
+        <template v-slot:location="{ row }">
+          <div>
+            <span class="text-dark fw-bold d-block fs-6">{{
+              getSiteName(row.siteId)
+            }}</span>
+            <span class="text-muted fw-semibold d-block fs-7">{{
+              getRoomName(row.roomId)
+            }}</span>
+            <span class="text-muted fw-semibold d-block fs-8">{{
+              row.location
+            }}</span>
+          </div>
+        </template>
+
+        <template v-slot:specs="{ row }">
+          <div>
+            <span class="badge badge-light-info fs-7 fw-bold mb-1">{{
+              row.brand
+            }}</span
+            ><br />
+            <span class="badge badge-light-warning fs-7 fw-bold">{{
+              row.resolution
+            }}</span>
+          </div>
+        </template>
+
+        <template v-slot:nvr="{ row }">
+          <div>
+            <span class="text-dark fw-bold d-block fs-6">{{
+              getNvrName(row.nvrId)
+            }}</span>
+            <span class="text-muted fw-semibold d-block fs-7">
+              {{ t("controlplane.site.camera.table.channelPrefix") }}
+              {{ row.channel }}
+            </span>
+          </div>
+        </template>
+
+        <template v-slot:status="{ row }">
+          <span
+            :class="`badge badge-light-${statusBadgeVariant(row.status)} fs-7 fw-bold`"
+          >
+            {{ resolveStatusLabel(row.status) }}
+          </span>
+        </template>
+
+        <template v-slot:actions="{ row }">
+          <div class="d-flex justify-content-end flex-shrink-0">
+            <button
+              class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
+              @click="viewCamera(row)"
+              :title="t('controlplane.site.camera.actions.view')"
+            >
+              <i class="ki-duotone ki-eye fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
+            </button>
+            <button
+              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
+              @click="editCamera(row)"
+              :title="t('controlplane.site.camera.actions.edit')"
+            >
+              <i class="ki-duotone ki-pencil fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </button>
+            <button
+              class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
+              @click="deleteCamera(row)"
+              :title="t('controlplane.site.camera.actions.delete')"
+            >
+              <i class="ki-duotone ki-trash fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </button>
+          </div>
+        </template>
+      </KTDataTable>
+      <!--end::Table-->
+
+      <!--begin::Pagination-->
+      <div class="d-flex justify-content-end align-items-center mt-4">
+        <Pagination
+          :page="currentPage"
+          :per-page="perPage"
+          :total-items="cameras.length"
+          :total-pages="Math.max(1, Math.ceil(cameras.length / perPage))"
+          @page-change="onPageChange"
+          @per-page-change="onPerPageChange"
+        />
+      </div>
+      <!--end::Pagination-->
+    </div>
+    <!--end::Card body-->
+  </div>
+  <!--end::Camera Management-->
+
+  <!-- Camera Playback Modal -->
+  <CameraPlaybackModal ref="playbackModal" />
+
+  <!-- Camera Form Modal -->
+  <Teleport to="body">
+    <Transition name="modal-fade">
+      <div 
+        v-if="showCameraForm" 
+        class="camera-form-modal-overlay"
+        @click="closeForm"
+      >
+        <div 
+          class="camera-form-modal-container"
+          @click.stop
+        >
+          <!-- Modal Header -->
+          <div class="camera-form-modal-header">
+            <h3 class="camera-form-modal-title">
               {{
                 isEdit
                   ? t("controlplane.site.camera.form.titleEdit")
                   : t("controlplane.site.camera.form.titleCreate")
               }}
             </h3>
-            <div class="card-toolbar">
-              <button
-                type="button"
-                class="btn btn-sm btn-icon btn-active-light-primary"
-                @click="closeForm"
-              >
-                <i class="ki-duotone ki-cross fs-2">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </button>
-            </div>
+            <button
+              type="button"
+              class="btn btn-sm btn-icon btn-active-light-primary"
+              @click="closeForm"
+            >
+              <i class="ki-duotone ki-cross fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </button>
           </div>
-          <div class="card-body">
+
+          <!-- Modal Body -->
+          <div class="camera-form-modal-body">
             <form @submit.prevent="saveCamera" class="form">
               <!--begin::Row-->
               <div class="row mb-7">
                 <!--begin::Col-->
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <!--begin::Label-->
                   <label class="required fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.site.label") }}
@@ -150,7 +305,7 @@
                 <!--end::Col-->
 
                 <!--begin::Col-->
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <!--begin::Label-->
                   <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.room.label") }}
@@ -177,33 +332,7 @@
                 </div>
                 <!--end::Col-->
 
-                <!--begin::Col-->
-                <div class="col-md-4">
-                  <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.camera.form.fields.nvr.label") }}
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Select-->
-                  <select
-                    v-model="cameraForm.nvrId"
-                    class="form-select form-select-solid"
-                    required
-                  >
-                    <option value="">
-                      {{ t("controlplane.site.camera.form.fields.nvr.placeholder") }}
-                    </option>
-                    <option
-                      v-for="nvr in availableNvrs"
-                      :key="nvr.uid"
-                      :value="nvr.uid"
-                    >
-                      {{ nvr.name }}
-                    </option>
-                  </select>
-                  <!--end::Select-->
-                </div>
-                <!--end::Col-->
+               
               </div>
               <!--end::Row-->
 
@@ -443,7 +572,7 @@
               <!--end::Row-->
 
               <!--begin::Actions-->
-              <div class="text-center">
+              <div class="text-center pt-3">
                 <button
                   type="button"
                   class="btn btn-light me-3"
@@ -476,147 +605,8 @@
           </div>
         </div>
       </div>
-      <!--end::Form Modal-->
-
-      <!-- Controls moved to header toolbar to match Site overview layout -->
-
-      <!--begin::Table-->
-      <KTDataTable
-        :data="filteredAndSortedCameras"
-        :header="tableHeader"
-        :checkbox-enabled="false"
-        :items-per-page-dropdown-enabled="false"
-        :items-per-page="perPage"
-        :loading="isLoading"
-        :sort-label="sortLabel"
-        :sort-order="sortOrder"
-        @on-sort="handleSort"
-        :empty-table-text="t('controlplane.site.camera.table.empty')"
-      >
-        <template v-slot:name="{ row }">
-          <div class="d-flex align-items-center">
-            <div class="symbol symbol-45px me-5">
-              <span class="symbol-label bg-light-success text-success fw-bold">
-                <i class="ki-duotone ki-picture fs-2">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </span>
-            </div>
-            <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">{{
-                row.name
-              }}</span>
-              <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-                row.ipAddress
-              }}</span>
-            </div>
-          </div>
-        </template>
-
-        <template v-slot:location="{ row }">
-          <div>
-            <span class="text-dark fw-bold d-block fs-6">{{
-              getSiteName(row.siteId)
-            }}</span>
-            <span class="text-muted fw-semibold d-block fs-7">{{
-              getRoomName(row.roomId)
-            }}</span>
-            <span class="text-muted fw-semibold d-block fs-8">{{
-              row.location
-            }}</span>
-          </div>
-        </template>
-
-        <template v-slot:specs="{ row }">
-          <div>
-            <span class="badge badge-light-info fs-7 fw-bold mb-1">{{
-              row.brand
-            }}</span
-            ><br />
-            <span class="badge badge-light-warning fs-7 fw-bold">{{
-              row.resolution
-            }}</span>
-          </div>
-        </template>
-
-        <template v-slot:nvr="{ row }">
-          <div>
-            <span class="text-dark fw-bold d-block fs-6">{{
-              getNvrName(row.nvrId)
-            }}</span>
-            <span class="text-muted fw-semibold d-block fs-7">
-              {{ t("controlplane.site.camera.table.channelPrefix") }}
-              {{ row.channel }}
-            </span>
-          </div>
-        </template>
-
-        <template v-slot:status="{ row }">
-          <span
-            :class="`badge badge-light-${statusBadgeVariant(row.status)} fs-7 fw-bold`"
-          >
-            {{ resolveStatusLabel(row.status) }}
-          </span>
-        </template>
-
-        <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end flex-shrink-0">
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
-              @click="viewCamera(row)"
-              :title="t('controlplane.site.camera.actions.view')"
-            >
-              <i class="ki-duotone ki-eye fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-              </i>
-            </button>
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              @click="editCamera(row)"
-              :title="t('controlplane.site.camera.actions.edit')"
-            >
-              <i class="ki-duotone ki-pencil fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-            </button>
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
-              @click="deleteCamera(row)"
-              :title="t('controlplane.site.camera.actions.delete')"
-            >
-              <i class="ki-duotone ki-trash fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-                <span class="path5"></span>
-              </i>
-            </button>
-          </div>
-        </template>
-      </KTDataTable>
-      <!--end::Table-->
-
-      <!--begin::Pagination-->
-      <div class="d-flex justify-content-end align-items-center mt-4">
-        <Pagination
-          :page="currentPage"
-          :per-page="perPage"
-          :total-items="cameras.length"
-          :total-pages="Math.max(1, Math.ceil(cameras.length / perPage))"
-          @page-change="onPageChange"
-          @per-page-change="onPerPageChange"
-        />
-      </div>
-      <!--end::Pagination-->
-    </div>
-    <!--end::Card body-->
-  </div>
-  <!--end::Camera Management-->
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -626,6 +616,7 @@ import { useI18n } from "vue-i18n";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import Pagination from '@/components/common/Pagination.vue';
 import ApiService from '@/core/services/ApiService';
+import CameraPlaybackModal from "@/components/CameraPlaybackModal.vue";
 
 // Interfaces
 interface Site {
@@ -663,6 +654,8 @@ interface Camera {
   description?: string;
   status: "online" | "offline";
   createdAt: string;
+  public_endpoint_url?: string; // Add for playback modal
+  room?: string; // Add for playback modal
 }
 
 interface CameraForm {
@@ -708,6 +701,7 @@ const currentPage = ref<number>(1);
 const perPage = ref<number>(10);
 const totalItems = ref<number>(0);
 const totalPages = ref<number>(0);
+const playbackModal = ref<InstanceType<typeof CameraPlaybackModal> | null>(null);
 
 const cameraForm = ref<CameraForm>({
   uid: undefined,
@@ -1069,7 +1063,7 @@ const loadCameras = async () => {
         roomId: camera.room_id ?? camera.roomId ?? 0,
         nvrId: camera.video_recorder_uid || camera.nvrId || "",
         name: camera.name || "",
-        ipAddress: camera.public_endpoint_url || camera.ipAddress || "",
+        ipAddress: camera.ip_address || camera.ipAddress || "",
         brand: camera.brand || "",
         model: camera.model || "",
         type: camera.cam_type || "Dome",
@@ -1081,6 +1075,8 @@ const loadCameras = async () => {
           typeof camera.status !== "undefined" ? camera.status : camera.is_active
         ),
         createdAt: camera.created_at || new Date().toISOString().split("T")[0],
+        public_endpoint_url: camera.public_endpoint_url || "",
+        room: camera.room_name || camera.room || "",
       }));
     } else {
       cameras.value = [];
@@ -1321,8 +1317,22 @@ const deleteCamera = async (camera: Camera) => {
 
 const viewCamera = (camera: Camera) => {
   console.log("Opening live stream for camera:", camera.name);
-  // TODO: Implement live stream viewer
-  alert(t("controlplane.site.camera.actions.viewAlert", { name: camera.name }));
+  
+  // Prepare camera data for modal
+  const cameraData = {
+    uid: camera.uid || camera.id.toString(),
+    name: camera.name,
+    room: camera.room || getRoomName(camera.roomId),
+    recording: false,
+    site_uid: camera.siteId,
+    nvr_uid: camera.nvrId,
+    public_endpoint_url: camera.public_endpoint_url,
+    model: camera.model
+  };
+  
+  if (playbackModal.value) {
+    playbackModal.value.openModal(cameraData);
+  }
 };
 
 const closeForm = () => {
@@ -1380,3 +1390,102 @@ onMounted(async () => {
   }
 });
 </script>
+
+<style scoped>
+/* Camera Form Modal Styles */
+.camera-form-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.camera-form-modal-container {
+  width: 100%;
+  max-width: 900px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  margin: auto;
+}
+
+.camera-form-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.camera-form-modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.camera-form-modal-body {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  background: white;
+}
+
+/* Modal Animations */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-active .camera-form-modal-container,
+.modal-fade-leave-active .camera-form-modal-container {
+  transition: all 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-from .camera-form-modal-container {
+  transform: scale(0.95) translateY(-20px);
+  opacity: 0;
+}
+
+.modal-fade-leave-to .camera-form-modal-container {
+  transform: scale(0.95) translateY(-20px);
+  opacity: 0;
+}
+
+/* Scrollbar styling */
+.camera-form-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.camera-form-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.camera-form-modal-body::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.camera-form-modal-body::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+</style>
