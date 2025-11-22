@@ -320,15 +320,39 @@ export default defineComponent({
 /* Brand Logo */
 .brand-logo {
   position: absolute;
-  top: 30px;
-  left: 30px;
-  z-index: 20;
+  top: 24px;
+  left: 24px;
+  z-index: 60;
   animation: logoFloat 4s ease-in-out infinite;
+  /* make a soft rounded backdrop so the logo contrasts on any background */
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 8px 30px rgba(14,165,233,0.06), 0 2px 6px rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
 }
 
 .brand-logo img {
-  height: 50px;
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+  height: 56px;
+  display: block;
+  filter: drop-shadow(0 10px 30px rgba(14,165,233,0.22)) saturate(1.15) contrast(1.15);
+  -webkit-filter: drop-shadow(0 10px 30px rgba(14,165,233,0.22)) saturate(1.15) contrast(1.15);
+}
+
+.brand-logo::after {
+  /* subtle halo to further improve visibility */
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(14,165,233,0.08), transparent 40%);
+  z-index: 10;
+  pointer-events: none;
 }
 
 @keyframes logoFloat {
@@ -714,6 +738,155 @@ export default defineComponent({
 
 .link-accent:hover {
   color: #60a5fa;
+}
+
+/* Responsive rules */
+@media (max-width: 991px) {
+  .login-card {
+    width: 92%;
+    height: auto;
+  }
+
+  .card-image-section {
+    width: 40%;
+  }
+
+  .card-form-section {
+    width: 60%;
+    padding: 40px;
+  }
+
+  .camera-wrapper {
+    width: 240px;
+    height: 240px;
+  }
+
+  .hologram-cone {
+    opacity: 0.35;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-card {
+    flex-direction: column;
+    width: 92%;
+    height: auto;
+    padding: 12px;
+  }
+
+  .card-image-section {
+    width: 100%;
+    order: -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 0;
+    margin-bottom: 6px;
+  }
+
+  /* On mobile we hide the left visual card completely to prioritize the form */
+  .card-image-section {
+    display: none !important;
+  }
+
+  .brand-logo {
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px;
+  }
+
+  .camera-wrapper {
+    width: 180px;
+    height: 180px;
+    transform: translateY(-10px);
+  }
+
+  .camera-head {
+    width: 120px;
+    height: 120px;
+  }
+
+  .camera-lens-housing {
+    width: 80px;
+    height: 80px;
+    transform: translateZ(20px);
+  }
+
+  .camera-lens-glass {
+    width: 48px;
+    height: 48px;
+  }
+
+  .welcome-text {
+    font-size: 2rem;
+    text-align: center;
+    left: 0;
+    bottom: 8px;
+  }
+
+  .sub-text {
+    font-size: 0.95rem;
+    text-align: center;
+    left: 0;
+  }
+
+  .card-form-section {
+    width: 100%;
+    padding: 20px;
+    border-radius: 12px;
+    /* restore normal top padding when logo hidden */
+    padding-top: 20px;
+  }
+
+  /* hide brand logo on mobile to avoid overlap */
+  .brand-logo {
+    display: none !important;
+  }
+
+  .btn-neon {
+    padding: 12px;
+  }
+
+  .social-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .hologram-cone {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .camera-wrapper {
+    width: 140px;
+    height: 140px;
+  }
+
+  .brand-logo img {
+    height: 42px;
+  }
+
+  .welcome-text {
+    font-size: 1.6rem;
+  }
+
+  .custom-input {
+    padding: 10px 12px 10px 40px !important;
+    font-size: 0.95rem !important;
+  }
+
+  .form-title {
+    font-size: 1.25rem;
+  }
+
+  .login-card {
+    width: 96%;
+  }
+
+  .particles { display: none; }
 }
 </style>
 
