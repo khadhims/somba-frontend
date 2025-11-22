@@ -14,21 +14,31 @@
         <img src="/logo-somba-2.png" alt="Somba Logo" />
       </div>
 
-      <!-- Left Side: Image & Character -->
+      <!-- Left Side: Camera Watcher -->
       <div class="card-image-section">
-        <div class="character-wrapper" ref="charRef">
-          <!-- Using a reliable Cyberpunk/Sci-Fi image -->
-          <img 
-            src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=1000&auto=format&fit=crop" 
-            alt="Visual" 
-            class="character-img"
-            @error="handleImageError"
-          />
-          <div class="image-glitch-effect"></div>
-          <div class="image-text">
-            <h2 class="welcome-text">WELCOME<br>BACK</h2>
-            <p class="sub-text">Enter the gateway to Somba</p>
+        <div class="camera-wrapper">
+          <div class="surveillance-camera">
+            <div class="camera-mount"></div>
+            <div class="camera-head" ref="cameraHeadRef">
+              <div class="camera-lens-housing">
+                <div class="camera-lens-glass">
+                  <div class="lens-reflection"></div>
+                  <div class="lens-aperture"></div>
+                </div>
+              </div>
+              <div class="status-led"></div>
+              <div class="ir-sensors">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
           </div>
+          <!-- Holographic Cone -->
+          <div class="hologram-cone"></div>
+        </div>
+        
+        <div class="image-text">
+          <h2 class="welcome-text">WELCOME<br>BACK</h2>
+          <p class="sub-text">Enter the gateway to SOMBA.</p>
         </div>
       </div>
 
@@ -98,7 +108,7 @@
             id="kt_sign_in_submit"
             class="btn btn-neon w-100 mb-6"
           >
-            <span class="indicator-label">INITIATE LOGIN</span>
+            <span class="indicator-label">SIGN IN</span>
             <span class="indicator-progress">
               AUTHENTICATING...
               <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
@@ -145,16 +155,17 @@ export default defineComponent({
     const router = useRouter();
     const submitButton = ref<HTMLButtonElement | null>(null);
     const cardRef = ref<HTMLElement | null>(null);
-    const charRef = ref<HTMLElement | null>(null);
+    const cameraHeadRef = ref<HTMLElement | null>(null);
 
     const login = Yup.object().shape({
       email: Yup.string().required().label("Username"),
       password: Yup.string().min(4).required().label("Password"),
     });
 
-    // Parallax Effect
+    // Parallax & Camera Tracking Effect
     const handleMouseMove = (e: MouseEvent) => {
-      if (!cardRef.value || !charRef.value) return;
+      if (!cardRef.value) return;
+      
       const { innerWidth, innerHeight } = window;
       const x = (e.clientX - innerWidth / 2) / 40;
       const y = (e.clientY - innerHeight / 2) / 40;
@@ -162,16 +173,21 @@ export default defineComponent({
       // Rotate card slightly
       cardRef.value.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
       
-      // Move character more for depth
-      charRef.value.style.transform = `translate(${x * 1.5}px, ${y * 1.5}px)`;
-    };
-
-    const handleImageError = (e: Event) => {
-      const img = e.target as HTMLImageElement;
-      // Fallback to a solid color or pattern if image fails
-      img.style.display = 'none';
-      if (img.parentElement) {
-        img.parentElement.style.background = 'linear-gradient(45deg, #2563eb, #9333ea)';
+      // Camera Head Tracking
+      if (cameraHeadRef.value) {
+        const rect = cameraHeadRef.value.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        // Calculate angle to mouse
+        const deltaX = e.clientX - centerX;
+        const deltaY = e.clientY - centerY;
+        
+        // Limit rotation angles (max 50 degrees)
+        const rotateY = Math.max(-50, Math.min(50, deltaX / 10));
+        const rotateX = Math.max(-50, Math.min(50, -deltaY / 10)); // Invert Y for CSS rotateX
+        
+        cameraHeadRef.value.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
       }
     };
 
@@ -230,8 +246,7 @@ export default defineComponent({
       submitButton,
       handleMouseMove,
       cardRef,
-      charRef,
-      handleImageError
+      cameraHeadRef
     };
   },
 });
@@ -326,30 +341,156 @@ export default defineComponent({
   width: 50%;
   position: relative;
   z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.character-wrapper {
+.camera-wrapper {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 800px;
+  transform: translateY(-30px);
+}
+
+.surveillance-camera {
+  position: relative;
+  transform-style: preserve-3d;
+  z-index: 10;
+}
+
+.camera-mount {
+  width: 140px;
+  height: 140px;
+  background: #0f172a;
+  border-radius: 50%;
+  box-shadow: 
+    inset 0 0 30px rgba(0,0,0,0.9),
+    0 0 0 2px #334155,
+    0 0 0 10px #1e293b;
   position: absolute;
-  top: -40px;
-  left: -40px;
-  width: 115%;
-  height: 115%;
-  border-radius: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateZ(-50px);
+}
+
+.camera-head {
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle at 30% 30%, #475569, #0f172a);
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 
+    -15px 15px 40px rgba(0,0,0,0.6),
+    inset 2px 2px 5px rgba(255,255,255,0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.05s ease-out; /* Fast response */
+  transform-style: preserve-3d;
+}
+
+.camera-lens-housing {
+  width: 100px;
+  height: 100px;
+  background: #000;
+  border-radius: 50%;
+  border: 5px solid #334155;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translateZ(25px);
+  box-shadow: 0 0 20px rgba(0,0,0,0.9);
+}
+
+.camera-lens-glass {
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle at 50% 50%, #0ea5e9, #1e3a8a 60%, #000 100%);
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 0 0 25px #0ea5e9;
   overflow: hidden;
-  box-shadow: 20px 20px 60px rgba(0, 0, 0, 0.5);
-  transition: transform 0.1s ease-out;
-  z-index: 5;
 }
 
-.character-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
+.lens-reflection {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 18px;
+  height: 18px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 50%;
+  filter: blur(3px);
 }
 
-.character-wrapper:hover .character-img {
-  transform: scale(1.05);
+.lens-aperture {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50%;
+}
+
+.status-led {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ef4444;
+  animation: blink 2s infinite;
+  transform: translateZ(20px);
+}
+
+.ir-sensors span {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #334155;
+  border-radius: 50%;
+  box-shadow: 0 0 2px #ef4444;
+}
+.ir-sensors span:nth-child(1) { bottom: 25px; left: 50%; }
+.ir-sensors span:nth-child(2) { bottom: 35px; left: 35%; }
+.ir-sensors span:nth-child(3) { bottom: 35px; right: 35%; }
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Holographic Cone */
+.hologram-cone {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  height: 400px;
+  background: conic-gradient(from 180deg at 50% 50%, 
+    rgba(14, 165, 233, 0) 0deg, 
+    rgba(14, 165, 233, 0.05) 20deg, 
+    rgba(14, 165, 233, 0) 40deg);
+  transform-origin: center;
+  transform: translate(-50%, -50%) rotate(180deg);
+  pointer-events: none;
+  z-index: 1;
+  animation: scanRotate 4s linear infinite;
+  opacity: 0.5;
+}
+
+@keyframes scanRotate {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 .image-text {
@@ -362,7 +503,7 @@ export default defineComponent({
 }
 
 .welcome-text {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 900;
   line-height: 1;
   margin-bottom: 10px;
@@ -376,8 +517,10 @@ export default defineComponent({
 }
 
 .sub-text {
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  color: #0ea5e9;
+  font-family: monospace;
+  letter-spacing: 2px;
   animation: textSlideIn 1s ease-out 0.7s forwards;
   opacity: 0;
   transform: translateX(-20px);
