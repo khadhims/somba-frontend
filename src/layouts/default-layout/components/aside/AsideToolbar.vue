@@ -17,7 +17,7 @@
         <div class="flex-grow-1 me-2">
           <!--begin::Username-->
           <a href="#" class="text-white text-hover-primary fs-6 fw-semibold"
-            >User</a
+            >{{ fullName }}</a
           >
           <!--end::Username-->
 
@@ -63,7 +63,8 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
+import { useAuthStore } from "@/stores/auth";
 import UserMenu from "@/layouts/default-layout/components/menus/UserAccountMenu.vue";
 import AsideSearch from "@/layouts/default-layout/components/aside/AsideSearch.vue";
 
@@ -74,8 +75,19 @@ export default defineComponent({
     AsideSearch,
   },
   setup() {
+    const authStore = useAuthStore();
+
+    const fullName = computed(() => {
+      const user = authStore.user;
+      if (user?.first_name || user?.last_name) {
+        return `${user.first_name || ''} ${user.last_name || ''}`.trim();
+      }
+      return 'User';
+    });
+
     return {
       getAssetPath,
+      fullName,
     };
   },
 });

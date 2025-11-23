@@ -180,7 +180,7 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onMounted, onUnmounted, ref } from "vue";
+import { defineComponent, onMounted, onUnmounted, ref, computed } from "vue";
 import KTThemeModeSwitcher from "@/layouts/default-layout/components/theme-mode/ThemeModeSwitcher.vue";
 import NotificationsMenu from "@/layouts/default-layout/components/menus/NotificationsMenu.vue";
 import LanguageSwitcher from "@/layouts/default-layout/components/header/LanguageSwitcher.vue";
@@ -208,7 +208,13 @@ export default defineComponent({
     const recordingCount = ref(18);
     const storageUsed = ref(68);
     const systemUptime = ref('72h 15m');
-    const userName = ref('User');
+    const userName = computed(() => {
+      const user = authStore.user;
+      if (user?.first_name || user?.last_name) {
+        return `${user.first_name || ''} ${user.last_name || ''}`.trim();
+      }
+      return 'User';
+    });
     const userRole = ref('Administrator');
 
     // Timer for real-time updates

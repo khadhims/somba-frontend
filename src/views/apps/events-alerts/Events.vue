@@ -500,7 +500,8 @@ const fetchEvents = async () => {
     await fetchCameras(siteUid);
 
     // Call API: sites/{site_uid}/list-activity with pagination params
-    const resp = await ApiService.query(`sites/${siteUid}/list-activity`, {
+    // ${siteUid}
+    const resp = await ApiService.query(`sites/fff0f3a7-cea8-4383-a0de-c7d9041a2519/list-activity`, {
       params: {
         page: currentPage.value,
         per_page: itemsPerPage.value
