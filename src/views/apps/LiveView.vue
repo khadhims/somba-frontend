@@ -554,15 +554,10 @@ const fetchSites = async () => {
   loadingSites.value = true;
   try {
     // Get selected team from localStorage or query params (exactly like Camera.vue)
-    const selectedTeamId = localStorage.getItem('lastSelectedTeam') || route.query.teamId as string;
-    if (!selectedTeamId) {
-      console.warn('[LiveView] No team selected, cannot load sites');
-      sites.value = [];
-      return;
-    }
-
-    console.debug('[LiveView] Using selectedTeamId:', selectedTeamId);
-    const resp = await ApiService.query(`teams/${selectedTeamId}/sites`, {});
+    const selectedTeamId = localStorage.getItem('lastSelectedTeam') || route.query.teamId as string;    
+    const resp = selectedTeamId
+      ? await ApiService.query(`teams/${selectedTeamId}/sites`, {})
+      : await ApiService.query(`sites`, {}); 
     
     // Parse response (wrapped or direct) - exactly like Camera.vue
     if (resp && resp.data) {
