@@ -1,0 +1,44 @@
+[
+  {
+    "activity_uid": "1",
+    "activity_name": "Persiapan",
+    "last_activity_timestamp": "2024-11-25T06:30:15Z",
+    "currently_active": true
+  },
+  {
+    "activity_uid": "2",
+    "activity_name": "Masak",
+    "last_activity_timestamp": "2024-11-25T07:45:32Z",
+    "currently_active": true
+  },
+  {
+    "activity_uid": "3",
+    "activity_name": "Pemorsian",
+    "last_activity_timestamp": "2024-11-25T08:15:48Z",
+    "currently_active": false
+  },
+  {
+    "activity_uid": "4",
+    "activity_name": "Pengiriman",
+    "last_activity_timestamp": "2024-11-24T12:30:25Z",
+    "currently_active": false
+  },
+  {
+    "activity_uid": "5",
+    "activity_name": "Ambil Nampan",
+    "last_activity_timestamp": "2024-11-24T14:20:10Z",
+    "currently_active": false
+  },
+  {
+    "activity_uid": "6",
+    "activity_name": "Cuci Nampan",
+    "last_activity_timestamp": "2024-11-24T15:45:55Z",
+    "currently_active": false
+  },
+  {
+    "activity_uid": "7",
+    "activity_name": "Selesai",
+    "last_activity_timestamp": "2024-11-24T16:30:00Z",
+    "currently_active": false
+  }
+]

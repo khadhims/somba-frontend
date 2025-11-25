@@ -123,7 +123,27 @@ const nextMonth = () => {
 // API AND DATA FUNCTIONS
 // ========================
 
-// Fetch activity data from API
+// Filter mockup dataset so it is shown only on its original dates
+const filterMockupDataByDate = (dataset, targetDate) => {
+    if (!Array.isArray(dataset)) {
+        return [];
+    }
+
+    const day = targetDate.getDate();
+    const month = targetDate.getMonth();
+    const year = targetDate.getFullYear();
+
+    return dataset.filter((item) => {
+        const itemDate = new Date(item.startTime);
+        return (
+            itemDate.getDate() === day &&
+            itemDate.getMonth() === month &&
+            itemDate.getFullYear() === year
+        );
+    });
+};
+
+// Fetch activity data from API with mockup fallback
 const fetchActivityData = async () => {
     isLoading.value = true;
     apiError.value = null;
@@ -135,6 +155,7 @@ const fetchActivityData = async () => {
         const dd = String(date.getDate()).padStart(2, '0');
         const dateStr = `${yyyy}-${mm}-${dd}`;
         
+        // Try API call first
         const response = await window.axios.get(`/activity/day`, {
             params: { date: dateStr },
             headers: {
@@ -146,11 +167,37 @@ const fetchActivityData = async () => {
         if (response.status !== 200) throw new Error('Gagal mengambil data aktivitas');
         
         const data = response.data;
-        apiData.value = Array.isArray(data) ? data : [];
+        if (!Array.isArray(data) || data.length === 0) {
+            apiData.value = [];
+            apiError.value = 'Tidak ada data aktivitas untuk tanggal ini.';
+            console.info(`[RealTimeReport] API returned no activity data for ${dateStr}`);
+            return;
+        }
+
+        apiData.value = data;
+        console.log('Successfully loaded data from API:', data);
     } catch (err) {
-        console.error('Error fetching activity data:', err);
-        apiError.value = err.message || 'Terjadi kesalahan saat mengambil data';
-        apiData.value = [];
+        console.warn('API call failed, falling back to mockup data:', err?.message || err);
+        
+        try {
+            const mockupModule = await import('@/assets/mockupData/dashboard/event_activity.json');
+            const allFallbackData = mockupModule.default || mockupModule;
+            const filteredFallback = filterMockupDataByDate(allFallbackData, selectedDate.value);
+
+            if (!filteredFallback.length) {
+                apiData.value = [];
+                apiError.value = 'Data demo tidak tersedia untuk tanggal ini.';
+                console.info('[RealTimeReport] Demo data not available for selected date');
+            } else {
+                apiData.value = filteredFallback;
+                apiError.value = 'Menggunakan data demo (API tidak tersedia).';
+                console.log('Successfully loaded fallback mockup data:', filteredFallback);
+            }
+        } catch (fallbackErr) {
+            console.error('Both API and mockup data failed:', fallbackErr);
+            apiError.value = 'Tidak dapat memuat data aktivitas.';
+            apiData.value = [];
+        }
     } finally {
         isLoading.value = false;
     }
@@ -1926,6 +1973,16 @@ onUnmounted(() => {
             <div v-if="isPlaying" class="position-absolute top-0 end-0 z-3 badge badge-danger badge-lg d-flex align-items-center" style="margin: 1rem;">
                 <div class="badge badge-circle badge-light-danger pulse me-2" style="width: 8px; height: 8px;"></div>
                 AUTO PLAY AKTIF
+            </div>
+
+            <!-- Error & state messaging -->
+            <div v-if="apiError" class="alert alert-warning d-flex align-items-center mb-4" role="alert">
+                <i class="ki-duotone ki-information fs-3 me-3 text-warning">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                </i>
+                <span class="fw-semibold text-warning">{{ apiError }}</span>
             </div>
 
             <!-- Loading State -->

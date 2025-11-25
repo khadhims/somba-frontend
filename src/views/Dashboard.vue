@@ -56,7 +56,7 @@
                       <div v-else-if="error" class="alert alert-warning" role="alert">
                         <i class="fas fa-exclamation-triangle me-2"></i>
                         {{ t('dashboard.general.errorLoading') }}: {{ error }}
-                        <button class="btn btn-sm btn-outline-primary ms-3" @click="loadMockupData">
+                        <button class="btn btn-sm btn-outline-primary ms-3" @click="fetchLiveActivities">
                           <i class="fas fa-refresh me-1"></i>{{ t('dashboard.general.retry') }}
                         </button>
                       </div>
@@ -211,6 +211,7 @@ import RealTimeReport from '@/components/dashboard/RealTimeReport.vue';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import ApiService from '@/core/services/ApiService';
 
 // Reactive data untuk live activities dari API
 const liveActivities = ref([]);
@@ -228,6 +229,9 @@ const router = useRouter();
 
 // I18n setup
 const { t } = useI18n();
+
+// Site UID untuk permintaan live-activities (gunakan env atau fallback demo)
+const activeSiteUid = import.meta.env.VITE_ACTIVE_SITE_UID || 'site-demo';
 
 // Mapping icon dan warna untuk setiap aktivitas
 const activityConfig = {
@@ -250,68 +254,6 @@ const activityConfig = {
   'default': { icon: 'fas fa-tasks', bgColor: '#607d8b' }
 };
 
-// Function untuk load mockup data (sementara tidak menggunakan API)
-const loadMockupData = () => {
-  loading.value = true;
-  
-  // Simulate loading delay
-  setTimeout(() => {
-    // Mockup data untuk demo proses pelaksanaan harian
-    liveActivities.value = [
-      {
-        activity_uid: '1',
-        activity_name: 'Persiapan',
-        last_activity_timestamp: '2024-11-25T06:30:15Z',
-        currently_active: true
-      },
-      {
-        activity_uid: '2',
-        activity_name: 'Masak',
-        last_activity_timestamp: '2024-11-25T07:45:32Z',
-        currently_active: true
-      },
-      {
-        activity_uid: '3',
-        activity_name: 'Pemorsian',
-        last_activity_timestamp: '2024-11-25T08:15:48Z',
-        currently_active: false
-      },
-      {
-        activity_uid: '4',
-        activity_name: 'Pengiriman',
-        last_activity_timestamp: '2024-11-24T12:30:25Z',
-        currently_active: false
-      },
-      {
-        activity_uid: '5',
-        activity_name: 'Ambil Nampan',
-        last_activity_timestamp: '2024-11-24T14:20:10Z',
-        currently_active: false
-      },
-      {
-        activity_uid: '6',
-        activity_name: 'Cuci Nampan',
-        last_activity_timestamp: '2024-11-24T15:45:55Z',
-        currently_active: false
-      },
-      {
-        activity_uid: '7',
-        activity_name: 'Selesai',
-        last_activity_timestamp: '2024-11-24T16:30:00Z',
-        currently_active: false
-      }
-    ];
-    
-    loading.value = false;
-    error.value = null;
-    
-    // Load sistem monitoring data
-    loadSistemMonitoringData();
-    
-    // Load navigation apps data
-    loadNavigationAppsData();
-  }, 1000); // 1 second delay untuk simulasi loading
-};
 
 // Function untuk load sistem monitoring mockup data
 const loadSistemMonitoringData = () => {
@@ -431,24 +373,52 @@ const navigateToApp = (route) => {
   router.push(route);
 };
 
-// Function untuk fetch live activities (akan digunakan nanti)
-const fetchLiveActivities = async () => {
+// Load mockup data untuk live activities (digunakan sebagai fallback)
+const loadMockupData = async ({ manageLoading = true } = {}) => {
   try {
-    loading.value = true;
+    if (manageLoading) {
+      loading.value = true;
+    }
+
+    const module = await import('@/assets/mockupData/dashboard/live_activity.json');
+    const mockData = module.default || module;
+
+    liveActivities.value = Array.isArray(mockData) ? mockData : [];
     error.value = null;
-    
-    // TODO: Implementasi API call nantinya
-    // const siteUid = 'your-site-uid';
-    // const response = await fetch(`/api/sites/${siteUid}/live-activities`);
-    // const data = await response.json();
-    // liveActivities.value = data;
-    
-    // Sementara gunakan mockup data
-    loadMockupData();
-    
+  } catch (mockError) {
+    console.error('[Dashboard] Failed to load mock live activities:', mockError);
+    liveActivities.value = [];
+    error.value = mockError?.message || 'Tidak dapat memuat data demo.';
+  } finally {
+    if (manageLoading) {
+      loading.value = false;
+    }
+  }
+};
+
+// Fetch live activities dari API dengan fallback ke mockup data
+const fetchLiveActivities = async () => {
+  loading.value = true;
+  error.value = null;
+
+  try {
+    const response = await ApiService.get(`/sites/${activeSiteUid}/live-activities`, {});
+
+    if (response.status !== 200) {
+      throw new Error('Gagal mengambil data live activities');
+    }
+
+    const data = response.data;
+
+    if (!Array.isArray(data)) {
+      throw new Error('Format data live activities tidak valid');
+    }
+
+    liveActivities.value = data;
   } catch (err) {
-    console.error('Error fetching live activities:', err);
-    error.value = err.message;
+    console.warn('[Dashboard] Falling back to mock live activities data:', err);
+    await loadMockupData({ manageLoading: false });
+  } finally {
     loading.value = false;
   }
 };
@@ -476,7 +446,9 @@ const getTranslatedActivityName = (activityName) => {
 
 // Mount lifecycle
 onMounted(() => {
-  loadMockupData(); // Gunakan mockup data untuk sementara
+  fetchLiveActivities(); // Utamakan API, fallback otomatis ke mock data
+  loadSistemMonitoringData();
+  loadNavigationAppsData();
 });
 </script>
 
