@@ -158,6 +158,12 @@ const MainMenuConfig: Array<MenuItem> = [
         bootstrapIcon: "bi-exclamation-triangle",
       },
       {
+        heading: "reportHarian",
+        route: "/apps/report/daily-report",
+        keenthemesIcon: "document",
+        bootstrapIcon: "bi-file-earmark-text",
+      },
+      {
         sectionTitle: "recordingPlayback",
         route: "/apps/recording-playback",
         keenthemesIcon: "screen",

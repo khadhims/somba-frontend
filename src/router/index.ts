@@ -284,6 +284,15 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: "/apps/report/daily-report",
+        name: "apps-report-daily-report",
+        component: () => import("@/views/apps/report/daily-report/DailyReport.vue"),
+        meta: {
+          pageTitle: "Report Harian",
+          breadcrumbs: ["Apps", "Report"],
+        },
+      },
+      {
         path: "/apps/events-alerts/settings",
         name: "apps-events-alerts-settings",
         component: () => import("@/views/apps/events-alerts/Settings.vue"),
