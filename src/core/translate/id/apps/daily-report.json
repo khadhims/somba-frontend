@@ -1,0 +1,94 @@
+{
+    "title": "Report Harian",
+    "subtitle": "Laporan produksi dan distribusi harian dapur",
+    "filterDate": "Filter Tanggal",
+    "target": "Target",
+    "setTarget": "Atur Target",
+    "addReport": "Tambah Report",
+    "editReport": "Edit Report",
+    "viewReport": "Lihat Report",
+    "deleteReport": "Hapus Report",
+    "todayReport": "Report Hari Ini",
+    "totalPortions": "Total Porsi",
+    "schoolsServed": "Sekolah Dilayani",
+    "activeDrivers": "Driver Aktif",
+    "fromTarget": "dari target",
+    "fromSchoolsTarget": "Dari {target} sekolah target",
+    "driversOnDuty": "Driver bertugas hari ini",
+    "portionsDistributed": "Porsi didistribusikan hari ini",
+    "dailyTarget": "dari target harian",
+    "table": {
+        "date": "Tanggal",
+        "deliveryTime": "Jam Kirim",
+        "destinationSchool": "Tujuan Sekolah",
+        "driver": "Driver",
+        "totalPortions": "Total Porsi",
+        "actions": "Aksi",
+        "empty": "Belum ada data report harian",
+        "portions": "porsi"
+    },
+    "modal": {
+        "add": {
+            "title": "Tambah Report Harian",
+            "save": "Simpan"
+        },
+        "edit": {
+            "title": "Edit Report Harian",
+            "update": "Update"
+        },
+        "view": {
+            "title": "Detail Report Harian",
+            "close": "Tutup"
+        },
+        "delete": {
+            "title": "Konfirmasi Hapus",
+            "message": "Apakah Anda yakin ingin menghapus report untuk {school}?",
+            "confirm": "Ya, Hapus",
+            "cancel": "Batal"
+        }
+    },
+    "form": {
+        "date": "Tanggal",
+        "deliveryTime": "Jam Kirim",
+        "destinationSchool": "Tujuan Sekolah",
+        "driver": "Driver",
+        "totalPortions": "Total Porsi",
+        "notes": "Catatan",
+        "required": "Wajib diisi",
+        "optional": "Opsional",
+        "placeholder": {
+            "schoolName": "Masukkan nama sekolah tujuan",
+            "driverName": "Masukkan nama driver",
+            "portionsCount": "Masukkan jumlah porsi",
+            "notes": "Catatan tambahan (opsional)"
+        }
+    },
+    "targetSettings": {
+        "title": "Pengaturan Target",
+        "infoTitle": "Informasi Target",
+        "infoMessage": "Target digunakan untuk menghitung persentase pencapaian harian pada dashboard.",
+        "dailyReportTarget": "Target Report Harian",
+        "schoolsTarget": "Target Sekolah",
+        "dailyReportHint": "Jumlah report yang ditargetkan dibuat setiap hari",
+        "schoolsTargetHint": "Jumlah sekolah yang ditargetkan dilayani setiap hari",
+        "previewTitle": "Preview Pencapaian Hari Ini",
+        "report": "Report",
+        "schools": "Sekolah",
+        "save": "Simpan Pengaturan",
+        "cancel": "Batal",
+        "unit": {
+            "reportPerDay": "report/hari",
+            "schoolsPerDay": "sekolah/hari"
+        }
+    },
+    "notifications": {
+        "saveSuccess": "Report berhasil disimpan",
+        "saveError": "Terjadi kesalahan saat menyimpan report",
+        "updateSuccess": "Report berhasil diupdate",
+        "updateError": "Terjadi kesalahan saat mengupdate report",
+        "deleteSuccess": "Report berhasil dihapus",
+        "deleteError": "Terjadi kesalahan saat menghapus report",
+        "targetSaveSuccess": "Pengaturan target berhasil disimpan",
+        "targetSaveError": "Terjadi kesalahan saat menyimpan pengaturan target"
+    }
+}

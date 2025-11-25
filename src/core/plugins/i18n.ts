@@ -11,6 +11,8 @@ import enAppsLiveView from "@/core/translate/en/apps/live-view.json";
 import idAppsLiveView from "@/core/translate/id/apps/live-view.json";
 import enAppsEventsAlerts from "@/core/translate/en/apps/events-alerts.json";
 import idAppsEventsAlerts from "@/core/translate/id/apps/events-alerts.json";
+import enAppsDailyReport from "@/core/translate/en/apps/daily-report.json";
+import idAppsDailyReport from "@/core/translate/id/apps/daily-report.json";
 import enAppsRecordingPlayback from "@/core/translate/en/apps/records-playback.json";
 import idAppsRecordingPlayback from "@/core/translate/id/apps/records-playback.json";
 import enAppsMonitoringCenter from "@/core/translate/en/apps/monitoring-center.json";
@@ -226,6 +228,7 @@ const messages = {
     "Layout": "Layout",
     "Dashboards": "Dashboards",
     "Events & Alerts": "Events & Alerts",
+    "Report": "Report",
     "Recording & Playback": "Recording & Playback",
     "Monitoring Center": "Monitoring Center",
     selectOrganization: "Select Organization",
@@ -444,6 +447,7 @@ const messages = {
     "Layout": "Tata Letak",
     "Dashboards": "Dasbor",
     "Events & Alerts": "Kejadian & Peringatan",
+    "Report": "Laporan",
     "Recording & Playback": "Rekaman & Putar Ulang",
     "Monitoring Center": "Pusat Monitoring",
     // Page titles
@@ -541,6 +545,8 @@ mergeDeep(messages.en, { appsLiveView: enAppsLiveView });
 mergeDeep(messages.id, { appsLiveView: idAppsLiveView });
 mergeDeep(messages.en, { appsEventsAlerts: enAppsEventsAlerts });
 mergeDeep(messages.id, { appsEventsAlerts: idAppsEventsAlerts });
+mergeDeep(messages.en, { appsDailyReport: enAppsDailyReport });
+mergeDeep(messages.id, { appsDailyReport: idAppsDailyReport });
 mergeDeep(messages.en, { appsRecordingPlayback: enAppsRecordingPlayback });
 mergeDeep(messages.id, { appsRecordingPlayback: idAppsRecordingPlayback });
 mergeDeep(messages.en, { appsMonitoringCenter: enAppsMonitoringCenter });

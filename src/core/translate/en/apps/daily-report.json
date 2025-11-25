@@ -1,0 +1,94 @@
+{
+    "title": "Daily Report",
+    "subtitle": "Daily kitchen production and distribution report",
+    "filterDate": "Filter Date",
+    "target": "Target",
+    "setTarget": "Set Target",
+    "addReport": "Add Report",
+    "editReport": "Edit Report",
+    "viewReport": "View Report",
+    "deleteReport": "Delete Report",
+    "todayReport": "Today's Report",
+    "totalPortions": "Total Portions",
+    "schoolsServed": "Schools Served",
+    "activeDrivers": "Active Drivers",
+    "fromTarget": "from target",
+    "fromSchoolsTarget": "from {target} schools target",
+    "driversOnDuty": "Drivers on duty today",
+    "portionsDistributed": "Portions distributed today",
+    "dailyTarget": "of daily target",
+    "table": {
+        "date": "Date",
+        "deliveryTime": "Delivery Time",
+        "destinationSchool": "Destination School",
+        "driver": "Driver",
+        "totalPortions": "Total Portions",
+        "actions": "Actions",
+        "empty": "No daily report data yet",
+        "portions": "portions"
+    },
+    "modal": {
+        "add": {
+            "title": "Add Daily Report",
+            "save": "Save"
+        },
+        "edit": {
+            "title": "Edit Daily Report",
+            "update": "Update"
+        },
+        "view": {
+            "title": "Daily Report Details",
+            "close": "Close"
+        },
+        "delete": {
+            "title": "Confirm Delete",
+            "message": "Are you sure you want to delete the report for {school}?",
+            "confirm": "Yes, Delete",
+            "cancel": "Cancel"
+        }
+    },
+    "form": {
+        "date": "Date",
+        "deliveryTime": "Delivery Time",
+        "destinationSchool": "Destination School",
+        "driver": "Driver",
+        "totalPortions": "Total Portions",
+        "notes": "Notes",
+        "required": "Required",
+        "optional": "Optional",
+        "placeholder": {
+            "schoolName": "Enter destination school name",
+            "driverName": "Enter driver name",
+            "portionsCount": "Enter number of portions",
+            "notes": "Additional notes (optional)"
+        }
+    },
+    "targetSettings": {
+        "title": "Target Settings",
+        "infoTitle": "Target Information",
+        "infoMessage": "Target is used to calculate daily achievement percentage on the dashboard.",
+        "dailyReportTarget": "Daily Report Target",
+        "schoolsTarget": "Schools Target",
+        "dailyReportHint": "Number of reports targeted to be created daily",
+        "schoolsTargetHint": "Number of schools targeted to be served daily",
+        "previewTitle": "Today's Achievement Preview",
+        "report": "Report",
+        "schools": "Schools",
+        "save": "Save Settings",
+        "cancel": "Cancel",
+        "unit": {
+            "reportPerDay": "report/day",
+            "schoolsPerDay": "schools/day"
+        }
+    },
+    "notifications": {
+        "saveSuccess": "Report saved successfully",
+        "saveError": "Error saving report",
+        "updateSuccess": "Report updated successfully",
+        "updateError": "Error updating report",
+        "deleteSuccess": "Report deleted successfully",
+        "deleteError": "Error deleting report",
+        "targetSaveSuccess": "Target settings saved successfully",
+        "targetSaveError": "Error saving target settings"
+    }
+}
