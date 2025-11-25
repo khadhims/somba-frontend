@@ -6,44 +6,54 @@
       <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
         <!-- Content wrapper -->
         <div class="d-flex flex-column flex-column-fluid">
-          <!-- Toolbar -->
-          <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-            <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
-              <div class="d-flex align-items-center gap-2 gap-lg-3">
-                <div class="d-flex align-items-center">
-                  <i class="ki-duotone ki-abstract-26 fs-3 text-primary text-white-dark me-2">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                  </i>
-                  <span class="text-muted fs-7">{{ t('dashboard.general.lastUpdated') }}: {{ new Date().toLocaleString('id-ID') }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <!-- Content -->
           <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-xxl">
               
-              <!-- Section 1: Proses Pelaksanaan Harian -->
-              <div class="row g-5 g-xl-8 mb-8 mt-6">
+              <!-- Main Dashboard Card - Gabungan 3 Section -->
+              <div class="row g-3 g-xl-4 mb-3">
                 <div class="col-12">
-                  <div class="card">
-                    <div class="card-header border-0 pt-6">
+                  <div class="card dashboard-main-card">
+                    
+                    <!-- Section 1: Proses Pelaksanaan Harian -->
+                    <div class="card-header border-0 pt-3 pb-3">
                       <div class="card-title">
-                        <div class="d-flex align-items-center position-relative my-1">
-                          <i class="ki-duotone ki-abstract-26 fs-3 position-absolute ms-4 text-info text-white-dark">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <h3 class="fw-bold ms-12 text-dark text-white-dark">{{ t('dashboard.sections.dailyProcess.title') }}</h3>
+                        <div class="d-flex flex-column">
+                          <h3 class="fw-bold text-dark text-white-dark fs-5 mb-2">{{ t('dashboard.sections.dailyProcess.title') }}</h3>
+                          <div class="d-flex align-items-center gap-3">
+                            <span class="badge badge-light-primary fs-8">
+                              Data per: {{ currentDate }}
+                            </span>
+                            <span class="text-muted fs-8 d-flex align-items-center">
+                              <i class="ki-duotone ki-arrows-circle fs-6 me-1 text-primary">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                              </i>
+                              Otomatis update tiap {{ autoUpdateInterval }} menit
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div class="card-toolbar">
-                        <span class="text-muted fs-7">{{ t('dashboard.sections.dailyProcess.subtitle') }}</span>
+                        <!-- Dropdown Pemilihan Lokasi -->
+                        <select 
+                          v-model="selectedSite" 
+                          @change="onSiteChange"
+                          class="form-select form-select-sm w-auto"
+                          style="min-width: 200px;"
+                        >
+                          <option 
+                            v-for="site in availableSites" 
+                            :key="site.uid" 
+                            :value="site.uid"
+                          >
+                            <i class="ki-duotone ki-geolocation fs-6 me-1"></i>
+                            {{ site.name }}
+                          </option>
+                        </select>
                       </div>
                     </div>
-                    <div class="card-body" style="padding: 2rem 1.5rem 1rem 1.5rem;">
+                    <div class="card-body position-relative" style="padding: 1rem 1rem 1.5rem 1rem;">
                       <!-- Loading state -->
                       <div v-if="loading" class="text-center py-8">
                         <div class="spinner-border text-primary" role="status">
@@ -61,18 +71,51 @@
                         </button>
                       </div>
                       
-                      <!-- Activities data -->
-                      <div v-else class="d-flex overflow-x-auto py-2" style="gap: 1rem;">
-                        <!-- Loop untuk menampilkan Card5 dengan data dari API -->
-                        <Card5
-                          v-for="activity in liveActivities"
-                          :key="activity.activity_uid"
-                          :activity-name="getTranslatedActivityName(activity.activity_name)"
-                          :last-activity-timestamp="activity.last_activity_timestamp"
-                          :currently-active="activity.currently_active"
-                          :icon="getActivityConfig(activity.activity_name).icon"
-                          :bg-color="getActivityConfig(activity.activity_name).bgColor"
-                        />
+                      <!-- Activities carousel -->
+                      <div v-else class="activities-carousel-wrapper">
+                        <!-- Carousel container -->
+                        <div 
+                          ref="carouselContainer"
+                          class="activities-carousel"
+                          @mousedown="handleDragStart"
+                          @mousemove="handleDragMove"
+                          @mouseup="handleDragEnd"
+                          @mouseleave="handleDragEnd"
+                          @touchstart="handleTouchStart"
+                          @touchmove="handleTouchMove"
+                          @touchend="handleTouchEnd"
+                        >
+                          <div 
+                            class="activities-carousel-track"
+                            :style="{ transform: `translateX(-${currentScrollIndex * scrollStep}%)` }"
+                          >
+                            <!-- Loop untuk menampilkan Card5 dengan data dari API -->
+                            <div 
+                              v-for="activity in liveActivities"
+                              :key="activity.activity_uid"
+                              class="carousel-item-wrapper"
+                            >
+                              <Card5
+                                :activity-name="getTranslatedActivityName(activity.activity_name)"
+                                :last-activity-timestamp="activity.last_activity_timestamp"
+                                :currently-active="activity.currently_active"
+                                :icon="getActivityConfig(activity.activity_name).icon"
+                                :bg-color="getActivityConfig(activity.activity_name).bgColor"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- Pagination dots -->
+                        <div v-if="liveActivities.length > cardsPerView" class="carousel-pagination">
+                          <button
+                            v-for="index in totalPages"
+                            :key="index"
+                            class="pagination-dot"
+                            :class="{ active: currentScrollIndex === index - 1 }"
+                            @click="scrollToPage(index - 1)"
+                          ></button>
+                        </div>
                         
                         <!-- Empty state -->
                         <div v-if="liveActivities.length === 0" class="col-12 text-center py-8">
@@ -82,32 +125,13 @@
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
 
-              <!-- Section 2: Sistem Monitoring -->
-              <div class="row g-5 g-xl-8 mb-8">
-                <div class="col-12">
-                  <div class="card">
-                    <div class="card-header border-0 pt-6">
-                      <div class="card-title">
-                        <div class="d-flex align-items-center position-relative my-1">
-                          <i class="ki-duotone ki-chart-simple fs-3 position-absolute ms-4 text-warning text-white-dark">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                            <span class="path4"></span>
-                          </i>
-                          <h3 class="fw-bold ms-12 text-dark text-white-dark">{{ t('dashboard.sections.systemMonitoring.title') }}</h3>
-                        </div>
-                      </div>
-                      <div class="card-toolbar">
-                        <span class="text-muted fs-7">{{ t('dashboard.sections.systemMonitoring.subtitle') }}</span>
-                      </div>
-                    </div>
-                    <div class="card-body" style="padding: 2rem 1.5rem 1rem 1.5rem;">
-                      <div class="d-flex" style="gap: 0.5rem;">
+                    <!-- Divider -->
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <!-- Section 2: Sistem Monitoring -->
+                    <div class="card-body" style="padding: 1rem;">
+                      <div class="d-flex flex-wrap" style="gap: 0.5rem;">
                         <!-- Loop untuk menampilkan Sistem Monitoring menggunakan Card5 -->
                         <MonitorCard5
                           v-for="monitor in sistemMonitoring"
@@ -122,70 +146,26 @@
                         />
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
 
-              <!-- Section 3: Menu Navigasi -->
-              <div class="row g-5 g-xl-8 mb-8">
-                <div class="col-12">
-                  <div class="card">
-                    <div class="card-header border-0 pt-6">
-                      <div class="card-title">
-                        <div class="d-flex align-items-center position-relative my-1">
-                          <i class="ki-duotone ki-element-11 fs-3 position-absolute ms-4 text-info text-white-dark">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                            <span class="path4"></span>
-                          </i>
-                          <h3 class="fw-bold ms-12 text-dark text-white-dark">{{ t('dashboard.sections.navigation.title') }}</h3>
-                        </div>
-                      </div>
-                      <div class="card-toolbar">
-                        <span class="text-muted fs-7">{{ t('dashboard.sections.navigation.subtitle') }}</span>
-                      </div>
-                    </div>
-                    <div class="card-body" style="padding: 2rem 1.5rem 1rem 1.5rem;">
-                      <div class="d-flex overflow-x-auto py-2" style="gap: 1rem;">
-                        <!-- Loop untuk menampilkan Navigation Apps menggunakan Card5 -->
-                        <Card5
-                          v-for="app in navigationApps"
-                          :key="app.activity_uid"
-                          :activity-name="app.activity_name"
-                          :icon="app.icon"
-                          :bg-color="app.bgColor"
-                          :hide-status="true"
-                          :hide-description="true"
-                          @click="navigateToApp(app.route)"
-                          :title="app.description"
-                          style="cursor: pointer;"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    <!-- Divider -->
+                    <div class="separator separator-dashed my-3"></div>
 
-              <!-- Section 4: Real Time Report -->
-              <div class="row g-5 g-xl-8 mb-8">
-                <div class="col-12">
-                  <div class="card">
-                    <div class="card-header border-0 pt-6">
+                    <!-- Section 3: Real Time Report -->
+                    <div class="card-header border-0 pt-3 pb-2">
                       <div class="card-title">
-                        <div class="d-flex align-items-center position-relative my-1">
-                          <i class="ki-duotone ki-chart-line fs-3 position-absolute ms-4 text-primary text-white-dark">
+                        <div class="d-flex align-items-center position-relative my-0">
+                          <i class="ki-duotone ki-chart-line fs-4 position-absolute ms-3 text-primary text-white-dark">
                             <span class="path1"></span>
                             <span class="path2"></span>
                           </i>
-                          <h3 class="fw-bold ms-12 text-dark text-white-dark">{{ t('dashboard.sections.realTimeReport.title') }}</h3>
+                          <h3 class="fw-bold ms-10 text-dark text-white-dark fs-5 mb-0">{{ t('dashboard.sections.realTimeReport.title') }}</h3>
                         </div>
                       </div>
                       <div class="card-toolbar">
-                        <span class="text-muted fs-7">{{ t('dashboard.sections.realTimeReport.subtitle') }}</span>
+                        <span class="text-muted fs-8">{{ t('dashboard.sections.realTimeReport.subtitle') }}</span>
                       </div>
                     </div>
-                    <div class="card-body py-4">
+                    <div class="card-body py-3">
                       <!-- Real Time Report Component -->
                       <RealTimeReport
                         :title="t('dashboard.sections.realTimeReport.componentTitle')"
@@ -193,6 +173,7 @@
                         :showFilters="true"
                       />
                     </div>
+
                   </div>
                 </div>
               </div>
@@ -208,7 +189,7 @@
 import Card5 from '@/components/cards/Card5.vue';
 import MonitorCard5 from '@/components/cards/Card5.vue';
 import RealTimeReport from '@/components/dashboard/RealTimeReport.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import ApiService from '@/core/services/ApiService';
@@ -217,6 +198,15 @@ import ApiService from '@/core/services/ApiService';
 const liveActivities = ref([]);
 const loading = ref(true);
 const error = ref(null);
+
+// Carousel state
+const carouselContainer = ref(null);
+const currentScrollIndex = ref(0);
+const cardsPerView = ref(4); // Default cards visible at once
+const isDragging = ref(false);
+const startX = ref(0);
+const currentX = ref(0);
+const dragThreshold = 50; // Minimum drag distance to trigger scroll
 
 // Reactive data untuk sistem monitoring dari mockup
 const sistemMonitoring = ref([]);
@@ -230,8 +220,36 @@ const router = useRouter();
 // I18n setup
 const { t } = useI18n();
 
+// Site selection and header info
+const selectedSite = ref('');
+const availableSites = ref([
+  { uid: 'sppg-tanah-sereal-bogor', name: 'SPPG Tanah Sereal Bogor' },
+  { uid: 'sppg-jakarta-pusat', name: 'SPPG Jakarta Pusat' },
+  { uid: 'sppg-bandung', name: 'SPPG Bandung' },
+  { uid: 'sppg-surabaya', name: 'SPPG Surabaya' },
+]);
+
+// Current date and auto update info
+const currentDate = computed(() => {
+  const now = new Date();
+  const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  
+  return `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} ${now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
+});
+
+const autoUpdateInterval = ref(2);
+
 // Site UID untuk permintaan live-activities (gunakan env atau fallback demo)
-const activeSiteUid = import.meta.env.VITE_ACTIVE_SITE_UID || 'site-demo';
+const activeSiteUid = computed(() => selectedSite.value || import.meta.env.VITE_ACTIVE_SITE_UID || 'site-demo');
+
+// Function to handle site change
+const onSiteChange = () => {
+  console.log('Site changed to:', selectedSite.value);
+  // Reload data when site changes
+  fetchLiveActivities();
+  loadSistemMonitoringData();
+};
 
 // Mapping icon dan warna untuk setiap aktivitas
 const activityConfig = {
@@ -252,6 +270,81 @@ const activityConfig = {
   'Selesai': { key: 'completed', icon: 'fas fa-check-circle', bgColor: '#8bc34a' },
   // Default fallback
   'default': { icon: 'fas fa-tasks', bgColor: '#607d8b' }
+};
+
+// Computed properties for carousel
+const scrollStep = computed(() => {
+  return 100 / cardsPerView.value;
+});
+
+const maxScrollIndex = computed(() => {
+  return Math.max(0, liveActivities.value.length - cardsPerView.value);
+});
+
+const totalPages = computed(() => {
+  return Math.ceil(liveActivities.value.length / cardsPerView.value);
+});
+
+// Carousel navigation functions
+const scrollCarousel = (direction) => {
+  if (direction === 'next' && currentScrollIndex.value < maxScrollIndex.value) {
+    currentScrollIndex.value++;
+  } else if (direction === 'prev' && currentScrollIndex.value > 0) {
+    currentScrollIndex.value--;
+  }
+};
+
+const scrollToPage = (pageIndex) => {
+  currentScrollIndex.value = Math.min(pageIndex, maxScrollIndex.value);
+};
+
+// Touch and drag handlers
+const handleDragStart = (e) => {
+  isDragging.value = true;
+  startX.value = e.pageX;
+  currentX.value = e.pageX;
+};
+
+const handleDragMove = (e) => {
+  if (!isDragging.value) return;
+  currentX.value = e.pageX;
+};
+
+const handleDragEnd = () => {
+  if (!isDragging.value) return;
+  
+  const diff = startX.value - currentX.value;
+  
+  if (Math.abs(diff) > dragThreshold) {
+    if (diff > 0) {
+      scrollCarousel('next');
+    } else {
+      scrollCarousel('prev');
+    }
+  }
+  
+  isDragging.value = false;
+};
+
+const handleTouchStart = (e) => {
+  startX.value = e.touches[0].pageX;
+  currentX.value = e.touches[0].pageX;
+};
+
+const handleTouchMove = (e) => {
+  currentX.value = e.touches[0].pageX;
+};
+
+const handleTouchEnd = () => {
+  const diff = startX.value - currentX.value;
+  
+  if (Math.abs(diff) > dragThreshold) {
+    if (diff > 0) {
+      scrollCarousel('next');
+    } else {
+      scrollCarousel('prev');
+    }
+  }
 };
 
 
@@ -402,7 +495,7 @@ const fetchLiveActivities = async () => {
   error.value = null;
 
   try {
-    const response = await ApiService.get(`/sites/${activeSiteUid}/live-activities`, {});
+    const response = await ApiService.get(`/sites/${activeSiteUid.value}/live-activities`, {});
 
     if (response.status !== 200) {
       throw new Error('Gagal mengambil data live activities');
@@ -444,30 +537,297 @@ const getTranslatedActivityName = (activityName) => {
   return t(translationKey, activityName); // Fallback to original name if translation not found
 };
 
+// Update cards per view based on window size
+const updateCardsPerView = () => {
+  const width = window.innerWidth;
+  if (width < 577) {
+    cardsPerView.value = 1; // Small screens
+  } else if (width < 993) {
+    cardsPerView.value = 3; // Medium screens
+  } else if (width < 1200) {
+    cardsPerView.value = 4; // Medium-large screens
+  } else if (width < 1400) {
+    cardsPerView.value = 5; // Large screens
+  } else {
+    cardsPerView.value = 7; // Extra large screens
+  }
+  // Reset scroll index if it exceeds new max
+  if (currentScrollIndex.value > maxScrollIndex.value) {
+    currentScrollIndex.value = maxScrollIndex.value;
+  }
+};
+
 // Mount lifecycle
 onMounted(() => {
+  // Initialize selected site with first available site or from env
+  selectedSite.value = import.meta.env.VITE_ACTIVE_SITE_UID || availableSites.value[0]?.uid || 'sppg-tanah-sereal-bogor';
+  
   fetchLiveActivities(); // Utamakan API, fallback otomatis ke mock data
   loadSistemMonitoringData();
   loadNavigationAppsData();
+  
+  // Initialize cards per view
+  updateCardsPerView();
+  
+  // Add resize listener
+  window.addEventListener('resize', updateCardsPerView);
+  
+  // Cleanup on unmount
+  return () => {
+    window.removeEventListener('resize', updateCardsPerView);
+  };
 });
 </script>
 
 <style scoped>
+/* Global rendering improvements */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Optimize SVG and icon rendering */
+svg, img {
+  shape-rendering: geometricPrecision;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+i, .ki-duotone, .fas, .far, .fab {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 .card {
   transition: all 0.2s ease-in-out;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px) translateZ(0);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .symbol {
   transition: all 0.2s ease-in-out;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .card:hover .symbol {
-  transform: scale(1.05);
+  transform: scale(1.05) translateZ(0);
+}
+
+/* Site Selection Dropdown */
+.form-select-sm {
+  padding: 0.375rem 2rem 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  border: 1px solid #e4e6ef;
+  background-color: #f9fafb;
+  transition: all 0.2s ease;
+}
+
+.form-select-sm:hover {
+  border-color: #3b82f6;
+  background-color: #ffffff;
+}
+
+.form-select-sm:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
+  background-color: #ffffff;
+}
+
+[data-bs-theme="dark"] .form-select-sm,
+.dark .form-select-sm,
+.app-dark .form-select-sm {
+  background-color: #1e293b;
+  border-color: #3f4254;
+  color: #ffffff;
+}
+
+[data-bs-theme="dark"] .form-select-sm:hover,
+.dark .form-select-sm:hover,
+.app-dark .form-select-sm:hover {
+  background-color: #2d3748;
+  border-color: #3b82f6;
+}
+
+/* Badge styling */
+.badge-light-primary {
+  background-color: #eff6ff;
+  color: #3b82f6;
+  padding: 0.35rem 0.65rem;
+  font-weight: 500;
+}
+
+[data-bs-theme="dark"] .badge-light-primary,
+.dark .badge-light-primary,
+.app-dark .badge-light-primary {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+/* Carousel Styles */
+.activities-carousel-wrapper {
+  position: relative;
+  padding: 0.5rem;
+  margin: -0.5rem;
+}
+
+.activities-carousel {
+  overflow: visible;
+  cursor: grab;
+  user-select: none;
+  padding: 0.5rem 0;
+}
+
+.activities-carousel:active {
+  cursor: grabbing;
+}
+
+.activities-carousel-track {
+  display: flex;
+  gap: 20px;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-item-wrapper {
+  flex: 0 0 calc(25% - 15px);
+  min-width: 0;
+}
+
+/* Pagination Dots */
+.carousel-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 1rem;
+}
+
+.pagination-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.pagination-dot:hover {
+  background: #94a3b8;
+  transform: scale(1.2);
+}
+
+.pagination-dot.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 18px;
+  border-radius: 3px;
+}
+
+/* Daily Process Card Enhancement */
+.daily-process-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+[data-bs-theme="dark"] .daily-process-card,
+.dark .daily-process-card,
+.app-dark .daily-process-card {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+/* Dashboard Main Card - Gabungan 3 Section */
+.dashboard-main-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+[data-bs-theme="dark"] .dashboard-main-card,
+.dark .dashboard-main-card,
+.app-dark .dashboard-main-card {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+/* Separator styling */
+.separator.separator-dashed {
+  border-top: 1px dashed #e4e6ef;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+[data-bs-theme="dark"] .separator.separator-dashed,
+.dark .separator.separator-dashed,
+.app-dark .separator.separator-dashed {
+  border-top: 1px dashed #3f4254;
+}
+
+/* Responsive Carousel */
+/* Extra large screens - 7 cards */
+@media (min-width: 1400px) {
+  .carousel-item-wrapper {
+    flex: 0 0 calc((100% - 120px) / 7);
+  }
+}
+
+/* Large screens - 5 cards */
+@media (max-width: 1399px) and (min-width: 1200px) {
+  .carousel-item-wrapper {
+    flex: 0 0 calc(20% - 16px);
+  }
+}
+
+/* Medium-large screens - 4 cards */
+@media (max-width: 1199px) and (min-width: 993px) {
+  .carousel-item-wrapper {
+    flex: 0 0 calc(25% - 15px);
+  }
+  
+  .activities-carousel-wrapper {
+    padding: 0 0.5rem;
+  }
+}
+
+/* Medium screens - 3 cards */
+@media (max-width: 992px) and (min-width: 577px) {
+  .carousel-item-wrapper {
+    flex: 0 0 calc(33.333% - 13.333px);
+  }
+  
+  .activities-carousel-wrapper {
+    padding: 0 0.5rem;
+  }
+}
+
+/* Small screens - 1 card */
+@media (max-width: 576px) {
+  .carousel-item-wrapper {
+    flex: 0 0 100%;
+  }
+  
+  .activities-carousel-wrapper {
+    padding: 0 0.5rem;
+  }
+  
+  .activities-carousel-track {
+    gap: 0;
+  }
 }
 
 /* Responsive grid adjustments */

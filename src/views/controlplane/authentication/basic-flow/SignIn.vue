@@ -136,7 +136,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useRouter } from "vue-router";
@@ -161,6 +161,15 @@ export default defineComponent({
     const login = Yup.object().shape({
       email: Yup.string().required().label("Username"),
       password: Yup.string().min(4).required().label("Password"),
+    });
+
+    // Clean up any leftover transition classes from signup page
+    onMounted(() => {
+      try {
+        document.body.classList.remove('transitioning-to-dashboard');
+      } catch (e) {
+        console.warn('Failed to remove transition class:', e);
+      }
     });
 
     // Parallax & Camera Tracking Effect
