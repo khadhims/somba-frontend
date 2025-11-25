@@ -1,0 +1,215 @@
+<template>
+  <!--begin::Col-->
+  <div class="flex-shrink-0" :class="monitorValue !== undefined && monitorValue !== null ? 'flex-fill' : ''" :style="monitorValue !== undefined && monitorValue !== null ? 'min-width: 180px;' : 'min-width: 200px; width: 200px;'">
+    <!--begin::Card-->
+    <div 
+      class="card h-100 position-relative"
+      :title="title"
+      data-bs-toggle="tooltip"
+      data-bs-placement="top"
+    >
+      <!-- Status dot indicator di pojok kanan atas (hanya tampil jika hideStatus = false) -->
+      <div v-if="!hideStatus" class="position-absolute top-0 end-0 m-3">
+        <div 
+          class="status-dot"
+          :class="currentlyActive ? 'status-active' : 'status-inactive'"
+          :title="currentlyActive ? 'Status: Aktif - Proses sedang berjalan' : 'Status: Tidak Aktif - Proses telah selesai atau belum dimulai'"
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+        ></div>
+      </div>
+      
+      <!--begin::Card body-->
+      <div class="card-body d-flex flex-center flex-column p-6" style="min-width: 180px;">
+        <!--begin::Icon-->
+        <div class="mb-4">
+          <div 
+            class="symbol symbol-60px symbol-circle"
+            :style="{ backgroundColor: bgColor || '#2196f3', border: 'none' }"
+          >
+            <span class="symbol-label">
+              <i 
+                :class="[(icon || 'fas fa-clipboard-list')]" 
+                class="card-icon"
+                style="font-size: 24px;"
+              ></i>
+            </span>
+          </div>
+        </div>
+        <!--end::Icon-->
+
+        <!--begin::Title-->
+        <div class="text-center mb-3">
+          <h4 class="fs-5 fw-bold text-gray-800 mb-0">{{ displayLabel }}</h4>
+        </div>
+        <!--end::Title-->
+
+        <!--begin::Status-->
+        <div v-if="!hideDescription" class="text-center">
+          <!-- Jika monitoring mode, tampilkan nilai besar -->
+          <div v-if="monitorValue !== undefined && monitorValue !== null" class="fs-2 fw-bold text-primary mb-1">
+            {{ displayBody }}
+          </div>
+          <!-- Jika aktivitas mode, tampilkan format biasa -->
+          <div v-else class="fs-7 text-muted mb-1">{{ displayBody }}</div>
+          
+          <div class="fs-8 text-muted">({{ displayDescription }})</div>
+        </div>
+        <!--end::Status-->
+      </div>
+      <!--end::Card body-->
+    </div>
+    <!--end::Card-->
+  </div>
+  <!--end::Col-->
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+
+export default defineComponent({
+  name: "card-5",
+  components: {},
+  props: {
+    key: String,
+    activityName: String,
+    lastActivityTimestamp: String,
+    currentlyActive: Boolean,
+    icon: String,
+    bgColor: String,
+    title: String, // For hover tooltip
+    // Props tambahan untuk monitoring
+    monitorValue: [Number, String],
+    monitorDescription: String,
+    hideStatus: Boolean, // Hide status dot for monitoring cards
+    hideDescription: Boolean, // Hide description section completely
+  },
+  computed: {
+    displayLabel() {
+      return this.activityName || 'Process';
+    },
+    displayBody() {
+      // Jika ada monitorValue, tampilkan dalam format monitoring
+      if (this.monitorValue !== undefined && this.monitorValue !== null) {
+        return this.monitorValue;
+      }
+      
+      // Fallback ke format aktivitas biasa
+      if (!this.lastActivityTimestamp) return 'Aktivitas terakhir: Tidak ada data';
+      
+      const timestamp = new Date(this.lastActivityTimestamp);
+      const formattedTime = timestamp.toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      return `Aktivitas terakhir: ${formattedTime}`;
+    },
+    displayDescription() {
+      // Jika ada monitorDescription, gunakan itu
+      if (this.monitorDescription) {
+        return this.monitorDescription;
+      }
+      
+      // Fallback ke timeAgo untuk aktivitas biasa
+      return this.timeAgo;
+    },
+    timeAgo() {
+      if (!this.lastActivityTimestamp) return 'Tidak ada data';
+      
+      const now = new Date();
+      const activityDate = new Date(this.lastActivityTimestamp);
+      const diffTime = Math.abs(now.getTime() - activityDate.getTime());
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) {
+        const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+        if (diffHours === 0) {
+          const diffMinutes = Math.floor(diffTime / (1000 * 60));
+          return `${diffMinutes} menit yang lalu`;
+        }
+        return `${diffHours} jam yang lalu`;
+      }
+      return `${diffDays} hari yang lalu`;
+    },
+    statusColor() {
+      return this.currentlyActive ? '#4caf50' : '#9e9e9e';
+    },
+    iconColor() {
+      return 'text-dark'; // Use dark color for better visibility in light mode
+    }
+  },
+});
+</script>
+
+<style scoped>
+.card {
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  border: 1px solid #e4e6ef;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-color: #3f4254;
+}
+
+.symbol {
+  transition: all 0.2s ease-in-out;
+}
+
+.card:hover .symbol {
+  transform: scale(1.05);
+}
+
+/* Status dot indicator styles */
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  cursor: help;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.status-active {
+  background-color: #4caf50; /* Green for active */
+}
+
+.status-inactive {
+  background-color: #9e9e9e; /* Gray for inactive */
+  animation: none; /* No pulse for inactive */
+}
+
+/* Pulse animation for active status */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(76, 175, 80, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
+/* Dynamic icon colors based on theme */
+.card-icon {
+  color: #1a1a1a !important; /* Dark color for light theme */
+  opacity: 1 !important;
+}
+
+/* Dark theme icon colors */
+[data-bs-theme="dark"] .card-icon,
+.dark .card-icon,
+.app-dark .card-icon {
+  color: #ffffff !important; /* White color for dark theme */
+}
+
+.symbol.symbol-circle {
+  border: none !important;
+}
+</style>

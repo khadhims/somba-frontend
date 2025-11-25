@@ -1,163 +1,109 @@
 {
-	"statistics": {
-		"activeCameras": "Kamera Aktif Online",
-		"currentlyRecording": "Sedang Merekam",
-		"activeSecurityAlerts": "Peringatan Keamanan Aktif", 
-		"storageUtilization": "Penggunaan Penyimpanan"
+	"general": {
+		"lastUpdated": "Terakhir diperbarui",
+		"loadData": "Muat Data",
+		"retry": "Muat Ulang",
+		"loading": "Memuat data aktivitas...",
+		"noData": "Tidak ada data aktivitas",
+		"noDataDescription": "Data aktivitas akan muncul ketika sistem mulai beroperasi",
+		"errorLoading": "Gagal memuat data aktivitas"
 	},
-	"securityEvents": {
-		"title": "Event Keamanan Terbaru",
-		"subtitle": "Peringatan dan insiden terkini",
-		"tabs": {
-			"today": "Hari Ini",
-			"week": "Minggu",
-			"month": "Bulan"
+	"sections": {
+		"dailyProcess": {
+			"title": "Proses Pelaksanaan Harian",
+			"subtitle": "Pantau status aktivitas harian secara real-time"
 		},
-		"table": {
-			"event": "Event", 
-			"location": "Lokasi",
-			"time": "Waktu",
-			"status": "Status"
+		"systemMonitoring": {
+			"title": "Sistem Monitoring",
+			"subtitle": "Informasi status sistem dan perangkat monitoring"
 		},
-		"eventTypes": {
-			"motionDetection": "Deteksi Gerakan",
-			"doorAccess": "Akses Pintu",
-			"cameraOffline": "Kamera Offline", 
-			"faceRecognition": "Pengenalan Wajah",
-			"perimeterBreach": "Pelanggaran Perimeter"
+		"navigation": {
+			"title": "Menu Navigasi",
+			"subtitle": "Akses cepat ke semua fitur sistem"
 		},
-		"descriptions": {
-			"unauthorizedMovement": "Gerakan tidak sah terdeteksi",
-			"accessCardAfterHours": "Kartu akses digunakan di luar jam kerja",
-			"connectionLost": "Koneksi kamera terputus",
-			"unknownPerson": "Orang tidak dikenal terdeteksi",
-			"fenceCrossing": "Penyeberangan pagar terdeteksi"
-		},
-		"statuses": {
-			"active": "Aktif",
-			"investigating": "Menyelidiki", 
-			"resolved": "Terselesaikan",
-			"reviewing": "Meninjau",
-			"falseAlarm": "Alarm Palsu"
-		},
-		"locations": {
-			"mainEntranceCamera01": "Pintu Masuk Utama - Kamera 01",
-			"serverRoomDoor05": "Ruang Server - Pintu 05",
-			"parkingLotCamera12": "Area Parkir - Kamera 12",
-			"receptionCamera03": "Resepsi - Kamera 03", 
-			"northPerimeterCamera08": "Perimeter Utara - Kamera 08"
+		"realTimeReport": {
+			"title": "Laporan Dasbor secara Real Time",
+			"subtitle": "Laporan aktivitas dan monitoring secara real-time",
+			"componentTitle": "Proses",
+			"componentSubtitle": "Live tracking aktivitas harian dengan timeline interaktif"
 		}
 	},
-	"cameraStatus": {
-		"title": "Status Kamera",
-		"subtitle": "Pemantauan kamera real-time",
-		"viewAll": "Lihat Semua",
-		"signalQuality": "Kualitas Sinyal",
-		"viewAllCameras": "Lihat Semua Kamera",
-		"statuses": {
-			"online": "Online",
-			"recording": "Merekam", 
-			"warning": "Peringatan",
-			"offline": "Offline"
-		},
-		"cameras": {
-			"mainEntrance": "Pintu Masuk Utama",
-			"parkingArea": "Area Parkir",
-			"serverRoom": "Ruang Server",
-			"receptionArea": "Area Resepsi",
-			"emergencyExit": "Pintu Darurat"
-		},
-		"cameraLocations": {
-			"buildingAFront": "Gedung A - Pintu Depan",
-			"outdoorWest": "Outdoor - Sisi Barat", 
-			"floor2Room201": "Lantai 2 - Ruang 201",
-			"groundFloorLobby": "Lantai Dasar - Lobi",
-			"buildingBBack": "Gedung B - Pintu Belakang"
-		}
-	},
-	"systemHealth": {
-		"title": "Kesehatan Sistem",
-		"subtitle": "Pemantauan sistem real-time",
-		"metrics": {
-			"cpuUsage": "Penggunaan CPU",
-			"memoryUsage": "Penggunaan Memori",
-			"storageUsage": "Penggunaan Penyimpanan", 
-			"networkTraffic": "Lalu Lintas Jaringan"
-		},
+	"activities": {
+		"preparation": "Persiapan",
+		"cooking": "Masak",
+		"portioning": "Pemorsian",
+		"delivery": "Pengiriman",
+		"collectTray": "Ambil Nampan",
+		"washTray": "Cuci Nampan",
+		"completed": "Selesai",
+		"lastActivity": "Aktivitas terakhir",
+		"lastActivityPrefix": "Aktivitas terakhir:",
+		"noActivityData": "Tidak ada data",
+		"noActivityDataFull": "Aktivitas terakhir: Tidak ada data",
 		"status": {
-			"systemUptime": "Waktu Hidup Sistem",
-			"lastBackup": "Backup Terakhir"
+			"active": "Status: Aktif - Proses sedang berjalan",
+			"inactive": "Status: Tidak Aktif - Proses telah selesai atau belum dimulai"
 		},
-		"values": {
-			"hoursAgo": "jam yang lalu"
+		"timeAgo": {
+			"minutes": "{minutes} menit yang lalu",
+			"hours": "{hours} jam yang lalu",
+			"days": "{days} hari yang lalu"
 		}
 	},
-	"recentActivity": {
-		"title": "Aktivitas Terbaru",
-		"subtitle": "Aktivitas sistem terkini", 
-		"viewAll": "Lihat Semua",
-		"activities": {
-			"systemBackupCompleted": "Backup Sistem Selesai",
-			"newUserLogin": "Login Pengguna Baru",
-			"motionAlertTriggered": "Peringatan Gerakan Dipicu",
-			"cameraMaintenance": "Pemeliharaan Kamera",
-			"storageCleanup": "Pembersihan Penyimpanan"
+	"monitoring": {
+		"totalCameras": {
+			"title": "Total Kamera",
+			"description": "Kamera terpasang"
 		},
-		"descriptions": {
-			"backupCompleted": "Backup sistem otomatis berhasil diselesaikan. Semua data video dan konfigurasi telah di-backup ke penyimpanan aman.",
-			"operatorLogin": "Operator keamanan masuk ke sistem dari workstation di ruang kontrol.", 
-			"motionDetected": "Deteksi gerakan diaktifkan di area terbatas. Event telah direkam secara otomatis untuk ditinjau.",
-			"maintenanceCompleted": "Pemeliharaan terjadwal selesai pada kamera surveilans outdoor. Semua sistem sekarang beroperasi.",
-			"filesRemoved": "File rekaman lama dihapus untuk membebaskan ruang penyimpanan. Rekaman penting dipertahankan sesuai kebijakan."
+		"activeCameras": {
+			"title": "Kamera Aktif",
+			"description": "Status normal"
 		},
-		"locations": {
-			"system": "Sistem",
-			"controlRoom": "Ruang Kontrol", 
-			"zone3Camera15": "Zona 3 - Kamera 15",
-			"perimeterCameras": "Kamera Perimeter",
-			"storageServer": "Server Penyimpanan"
+		"inactiveCameras": {
+			"title": "Kamera Tidak Aktif",
+			"description": "Offline/Error"
 		},
-		"statuses": {
-			"success": "Berhasil",
-			"authenticated": "Terotentikasi",
-			"investigating": "Menyelidiki",
-			"completed": "Selesai", 
-			"optimized": "Dioptimalkan"
+		"totalSppg": {
+			"title": "Total SPPG",
+			"description": "SPPG Tanah Sereal Bogor"
+		},
+		"distributionLocations": {
+			"title": "Lokasi Distribusi",
+			"description": "Area distribusi aktif"
 		}
 	},
-	"recordingStatus": {
-		"title": "Status Rekaman",
-		"subtitle": "Ringkasan rekaman aktif",
-		"viewAll": "Lihat Semua",
-		"summary": {
-			"activeRecordings": "Rekaman Aktif",
-			"storedFiles": "File Tersimpan"
+	"navigation": {
+		"liveView": {
+			"title": "Live View",
+			"description": "Monitor kamera secara real-time"
 		},
-		"currentRecordings": "Rekaman Saat Ini", 
-		"storageUsage": "Penggunaan Penyimpanan",
-		"estimatedDays": "Perkiraan {days} hari tersisa pada penggunaan saat ini",
-		"stopRecording": "Hentikan Rekaman",
-		"cameras": {
-			"mainEntrance": "Pintu Masuk Utama",
-			"parkingArea": "Area Parkir",
-			"serverRoom": "Ruang Server",
-			"receptionArea": "Area Resepsi"
+		"events": {
+			"title": "Events",
+			"description": "Kelola event dan notifikasi"
 		},
-		"cameraLocations": {
-			"buildingAFront": "Gedung A - Depan",
-			"outdoorWest": "Outdoor - Barat", 
-			"floor2Room201": "Lantai 2 - Ruang 201",
-			"groundFloor": "Lantai Dasar"
+		"alerts": {
+			"title": "Alerts",
+			"description": "Sistem peringatan dan alert"
 		},
-		"recordingTypes": {
-			"continuous": "Berkelanjutan",
-			"motionTriggered": "Dipicu Gerakan",
-			"eventBased": "Berbasis Event"
+		"dailyReport": {
+			"title": "Daily Report",
+			"description": "Laporan harian aktivitas"
+		},
+		"recording": {
+			"title": "Recording & Playback",
+			"description": "Rekaman dan pemutaran ulang"
+		},
+		"monitoringCenter": {
+			"title": "Monitoring Center",
+			"description": "Pusat monitoring sistem"
 		}
 	},
-	"timeFormats": {
-		"minAgo": "{min} menit yang lalu",
-		"hourAgo": "{hour} jam yang lalu", 
-		"hoursAgo": "{hours} jam yang lalu"
+	"routes": {
+		"liveView": "/apps/live-view",
+		"events": "/apps/events",
+		"alerts": "/apps/alerts",
+		"dailyReport": "/apps/daily-report",
+		"recording": "/apps/recording",
+		"monitoringCenter": "/apps/monitoring-center"
 	}
 }
