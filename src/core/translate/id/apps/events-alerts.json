@@ -10,6 +10,8 @@
 		"subtitleSite": "Pantau dan kelola peringatan keamanan untuk {site}"
 	},
 	"eventsFilters": {
+		"fromDateLabel": "Dari:",
+		"toDateLabel": "Ke:",
 		"siteLabel": "Lokasi:",
 		"siteAll": "Semua Lokasi",
 		"sampleSite": "Lokasi A",
@@ -23,6 +25,8 @@
 		"refresh": "Refresh"
 	},
 	"alertsFilters": {
+		"fromDateLabel": "Dari:",
+		"toDateLabel": "Ke:",
 		"siteLabel": "Lokasi:",
 		"siteAll": "Semua Lokasi",
 		"sampleSite": "Lokasi A",

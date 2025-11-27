@@ -47,74 +47,82 @@
       <!--end::Card title-->
 
       <!--begin::Card toolbar-->
-      <div class="card-toolbar">
-        <!--begin::Items per page-->
-        <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('appsEventsAlerts.eventsTable.pagination.itemsLabel') || 'Items per page' }}</label>
-          <select 
-            class="form-select form-select-sm w-auto" 
-            v-model.number="itemsPerPage"
+      <div class="card-toolbar d-flex justify-content-between align-items-center w-100">
+        <!-- Date Range Filters - Start -->
+        <div class="d-flex align-items-center">
+          <div class="d-flex align-items-center me-3">
+            <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.eventsFilters.fromDateLabel') }}</label>
+            <DatePicker
+              v-model="dateFrom"
+              size="sm"
+              :clearable="true"
+            />
+          </div>
+          <div class="d-flex align-items-center me-3">
+            <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.eventsFilters.toDateLabel') }}</label>
+            <DatePicker
+              v-model="dateTo"
+              size="sm"
+              :clearable="true"
+            />
+          </div>
+          
+          <!-- Apply Date Filter Button -->
+          <div class="me-3">
+            <button 
+              @click="applyDateFilter" 
+              class="btn btn-sm btn-primary py-1 px-2"
+              :disabled="!dateFrom && !dateTo"
+              title="Apply Date Filter"
             >
-            <option :value="5">5</option>
-            <option :value="10">10</option>
-            <option :value="15">15</option>
-            <option :value="25">25</option>
-            <option :value="50">50</option>
-          </select>
+              <i class="ki-duotone ki-check fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Apply Filter
+            </button>
+          </div>
         </div>
-        <!--end::Items per page-->
+        
+        <!-- Other Filters - End -->
+        <div class="d-flex align-items-center">
+          <!-- Severity Filter -->
+          <div class="me-3">
+            <select
+              v-model="selectedSeverityType"
+              @change="filterEvents"
+              class="form-select form-select-sm form-select-solid w-150px"
+            >
+              <option value="">{{ t('appsEventsAlerts.eventsFilters.severityAll') }}</option>
+              <option value="low">{{ t('appsEventsAlerts.eventsTable.severity.low') }}</option>
+              <option value="medium">{{ t('appsEventsAlerts.eventsTable.severity.medium') }}</option>
+              <option value="high">{{ t('appsEventsAlerts.eventsTable.severity.high') }}</option>
+              <option value="critical">{{ t('appsEventsAlerts.eventsTable.severity.critical') }}</option>
+            </select>
+          </div>
 
-        <!-- Type Filter -->
-        <div class="me-3">
-          <select
-            v-model="selectedEventType"
-            @change="filterEvents"
-            class="form-select form-select-sm form-select-solid w-150px"
-          >
-            <option value="">{{ t('appsEventsAlerts.eventsFilters.typeAll') }}</option>
-            <option value="motion">{{ t('appsEventsAlerts.eventsTable.types.motion') }}</option>
-            <option value="intrusion">{{ t('appsEventsAlerts.eventsTable.types.intrusion') }}</option>
-            <option value="system">{{ t('appsEventsAlerts.eventsTable.types.system') }}</option>
-            <option value="camera_offline">{{ t('appsEventsAlerts.eventsTable.types.cameraOffline') }}</option>
-          </select>
+          <!--begin::Search-->
+          <div class="d-flex align-items-center position-relative my-1 me-3">
+            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <input
+              type="text"
+              v-model="searchQuery"
+              class="form-control form-control-sm form-control-solid w-200px ps-12"
+              placeholder="Search"
+            />
+          </div>
+          <!--end::Search-->
+
+          <button @click="refreshEvents" class="btn btn-sm btn-light-primary btn-icon" title="Refresh">
+            <i class="ki-duotone ki-arrows-circle fs-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+          </button>
         </div>
-
-        <!-- Severity Filter -->
-        <div class="me-3">
-          <select
-            v-model="selectedSeverityType"
-            @change="filterEvents"
-            class="form-select form-select-sm form-select-solid w-150px"
-          >
-            <option value="">{{ t('appsEventsAlerts.eventsFilters.severityAll') }}</option>
-            <option value="low">{{ t('appsEventsAlerts.eventsTable.severity.low') }}</option>
-            <option value="medium">{{ t('appsEventsAlerts.eventsTable.severity.medium') }}</option>
-            <option value="high">{{ t('appsEventsAlerts.eventsTable.severity.high') }}</option>
-            <option value="critical">{{ t('appsEventsAlerts.eventsTable.severity.critical') }}</option>
-          </select>
-        </div>
-
-        <!--begin::Search-->
-        <div class="d-flex align-items-center position-relative my-1 me-3">
-          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          <input
-            type="text"
-            v-model="searchQuery"
-            class="form-control form-control-sm form-control-solid w-200px ps-12"
-            placeholder="Search"
-          />
-        </div>
-        <!--end::Search-->
-
-        <button @click="refreshEvents" class="btn btn-sm btn-light-primary btn-icon" title="Refresh">
-          <i class="ki-duotone ki-arrows-circle fs-2">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-        </button>
       </div>
       <!--end::Card toolbar-->
     </div>
@@ -200,7 +208,13 @@
       </KTDataTable>
       
       <!--begin::Pagination-->
-      <div class="d-flex justify-content-end align-items-center mt-4">
+      <div class="d-flex justify-content-between align-items-center mt-4">
+        <ItemPerPage
+          v-model="itemsPerPage"
+          :label="t('appsEventsAlerts.eventsTable.pagination.itemsLabel') || 'Items per page:'"
+          :options="[5, 10, 15, 25, 50]"
+          @change="goToPage(1)"
+        />
         <Pagination
           :page="currentPage"
           :per-page="itemsPerPage"
@@ -363,6 +377,8 @@ import { Modal } from "bootstrap";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import Pagination from '@/components/common/Pagination.vue';
+import ItemPerPage from '@/components/ItemPerPage.vue';
+import DatePicker from '@/components/DatePicker.vue';
 import ApiService from "@/core/services/ApiService";
 
 const { t } = useI18n();
@@ -412,6 +428,9 @@ const selectedSiteFilter = ref<string>("");
 const selectedNvrFilter = ref<string>("");
 const selectedEventType = ref("");
 const selectedSeverityType = ref("");
+// Date range filters
+const dateFrom = ref<string | null>(null);
+const dateTo = ref<string | null>(null);
 const sortLabel = ref("timestamp");
 const sortOrder = ref<"asc" | "desc">("desc");
 const currentSite = ref<Site | null>(null);
@@ -488,7 +507,7 @@ const fetchEvents = async () => {
   loading.value = true;
   try {
     // Determine site uid to request - prefer selectedSiteFilter, fallback to first loaded site
-    let siteUid = selectedSiteFilter.value || (sites.value.length ? sites.value[0].uid : "") || "fff0f3a7-cea8-4383-a0de-c7d9041a2519";
+    let siteUid = selectedSiteFilter.value || (sites.value.length ? sites.value[0].uid : "");
     if (!siteUid) {
       console.warn("No site selected and no sites available - skipping list-activity call");
       events.value = [];
@@ -501,11 +520,21 @@ const fetchEvents = async () => {
 
     // Call API: sites/{site_uid}/list-activity with pagination params
     // ${siteUid}
-    const resp = await ApiService.query(`sites/fff0f3a7-cea8-4383-a0de-c7d9041a2519/list-activity`, {
-      params: {
-        page: currentPage.value,
-        per_page: itemsPerPage.value
-      }
+    const params: any = {
+      page: currentPage.value,
+      per_page: itemsPerPage.value
+    };
+    
+    // Add date range filters if set
+    if (dateFrom.value) {
+      params.from_date = dateFrom.value;
+    }
+    if (dateTo.value) {
+      params.to_date = dateTo.value;
+    }
+    
+    const resp = await ApiService.query(`sites/${siteUid}/activities`, {
+      params
     });
     const payload = resp && resp.data ? resp.data : resp;
 
@@ -670,6 +699,12 @@ const onFilterSiteChange = () => {
 
 const onFilterNvrChange = () => {
   // Changing NVR filter should reload events scoped to that NVR
+  currentPage.value = 1;
+  fetchEvents();
+};
+
+const applyDateFilter = () => {
+  // Reset to first page when applying date filter
   currentPage.value = 1;
   fetchEvents();
 };

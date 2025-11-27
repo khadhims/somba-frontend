@@ -1,163 +1,109 @@
 {
-	"statistics": {
-		"activeCameras": "Active Cameras Online",
-		"currentlyRecording": "Currently Recording", 
-		"activeSecurityAlerts": "Active Security Alerts",
-		"storageUtilization": "Storage Utilization"
+	"general": {
+		"lastUpdated": "Last updated",
+		"loadData": "Load Data",
+		"retry": "Reload",
+		"loading": "Loading activity data...",
+		"noData": "No activity data",
+		"noDataDescription": "Activity data will appear when the system starts operating",
+		"errorLoading": "Failed to load activity data"
 	},
-	"securityEvents": {
-		"title": "Recent Security Events",
-		"subtitle": "Latest alerts and incidents",
-		"tabs": {
-			"today": "Today",
-			"week": "Week", 
-			"month": "Month"
+	"sections": {
+		"dailyProcess": {
+			"title": "Daily Process Execution",
+			"subtitle": "Monitor daily activity status in real-time"
 		},
-		"table": {
-			"event": "Event",
-			"location": "Location",
-			"time": "Time",
-			"status": "Status"
+		"systemMonitoring": {
+			"title": "System Monitoring",
+			"subtitle": "System status and monitoring device information"
 		},
-		"eventTypes": {
-			"motionDetection": "Motion Detection",
-			"doorAccess": "Door Access", 
-			"cameraOffline": "Camera Offline",
-			"faceRecognition": "Face Recognition",
-			"perimeterBreach": "Perimeter Breach"
+		"navigation": {
+			"title": "Navigation Menu",
+			"subtitle": "Quick access to all system features"
 		},
-		"descriptions": {
-			"unauthorizedMovement": "Unauthorized movement detected",
-			"accessCardAfterHours": "Access card used after hours",
-			"connectionLost": "Camera connection lost",
-			"unknownPerson": "Unknown person detected", 
-			"fenceCrossing": "Fence line crossing detected"
-		},
-		"statuses": {
-			"active": "Active",
-			"investigating": "Investigating",
-			"resolved": "Resolved",
-			"reviewing": "Reviewing",
-			"falseAlarm": "False Alarm"
-		},
-		"locations": {
-			"mainEntranceCamera01": "Main Entrance - Camera 01",
-			"serverRoomDoor05": "Server Room - Door 05",
-			"parkingLotCamera12": "Parking Lot - Camera 12", 
-			"receptionCamera03": "Reception - Camera 03",
-			"northPerimeterCamera08": "North Perimeter - Camera 08"
+		"realTimeReport": {
+			"title": "Real Time Report Dashboard",
+			"subtitle": "Real-time activity and monitoring reports",
+			"componentTitle": "Real Time Process Monitoring",
+			"componentSubtitle": "Live tracking of daily activities with interactive timeline"
 		}
 	},
-	"cameraStatus": {
-		"title": "Camera Status",
-		"subtitle": "Real-time camera monitoring",
-		"viewAll": "View All",
-		"signalQuality": "Signal Quality",
-		"viewAllCameras": "View All Cameras",
-		"statuses": {
-			"online": "Online",
-			"recording": "Recording",
-			"warning": "Warning",
-			"offline": "Offline"
-		},
-		"cameras": {
-			"mainEntrance": "Main Entrance",
-			"parkingArea": "Parking Area",
-			"serverRoom": "Server Room", 
-			"receptionArea": "Reception Area",
-			"emergencyExit": "Emergency Exit"
-		},
-		"cameraLocations": {
-			"buildingAFront": "Building A - Front Door",
-			"outdoorWest": "Outdoor - West Side",
-			"floor2Room201": "Floor 2 - Room 201",
-			"groundFloorLobby": "Ground Floor - Lobby",
-			"buildingBBack": "Building B - Back Exit"
-		}
-	},
-	"systemHealth": {
-		"title": "System Health",
-		"subtitle": "Real-time system monitoring",
-		"metrics": {
-			"cpuUsage": "CPU Usage",
-			"memoryUsage": "Memory Usage", 
-			"storageUsage": "Storage Usage",
-			"networkTraffic": "Network Traffic"
-		},
+	"activities": {
+		"preparation": "Preparation",
+		"cooking": "Cooking",
+		"portioning": "Portioning",
+		"delivery": "Delivery",
+		"collectTray": "Collect Tray",
+		"washTray": "Wash Tray",
+		"completed": "Completed",
+		"lastActivity": "Last activity",
+		"lastActivityPrefix": "Last activity:",
+		"noActivityData": "No data",
+		"noActivityDataFull": "Last activity: No data",
 		"status": {
-			"systemUptime": "System Uptime",
-			"lastBackup": "Last Backup"
+			"active": "Status: Active - Process is running",
+			"inactive": "Status: Inactive - Process completed or not started"
 		},
-		"values": {
-			"hoursAgo": "hours ago"
+		"timeAgo": {
+			"minutes": "{minutes} minutes ago",
+			"hours": "{hours} hours ago",
+			"days": "{days} days ago"
 		}
 	},
-	"recentActivity": {
-		"title": "Recent Activity", 
-		"subtitle": "Latest system activities",
-		"viewAll": "View All",
-		"activities": {
-			"systemBackupCompleted": "System Backup Completed",
-			"newUserLogin": "New User Login",
-			"motionAlertTriggered": "Motion Alert Triggered",
-			"cameraMaintenance": "Camera Maintenance",
-			"storageCleanup": "Storage Cleanup"
+	"monitoring": {
+		"totalCameras": {
+			"title": "Total Cameras",
+			"description": "Cameras installed"
 		},
-		"descriptions": {
-			"backupCompleted": "Automatic system backup completed successfully. All video data and configurations have been backed up to secure storage.",
-			"operatorLogin": "Security operator logged into the system from workstation in control room.",
-			"motionDetected": "Motion detection activated in restricted area. Event has been automatically recorded for review.", 
-			"maintenanceCompleted": "Scheduled maintenance completed on outdoor surveillance cameras. All systems are now operational.",
-			"filesRemoved": "Old recording files removed to free up storage space. Retained important footage as per policy."
+		"activeCameras": {
+			"title": "Active Cameras",
+			"description": "Normal status"
 		},
-		"locations": {
-			"system": "System",
-			"controlRoom": "Control Room",
-			"zone3Camera15": "Zone 3 - Camera 15",
-			"perimeterCameras": "Perimeter Cameras", 
-			"storageServer": "Storage Server"
+		"inactiveCameras": {
+			"title": "Inactive Cameras",
+			"description": "Offline/Error"
 		},
-		"statuses": {
-			"success": "Success",
-			"authenticated": "Authenticated",
-			"investigating": "Investigating",
-			"completed": "Completed",
-			"optimized": "Optimized"
+		"totalSppg": {
+			"title": "Total SPPG",
+			"description": "SPPG Tanah Sereal Bogor"
+		},
+		"distributionLocations": {
+			"title": "Distribution Locations",
+			"description": "Active distribution areas"
 		}
 	},
-	"recordingStatus": {
-		"title": "Recording Status",
-		"subtitle": "Active recordings overview", 
-		"viewAll": "View All",
-		"summary": {
-			"activeRecordings": "Active Recordings",
-			"storedFiles": "Stored Files"
+	"navigation": {
+		"liveView": {
+			"title": "Live View",
+			"description": "Monitor cameras in real-time"
 		},
-		"currentRecordings": "Current Recordings",
-		"storageUsage": "Storage Usage", 
-		"estimatedDays": "Estimated {days} days remaining at current usage",
-		"stopRecording": "Stop Recording",
-		"cameras": {
-			"mainEntrance": "Main Entrance",
-			"parkingArea": "Parking Area",
-			"serverRoom": "Server Room",
-			"receptionArea": "Reception Area"
+		"events": {
+			"title": "Events",
+			"description": "Manage events and notifications"
 		},
-		"cameraLocations": {
-			"buildingAFront": "Building A - Front", 
-			"outdoorWest": "Outdoor - West",
-			"floor2Room201": "Floor 2 - Room 201",
-			"groundFloor": "Ground Floor"
+		"alerts": {
+			"title": "Alerts",
+			"description": "Alert and warning system"
 		},
-		"recordingTypes": {
-			"continuous": "Continuous",
-			"motionTriggered": "Motion Triggered", 
-			"eventBased": "Event Based"
+		"dailyReport": {
+			"title": "Daily Report",
+			"description": "Daily activity reports"
+		},
+		"recording": {
+			"title": "Recording & Playback",
+			"description": "Recording and playback"
+		},
+		"monitoringCenter": {
+			"title": "Monitoring Center",
+			"description": "System monitoring center"
 		}
 	},
-	"timeFormats": {
-		"minAgo": "{min} min ago",
-		"hourAgo": "{hour} hour ago", 
-		"hoursAgo": "{hours} hours ago"
+	"routes": {
+		"liveView": "/apps/live-view",
+		"events": "/apps/events",
+		"alerts": "/apps/alerts",
+		"dailyReport": "/apps/daily-report",
+		"recording": "/apps/recording",
+		"monitoringCenter": "/apps/monitoring-center"
 	}
 }

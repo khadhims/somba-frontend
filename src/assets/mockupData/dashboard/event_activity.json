@@ -1,0 +1,1930 @@
+[
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T17:04:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_1703.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T17:03:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T17:06:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_1705.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T17:05:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-26T17:10:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_1707.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T17:07:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 11.08,
+        "endTime": "2025-08-27T04:12:00+07:00",
+        "image_path": "\/image\/stream_902_20250826_1707.jpg",
+        "process": "Masak",
+        "startTime": "2025-08-26T17:07:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.18,
+        "endTime": "2025-08-26T17:18:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_1707.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T17:07:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.08,
+        "endTime": "2025-08-26T17:13:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_1708.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T17:08:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 5.53,
+        "endTime": "2025-08-26T22:41:00+07:00",
+        "image_path": "\/image\/stream_102_20250826_1709.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-26T17:09:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T17:13:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1712.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T17:12:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-26T17:17:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_1715.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T17:15:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T17:21:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_1720.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T17:20:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-26T17:24:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1721.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T17:21:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.15,
+        "endTime": "2025-08-26T17:31:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_1722.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T17:22:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T17:25:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_1724.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T17:24:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.37,
+        "endTime": "2025-08-26T17:46:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_1724.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T17:24:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T17:29:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_1728.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T17:28:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-26T17:34:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1731.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T17:31:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T17:39:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1738.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T17:38:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-26T17:45:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1743.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T17:43:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-26T17:46:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_1744.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T17:44:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.1,
+        "endTime": "2025-08-26T17:52:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_1746.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T17:46:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.07,
+        "endTime": "2025-08-26T17:53:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_1749.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T17:49:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.08,
+        "endTime": "2025-08-26T17:55:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_1750.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T17:50:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T17:56:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1755.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T17:55:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T17:56:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_1755.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T17:55:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T17:58:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_1757.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T17:57:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T18:04:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_1803.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T18:03:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.23,
+        "endTime": "2025-08-26T18:20:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_1806.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T18:06:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T18:12:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1811.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T18:11:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T18:14:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_1813.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T18:13:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.08,
+        "endTime": "2025-08-26T18:22:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_1817.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T18:17:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.13,
+        "endTime": "2025-08-26T18:31:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_1823.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T18:23:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T18:26:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_1825.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T18:25:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T18:30:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_1829.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T18:29:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-26T18:31:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1829.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T18:29:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T18:31:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_1830.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T18:30:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.27,
+        "endTime": "2025-08-26T18:50:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_1834.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T18:34:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.17,
+        "endTime": "2025-08-26T18:45:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1835.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T18:35:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.08,
+        "endTime": "2025-08-26T18:44:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_1839.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T18:39:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.32,
+        "endTime": "2025-08-26T19:00:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_1841.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T18:41:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T18:50:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1849.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T18:49:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.27,
+        "endTime": "2025-08-26T19:12:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_1856.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T18:56:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T18:58:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_1857.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T18:57:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T18:58:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1857.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T18:57:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T19:10:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_1909.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T19:09:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.18,
+        "endTime": "2025-08-26T19:26:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_1915.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T19:15:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T19:20:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1919.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T19:19:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T19:23:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_1922.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T19:22:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-26T19:25:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_1923.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T19:23:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T19:26:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1925.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T19:25:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-26T19:29:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_1927.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T19:27:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.1,
+        "endTime": "2025-08-26T19:34:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_1928.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T19:28:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-26T19:32:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1929.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T19:29:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.07,
+        "endTime": "2025-08-26T19:33:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_1929.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T19:29:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T19:35:00+07:00",
+        "image_path": "\/image\/stream_502_20250826_1934.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-26T19:34:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-26T19:39:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1936.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T19:36:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T19:38:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_1937.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T19:37:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.48,
+        "endTime": "2025-08-26T20:06:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_1937.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T19:37:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-26T19:40:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_1937.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T19:37:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T19:45:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_1944.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T19:44:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T19:52:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_1951.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T19:51:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T19:53:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_1952.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T19:52:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T19:55:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_1954.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T19:54:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T19:57:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_1956.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T19:56:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-26T20:01:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_1958.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T19:58:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 2.72,
+        "endTime": "2025-08-26T22:42:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_1959.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T19:59:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T20:00:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_1959.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T19:59:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T20:06:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2005.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T20:05:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-26T20:08:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_2006.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T20:06:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.08,
+        "endTime": "2025-08-26T20:14:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2009.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T20:09:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T20:14:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_2013.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T20:13:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T20:14:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_2013.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T20:13:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-26T20:18:00+07:00",
+        "image_path": "\/image\/stream_502_20250826_2016.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-26T20:16:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T20:18:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_2017.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T20:17:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.07,
+        "endTime": "2025-08-26T20:21:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_2017.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T20:17:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T20:19:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2018.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T20:18:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T20:23:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2022.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T20:22:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T20:24:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_2023.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T20:23:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T20:24:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2023.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T20:23:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.07,
+        "endTime": "2025-08-26T20:28:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_2024.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T20:24:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-26T20:29:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2027.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T20:27:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T20:30:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_2029.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T20:29:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.2,
+        "endTime": "2025-08-26T20:43:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_2031.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T20:31:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.17,
+        "endTime": "2025-08-26T20:44:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2034.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T20:34:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T20:35:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2034.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T20:34:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T20:56:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_2055.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T20:55:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T20:59:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2058.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T20:58:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.18,
+        "endTime": "2025-08-26T21:11:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_2100.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T21:00:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.27,
+        "endTime": "2025-08-26T21:19:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2103.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T21:03:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.2,
+        "endTime": "2025-08-26T21:15:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2103.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T21:03:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-26T21:14:00+07:00",
+        "image_path": "\/image\/stream_502_20250826_2112.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-26T21:12:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.5,
+        "endTime": "2025-08-26T21:45:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_2115.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T21:15:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T21:23:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2122.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T21:22:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.15,
+        "endTime": "2025-08-26T21:33:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2124.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T21:24:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.38,
+        "endTime": "2025-08-26T21:56:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2133.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T21:33:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.12,
+        "endTime": "2025-08-26T21:46:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2139.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T21:39:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-26T21:52:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2149.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T21:49:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.08,
+        "endTime": "2025-08-26T21:54:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_2149.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T21:49:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T21:53:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_2152.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T21:52:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-26T21:59:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_2156.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T21:56:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.17,
+        "endTime": "2025-08-26T22:06:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2156.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T21:56:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T21:58:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_2157.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T21:57:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.15,
+        "endTime": "2025-08-26T22:12:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_2203.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T22:03:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T22:07:00+07:00",
+        "image_path": "\/image\/stream_502_20250826_2206.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-26T22:06:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.42,
+        "endTime": "2025-08-26T22:33:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_2208.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T22:08:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.17,
+        "endTime": "2025-08-26T22:21:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2211.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T22:11:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.07,
+        "endTime": "2025-08-26T22:17:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2213.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T22:13:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.28,
+        "endTime": "2025-08-26T22:33:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_2216.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T22:16:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.15,
+        "endTime": "2025-08-26T22:33:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2224.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T22:24:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-26T22:28:00+07:00",
+        "image_path": "\/image\/stream_502_20250826_2226.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-26T22:26:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-26T22:35:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2233.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T22:33:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.18,
+        "endTime": "2025-08-26T22:47:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_2236.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T22:36:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 1.87,
+        "endTime": "2025-08-27T00:28:00+07:00",
+        "image_path": "\/image\/stream_1002_20250826_2236.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-26T22:36:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.25,
+        "endTime": "2025-08-26T22:52:00+07:00",
+        "image_path": "\/image\/stream_502_20250826_2237.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-26T22:37:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.18,
+        "endTime": "2025-08-26T22:48:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2237.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T22:37:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.13,
+        "endTime": "2025-08-26T22:48:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2240.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T22:40:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T22:52:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2251.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T22:51:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.13,
+        "endTime": "2025-08-26T23:03:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_2255.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T22:55:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T22:56:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2255.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T22:55:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.07,
+        "endTime": "2025-08-26T23:01:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2257.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T22:57:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.15,
+        "endTime": "2025-08-26T23:08:00+07:00",
+        "image_path": "\/image\/stream_502_20250826_2259.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-26T22:59:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.07,
+        "endTime": "2025-08-26T23:03:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_2259.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T22:59:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T23:03:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2302.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T23:02:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 7.22,
+        "endTime": "2025-08-27T06:17:00+07:00",
+        "image_path": "\/image\/stream_602_20250826_2304.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-26T23:04:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.25,
+        "endTime": "2025-08-26T23:22:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_2307.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T23:07:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.3,
+        "endTime": "2025-08-26T23:26:00+07:00",
+        "image_path": "\/image\/stream_102_20250826_2308.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-26T23:08:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-26T23:13:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2311.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T23:11:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T23:22:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_2321.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T23:21:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T23:22:00+07:00",
+        "image_path": "\/image\/stream_502_20250826_2321.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-26T23:21:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T23:26:00+07:00",
+        "image_path": "\/image\/stream_502_20250826_2325.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-26T23:25:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-26T23:32:00+07:00",
+        "image_path": "\/image\/stream_502_20250826_2329.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-26T23:29:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 2.35,
+        "endTime": "2025-08-27T01:51:00+07:00",
+        "image_path": "\/image\/stream_102_20250826_2330.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-26T23:30:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.37,
+        "endTime": "2025-08-26T23:52:00+07:00",
+        "image_path": "\/image\/stream_402_20250826_2330.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-26T23:30:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.25,
+        "endTime": "2025-08-26T23:49:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2334.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T23:34:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-26T23:38:00+07:00",
+        "image_path": "\/image\/stream_502_20250826_2335.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-26T23:35:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 1.78,
+        "endTime": "2025-08-27T01:25:00+07:00",
+        "image_path": "\/image\/stream_702_20250826_2338.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-26T23:38:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 3.62,
+        "endTime": "2025-08-27T03:18:00+07:00",
+        "image_path": "\/image\/stream_502_20250826_2341.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-26T23:41:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-26T23:54:00+07:00",
+        "image_path": "\/image\/stream_802_20250826_2353.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-26T23:53:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 3.25,
+        "endTime": "2025-08-27T03:16:00+07:00",
+        "image_path": "\/image\/stream_402_20250827_0001.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-27T00:01:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.07,
+        "endTime": "2025-08-27T00:05:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0001.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T00:01:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.07,
+        "endTime": "2025-08-27T00:13:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0009.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T00:09:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T00:25:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0024.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T00:24:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 6.48,
+        "endTime": "2025-08-27T07:00:00+07:00",
+        "image_path": "\/image\/stream_1002_20250827_0031.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-27T00:31:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T00:36:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0035.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T00:35:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.83,
+        "endTime": "2025-08-27T01:31:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0041.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T00:41:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 1.65,
+        "endTime": "2025-08-27T03:07:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0128.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T01:28:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 1.72,
+        "endTime": "2025-08-27T03:17:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0134.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T01:34:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.17,
+        "endTime": "2025-08-27T02:04:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0154.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T01:54:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.98,
+        "endTime": "2025-08-27T03:06:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0207.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T02:07:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.13,
+        "endTime": "2025-08-27T03:29:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0321.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T03:21:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T03:23:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0322.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T03:22:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.1,
+        "endTime": "2025-08-27T03:28:00+07:00",
+        "image_path": "\/image\/stream_402_20250827_0322.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-27T03:22:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T03:23:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0322.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T03:22:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.08,
+        "endTime": "2025-08-27T03:27:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0322.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T03:22:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.2,
+        "endTime": "2025-08-27T03:44:00+07:00",
+        "image_path": "\/image\/stream_402_20250827_0332.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-27T03:32:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T03:33:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0332.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T03:32:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T03:42:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0341.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T03:41:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T03:42:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0341.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T03:41:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.08,
+        "endTime": "2025-08-27T03:47:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0342.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T03:42:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.2,
+        "endTime": "2025-08-27T03:56:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0344.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T03:44:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T03:53:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0352.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T03:52:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.12,
+        "endTime": "2025-08-27T04:00:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0353.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T03:53:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-27T03:59:00+07:00",
+        "image_path": "\/image\/stream_402_20250827_0357.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-27T03:57:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.18,
+        "endTime": "2025-08-27T04:13:00+07:00",
+        "image_path": "\/image\/stream_402_20250827_0402.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-27T04:02:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.15,
+        "endTime": "2025-08-27T04:16:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0407.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T04:07:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T04:17:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0416.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T04:16:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T04:17:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0416.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T04:16:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-27T04:18:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0416.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T04:16:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.13,
+        "endTime": "2025-08-27T04:26:00+07:00",
+        "image_path": "\/image\/stream_902_20250827_0418.jpg",
+        "process": "Masak",
+        "startTime": "2025-08-27T04:18:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T04:20:00+07:00",
+        "image_path": "\/image\/stream_402_20250827_0419.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-27T04:19:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.85,
+        "endTime": "2025-08-27T05:10:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0419.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T04:19:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-27T04:25:00+07:00",
+        "image_path": "\/image\/stream_402_20250827_0423.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-27T04:23:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T04:25:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0424.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T04:24:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-27T04:30:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0427.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T04:27:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.33,
+        "endTime": "2025-08-27T04:48:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0428.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T04:28:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.33,
+        "endTime": "2025-08-27T04:48:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0428.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T04:28:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T04:34:00+07:00",
+        "image_path": "\/image\/stream_402_20250827_0433.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-27T04:33:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-27T04:35:00+07:00",
+        "image_path": "\/image\/stream_902_20250827_0433.jpg",
+        "process": "Masak",
+        "startTime": "2025-08-27T04:33:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.53,
+        "endTime": "2025-08-27T05:09:00+07:00",
+        "image_path": "\/image\/stream_402_20250827_0437.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-27T04:37:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.2,
+        "endTime": "2025-08-27T04:50:00+07:00",
+        "image_path": "\/image\/stream_902_20250827_0438.jpg",
+        "process": "Masak",
+        "startTime": "2025-08-27T04:38:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-27T04:43:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0441.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T04:41:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T04:52:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0451.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T04:51:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T04:52:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0451.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T04:51:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.35,
+        "endTime": "2025-08-27T05:14:00+07:00",
+        "image_path": "\/image\/stream_902_20250827_0453.jpg",
+        "process": "Masak",
+        "startTime": "2025-08-27T04:53:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.2,
+        "endTime": "2025-08-27T05:13:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0501.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T05:01:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.8,
+        "endTime": "2025-08-27T05:49:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0501.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T05:01:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.17,
+        "endTime": "2025-08-27T05:11:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0501.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T05:01:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.25,
+        "endTime": "2025-08-27T05:31:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0516.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T05:16:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.92,
+        "endTime": "2025-08-27T06:11:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0516.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T05:16:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-27T05:20:00+07:00",
+        "image_path": "\/image\/stream_902_20250827_0518.jpg",
+        "process": "Masak",
+        "startTime": "2025-08-27T05:18:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.68,
+        "endTime": "2025-08-27T06:00:00+07:00",
+        "image_path": "\/image\/stream_402_20250827_0519.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-27T05:19:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.1,
+        "endTime": "2025-08-27T05:33:00+07:00",
+        "image_path": "\/image\/stream_902_20250827_0527.jpg",
+        "process": "Masak",
+        "startTime": "2025-08-27T05:27:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-27T05:36:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0533.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T05:33:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.15,
+        "endTime": "2025-08-27T05:46:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0537.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T05:37:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.08,
+        "endTime": "2025-08-27T05:53:00+07:00",
+        "image_path": "\/image\/stream_902_20250827_0548.jpg",
+        "process": "Masak",
+        "startTime": "2025-08-27T05:48:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.18,
+        "endTime": "2025-08-27T06:03:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0552.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T05:52:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.85,
+        "endTime": "2025-08-27T06:43:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0552.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T05:52:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T05:57:00+07:00",
+        "image_path": "\/image\/stream_902_20250827_0556.jpg",
+        "process": "Masak",
+        "startTime": "2025-08-27T05:56:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-27T06:02:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0559.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T05:59:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.05,
+        "endTime": "2025-08-27T06:05:00+07:00",
+        "image_path": "\/image\/stream_902_20250827_0602.jpg",
+        "process": "Masak",
+        "startTime": "2025-08-27T06:02:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.08,
+        "endTime": "2025-08-27T06:08:00+07:00",
+        "image_path": "\/image\/stream_402_20250827_0603.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-27T06:03:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.08,
+        "endTime": "2025-08-27T06:16:00+07:00",
+        "image_path": "\/image\/stream_402_20250827_0611.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-27T06:11:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.78,
+        "endTime": "2025-08-27T06:59:00+07:00",
+        "image_path": "\/image\/stream_902_20250827_0612.jpg",
+        "process": "Masak",
+        "startTime": "2025-08-27T06:12:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.32,
+        "endTime": "2025-08-27T06:33:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0614.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T06:14:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 1.98,
+        "endTime": "2025-08-27T08:18:00+07:00",
+        "image_path": "\/image\/stream_402_20250827_0619.jpg",
+        "process": "Persiapan",
+        "startTime": "2025-08-27T06:19:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.2,
+        "endTime": "2025-08-27T06:32:00+07:00",
+        "image_path": "\/image\/stream_602_20250827_0620.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-27T06:20:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-27T06:25:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0623.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T06:23:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.1,
+        "endTime": "2025-08-27T06:30:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0624.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T06:24:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.43,
+        "endTime": "2025-08-27T06:58:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0632.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T06:32:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T06:34:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0633.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T06:33:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.13,
+        "endTime": "2025-08-27T06:44:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0636.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T06:36:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.38,
+        "endTime": "2025-08-27T06:59:00+07:00",
+        "image_path": "\/image\/stream_602_20250827_0636.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-27T06:36:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-27T06:39:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0637.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T06:37:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.22,
+        "endTime": "2025-08-27T07:00:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0647.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T06:47:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.17,
+        "endTime": "2025-08-27T07:00:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0650.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T06:50:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T07:02:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0701.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T07:01:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.23,
+        "endTime": "2025-08-27T07:17:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0703.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T07:03:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.18,
+        "endTime": "2025-08-27T07:14:00+07:00",
+        "image_path": "\/image\/stream_602_20250827_0703.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-27T07:03:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.12,
+        "endTime": "2025-08-27T07:10:00+07:00",
+        "image_path": "\/image\/stream_902_20250827_0703.jpg",
+        "process": "Masak",
+        "startTime": "2025-08-27T07:03:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T07:04:00+07:00",
+        "image_path": "\/image\/stream_1002_20250827_0703.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-27T07:03:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.07,
+        "endTime": "2025-08-27T07:09:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0705.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T07:05:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.17,
+        "endTime": "2025-08-27T07:18:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0708.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T07:08:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.93,
+        "endTime": "2025-08-27T08:06:00+07:00",
+        "image_path": "\/image\/stream_1002_20250827_0710.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-27T07:10:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 1.08,
+        "endTime": "2025-08-27T08:18:00+07:00",
+        "image_path": "\/image\/stream_902_20250827_0713.jpg",
+        "process": "Masak",
+        "startTime": "2025-08-27T07:13:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.22,
+        "endTime": "2025-08-27T07:29:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0716.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T07:16:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T07:22:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0721.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T07:21:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T07:26:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0725.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T07:25:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.22,
+        "endTime": "2025-08-27T07:38:00+07:00",
+        "image_path": "\/image\/stream_602_20250827_0725.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-27T07:25:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.02,
+        "endTime": "2025-08-27T07:26:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0725.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T07:25:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.1,
+        "endTime": "2025-08-27T07:35:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0729.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T07:29:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-27T07:32:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0730.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T07:30:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.17,
+        "endTime": "2025-08-27T07:43:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0733.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T07:33:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.68,
+        "endTime": "2025-08-27T08:18:00+07:00",
+        "image_path": "\/image\/stream_802_20250827_0737.jpg",
+        "process": "Cuci Nampan",
+        "startTime": "2025-08-27T07:37:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.15,
+        "endTime": "2025-08-27T07:53:00+07:00",
+        "image_path": "\/image\/stream_602_20250827_0744.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-27T07:44:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.23,
+        "endTime": "2025-08-27T08:00:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0746.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T07:46:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.12,
+        "endTime": "2025-08-27T07:55:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0748.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T07:48:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.22,
+        "endTime": "2025-08-27T08:11:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0758.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T07:58:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.25,
+        "endTime": "2025-08-27T08:17:00+07:00",
+        "image_path": "\/image\/stream_102_20250827_0802.jpg",
+        "process": "Ambil Nampan",
+        "startTime": "2025-08-27T08:02:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.2,
+        "endTime": "2025-08-27T08:17:00+07:00",
+        "image_path": "\/image\/stream_602_20250827_0805.jpg",
+        "process": "Unknown Stream 602",
+        "startTime": "2025-08-27T08:05:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.17,
+        "endTime": "2025-08-27T08:17:00+07:00",
+        "image_path": "\/image\/stream_502_20250827_0807.jpg",
+        "process": "Pengiriman",
+        "startTime": "2025-08-27T08:07:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.13,
+        "endTime": "2025-08-27T08:18:00+07:00",
+        "image_path": "\/image\/stream_1002_20250827_0810.jpg",
+        "process": "Unknown Stream 1002",
+        "startTime": "2025-08-27T08:10:00+07:00",
+        "status": "completed"
+    },
+    {
+        "duration": 0.03,
+        "endTime": "2025-08-27T08:17:00+07:00",
+        "image_path": "\/image\/stream_702_20250827_0815.jpg",
+        "process": "Pemorsian",
+        "startTime": "2025-08-27T08:15:00+07:00",
+        "status": "completed"
+    }
+]

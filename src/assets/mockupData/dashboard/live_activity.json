@@ -1,0 +1,98 @@
+{
+  "default": [
+    {
+      "activity_uid": "1",
+      "activity_name": "Persiapan",
+      "last_activity_timestamp": "2024-11-25T06:30:15Z",
+      "currently_active": true
+    },
+    {
+      "activity_uid": "2",
+      "activity_name": "Masak",
+      "last_activity_timestamp": "2024-11-25T07:45:32Z",
+      "currently_active": true
+    },
+    {
+      "activity_uid": "3",
+      "activity_name": "Pemorsian",
+      "last_activity_timestamp": "2024-11-25T08:15:48Z",
+      "currently_active": false
+    },
+    {
+      "activity_uid": "4",
+      "activity_name": "Pengiriman",
+      "last_activity_timestamp": "2024-11-24T12:30:25Z",
+      "currently_active": false
+    },
+    {
+      "activity_uid": "5",
+      "activity_name": "Ambil Nampan",
+      "last_activity_timestamp": "2024-11-24T14:20:10Z",
+      "currently_active": false
+    },
+    {
+      "activity_uid": "6",
+      "activity_name": "Cuci Nampan",
+      "last_activity_timestamp": "2024-11-24T15:45:55Z",
+      "currently_active": false
+    },
+    {
+      "activity_uid": "7",
+      "activity_name": "Selesai",
+      "last_activity_timestamp": "2024-11-24T16:30:00Z",
+      "currently_active": false
+    }
+  ],
+  "siteA": [
+    {
+      "activity_uid": "siteA-1",
+      "activity_name": "Persiapan",
+      "last_activity_timestamp": "2025-11-27T06:45:00Z",
+      "currently_active": true
+    },
+    {
+      "activity_uid": "siteA-2",
+      "activity_name": "Masak",
+      "last_activity_timestamp": "2025-11-27T07:15:00Z",
+      "currently_active": true
+    },
+    {
+      "activity_uid": "siteA-3",
+      "activity_name": "Pemorsian",
+      "last_activity_timestamp": "2025-11-27T07:50:00Z",
+      "currently_active": false
+    },
+    {
+      "activity_uid": "siteA-4",
+      "activity_name": "Pengiriman",
+      "last_activity_timestamp": "2025-11-27T09:05:00Z",
+      "currently_active": false
+    }
+  ],
+  "siteB": [
+    {
+      "activity_uid": "siteB-1",
+      "activity_name": "Persiapan",
+      "last_activity_timestamp": "2025-11-26T22:05:00Z",
+      "currently_active": false
+    },
+    {
+      "activity_uid": "siteB-2",
+      "activity_name": "Masak",
+      "last_activity_timestamp": "2025-11-26T22:40:00Z",
+      "currently_active": false
+    },
+    {
+      "activity_uid": "siteB-3",
+      "activity_name": "Pengiriman",
+      "last_activity_timestamp": "2025-11-27T00:10:00Z",
+      "currently_active": true
+    },
+    {
+      "activity_uid": "siteB-4",
+      "activity_name": "Selesai",
+      "last_activity_timestamp": "2025-11-27T01:20:00Z",
+      "currently_active": true
+    }
+  ]
+}
