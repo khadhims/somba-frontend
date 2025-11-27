@@ -10,6 +10,8 @@
 		"subtitleSite": "Monitor and manage security alerts for {site}"
 	},
 	"eventsFilters": {
+		"fromDateLabel": "From:",
+		"toDateLabel": "To:",
 		"siteLabel": "Site:",
 		"siteAll": "All Sites",
 		"sampleSite": "Site A",
@@ -23,6 +25,8 @@
 		"refresh": "Refresh"
 	},
 	"alertsFilters": {
+		"fromDateLabel": "From:",
+		"toDateLabel": "To:",
 		"siteLabel": "Site:",
 		"siteAll": "All Sites",
 		"sampleSite": "Site A",

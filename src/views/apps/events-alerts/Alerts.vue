@@ -47,74 +47,81 @@
       <!--end::Card title-->
 
       <!--begin::Card toolbar-->
-      <div class="card-toolbar">
-        <!--begin::Items per page-->
-        <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('appsEventsAlerts.alertsTable.pagination.itemsLabel') || 'Items per page' }}</label>
-          <select 
-            class="form-select form-select-sm w-auto" 
-            v-model.number="itemsPerPage"
+      <div class="card-toolbar d-flex justify-content-between align-items-center w-100">
+        <!-- Date Range Filters - Start -->
+        <div class="d-flex align-items-center">
+          <div class="d-flex align-items-center me-3">
+            <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.alertsFilters.fromDateLabel') }}</label>
+            <DatePicker
+              v-model="dateFrom"
+              size="sm"
+              :clearable="true"
+            />
+          </div>
+          <div class="d-flex align-items-center me-3">
+            <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.alertsFilters.toDateLabel') }}</label>
+            <DatePicker
+              v-model="dateTo"
+              size="sm"
+              :clearable="true"
+            />
+          </div>
+          <!-- Apply Date Filter Button -->
+          <div class="me-3">
+            <button 
+              @click="applyDateFilter" 
+              class="btn btn-sm btn-primary py-1 px-2"
+              :disabled="!dateFrom && !dateTo"
+              title="Apply Date Filter"
             >
-            <option :value="5">5</option>
-            <option :value="10">10</option>
-            <option :value="15">15</option>
-            <option :value="25">25</option>
-            <option :value="50">50</option>
-          </select>
+              <i class="ki-duotone ki-check fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Apply Filter
+            </button>
+          </div>
         </div>
-        <!--end::Items per page-->
+        
+        <!-- Other Filters - End -->
+        <div class="d-flex align-items-center">
+          <!-- Severity Filter -->
+          <div class="me-3">
+            <select
+              v-model="selectedSeverityType"
+              @change="filterAlerts"
+              class="form-select form-select-sm form-select-solid w-150px"
+            >
+              <option value="">{{ t('appsEventsAlerts.alertsFilters.severityAll') }}</option>
+              <option value="low">{{ t('appsEventsAlerts.alertsTable.severity.low') }}</option>
+              <option value="medium">{{ t('appsEventsAlerts.alertsTable.severity.medium') }}</option>
+              <option value="high">{{ t('appsEventsAlerts.alertsTable.severity.high') }}</option>
+              <option value="critical">{{ t('appsEventsAlerts.alertsTable.severity.critical') }}</option>
+            </select>
+          </div>
 
-        <!-- Type Filter -->
-        <div class="me-3">
-          <select
-            v-model="selectedEventType"
-            @change="filterEvents"
-            class="form-select form-select-sm form-select-solid w-150px"
-          >
-            <option value="">{{ t('appsEventsAlerts.alertsFilters.typeAll') }}</option>
-            <option value="motion">{{ t('appsEventsAlerts.alertsTable.types.motion') }}</option>
-            <option value="intrusion">{{ t('appsEventsAlerts.alertsTable.types.intrusion') }}</option>
-            <option value="system">{{ t('appsEventsAlerts.alertsTable.types.system') }}</option>
-            <option value="camera_offline">{{ t('appsEventsAlerts.alertsTable.types.cameraOffline') }}</option>
-          </select>
+          <!--begin::Search-->
+          <div class="d-flex align-items-center position-relative my-1 me-3">
+            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <input
+              type="text"
+              v-model="searchQuery"
+              class="form-control form-control-sm form-control-solid w-200px ps-12"
+              placeholder="Search"
+            />
+          </div>
+          <!--end::Search-->
+
+          <button @click="refreshAlerts" class="btn btn-sm btn-light-primary btn-icon" title="Refresh">
+            <i class="ki-duotone ki-arrows-circle fs-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+          </button>
         </div>
-
-        <!-- Severity Filter -->
-        <div class="me-3">
-          <select
-            v-model="selectedSeverityType"
-            @change="filterEvents"
-            class="form-select form-select-sm form-select-solid w-150px"
-          >
-            <option value="">{{ t('appsEventsAlerts.alertsFilters.severityAll') }}</option>
-            <option value="low">{{ t('appsEventsAlerts.alertsTable.severity.low') }}</option>
-            <option value="medium">{{ t('appsEventsAlerts.alertsTable.severity.medium') }}</option>
-            <option value="high">{{ t('appsEventsAlerts.alertsTable.severity.high') }}</option>
-            <option value="critical">{{ t('appsEventsAlerts.alertsTable.severity.critical') }}</option>
-          </select>
-        </div>
-
-        <!--begin::Search-->
-        <div class="d-flex align-items-center position-relative my-1 me-3">
-          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          <input
-            type="text"
-            v-model="searchQuery"
-            class="form-control form-control-sm form-control-solid w-200px ps-12"
-            placeholder="Search"
-          />
-        </div>
-        <!--end::Search-->
-
-        <button @click="refreshEvents" class="btn btn-sm btn-light-primary btn-icon" title="Refresh">
-          <i class="ki-duotone ki-arrows-circle fs-2">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-        </button>
       </div>
       <!--end::Card toolbar-->
     </div>
@@ -123,11 +130,12 @@
     <!--begin::Card body-->
     <div class="card-body py-3">
       <KTDataTable
-        :data="filteredAndSortedEvents"
+        :data="alerts"
         :header="tableHeader"
         :checkbox-enabled="false"
         :items-per-page-dropdown-enabled="false"
-        :items-per-page="itemsPerPage"
+        :items-per-page="pagination.per_page"
+        :current-page="pagination.page"
         :loading="loading"
         :sort-label="sortLabel"
         :sort-order="sortOrder"
@@ -176,30 +184,24 @@
           </span>
         </template>
 
-        <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end flex-shrink-0">
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm"
-              @click="viewAndEditEvent(row)"
-              :title="t('appsEventsAlerts.table.actions.viewEdit')"
-            >
-              <i class="ki-duotone ki-eye fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-              </i>
-            </button>
-          </div>
+        <template v-slot:actions>
+          <span class="text-muted">-</span>
         </template>
       </KTDataTable>
       
       <!--begin::Pagination-->
-      <div class="d-flex justify-content-end align-items-center mt-4">
+      <div class="d-flex justify-content-between align-items-center mt-4">
+        <ItemPerPage
+          v-model="pagination.per_page"
+          :label="t('appsEventsAlerts.alertsTable.pagination.itemsLabel') || 'Items per page:'"
+          :options="[5, 10, 15, 25, 50]"
+          @change="changeItemsPerPage"
+        />
         <Pagination
-          :page="currentPage"
-          :per-page="itemsPerPage"
-          :total-items="totalItems"
-          :total-pages="totalPages"
+          :page="pagination.page"
+          :per-page="pagination.per_page"
+          :total-items="pagination.total_items"
+          :total-pages="Math.max(1, pagination.total_pages)"
           @page-change="goToPage"
         />
       </div>
@@ -209,194 +211,33 @@
   </div>
   <!--end::Alerts List-->
 
-  <!--begin::Alert Details Modal-->
-  <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="modal-title fw-bold" id="eventDetailsModalLabel">{{ t('appsEventsAlerts.alertsModals.details.title') }}</h3>
-          <button type="button" class="btn-close" @click="closeModal" :aria-label="t('appsEventsAlerts.actions.close')"></button>
-        </div>
-        <div class="modal-body" v-if="selectedEvent">
-          <!--begin::Event Image-->
-          <div class="row mb-6" v-if="selectedEvent.image_path">
-            <div class="col-12">
-              <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.modals.details.image') }}</label>
-              <div class="text-center">
-                <img 
-                  :src="selectedEvent.image_path" 
-                  :alt="selectedEvent.description"
-                  class="img-fluid rounded border"
-                  style="max-height: 300px; object-fit: contain;"
-                  @error="handleImageError"
-                />
-              </div>
-            </div>
-          </div>
-          <!--end::Event Image-->
-
-          <!--begin::Event Info Grid-->
-          <div class="row g-6">
-            <!--begin::Left Column-->
-            <div class="col-md-6">
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.alertName') }}</label>
-                <p class="text-gray-800 mb-0 fs-4 font-monospace">{{ selectedEvent.event_name }}</p>
-              </div>
-              
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.cameraUuid') }}</label>
-                <p class="text-gray-800 mb-0 fs-4 font-monospace">{{ selectedEvent.camera_name }}</p>
-              </div>
-              
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.status') }}</label>
-                <div>
-                  <span class="badge fs-5" :class="getStatusBadgeClass(selectedEvent.status)" style="padding: 8px 12px;">
-                    {{ getStatusLabel(selectedEvent.status) }}
-                  </span>
-                </div>
-              </div>
-
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.description') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.description }}</p>
-              </div>
-            </div>
-            <!--end::Left Column-->
-
-            <!--begin::Right Column-->
-            <div class="col-md-6">
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.triggeredTime') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.startTime) }}</p>
-              </div>
-              
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.acknowledgedTime') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.endTime) }}</p>
-              </div>
-              
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.resolvedTime') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.startTime) }}</p>
-              </div>
-
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.severity') }}</label>
-                <div>
-                  <span class="badge fs-5" :class="getSeverityBadgeClass(selectedEvent.severity)" style="padding: 8px 12px;">
-                    {{ getSeverityLabel(selectedEvent.severity) }}
-                  </span>
-                </div>
-              </div>
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.alertsModals.details.responseTime') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.avg_seconds_with_detection }}</p>
-              </div>
-            </div>
-            <!--end::Right Column-->
-          </div>
-          <!--end::Event Info Grid-->
-
-          <!--begin::Comments Section-->
-          <div class="row mt-6" v-if="selectedEvent.comment">
-            <div class="col-12">
-              <div class="bg-light-info p-4 rounded">
-                <label class="fw-semibold fs-4 text-gray-700 mb-2 d-block">{{ t('appsEventsAlerts.alertsModals.details.comments') }}</label>
-                <p class="text-gray-800 mb-0 fs-5" style="white-space: pre-wrap;">{{ selectedEvent.comment }}</p>
-              </div>
-            </div>
-          </div>
-          <!--end::Comments Section-->
-
-          <!--begin::Event UID-->
-          <div class="row mt-6">
-            <div class="col-12">
-              <div class="bg-light p-4 rounded">
-                <label class="fw-semibold fs-5 text-gray-600 mb-1">{{ t('appsEventsAlerts.alertsModals.details.alertIdHint') }}</label>
-                <p class="text-gray-800 mb-0 font-monospace fs-6">{{ selectedEvent.uid }}</p>
-              </div>
-            </div>
-          </div>
-          <!--end::Event UID-->
-
-          <!--begin::Edit Fields-->
-          <div class="row mt-6">
-            <div class="col-md-6">
-              <label class="form-label fw-bold text-dark">Status</label>
-              <select class="form-select" v-model="editStatus">
-                <option value="">{{ t('appsEventsAlerts.form.selectStatus') }}</option>
-                <option value="active">{{ t('appsEventsAlerts.alertsTable.status.active') }}</option>
-                <option value="acknowledged">{{ t('appsEventsAlerts.alertsTable.status.acknowledged') }}</option>
-                <option value="resolved">{{ t('appsEventsAlerts.alertsTable.status.resolved') }}</option>
-              </select>
-            </div>
-            <div class="col-12 mt-3">
-              <label class="form-label fw-bold text-dark">{{ t('appsEventsAlerts.alertsModals.details.comment') }}</label>
-              <textarea 
-                class="form-control" 
-                rows="3" 
-                v-model="editComment"
-                :placeholder="t('appsEventsAlerts.alertsModals.details.commentPlaceholder')"
-              ></textarea>
-            </div>
-          </div>
-          <!--end::Edit Fields-->
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary fs-5 px-4 py-2" @click="closeModal">{{ t('appsEventsAlerts.actions.close') }}</button>
-          <button 
-            type="button" 
-            class="btn btn-primary fs-5 px-4 py-2" 
-            v-if="hasChanges" 
-            @click="saveEventChanges" 
-            :disabled="isModalLoading"
-          >
-            <span v-if="isModalLoading" class="spinner-border spinner-border-sm me-2"></span>
-            {{ t('appsEventsAlerts.actions.update') }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--end::Alert Details Modal-->
+  <!-- Modal removed per request -->
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import { Modal } from "bootstrap";
-import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import Pagination from '@/components/common/Pagination.vue';
+import ItemPerPage from '@/components/ItemPerPage.vue';
+import DatePicker from '@/components/DatePicker.vue';
 import ApiService from "@/core/services/ApiService";
 
 const { t } = useI18n();
 
 // Interface definitions
-interface Event {
-  code: number;
-  message: string;
-  data: Array<{
-    duration: number;
-    endTime: string;
-    image_path: string;
-    process: string;
-    startTime: string;
-    status: string;
-    comment?: string;
-  }>;
-  uid: string;
-  type: 'motion' | 'intrusion' | 'system' | 'camera_offline';
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  description: string;
+interface Alert {
+  name: string;
+  activities: any[];
+  // Additional fields for display purposes
+  uid?: string;
+  event_name?: string;
   camera_name?: string;
-  location: string;
-  timestamp: string;
-  status: 'active' | 'acknowledged' | 'resolved';
-  site_uid?: string;
-  comment?: string;
+  severity?: string;
+  status?: string;
+  startTime?: string;
+  location?: string;
+  description?: string;
 }
 
 interface Site {
@@ -405,50 +246,48 @@ interface Site {
 }
 
 // Reactive data
-const events = ref<any[]>([]);
+const alerts = ref<Alert[]>([]);
 const sites = ref<Site[]>([]);
-const nvrs = ref<Array<{ uid: string; name: string; site_uid?: string }>>([]);
-const camerasCache = ref<Record<string, Record<string, string>>>({});
 const loading = ref(false);
 const loadingSites = ref(false);
-const loadingNvrs = ref(false);
 const searchQuery = ref("");
-const selectedSiteId = ref("");
-// Header filter state (site + nvr)
+// Header filter state (site)
 const selectedSiteFilter = ref<string>("");
-const selectedNvrFilter = ref<string>("");
 const selectedEventType = ref("");
 const selectedSeverityType = ref("");
+// Date range filters
+const dateFrom = ref<string | null>(null);
+const dateTo = ref<string | null>(null);
 const sortLabel = ref("timestamp");
 const sortOrder = ref<"asc" | "desc">("desc");
 const currentSite = ref<Site | null>(null);
 // Pagination
-const currentPage = ref(1);
-const itemsPerPage = ref(10);
-const totalItems = ref(0);
-const totalPages = ref(0);
-// Modal state
-const selectedEvent = ref<any>(null);
-const editStatus = ref('');
-const editComment = ref('');
-const isModalLoading = ref(false);
+const pagination = ref({
+  page: 1,
+  per_page: 10,
+  total_pages: 1,
+  total_items: 0,
+  next_page: null as number | null,
+  prev_page: null as number | null,
+});
+// Modal interactions removed per request
 
-// Pagination handlers
+// Pagination handlers - simplified like Camera.vue
 const goToPage = (page: number) => {
-  currentPage.value = page;
-  fetchEvents();
+  pagination.value.page = page;
+  void fetchAlerts();
 };
 
-watch(itemsPerPage, () => {
-  currentPage.value = 1;
-  fetchEvents();
-});
+const changeItemsPerPage = () => {
+  pagination.value.page = 1;
+  void fetchAlerts();
+};
 
 // Table header configuration
 const tableHeader = computed(() => [
   {
-    columnName: t('appsEventsAlerts.alertsTable.columns.alertName'),
-    columnLabel: 'event_name',
+    columnName: t('appsEventsAlerts.alertsTable.columns.alert'),
+    columnLabel: 'alert_name',
     sortEnabled: true,
     searchable: true,
   },
@@ -484,106 +323,20 @@ const tableHeader = computed(() => [
   },
 ]);
 
-// Fetch events from API (uses mock response shape as fallback)
-const fetchEvents = async () => {
-  loading.value = true;
-  try {
-    // Determine site uid to request - prefer selectedSiteFilter, fallback to first loaded site
-    let siteUid = selectedSiteFilter.value || (sites.value.length ? sites.value[0].uid : "") || "fff0f3a7-cea8-4383-a0de-c7d9041a2519";
-    if (!siteUid) {
-      console.warn("No site selected and no sites available - skipping list-activity call");
-      events.value = [];
-      totalItems.value = 0;
-      totalPages.value = 0;
-      return;
-    }
-
-    await fetchCameras(siteUid);
-
-    // Call API: sites/{site_uid}/list-activity
-    const resp = await ApiService.query(`sites/${siteUid}/list-activity`, {
-      params: {
-        page: currentPage.value,
-        per_page: itemsPerPage.value
-      }
-    });
-    const payload = resp && resp.data ? resp.data : resp;
-
-    // Handle API response structure: { status, code, message, data: [...], pagination: {...} }
-    let results = [];
-    if (payload?.status === "success" && Array.isArray(payload?.data)) {
-      results = payload.data;
-    } else if (Array.isArray(payload?.results)) {
-      // Fallback untuk struktur lama
-      results = payload.results;
-    } else {
-      console.warn('Unexpected API response format:', payload);
-      results = [];
-    }
-
-    // Map response data items to internal event structure
-    events.value = results.map((item: any, idx: number) => {
-      return {
-        uid: item.event_id || `evt-${idx}-${Date.now()}`,
-        type: 'motion', // default type - adjust if API provides type later
-        severity: 'medium', // default severity based on detection activity
-        description: t('appsEventsAlerts.alertsTable.generatedDescription', {
-          seconds: Math.round(item.avg_seconds_with_detection || 0),
-        }),
-        event_name: item.event_name || '',
-        camera_name: item.camera_name || '',
-        location: '',
-        timestamp: item.event_start || item.event_end || new Date().toISOString(),
-        status: 'resolved', // default status
-        site_uid: siteUid,
-        // preserve fields from API
-        duration: item.duration_minutes,
-        startTime: item.event_start,
-        endTime: item.event_end,
-        image_path: '',
-        process: '',
-        comment: null,
-        avg_seconds_with_detection: item.avg_seconds_with_detection
-      }
-    });
-
-    // Use pagination from API response
-    const pagination = payload?.pagination || {};
-    currentPage.value = typeof pagination.page === "number" ? pagination.page : currentPage.value;
-    totalItems.value = typeof pagination.total_items === "number" ? pagination.total_items : events.value.length;
-    itemsPerPage.value = typeof pagination.per_page === "number" && pagination.per_page > 0 ? pagination.per_page : itemsPerPage.value;
-    totalPages.value = typeof pagination.total_pages === "number" && pagination.total_pages > 0
-      ? pagination.total_pages
-      : Math.ceil(totalItems.value / itemsPerPage.value);
-
-    // Apply client-side filters if header filters are set
-    if (selectedSiteFilter.value) {
-      events.value = events.value.filter(e => !e.site_uid || e.site_uid === selectedSiteFilter.value);
-    }
-  } catch (error) {
-    console.error("Error fetching events:", error);
-    events.value = [];
-    totalItems.value = 0;
-    totalPages.value = 0;
-  } finally {
-    loading.value = false;
-  }
-};
-
-// Fetch sites from API (following Camera.vue pattern)
+// Fetch sites from API using team-based approach like Camera.vue
 const fetchSites = async () => {
-  loadingSites.value = true;
   try {
-    // Get selected team from localStorage (following Camera.vue pattern)
+    // Get selected team from localStorage
     const selectedTeamId = localStorage.getItem('lastSelectedTeam');
     if (!selectedTeamId) {
       console.warn('No team selected, cannot load sites');
       sites.value = [];
       return;
     }
-    
+
     const resp = await ApiService.query(`teams/${selectedTeamId}/sites`, {});
-    // Parse response (wrapped or direct) - exactly like Camera.vue
+    
+    // Parse response (wrapped or direct)
     if (resp && resp.data) {
       if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
         sites.value = resp.data.data;
@@ -598,80 +351,103 @@ const fetchSites = async () => {
       sites.value = [];
     }
   } catch (error) {
-    console.error("Error fetching sites:", error);
+    console.error('Error loading sites:', error);
     // Fallback to mock data for development
-  } finally {
-    loadingSites.value = false;
+    sites.value = [
+      { uid: "site-1", name: "Main Office" },
+      { uid: "site-2", name: "Branch Office" },
+      { uid: "site-3", name: "Warehouse A" },
+    ];
   }
 };
 
-  // Fetch cameras for a site and cache uuid->name map per site
-  const fetchCameras = async (siteUid: string) => {
-    if (!siteUid) return;
-    // if cache exists for this site, skip
-    if (camerasCache.value[siteUid] && Object.keys(camerasCache.value[siteUid]).length) return;
+const fetchAlerts = async () => {
+  // Get alerts for the selected site only
+  if (!selectedSiteFilter.value) {
+    alerts.value = [];
+    return;
+  }
 
-    try {
-      const resp = await ApiService.get(`sites/${siteUid}/cameras`);
-      const payload = resp && resp.data ? resp.data : resp;
+  loading.value = true;
 
-      let cams: any[] = [];
-      if (payload?.status === 'success' && Array.isArray(payload?.data)) {
-        cams = payload.data;
-      } else if (Array.isArray(payload)) {
-        cams = payload;
-      } else if (Array.isArray(payload?.results)) {
-        cams = payload.results;
-      }
-
-      const map: Record<string, string> = {};
-      cams.forEach((c: any) => {
-        const id = c.uuid || c.camera_uuid || c.id;
-        if (id) {
-          map[id] = c.name || c.camera_name || c.label || id;
-        }
-      });
-
-      camerasCache.value[siteUid] = map;
-    } catch (err) {
-      console.warn('Failed to load cameras for site', siteUid, err);
-      // set empty map to avoid retry storm
-      camerasCache.value[siteUid] = {};
+  try {
+    const params: any = {};
+    
+    // Add date range filters if set
+    if (dateFrom.value) {
+      params.from_date = dateFrom.value;
     }
-  };
-
-// Switch site
-const switchSite = () => {
-  const site = sites.value.find(s => s.uid === selectedSiteId.value);
-  currentSite.value = site || null;
-  fetchEvents();
+    if (dateTo.value) {
+      params.to_date = dateTo.value;
+    }
+    
+    const resp = await ApiService.query(`sites/${selectedSiteFilter.value}/alerts`, {
+      params: Object.keys(params).length > 0 ? params : undefined
+    });
+    
+    if (resp && resp.data) {
+      const payload = resp.data;
+      
+      // Handle the simple response structure: { results: [...], pagination: {...} }
+      if (Array.isArray(payload.results)) {
+        alerts.value = payload.results.map((item: any) => ({
+          name: item.name || 'Alert',
+          activities: Array.isArray(item.activities) ? item.activities : [],
+        }));
+        
+        // Update pagination from API response
+        if (payload.pagination) {
+          const p = payload.pagination;
+          pagination.value = {
+            page: p.page || 1,
+            per_page: p.per_page || 10,
+            total_pages: p.total_pages || 1,
+            total_items: p.total_items || alerts.value.length,
+            next_page: p.next_page || null,
+            prev_page: p.prev_page || null,
+          };
+        }
+      } else {
+        alerts.value = [];
+      }
+    } else {
+      alerts.value = [];
+    }
+  } catch (error) {
+    console.error('Error loading alerts:', error);
+    alerts.value = [];
+  } finally {
+    loading.value = false;
+  }
 };
 
+// Switch site
 // Filter events
-const filterEvents = () => {
+const filterAlerts = () => {
   // Filtering is handled in computed property
 };
 
-// Refresh events
-const refreshEvents = () => {
-  fetchEvents();
+// Refresh alerts
+const refreshAlerts = () => {
+  void fetchAlerts();
 };
 
-// Header filter handlers
+// Header filter handlers - simplified like Camera.vue
 const onFilterSiteChange = () => {
-  // selectedSiteFilter stores the site uid
   currentSite.value = sites.value.find(s => s.uid === selectedSiteFilter.value) || null;
-  // reset NVR filter when site changes
-  selectedNvrFilter.value = "";
-  // reset to first page when changing filters
-  currentPage.value = 1;
-  fetchEvents();
+  pagination.value.page = 1;
+  localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || '');
+  if (selectedSiteFilter.value) {
+    void fetchAlerts();
+  } else {
+    alerts.value = [];
+  }
 };
 
-const onFilterNvrChange = () => {
-  // Changing NVR filter should reload events scoped to that NVR
-  currentPage.value = 1;
-  fetchEvents();
+const applyDateFilter = () => {
+  // Reset to first page when applying date filter
+  pagination.value.page = 1;
+  void fetchAlerts();
 };
 
 
@@ -701,7 +477,7 @@ const typeKeyMap: Record<string, string> = {
   cameraoffline: 'cameraOffline',
 };
 
-const getEventTypeBadgeClass = (type: string) => {
+const getAlertTypeBadgeClass = (type: string) => {
   switch (normalizeKey(type)) {
     case 'motion':
       return 'badge-light-primary';
@@ -750,7 +526,7 @@ const getSeverityLabel = (severity: string) => {
   return key ? t(`appsEventsAlerts.alertsTable.severity.${key}`) : severity;
 };
 
-const getEventTypeLabel = (type: string) => {
+const getAlertTypeLabel = (type: string) => {
   const key = typeKeyMap[normalizeKey(type)];
   return key ? t(`appsEventsAlerts.alertsTable.types.${key}`) : type;
 };
@@ -800,115 +576,6 @@ const formatDuration = (minutes?: number | null) => {
   });
 };
 
-// Computed properties
-const filteredAndSortedEvents = computed(() => {
-  let filtered = events.value;
-
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter((event) => {
-      const description = (event.description || '').toLowerCase();
-      const camera = (event.camera_name || '').toLowerCase();
-      const location = (event.location || '').toLowerCase();
-      const type = (event.type || '').toLowerCase();
-      const status = (event.status || '').toLowerCase();
-      const severity = (event.severity || '').toLowerCase();
-      const translatedType = getEventTypeLabel(event.type).toLowerCase();
-
-      return (
-        description.includes(query) ||
-        camera.includes(query) ||
-        location.includes(query) ||
-        type.includes(query) ||
-        status.includes(query) ||
-        severity.includes(query) ||
-        translatedType.includes(query)
-      );
-    });
-  }
-
-  if (selectedEventType.value) {
-    filtered = filtered.filter((event) => event.type === selectedEventType.value);
-  }
-
-  if (selectedSeverityType.value) {
-    filtered = filtered.filter((event) => event.severity === selectedSeverityType.value);
-  }
-
-  if (sortLabel.value) {
-    filtered = [...filtered].sort((a, b) => {
-      let aValue: any = a[sortLabel.value as keyof Event];
-      let bValue: any = b[sortLabel.value as keyof Event];
-
-      if (sortLabel.value === 'startTime' || sortLabel.value === 'endTime' || sortLabel.value === 'timestamp') {
-        aValue = aValue ? new Date(aValue as string).getTime() : 0;
-        bValue = bValue ? new Date(bValue as string).getTime() : 0;
-      }
-
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        const comparison = aValue.localeCompare(bValue);
-        return sortOrder.value === 'asc' ? comparison : -comparison;
-      }
-
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        const comparison = aValue - bValue;
-        return sortOrder.value === 'asc' ? comparison : -comparison;
-      }
-
-      return 0;
-    });
-  }
-
-  // Don't recalculate pagination here - use server-side pagination values
-  // Just return filtered/sorted events without slicing
-  return filtered;
-});
-
-// Statistics computed properties
-const activeAlerts = computed(() => events.value.filter(e => e.status === 'active').length);
-const criticalAlerts = computed(() => events.value.filter(e => e.severity === 'critical' && e.status === 'active').length);
-const motionEvents = computed(() => events.value.filter(e => e.type === 'motion').length);
-const resolvedToday = computed(() => {
-  const today = new Date().toDateString();
-  return events.value.filter(e => 
-    e.status === 'resolved' && 
-    new Date(e.timestamp).toDateString() === today
-  ).length;
-});
-const totalResolved = computed(() => events.value.filter(e => e.status === 'resolved').length);
-const avgResponseTime = computed(() => 15); // Mock data
-
-const criticalAlertsPercentage = computed(() =>
-  activeAlerts.value > 0 ? Math.round((criticalAlerts.value / activeAlerts.value) * 100) : 0
-);
-
-const resolvedTodayPercentage = computed(() =>
-  totalResolved.value > 0 ? Math.round((resolvedToday.value / totalResolved.value) * 100) : 0
-);
-
-const responseTimePercentage = computed(() => 75); // Mock data
-
-// Pagination computed properties
-const visiblePages = computed(() => {
-  const pages = [];
-  const start = Math.max(1, currentPage.value - 2);
-  const end = Math.min(totalPages.value, currentPage.value + 2);
-  
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-  return pages;
-});
-
-// Check if there are changes to enable update button
-const hasChanges = computed(() => {
-  if (!selectedEvent.value) return false;
-  
-  const originalStatus = selectedEvent.value.status || '';
-  const originalComment = selectedEvent.value.comment || '';
-  
-  return editStatus.value !== originalStatus || editComment.value !== originalComment;
-});
 
 // Methods
 const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
@@ -916,199 +583,21 @@ const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
   sortOrder.value = sort.order;
 };
 
-const viewAndEditEvent = (event: Event) => {
-  selectedEvent.value = event;
-  // Initialize edit fields with current values
-  editStatus.value = event.status || '';
-  editComment.value = event.comment || '';
-  
-  // Show modal using Bootstrap 5
-  const modalElement = document.getElementById('eventDetailsModal');
-  if (modalElement) {
-    try {
-      const modal = new Modal(modalElement);
-      modal.show();
-    } catch (error) {
-      console.error('Error showing modal:', error);
-    }
-  }
-};
-
-const saveEventChanges = async () => {
-  if (!selectedEvent.value) return;
-  
+// Initialize data on component mount - following Camera.vue pattern
+onMounted(async () => {
   try {
-    isModalLoading.value = true;
+    await fetchSites();
     
-    const updateData = {
-      status: editStatus.value,
-      comment: editComment.value
-    };
+    // Initialize selected site filter from localStorage like Camera.vue
+    selectedSiteFilter.value = localStorage.getItem('lastSelectedSite') || (sites.value[0] && sites.value[0].uid) || '';
+    localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || '');
     
-    // TODO: API call untuk update event
-    // await ApiService.put(`events/${selectedEvent.value.uid}`, updateData);
-    
-    // Update local state
-    const index = events.value.findIndex(e => e.uid === selectedEvent.value.uid);
-    if (index !== -1) {
-      events.value[index].status = editStatus.value;
-      if (editComment.value) {
-        events.value[index].comment = editComment.value;
-      }
-    }
-    
-    // Update selected event for immediate UI feedback
-    selectedEvent.value.status = editStatus.value;
-    if (editComment.value) {
-      selectedEvent.value.comment = editComment.value;
-    }
-    
-    console.log('Event updated:', updateData);
-    closeModal();
-    
-  } catch (error) {
-    console.error("Error updating event:", error);
-  } finally {
-    isModalLoading.value = false;
-  }
-};
-
-const updatePaginationInfo = () => {
-  totalItems.value = filteredAndSortedEvents.value.length;
-  totalPages.value = Math.ceil(totalItems.value / itemsPerPage.value);
-  
-  // Adjust current page if it exceeds total pages
-  if (currentPage.value > totalPages.value && totalPages.value > 0) {
-    currentPage.value = totalPages.value;
-  }
-};
-
-const viewEventDetails = (event: Event) => {
-  selectedEvent.value = event;
-  console.log('Opening modal for event:', event);
-  
-  // Show modal using Bootstrap 5
-  const modalElement = document.getElementById('eventDetailsModal');
-  if (modalElement) {
-    try {
-      const modal = new Modal(modalElement);
-      modal.show();
-      console.log('Modal shown successfully');
-    } catch (error) {
-      console.error('Error showing modal:', error);
-      // Fallback: manually show modal
-      modalElement.classList.add('show');
-      modalElement.style.display = 'block';
-      modalElement.setAttribute('aria-hidden', 'false');
-      
-      // Add backdrop
-      const backdrop = document.createElement('div');
-      backdrop.className = 'modal-backdrop fade show';
-      backdrop.id = 'eventDetailsModalBackdrop';
-      document.body.appendChild(backdrop);
-      
-      // Add body class for modal behavior
-      document.body.classList.add('modal-open');
-    }
-  } else {
-    console.error('Modal element not found');
-  }
-};
-
-const closeModal = () => {
-  const modalElement = document.getElementById('eventDetailsModal');
-  if (modalElement) {
-    try {
-      const modal = Modal.getInstance(modalElement);
-      if (modal) {
-        modal.hide();
-      }
-    } catch (error) {
-      console.error('Error hiding modal:', error);
-      // Fallback: manually hide modal
-      modalElement.classList.remove('show');
-      modalElement.style.display = 'none';
-      modalElement.setAttribute('aria-hidden', 'true');
-      
-      // Remove backdrop
-      const backdrop = document.getElementById('eventDetailsModalBackdrop');
-      if (backdrop) {
-        backdrop.remove();
-      }
-      
-      // Remove body class
-      document.body.classList.remove('modal-open');
-    }
-  }
-  selectedEvent.value = null;
-  editStatus.value = '';
-  editComment.value = '';
-};
-
-
-
-const formatDateTime = (dateTimeString?: string | null) => {
-  if (!dateTimeString) return t('appsEventsAlerts.format.notAvailable');
-  const date = new Date(dateTimeString);
-  if (Number.isNaN(date.getTime())) {
-    return dateTimeString;
-  }
-  return new Intl.DateTimeFormat(undefined, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  }).format(date);
-};
-
-const handleImageError = (event: any) => {
-  event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMzUgNzVIMTY1VjEyNUgxMzVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMjAgMTA1TDE0MCA5MEwxNjAgMTEwTDE4MCA5MEwyMDAgMTEwVjEzNUgxMDBWMTEwTDEyMCAxMDVaIiBmaWxsPSIjQ0NDQ0NDIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE0cHgiPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+Cjwvc3ZnPgo=';
-  event.target.alt = t('appsEventsAlerts.eventsModals.details.imageFallback');
-};
-
-const acknowledgeEvent = async (event: Event) => {
-  try {
-    // TODO: API call to acknowledge event
-    // await ApiService.post(`events/${event.uid}/acknowledge`);
-    
-    // Update local state
-    const index = events.value.findIndex(e => e.uid === event.uid);
-    if (index !== -1) {
-      events.value[index].status = 'acknowledged';
+    // Load alerts for the selected site
+    if (selectedSiteFilter.value) {
+      await fetchAlerts();
     }
   } catch (error) {
-    console.error("Error acknowledging event:", error);
+    console.error('Error initializing alerts:', error);
   }
-};
-
-const resolveEvent = async (event: Event) => {
-  try {
-    // TODO: API call to resolve event
-    // await ApiService.post(`events/${event.uid}/resolve`);
-    
-    // Update local state
-    const index = events.value.findIndex(e => e.uid === event.uid);
-    if (index !== -1) {
-      events.value[index].status = 'resolved';
-    }
-  } catch (error) {
-    console.error("Error resolving event:", error);
-  }
-};
-
-// Initialize data on component mount
-onMounted(() => {
-  fetchSites();
-  fetchEvents();
-  
-  // Add event listener for manual modal backdrop click
-  document.addEventListener('click', (e) => {
-    if ((e.target as HTMLElement)?.id === 'eventDetailsModalBackdrop') {
-      closeModal();
-    }
-  });
 });
 </script>
