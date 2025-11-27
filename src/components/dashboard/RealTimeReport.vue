@@ -1725,7 +1725,7 @@ onUnmounted(() => {
     <!-- Real Time Process Monitoring Dashboard -->
     <div class="card card-flush">
         <!-- Header Section -->
-        <div class="card-header pt-5">
+        <div class="card-header py-5">
                 <!-- Title -->
                 <div class="d-flex align-items-center mb-4">
                     <div class="symbol symbol-40px me-3">

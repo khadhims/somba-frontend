@@ -53,52 +53,6 @@
   </div>
   <!--end::Organization Switcher-->
 
-  <!-- <div class="row g-5 g-xl-8 mb-8">
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Total Payment Accounts'"
-        :value="totalAccounts"
-        :progress-text="`${activeAccounts} Active`"
-        :progress-value="activeAccountsPercentage"
-        bg-color="#1B84FF"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Total Revenue'"
-        :value="totalRevenue"
-        :progress-text="'This Month'"
-        :progress-value="revenueGrowth"
-        bg-color="#17C653"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Active Subscriptions'"
-        :value="totalProjects"
-        :progress-text="`${activeProjects} Renewing`"
-        :progress-value="activeProjectsPercentage"
-        bg-color="#3699FF"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Payment Methods'"
-        :value="totalUsers"
-        :progress-text="`${activeUsers} Verified`"
-        :progress-value="activeUsersPercentage"
-        bg-color="#FFA800"
-        text-color="white"
-      />
-    </div>
-  </div> -->
-
   <!--begin::Error Alert-->
   <div v-if="error" class="alert alert-danger d-flex align-items-center mb-5">
     <i class="ki-duotone ki-shield-cross fs-2hx text-danger me-4">

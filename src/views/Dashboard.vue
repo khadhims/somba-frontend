@@ -16,40 +16,52 @@
                   <div class="card dashboard-main-card">
                     
                     <!-- Section 1: Proses Pelaksanaan Harian -->
-                    <div class="card-header border-0 pt-3 pb-3">
-                      <div class="card-title">
-                        <div class="d-flex flex-column">
-                          <h3 class="fw-bold text-dark text-white-dark fs-5 mb-2">{{ t('dashboard.sections.dailyProcess.title') }}</h3>
-                          <div class="d-flex align-items-center gap-3">
+                    <div
+                      class="card-header border-0 pt-3 pb-3 d-flex flex-wrap flex-md-nowrap align-items-center justify-content-between gap-3 gap-lg-5 dashboard-section-header"
+                    >
+                      <div class="card-title flex-grow-1">
+                        <div class="d-flex flex-column gap-2">
+                          <h3 class="fw-bold text-dark text-white-dark fs-5 mb-0">
+                            {{ t('dashboard.sections.dailyProcess.title') }}
+                          </h3>
+                          <div class="header-meta d-flex flex-wrap align-items-center">
                             <span class="badge badge-light-primary fs-8">
                               Data per: {{ currentDate }}
                             </span>
-                            <span class="text-muted fs-8 d-flex align-items-center">
-                              <i class="ki-duotone ki-arrows-circle fs-6 me-1 text-primary">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                              </i>
-                              Otomatis update tiap {{ autoUpdateInterval }} menit
+                            <span class="header-meta-item fs-8">
+                              <span class="icon-wrapper">
+                                <i class="ki-duotone ki-arrows-circle fs-6 text-primary">
+                                  <span class="path1"></span>
+                                  <span class="path2"></span>
+                                </i>
+                              </span>
+                              <span class="meta-text">Otomatis update tiap {{ autoUpdateInterval }} menit</span>
                             </span>
                           </div>
                         </div>
                       </div>
-                      <div class="card-toolbar">
+                      <div class="card-toolbar d-flex flex-wrap align-items-center gap-2">
+                        <label class="fw-semibold fs-7 text-muted mb-0">
+                          {{ t("controlplane.site.camera.filters.siteLabel") }}
+                        </label>
                         <!-- Dropdown Pemilihan Lokasi -->
-                        <select 
-                          v-model="selectedSite" 
-                          @change="onSiteChange"
-                          class="form-select form-select-sm w-auto"
+                        <select
+                          v-model="selectedSite"
+                          class="form-select form-select-sm w-100 w-md-auto"
                           style="min-width: 200px;"
                         >
-                          <option 
-                            v-for="site in availableSites" 
-                            :key="site.uid" 
+                          <option value="">
+                            {{ t("controlplane.site.camera.form.fields.site.placeholder") }}
+                          </option>
+                          <option
+                            v-for="site in sites"
+                            :key="site.uid"
                             :value="site.uid"
                           >
-                            <i class="ki-duotone ki-geolocation fs-6 me-1"></i>
                             {{ site.name }}
                           </option>
+                          <option value="siteA">Site A</option>
+                          <option value="siteB">Site B</option>
                         </select>
                       </div>
                     </div>
@@ -66,7 +78,7 @@
                       <div v-else-if="error" class="alert alert-warning" role="alert">
                         <i class="fas fa-exclamation-triangle me-2"></i>
                         {{ t('dashboard.general.errorLoading') }}: {{ error }}
-                        <button class="btn btn-sm btn-outline-primary ms-3" @click="fetchLiveActivities">
+                        <button class="btn btn-sm btn-outline-primary ms-3" @click="loadLiveActivities">
                           <i class="fas fa-refresh me-1"></i>{{ t('dashboard.general.retry') }}
                         </button>
                       </div>
@@ -185,14 +197,20 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Card5 from '@/components/cards/Card5.vue';
 import MonitorCard5 from '@/components/cards/Card5.vue';
 import RealTimeReport from '@/components/dashboard/RealTimeReport.vue';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, onBeforeUnmount, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import ApiService from '@/core/services/ApiService';
+import liveActivityMock from '@/assets/mockupData/dashboard/live_activity.json';
+
+interface Site {
+  uid: string;
+  name: string;
+}
 
 // Reactive data untuk live activities dari API
 const liveActivities = ref([]);
@@ -208,11 +226,25 @@ const startX = ref(0);
 const currentX = ref(0);
 const dragThreshold = 50; // Minimum drag distance to trigger scroll
 
-// Reactive data untuk sistem monitoring dari mockup
+// Reactive data 
 const sistemMonitoring = ref([]);
-
-// Reactive data untuk navigation apps
 const navigationApps = ref([]);
+
+const STORAGE_KEY = 'dashboardSelectedSite';
+const sites = ref<Site[]>([]);
+const selectedSite = ref<string>(
+  (typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null) ||
+    ''
+);
+
+type MockActivity = {
+  activity_uid: string;
+  activity_name: string;
+  last_activity_timestamp: string;
+  currently_active: boolean;
+};
+
+const mockLiveActivities = liveActivityMock as Record<string, MockActivity[]>;
 
 // Router setup
 const router = useRouter();
@@ -221,14 +253,6 @@ const router = useRouter();
 const { t } = useI18n();
 
 // Site selection and header info
-const selectedSite = ref('');
-const availableSites = ref([
-  { uid: 'sppg-tanah-sereal-bogor', name: 'SPPG Tanah Sereal Bogor' },
-  { uid: 'sppg-jakarta-pusat', name: 'SPPG Jakarta Pusat' },
-  { uid: 'sppg-bandung', name: 'SPPG Bandung' },
-  { uid: 'sppg-surabaya', name: 'SPPG Surabaya' },
-]);
-
 // Current date and auto update info
 const currentDate = computed(() => {
   const now = new Date();
@@ -240,17 +264,7 @@ const currentDate = computed(() => {
 
 const autoUpdateInterval = ref(2);
 
-// Site UID untuk permintaan live-activities (gunakan env atau fallback demo)
-const activeSiteUid = computed(() => selectedSite.value || import.meta.env.VITE_ACTIVE_SITE_UID || 'site-demo');
-
 // Function to handle site change
-const onSiteChange = () => {
-  console.log('Site changed to:', selectedSite.value);
-  // Reload data when site changes
-  fetchLiveActivities();
-  loadSistemMonitoringData();
-};
-
 // Mapping icon dan warna untuk setiap aktivitas
 const activityConfig = {
   'preparation': { icon: 'fas fa-list-alt', bgColor: '#2196f3' },
@@ -466,56 +480,134 @@ const navigateToApp = (route) => {
   router.push(route);
 };
 
-// Load mockup data untuk live activities (digunakan sebagai fallback)
-const loadMockupData = async ({ manageLoading = true } = {}) => {
-  try {
-    if (manageLoading) {
-      loading.value = true;
-    }
-
-    const module = await import('@/assets/mockupData/dashboard/live_activity.json');
-    const mockData = module.default || module;
-
-    liveActivities.value = Array.isArray(mockData) ? mockData : [];
-    error.value = null;
-  } catch (mockError) {
-    console.error('[Dashboard] Failed to load mock live activities:', mockError);
-    liveActivities.value = [];
-    error.value = mockError?.message || 'Tidak dapat memuat data demo.';
-  } finally {
-    if (manageLoading) {
-      loading.value = false;
-    }
-  }
-};
-
-// Fetch live activities dari API dengan fallback ke mockup data
-const fetchLiveActivities = async () => {
+const loadLiveActivities = async () => {
   loading.value = true;
   error.value = null;
 
   try {
-    const response = await ApiService.get(`/sites/${activeSiteUid.value}/live-activities`, {});
-
-    if (response.status !== 200) {
-      throw new Error('Gagal mengambil data live activities');
+    if (!selectedSite.value) {
+      liveActivities.value = [];
+      return;
     }
 
-    const data = response.data;
-
-    if (!Array.isArray(data)) {
-      throw new Error('Format data live activities tidak valid');
+    const dummyData = mockLiveActivities[selectedSite.value];
+    if (dummyData) {
+      liveActivities.value = dummyData.map((item) => ({
+        activity_uid: item.activity_uid,
+        activity_name: item.activity_name,
+        last_activity_timestamp: item.last_activity_timestamp,
+        currently_active: item.currently_active,
+      }));
+      error.value = null;
+      return;
     }
 
-    liveActivities.value = data;
+    const { data } = await ApiService.get(
+      `sites/${selectedSite.value}/live-activities`
+    );
+
+    const list = Array.isArray(data)
+      ? data
+      : Array.isArray(data?.data)
+      ? data.data
+      : Array.isArray(data?.results)
+      ? data.results
+      : [];
+
+    liveActivities.value = list.map((item: any, index: number) => ({
+      activity_uid: String(item?.activity_uid ?? item?.uid ?? index),
+      activity_name: String(item?.activity_name ?? item?.name ?? 'Aktivitas'),
+      last_activity_timestamp: item?.last_activity_timestamp ?? null,
+      currently_active: Boolean(item?.currently_active ?? item?.is_active),
+    }));
   } catch (err) {
-    console.warn('[Dashboard] Falling back to mock live activities data:', err);
-    await loadMockupData({ manageLoading: false });
+    console.error('loadLiveActivities failed:', err);
+    error.value = err instanceof Error ? err.message : 'Gagal memuat aktivitas.';
+    const fallback = mockLiveActivities.default || [];
+    liveActivities.value = fallback.map((item) => ({
+      activity_uid: item.activity_uid,
+      activity_name: item.activity_name,
+      last_activity_timestamp: item.last_activity_timestamp,
+      currently_active: item.currently_active,
+    }));
   } finally {
     loading.value = false;
   }
 };
 
+const fetchSites = async () => {
+  try {
+    const { data } = await ApiService.get('sites');
+
+    const list = Array.isArray(data)
+      ? data
+      : Array.isArray(data?.data)
+      ? data.data
+      : Array.isArray(data?.results)
+      ? data.results
+      : [];
+
+    sites.value = list
+      .map((item: any) => {
+        const uid = item?.uid ?? item?.site_uid ?? item?.id ?? item?.slug;
+        if (!uid) {
+          return null;
+        }
+
+        return {
+          uid: String(uid),
+          name: String(
+            item?.name ??
+              item?.display_name ??
+              item?.site_name ??
+              `Site ${uid}`
+          ),
+        } as Site;
+      })
+      .filter(Boolean) as Site[];
+
+    if (!sites.value.length) {
+      selectedSite.value = '';
+      liveActivities.value = [];
+      loading.value = false;
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem(STORAGE_KEY);
+      }
+      return;
+    }
+
+    const stored =
+      typeof window !== 'undefined'
+        ? window.localStorage.getItem(STORAGE_KEY)
+        : null;
+
+    const nextSite =
+      stored && sites.value.some((site) => site.uid === stored)
+        ? stored
+        : sites.value[0].uid;
+
+    if (selectedSite.value !== nextSite) {
+      selectedSite.value = nextSite;
+      if (typeof window !== 'undefined' && nextSite) {
+        window.localStorage.setItem(STORAGE_KEY, nextSite);
+      }
+    } else {
+      if (typeof window !== 'undefined' && nextSite) {
+        window.localStorage.setItem(STORAGE_KEY, nextSite);
+      }
+      await loadLiveActivities();
+    }
+  } catch (err) {
+    console.error('fetchSites failed:', err);
+    error.value = err instanceof Error ? err.message : 'Gagal memuat site.';
+    sites.value = [];
+    liveActivities.value = [];
+    loading.value = false;
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(STORAGE_KEY);
+    }
+  }
+};
 // Get activity configuration (icon & color)
 const getActivityConfig = (activityName) => {
   const config = activityConfig[activityName];
@@ -559,23 +651,28 @@ const updateCardsPerView = () => {
 
 // Mount lifecycle
 onMounted(() => {
-  // Initialize selected site with first available site or from env
-  selectedSite.value = import.meta.env.VITE_ACTIVE_SITE_UID || availableSites.value[0]?.uid || 'sppg-tanah-sereal-bogor';
-  
-  fetchLiveActivities(); // Utamakan API, fallback otomatis ke mock data
   loadSistemMonitoringData();
   loadNavigationAppsData();
-  
-  // Initialize cards per view
   updateCardsPerView();
-  
-  // Add resize listener
+  fetchSites();
   window.addEventListener('resize', updateCardsPerView);
-  
-  // Cleanup on unmount
-  return () => {
-    window.removeEventListener('resize', updateCardsPerView);
-  };
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateCardsPerView);
+});
+
+watch(selectedSite, async (uid, oldUid) => {
+  if (!uid || uid === oldUid) {
+    return;
+  }
+
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(STORAGE_KEY, uid);
+  }
+
+  await loadLiveActivities();
+  loadSistemMonitoringData();
 });
 </script>
 
@@ -626,6 +723,65 @@ i, .ki-duotone, .fas, .far, .fab {
 
 .card:hover .symbol {
   transform: scale(1.05) translateZ(0);
+}
+
+.dashboard-section-header {
+  background: transparent;
+}
+
+.dashboard-section-header .header-meta {
+  gap: 0.75rem;
+}
+
+.dashboard-section-header .header-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #64748b;
+}
+
+.dashboard-section-header .header-meta-item .icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.dashboard-section-header .header-meta-item .icon-wrapper i {
+  color: #3b82f6;
+}
+
+.dashboard-section-header .header-meta-item .meta-text {
+  line-height: 1.4;
+}
+
+[data-bs-theme="dark"] .dashboard-section-header .header-meta-item,
+.dark .dashboard-section-header .header-meta-item,
+.app-dark .dashboard-section-header .header-meta-item {
+  color: #cbd5f5;
+}
+
+[data-bs-theme="dark"] .dashboard-section-header .header-meta-item .icon-wrapper,
+.dark .dashboard-section-header .header-meta-item .icon-wrapper,
+.app-dark .dashboard-section-header .header-meta-item .icon-wrapper {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+[data-bs-theme="dark"] .dashboard-section-header .header-meta-item .icon-wrapper i,
+.dark .dashboard-section-header .header-meta-item .icon-wrapper i,
+.app-dark .dashboard-section-header .header-meta-item .icon-wrapper i {
+  color: #60a5fa;
+}
+
+.dashboard-section-header .card-toolbar {
+  justify-content: flex-end;
+}
+
+.dashboard-section-header .card-toolbar label {
+  min-width: max-content;
 }
 
 /* Site Selection Dropdown */
@@ -827,6 +983,26 @@ i, .ki-duotone, .fas, .far, .fab {
   
   .activities-carousel-track {
     gap: 0;
+  }
+
+  .dashboard-section-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-section-header .card-toolbar {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .dashboard-section-header .header-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .dashboard-section-header .header-meta-item {
+    width: 100%;
   }
 }
 
