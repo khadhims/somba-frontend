@@ -553,11 +553,7 @@ const fetchNvrs = async () => {
 const fetchSites = async () => {
   loadingSites.value = true;
   try {
-    // Get selected team from localStorage or query params (exactly like Camera.vue)
-    const selectedTeamId = localStorage.getItem('lastSelectedTeam') || route.query.teamId as string;    
-    const resp = selectedTeamId
-      ? await ApiService.query(`teams/${selectedTeamId}/sites`, {})
-      : await ApiService.query(`sites`, {}); 
+    const resp = await ApiService.get(`sites`); 
     
     // Parse response (wrapped or direct) - exactly like Camera.vue
     if (resp && resp.data) {
@@ -586,7 +582,6 @@ const fetchSites = async () => {
       selectedSiteId.value = selectedUid;
       
       console.debug('[LiveView] selectedSiteId set to:', selectedSiteId.value);
-      await fetchNvrs();
       await fetchCameras();
     }
   } catch (error) {
