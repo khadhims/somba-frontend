@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 
 interface Props {
   modelValue?: string | null
@@ -65,6 +65,30 @@ interface Props {
   helpText?: string
   size?: 'sm' | 'md' | 'lg'
   variant?: 'solid' | 'outline'
+  defaultType?: 'today' | 'monthAgo' | 'weekAgo' | 'yearAgo' | null
+}
+
+// Helper functions for default dates
+const getDefaultDate = (type: string | null): string | null => {
+  if (!type) return null
+  
+  const date = new Date()
+  
+  switch (type) {
+    case 'today':
+      return date.toISOString().split('T')[0]
+    case 'monthAgo':
+      date.setMonth(date.getMonth() - 1)
+      return date.toISOString().split('T')[0]
+    case 'weekAgo':
+      date.setDate(date.getDate() - 7)
+      return date.toISOString().split('T')[0]
+    case 'yearAgo':
+      date.setFullYear(date.getFullYear() - 1)
+      return date.toISOString().split('T')[0]
+    default:
+      return null
+  }
 }
 
 interface Emits {
@@ -79,13 +103,26 @@ const props = withDefaults(defineProps<Props>(), {
   placeholder: 'Pilih tanggal',
   size: 'md',
   variant: 'solid',
-  clearable: true
+  clearable: true,
+  defaultType: null
 })
 
 const emit = defineEmits<Emits>()
 
-const localValue = ref(props.modelValue)
+const localValue = ref(props.modelValue || getDefaultDate(props.defaultType))
 const dateInput = ref<HTMLInputElement>()
+
+// Use nextTick to emit initial default value to prevent immediate multiple calls
+onMounted(async () => {
+  // Emit initial default value if it exists, but only after component is mounted
+  if (!props.modelValue && props.defaultType) {
+    const defaultValue = getDefaultDate(props.defaultType)
+    if (defaultValue && defaultValue !== localValue.value) {
+      await nextTick()
+      emit('update:modelValue', defaultValue)
+    }
+  }
+})
 
 // Computed classes
 const inputClasses = computed(() => {

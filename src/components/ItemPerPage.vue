@@ -51,7 +51,7 @@ interface Emits {
 const props = withDefaults(defineProps<Props>(), {
   modelValue: 10,
   label: 'Items per page:',
-  options: () => [5, 10, 25, 50, 100],
+  options: () => [10, 20, 30, 50],
   size: 'sm',
   variant: 'solid',
   showItemsText: true,

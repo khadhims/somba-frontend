@@ -42,8 +42,20 @@ const props = defineProps({
 const emit = defineEmits(['page-change', 'per-page-change'])
 
 const totalPagesComputed = computed(() => {
-  if (typeof props.totalPages === 'number' && props.totalPages > 0) return props.totalPages
-  return Math.max(1, Math.ceil((props.totalItems || 0) / (props.perPage || 1)))
+  // Always calculate from totalItems and perPage for accuracy
+  const calculated = Math.max(1, Math.ceil((props.totalItems || 0) / (props.perPage || 1)))
+  
+  // Use props.totalPages only if it's reasonable, otherwise use calculated
+  if (typeof props.totalPages === 'number' && props.totalPages > 0) {
+    // If API totalPages is significantly different from calculated, prefer calculated
+    if (Math.abs(props.totalPages - calculated) > 1) {
+      console.warn(`Pagination mismatch: API says ${props.totalPages} pages, calculated ${calculated} pages. Using calculated.`)
+      return calculated
+    }
+    return props.totalPages
+  }
+  
+  return calculated
 })
 
 const startItem = computed(() => {
@@ -51,7 +63,9 @@ const startItem = computed(() => {
   return (props.page - 1) * props.perPage + 1
 })
 
-const endItem = computed(() => Math.min(props.page * props.perPage, props.totalItems))
+const endItem = computed(() => {
+  return Math.min(props.page * props.perPage, props.totalItems)
+})
 
 const visiblePages = computed(() => {
   const current = props.page
