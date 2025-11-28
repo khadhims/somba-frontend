@@ -326,15 +326,7 @@ const tableHeader = computed(() => [
 // Fetch sites from API using team-based approach like Camera.vue
 const fetchSites = async () => {
   try {
-    // Get selected team from localStorage
-    const selectedTeamId = localStorage.getItem('lastSelectedTeam');
-    if (!selectedTeamId) {
-      console.warn('No team selected, cannot load sites');
-      sites.value = [];
-      return;
-    }
-
-    const resp = await ApiService.query(`teams/${selectedTeamId}/sites`, {});
+    const resp = await ApiService.get(`sites`);
     
     // Parse response (wrapped or direct)
     if (resp && resp.data) {

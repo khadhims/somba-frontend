@@ -602,16 +602,8 @@ const fetchEvents = async () => {
 // Fetch sites from API (following Camera.vue pattern)
 const fetchSites = async () => {
   loadingSites.value = true;
-  try {
-    // Get selected team from localStorage (following Camera.vue pattern)
-    const selectedTeamId = localStorage.getItem('lastSelectedTeam');
-    if (!selectedTeamId) {
-      console.warn('No team selected, cannot load sites');
-      sites.value = [];
-      return;
-    }
-    
-    const resp = await ApiService.query(`teams/${selectedTeamId}/sites`, {});
+  try {    
+    const resp = await ApiService.get(`sites`);
     // Parse response (wrapped or direct) - exactly like Camera.vue
     if (resp && resp.data) {
       if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
