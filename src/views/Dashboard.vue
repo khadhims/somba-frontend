@@ -29,7 +29,7 @@
                               Data per: {{ currentDate }}
                             </span>
                             <span class="header-meta-item fs-8">
-                              <span class="icon-wrapper">
+                              <span class="icon-wrapper" @click="handleManualRefresh" style="cursor: pointer;" title="Klik untuk refresh manual">
                                 <i class="ki-duotone ki-arrows-circle fs-6 text-primary">
                                   <span class="path1"></span>
                                   <span class="path2"></span>
@@ -60,8 +60,8 @@
                           >
                             {{ site.name }}
                           </option>
-                          <option value="siteA">Site A</option>
-                          <option value="siteB">Site B</option>
+                          <!-- <option value="siteA">Site A</option>
+                          <option value="siteB">Site B</option> -->
                         </select>
                       </div>
                     </div>
@@ -137,15 +137,13 @@
                         </div>
                       </div>
                     </div>
-
                     <!-- Divider -->
-                    <div class="separator separator-dashed my-3"></div>
-
+                    <!-- <div class="separator separator-dashed my-3"></div> -->
                     <!-- Section 2: Sistem Monitoring -->
-                    <div class="card-body" style="padding: 1rem;">
-                      <div class="d-flex flex-wrap" style="gap: 0.5rem;">
+                    <!-- <div class="card-body" style="padding: 1rem;"> -->
+                      <!-- <div class="d-flex flex-wrap" style="gap: 0.5rem;"> -->
                         <!-- Loop untuk menampilkan Sistem Monitoring menggunakan Card5 -->
-                        <MonitorCard5
+                        <!-- <MonitorCard5
                           v-for="monitor in sistemMonitoring"
                           :key="monitor.activity_uid"
                           :activity-name="monitor.activity_name"
@@ -155,13 +153,11 @@
                           :monitor-description="monitor.description"
                           :hide-status="true"
                           :hide-description="false"
-                        />
-                      </div>
-                    </div>
-
+                        /> -->
+                      <!-- </div>
+                    </div> -->
                     <!-- Divider -->
                     <div class="separator separator-dashed my-3"></div>
-
                     <!-- Section 3: Real Time Report -->
                     <div class="card-header border-0 pt-3 pb-2">
                       <div class="card-title">
@@ -216,6 +212,10 @@ interface Site {
 const liveActivities = ref([]);
 const loading = ref(true);
 const error = ref(null);
+
+// Auto-refresh functionality
+const autoRefreshInterval = ref(null);
+const isManualRefreshing = ref(false);
 
 // Carousel state
 const carouselContainer = ref(null);
@@ -480,6 +480,41 @@ const navigateToApp = (route) => {
   router.push(route);
 };
 
+// Manual refresh handler
+const handleManualRefresh = async () => {
+  if (isManualRefreshing.value) return; // Prevent multiple simultaneous refreshes
+  
+  isManualRefreshing.value = true;
+  try {
+    await loadLiveActivities();
+  } finally {
+    isManualRefreshing.value = false;
+  }
+};
+
+// Setup auto-refresh interval
+const setupAutoRefresh = () => {
+  // Clear existing interval
+  if (autoRefreshInterval.value) {
+    clearInterval(autoRefreshInterval.value);
+  }
+  
+  // Set new interval (2 minutes = 120000 milliseconds)
+  autoRefreshInterval.value = setInterval(() => {
+    if (!isManualRefreshing.value && selectedSite.value) {
+      loadLiveActivities();
+    }
+  }, 120000); // 2 minutes
+};
+
+// Clear auto-refresh interval
+const clearAutoRefresh = () => {
+  if (autoRefreshInterval.value) {
+    clearInterval(autoRefreshInterval.value);
+    autoRefreshInterval.value = null;
+  }
+};
+
 const loadLiveActivities = async () => {
   loading.value = true;
   error.value = null;
@@ -490,17 +525,17 @@ const loadLiveActivities = async () => {
       return;
     }
 
-    const dummyData = mockLiveActivities[selectedSite.value];
-    if (dummyData) {
-      liveActivities.value = dummyData.map((item) => ({
-        activity_uid: item.activity_uid,
-        activity_name: item.activity_name,
-        last_activity_timestamp: item.last_activity_timestamp,
-        currently_active: item.currently_active,
-      }));
-      error.value = null;
-      return;
-    }
+    // const dummyData = mockLiveActivities[selectedSite.value];
+    // if (dummyData) {
+    //   liveActivities.value = dummyData.map((item) => ({
+    //     activity_uid: item.activity_uid,
+    //     activity_name: item.activity_name,
+    //     last_activity_timestamp: item.last_activity_timestamp,
+    //     currently_active: item.currently_active,
+    //   }));
+    //   error.value = null;
+    //   return;
+    // }
 
     const { data } = await ApiService.get(
       `sites/${selectedSite.value}/live-activities`
@@ -520,6 +555,8 @@ const loadLiveActivities = async () => {
       last_activity_timestamp: item?.last_activity_timestamp ?? null,
       currently_active: Boolean(item?.currently_active ?? item?.is_active),
     }));
+
+    console.log('live activities successfully loaded:');
   } catch (err) {
     console.error('loadLiveActivities failed:', err);
     error.value = err instanceof Error ? err.message : 'Gagal memuat aktivitas.';
@@ -655,10 +692,12 @@ onMounted(() => {
   loadNavigationAppsData();
   updateCardsPerView();
   fetchSites();
+  setupAutoRefresh(); // Setup auto-refresh when component mounts
   window.addEventListener('resize', updateCardsPerView);
 });
 
 onBeforeUnmount(() => {
+  clearAutoRefresh(); // Clear auto-refresh interval
   window.removeEventListener('resize', updateCardsPerView);
 });
 
@@ -673,6 +712,9 @@ watch(selectedSite, async (uid, oldUid) => {
 
   await loadLiveActivities();
   loadSistemMonitoringData();
+  
+  // Restart auto-refresh when site changes
+  setupAutoRefresh();
 });
 </script>
 
@@ -748,6 +790,16 @@ i, .ki-duotone, .fas, .far, .fab {
   height: 1.75rem;
   border-radius: 999px;
   background: rgba(59, 130, 246, 0.12);
+  transition: all 0.2s ease;
+}
+
+.dashboard-section-header .header-meta-item .icon-wrapper:hover {
+  background: rgba(59, 130, 246, 0.2);
+  transform: scale(1.05);
+}
+
+.dashboard-section-header .header-meta-item .icon-wrapper:active {
+  transform: scale(0.95);
 }
 
 .dashboard-section-header .header-meta-item .icon-wrapper i {

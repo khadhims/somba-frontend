@@ -12,13 +12,13 @@
         <div class="col-md-8">
           <div class="d-flex justify-content-end align-items-center">
             <!-- Site Filter -->
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center me-3">
               <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsEventsAlerts.eventsFilters.siteLabel') }}</label>
               <select
-                v-model="selectedSiteFilter"
+                v-model="tempSelectedSiteFilter"
                 class="form-select form-select-solid w-200px"
                 :disabled="loadingSites"
-                @change="onFilterSiteChange"
+                @change="onTempFilterSiteChange"
               >
                 <option value="">{{ t('appsEventsAlerts.eventsFilters.siteAll') }}</option>
                 <option
@@ -27,6 +27,27 @@
                   :value="site.uid"
                 >
                   {{ site.name }}
+                </option>
+              </select>
+            </div>
+            
+            <!-- Camera Filter -->
+            <div class="d-flex align-items-center">
+              <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsEventsAlerts.eventsFilters.cameraLabel') || 'Camera' }}</label>
+              <select
+                v-model="tempSelectedCameraFilter"
+                class="form-select form-select-solid w-200px"
+                :disabled="loadingCameras || !tempSelectedSiteFilter"
+                @change="onTempFilterCameraChange"
+              >
+                <option value="">{{ t('appsEventsAlerts.eventsFilters.cameraAll') || 'All Cameras' }}</option>
+                <option
+                  v-for="camera in cameras"
+                  :key="camera.uuid"
+                  :value="camera.uuid"
+                  :title="`ID: ${camera.uuid} | Model: ${camera.model || 'N/A'} | Recorder: ${camera.video_recorder_name || 'N/A'}`"
+                >
+                  {{ camera.name }} {{ camera.model ? `(${camera.model})` : '' }}
                 </option>
               </select>
             </div>
@@ -53,33 +74,64 @@
           <div class="d-flex align-items-center me-3">
             <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.eventsFilters.fromDateLabel') }}</label>
             <DatePicker
-              v-model="dateFrom"
+              v-model="tempDateFrom"
               size="sm"
               :clearable="true"
+              defaultType="monthAgo"
+              style="width: 180px;"
             />
           </div>
           <div class="d-flex align-items-center me-3">
             <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.eventsFilters.toDateLabel') }}</label>
             <DatePicker
-              v-model="dateTo"
+              v-model="tempDateTo"
               size="sm"
               :clearable="true"
+              defaultType="today"
+              style="width: 180px;"
             />
           </div>
           
-          <!-- Apply Date Filter Button -->
+          <!-- Apply All Filters Button -->
           <div class="me-3">
             <button 
-              @click="applyDateFilter" 
+              @click="applyFilters" 
               class="btn btn-sm btn-primary py-1 px-2"
-              :disabled="!dateFrom && !dateTo"
-              title="Apply Date Filter"
+              title="Apply All Filters"
             >
               <i class="ki-duotone ki-check fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-              Apply Filter
+              Apply Filters
+            </button>
+          </div>
+          <!-- Reset Filters Button -->
+          <div class="me-3">
+            <button 
+              @click="resetFilters" 
+              class="btn btn-sm btn-light py-1 px-2"
+              title="Reset to Applied Filters"
+            >
+              <i class="ki-duotone ki-arrows-circle fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Reset
+            </button>
+          </div>
+          <!-- Reset to Defaults Button -->
+          <div class="me-3">
+            <button 
+              @click="resetToDefaults" 
+              class="btn btn-sm btn-secondary py-1 px-2"
+              title="Reset to Default Values"
+            >
+              <i class="ki-duotone ki-time fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Defaults
             </button>
           </div>
         </div>
@@ -130,12 +182,15 @@
 
     <!--begin::Card body-->
     <div class="card-body py-3">
-      <KTDataTable
+      <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+        <KTDataTable
         :data="filteredAndSortedEvents"
         :header="tableHeader"
         :checkbox-enabled="false"
         :items-per-page-dropdown-enabled="false"
         :items-per-page="itemsPerPage"
+        :current-page="currentPage"
+        :total="totalItems"
         :loading="loading"
         :sort-label="sortLabel"
         :sort-order="sortOrder"
@@ -161,17 +216,17 @@
 
         <template v-slot:startTime="{ row }">
           <span class="text-dark fw-bold d-block fs-6">{{
-            row.startTime ? new Date(row.startTime).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-'
+            row.event_start ? new Date(row.event_start).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-'
           }}</span>
           <span class="text-muted fw-semibold d-block fs-7">
-            {{ row.startTime ? new Date(row.startTime).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false }).substring(0, 5) : '-' }}
-            <span v-if="row.endTime"> - {{ new Date(row.endTime).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false }).substring(0, 5) }}</span>
+            {{ row.event_start ? new Date(row.event_start).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false }).substring(0, 5) : '-' }}
+            <span v-if="row.event_end"> - {{ new Date(row.event_end).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false }).substring(0, 5) }}</span>
           </span>
         </template>
 
         <template v-slot:duration="{ row }">
           <span class="text-dark fw-bold fs-6">
-            {{ row.duration ?? t('appsEventsAlerts.format.notAvailable') }}
+            {{ row.duration_minutes ?? t('appsEventsAlerts.format.notAvailable') }}
           </span>
         </template>
 
@@ -194,8 +249,8 @@
           <div class="d-flex justify-content-end flex-shrink-0">
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm"
-              @click="viewAndEditEvent(row)"
-              :title="t('appsEventsAlerts.table.actions.viewEdit')"
+              @click="viewEventDetails(row)"
+              :title="t('appsEventsAlerts.table.actions.view')"
             >
               <i class="ki-duotone ki-eye fs-2">
                 <span class="path1"></span>
@@ -205,15 +260,16 @@
             </button>
           </div>
         </template>
-      </KTDataTable>
+        </KTDataTable>
+      </div>
       
       <!--begin::Pagination-->
       <div class="d-flex justify-content-between align-items-center mt-4">
         <ItemPerPage
-          v-model="itemsPerPage"
+          :model-value="itemsPerPage"
           :label="t('appsEventsAlerts.eventsTable.pagination.itemsLabel') || 'Items per page:'"
-          :options="[5, 10, 15, 25, 50]"
-          @change="goToPage(1)"
+          :options="[10, 20, 30, 50]"
+          @change="changeItemsPerPage"
         />
         <Pagination
           :page="currentPage"
@@ -239,12 +295,12 @@
         </div>
         <div class="modal-body" v-if="selectedEvent">
           <!--begin::Event Image-->
-          <div class="row mb-6" v-if="selectedEvent.image_path">
+          <div class="row mb-6" v-if="selectedEvent.image_url">
             <div class="col-12">
               <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.image') }}</label>
               <div class="text-center">
                 <img 
-                  :src="selectedEvent.image_path" 
+                  :src="selectedEvent.image_url" 
                   :alt="selectedEvent.description"
                   class="img-fluid rounded border"
                   style="max-height: 300px; object-fit: contain;"
@@ -264,7 +320,7 @@
                 <p class="text-gray-800 mb-0 fs-4 font-monospace">{{ selectedEvent.event_name }}</p>
               </div>
               <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.cameraUuid') }}</label>
+                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.cameraName') }}</label>
                 <p class="text-gray-800 mb-0 fs-4 font-monospace">{{ selectedEvent.camera_name }}</p>
               </div>
               
@@ -276,26 +332,21 @@
                   </span>
                 </div>
               </div>
-
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.description') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.description }}</p>
-              </div>
             </div>
             <!--end::Left Column-->
             <!--begin::Right Column-->
             <div class="col-md-6">
               <div class="mb-4">
                 <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.startTime') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.startTime) }}</p>
+                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.event_start) }}</p>
               </div>
               <div class="mb-4">
                 <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.endTime') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.endTime) }}</p>
+                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.event_end) }}</p>
               </div>
               <div class="mb-4">
                 <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.duration') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.duration }}</p>
+                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.duration_minutes }}</p>
               </div>
               <div class="mb-4">
                 <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.avgDetection') }}</label>
@@ -305,64 +356,9 @@
             <!--end::Right Column-->
           </div>
           <!--end::Event Info Grid-->
-
-          <!--begin::Comments Section-->
-          <div class="row mt-6" v-if="selectedEvent.comment">
-            <div class="col-12">
-              <div class="bg-light-info p-4 rounded">
-                <label class="fw-semibold fs-4 text-gray-700 mb-2 d-block">{{ t('appsEventsAlerts.eventsModals.details.comments') }}</label>
-                <p class="text-gray-800 mb-0 fs-5" style="white-space: pre-wrap;">{{ selectedEvent.comment }}</p>
-              </div>
-            </div>
-          </div>
-          <!--end::Comments Section-->
-
-          <!--begin::Event UID-->
-          <div class="row mt-6">
-            <div class="col-12">
-              <div class="bg-light p-4 rounded">
-                <label class="fw-semibold fs-5 text-gray-600 mb-1">{{ t('appsEventsAlerts.eventsModals.details.eventIdHint') }}</label>
-                <p class="text-gray-800 mb-0 font-monospace fs-6">{{ selectedEvent.uid }}</p>
-              </div>
-            </div>
-          </div>
-          <!--end::Event UID-->
-
-          <!--begin::Edit Fields-->
-          <div class="row mt-6">
-            <div class="col-md-6">
-              <label class="form-label fw-bold text-dark">Status</label>
-              <select class="form-select" v-model="editStatus">
-                <option value="">{{ t('appsEventsAlerts.form.selectStatus') }}</option>
-                <option value="active">{{ t('appsEventsAlerts.eventsTable.status.active') }}</option>
-                <option value="acknowledged">{{ t('appsEventsAlerts.eventsTable.status.acknowledged') }}</option>
-                <option value="resolved">{{ t('appsEventsAlerts.eventsTable.status.resolved') }}</option>
-              </select>
-            </div>
-            <div class="col-12 mt-3">
-              <label class="form-label fw-bold text-dark">{{ t('appsEventsAlerts.eventsModals.details.comment') }}</label>
-              <textarea 
-                class="form-control" 
-                rows="3" 
-                v-model="editComment"
-                :placeholder="t('appsEventsAlerts.eventsModals.details.commentPlaceholder')"
-              ></textarea>
-            </div>
-          </div>
-          <!--end::Edit Fields-->
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary fs-5 px-4 py-2" @click="closeModal">{{ t('appsEventsAlerts.actions.close') }}</button>
-          <button 
-            type="button" 
-            class="btn btn-primary fs-5 px-4 py-2" 
-            v-if="hasChanges" 
-            @click="saveEventChanges" 
-            :disabled="isModalLoading"
-          >
-            <span v-if="isModalLoading" class="spinner-border spinner-border-sm me-2"></span>
-            {{ t('appsEventsAlerts.actions.update') }}
-          </button>
         </div>
       </div>
     </div>
@@ -371,7 +367,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { Modal } from "bootstrap";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
@@ -385,27 +381,21 @@ const { t } = useI18n();
 
 // Interface definitions
 interface Event {
-  code: number;
-  message: string;
-  data: Array<{
-    duration: number;
-    endTime: string;
-    image_path: string;
-    process: string;
-    startTime: string;
-    status: string;
-    comment?: string;
-  }>;
-  uid: string;
-  type: 'motion' | 'intrusion' | 'system' | 'camera_offline';
+  // type: 'motion' | 'intrusion' | 'system' | 'camera_offline';
   severity: 'low' | 'medium' | 'high' | 'critical';
-  description: string;
+  site_uid: string;
+  camera_uuid?: string;
   camera_name?: string;
-  location: string;
-  timestamp: string;
+  event_id: string;
+  event_name: string;
+  event_start: string;
+  event_end: string;
+  duration_minutes?: number;
+  total_minutes?: number;
+  avg_seconds_with_detection?: number;
   status: 'active' | 'acknowledged' | 'resolved';
-  site_uid?: string;
-  comment?: string;
+  imge_url?: string;
+  activities?: any[];
 }
 
 interface Site {
@@ -413,24 +403,63 @@ interface Site {
   name: string;
 }
 
+interface Camera {
+  // Compatibility fields (mapped from API)
+  uuid: string; // Mapped from API's uid field for compatibility
+  name: string;
+  site_uuid: string;
+  status?: string;
+  
+  // Original API fields
+  uid?: string;
+  site_uid?: string;
+  site_name?: string;
+  video_recorder_uid?: string;
+  video_recorder_name?: string;
+  camera_config?: {
+    zones?: any[];
+    uid?: string;
+    name?: string;
+    allow_labels?: string[];
+    deny_labels?: string[];
+    min_score?: number;
+    zone_test?: string;
+    iou_threshold?: number;
+  };
+  video_recorder?: number;
+  model?: string;
+  public_endpoint_url?: string;
+  created_by?: {
+    username?: string;
+    email?: string;
+  };
+}
+
 // Reactive data
-const events = ref<any[]>([]);
+const events = ref<Event[]>([]);
 const sites = ref<Site[]>([]);
-const nvrs = ref<Array<{ uid: string; name: string; site_uid?: string }>>([]);
+const cameras = ref<Camera[]>([]);
 const camerasCache = ref<Record<string, Record<string, string>>>({});
 const loading = ref(false);
 const loadingSites = ref(false);
-const loadingNvrs = ref(false);
+const loadingCameras = ref(false);
 const searchQuery = ref("");
 const selectedSiteId = ref("");
-// Header filter state (site + nvr)
+// Header filter state (site + camera)
 const selectedSiteFilter = ref<string>("");
+const selectedCameraFilter = ref<string>("");
 const selectedNvrFilter = ref<string>("");
 const selectedEventType = ref("");
 const selectedSeverityType = ref("");
 // Date range filters
 const dateFrom = ref<string | null>(null);
 const dateTo = ref<string | null>(null);
+
+// Temporary filter states (for apply button)
+const tempSelectedSiteFilter = ref<string>("");
+const tempSelectedCameraFilter = ref<string>("");
+const tempDateFrom = ref<string | null>(null);
+const tempDateTo = ref<string | null>(null);
 const sortLabel = ref("timestamp");
 const sortOrder = ref<"asc" | "desc">("desc");
 const currentSite = ref<Site | null>(null);
@@ -441,20 +470,82 @@ const totalItems = ref(0);
 const totalPages = ref(0);
 // Modal state
 const selectedEvent = ref<any>(null);
-const editStatus = ref('');
-const editComment = ref('');
-const isModalLoading = ref(false);
 
 // Pagination handlers
-const goToPage = (page: number) => {
-  currentPage.value = page;
-  fetchEvents();
+let fetchTimeout: number | null = null;
+
+// Initialize default dates (1 month ago to today)
+const initializeDefaultDates = () => {
+  const today = new Date();
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(today.getMonth() - 1);
+  
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  
+  const defaultFromDate = formatDate(oneMonthAgo);
+  const defaultToDate = formatDate(today);
+  
+  // Check if dates are already stored in localStorage
+  const storedFromDate = localStorage.getItem('eventsDefaultFromDate');
+  const storedToDate = localStorage.getItem('eventsDefaultToDate');
+  
+  if (!storedFromDate || !storedToDate) {
+    // Store default dates in localStorage
+    localStorage.setItem('eventsDefaultFromDate', defaultFromDate);
+    localStorage.setItem('eventsDefaultToDate', defaultToDate);
+    console.log('Events.vue: Set default dates in localStorage:', { defaultFromDate, defaultToDate });
+  }
+  
+  // Set reactive date values from localStorage
+  const fromDate = localStorage.getItem('eventsDefaultFromDate') || defaultFromDate;
+  const toDate = localStorage.getItem('eventsDefaultToDate') || defaultToDate;
+  
+  dateFrom.value = fromDate;
+  dateTo.value = toDate;
+  tempDateFrom.value = fromDate;
+  tempDateTo.value = toDate;
+  
+  console.log('Events.vue: Initialized default dates:', {
+    dateFrom: dateFrom.value,
+    dateTo: dateTo.value,
+    tempDateFrom: tempDateFrom.value,
+    tempDateTo: tempDateTo.value
+  });
 };
 
-watch(itemsPerPage, () => {
+const debouncedFetchEvents = () => {
+  if (fetchTimeout) clearTimeout(fetchTimeout);
+  fetchTimeout = setTimeout(() => {
+    fetchEvents();
+  }, 100); // 100ms debounce
+};
+
+const goToPage = (page: number) => {
+  currentPage.value = page;
+  debouncedFetchEvents();
+};
+
+const changeItemsPerPage = (newPerPage: number) => {
+  console.log('changeItemsPerPage called with:', newPerPage);
+  console.log('Current itemsPerPage value before change:', itemsPerPage.value);
+  
+  // Force update the reactive value
+  itemsPerPage.value = newPerPage;
+  
+  console.log('itemsPerPage value after change:', itemsPerPage.value);
+  console.log('Will send to API: page_size =', itemsPerPage.value);
+  
+  // Reset to first page
   currentPage.value = 1;
+  
+  // Fetch immediately without debounce for items per page change
   fetchEvents();
-});
+};
 
 // Table header configuration
 const tableHeader = computed(() => [
@@ -504,6 +595,11 @@ const tableHeader = computed(() => [
 
 // Fetch events from API (uses mock response shape as fallback)
 const fetchEvents = async () => {
+  if (loading.value) {
+    console.log('fetchEvents: Already loading, skipping duplicate call');
+    return;
+  }
+  
   loading.value = true;
   try {
     // Determine site uid to request - prefer selectedSiteFilter, fallback to first loaded site
@@ -516,14 +612,18 @@ const fetchEvents = async () => {
       return;
     }
 
-    await fetchCameras(siteUid);
-
     // Call API: sites/{site_uid}/list-activity with pagination params
     // ${siteUid}
     const params: any = {
       page: currentPage.value,
-      per_page: itemsPerPage.value
+      page_size: itemsPerPage.value
     };
+        
+    // Add camera filter if set
+    if (selectedCameraFilter.value && selectedCameraFilter.value !== '' && selectedCameraFilter.value !== 'undefined') {
+      params.camera_uuid = selectedCameraFilter.value;
+      console.log('Adding camera_uuid to query params:', selectedCameraFilter.value);
+    }
     
     // Add date range filters if set
     if (dateFrom.value) {
@@ -553,37 +653,52 @@ const fetchEvents = async () => {
     // Map response data items to internal event structure
     events.value = results.map((item: any, idx: number) => {
       return {
-        uid: item.event_id || `evt-${idx}-${Date.now()}`,
-        type: 'motion', // default type - adjust if API provides type later
         severity: 'medium', // default severity based on detection activity
-        description: t('appsEventsAlerts.eventsTable.generatedDescription', {
-          seconds: Math.round(item.avg_seconds_with_detection || 0),
-        }),
-        event_name: item.event_name || '',
-        camera_name: item.camera_name || '',
-        location: '',
-        timestamp: item.event_start || item.event_end || new Date().toISOString(),
-        status: 'resolved', // default status
         site_uid: siteUid,
-        // preserve fields from API
-        duration: item.duration_minutes,
-        startTime: item.event_start,
-        endTime: item.event_end,
-        image_path: '',
-        process: '',
-        comment: null,
-        avg_seconds_with_detection: item.avg_seconds_with_detection
+        camera_uuid: item.camera_uuid || '',
+        camera_name: item.camera_name || '',
+        event_id: item.event_id || '',
+        event_name: item.event_name || '',
+        event_start: item.event_start,
+        event_end: item.event_end,
+        duration_minutes: item.duration_minutes,
+        total_minutes: item.total_minutes,
+        avg_seconds_with_detection: item.avg_seconds_with_detection,
+        // type: 'motion', // default type - adjust if API provides type later
+        status: item.status || 'active',
+        image_url: '',
+        activities: item.activities || [],
       }
     });
 
     // Use pagination from API response
     const pagination = payload?.pagination || {};
-    currentPage.value = typeof pagination.page === "number" ? pagination.page : currentPage.value;
-    totalItems.value = typeof pagination.total_items === "number" ? pagination.total_items : events.value.length;
-    itemsPerPage.value = typeof pagination.per_page === "number" && pagination.per_page > 0 ? pagination.per_page : itemsPerPage.value;
-    totalPages.value = typeof pagination.total_pages === "number" && pagination.total_pages > 0
-      ? pagination.total_pages
-      : Math.ceil(totalItems.value / itemsPerPage.value);
+    
+    console.log('API pagination response:', pagination);
+    console.log('Our sent parameters:', { page: currentPage.value, page_size: itemsPerPage.value });
+    
+    // Use pagination values from API response
+    if (typeof pagination.total_items === "number") {
+      totalItems.value = pagination.total_items;
+    }
+    if (typeof pagination.total_pages === "number") {
+      totalPages.value = pagination.total_pages;
+    }
+    
+    // DON'T update itemsPerPage from API response - keep user's selection
+    // The API should respect our per_page parameter, but if it doesn't,
+    // we still want to maintain the user's choice in the UI
+    if (typeof pagination.per_page === "number" && pagination.per_page !== itemsPerPage.value) {
+      console.warn(`API returned different per_page: ${pagination.per_page}, but keeping user selection: ${itemsPerPage.value}`);
+    }
+    
+    console.log('Final pagination state:', {
+      currentPage: currentPage.value,
+      itemsPerPage: itemsPerPage.value,
+      totalItems: totalItems.value,
+      totalPages: totalPages.value,
+      fromAPI: pagination
+    });
 
     // Apply client-side filters if header filters are set
     if (selectedSiteFilter.value) {
@@ -626,6 +741,71 @@ const fetchSites = async () => {
   }
 };
 
+  // Fetch cameras for dropdown filter
+  const fetchCamerasForFilter = async (siteUid: string) => {
+    if (!siteUid) {
+      cameras.value = [];
+      return;
+    }
+    loadingCameras.value = true;
+    try {    
+      console.log('Fetching cameras for site:', siteUid);
+      const resp = await ApiService.get(`sites/${siteUid}/cameras`);
+      
+      console.log('Raw camera API response:', resp);
+      
+      // Parse response - handle direct array or wrapped response
+      let rawCameras: any[] = [];
+      if (resp && resp.data) {
+        if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+          rawCameras = resp.data.data;
+        } else if (Array.isArray(resp.data)) {
+          rawCameras = resp.data;
+        } else {
+          console.warn('Unexpected cameras response format:', resp.data);
+          rawCameras = [];
+        }
+      } else if (Array.isArray(resp)) {
+        rawCameras = resp;
+      } else {
+        console.warn('No data received from cameras API');
+        rawCameras = [];
+      }
+      
+      console.log('Raw cameras data:', rawCameras);
+      
+      // Map all camera data to expected structure, preserving all original fields
+      cameras.value = rawCameras.map((camera: any) => ({
+        // Map uid to uuid for compatibility with existing code
+        uuid: camera.uid || camera.uuid || camera.id,
+        name: camera.name || camera.camera_name || `Camera ${camera.uid || camera.id}`,
+        site_uuid: camera.site_uid || camera.site_uuid || siteUid,
+        status: 'active', // Default status
+        
+        // Preserve all original API fields
+        uid: camera.uid,
+        site_uid: camera.site_uid,
+        site_name: camera.site_name,
+        video_recorder_uid: camera.video_recorder_uid,
+        video_recorder_name: camera.video_recorder_name,
+        camera_config: camera.camera_config,
+        video_recorder: camera.video_recorder,
+        model: camera.model,
+        public_endpoint_url: camera.public_endpoint_url,
+        created_by: camera.created_by
+      }));
+      
+      console.log('Mapped cameras for dropdown:', cameras.value);
+      console.log('Camera count:', cameras.value.length);
+      
+    } catch (error) {
+      console.error('Error loading cameras for site', siteUid, ':', error);
+      cameras.value = [];
+    } finally {
+      loadingCameras.value = false;
+    }
+  };
+
   // Fetch cameras for a site and cache uuid->name map per site
   const fetchCameras = async (siteUid: string) => {
     if (!siteUid) return;
@@ -647,13 +827,15 @@ const fetchSites = async () => {
 
       const map: Record<string, string> = {};
       cams.forEach((c: any) => {
-        const id = c.uuid || c.camera_uuid || c.id;
+        // Handle both uid (new API) and uuid (legacy) fields
+        const id = c.uid || c.uuid || c.camera_uuid || c.id;
         if (id) {
           map[id] = c.name || c.camera_name || c.label || id;
         }
       });
 
       camerasCache.value[siteUid] = map;
+      console.log('Cached cameras for site:', siteUid, map);
     } catch (err) {
       console.warn('Failed to load cameras for site', siteUid, err);
       // set empty map to avoid retry storm
@@ -675,30 +857,144 @@ const filterEvents = () => {
 
 // Refresh events
 const refreshEvents = () => {
-  fetchEvents();
+  debouncedFetchEvents();
 };
 
-// Header filter handlers
-const onFilterSiteChange = () => {
-  // selectedSiteFilter stores the site uid
-  currentSite.value = sites.value.find(s => s.uid === selectedSiteFilter.value) || null;
-  // reset NVR filter when site changes
+// Temp filter handlers (no immediate API calls)
+const onTempFilterSiteChange = async () => {
+  // Reset camera and NVR filter when site changes
+  tempSelectedCameraFilter.value = "";
   selectedNvrFilter.value = "";
-  // reset to first page when changing filters
-  currentPage.value = 1;
-  fetchEvents();
+  
+  // Fetch cameras for the selected site immediately for dropdown
+  if (tempSelectedSiteFilter.value) {
+    await fetchCamerasForFilter(tempSelectedSiteFilter.value);
+  } else {
+    cameras.value = [];
+  }
+};
+
+const onTempFilterCameraChange = () => {
+  // Just update temp state, no API call
+  console.log('onTempFilterCameraChange: Camera filter changed', {
+    value: tempSelectedCameraFilter.value,
+    type: typeof tempSelectedCameraFilter.value,
+    isUndefined: tempSelectedCameraFilter.value === undefined,
+    isNull: tempSelectedCameraFilter.value === null,
+    isEmpty: tempSelectedCameraFilter.value === '',
+    stringValue: String(tempSelectedCameraFilter.value)
+  });
+  
+  // Also log available cameras for debugging
+  console.log('Available cameras for selection:', cameras.value.map(c => ({ 
+    uuid: c.uuid, 
+    uid: c.uid, 
+    name: c.name,
+    site_uid: c.site_uid,
+    site_name: c.site_name,
+    model: c.model,
+    video_recorder_name: c.video_recorder_name
+  })));
+  
+  // Save temp camera selection for persistence (backup method)
+  if (tempSelectedCameraFilter.value && tempSelectedCameraFilter.value !== '' && tempSelectedCameraFilter.value !== 'undefined') {
+    localStorage.setItem('lastTempSelectedCamera', tempSelectedCameraFilter.value);
+    console.log('Saved temp camera to localStorage:', tempSelectedCameraFilter.value);
+  }
 };
 
 const onFilterNvrChange = () => {
-  // Changing NVR filter should reload events scoped to that NVR
+  // For now, NVR changes still immediate (can be converted to temp later if needed)
   currentPage.value = 1;
-  fetchEvents();
+  debouncedFetchEvents();
 };
 
-const applyDateFilter = () => {
-  // Reset to first page when applying date filter
+// Apply all filters at once
+const applyFilters = async () => {
+  console.log('applyFilters: Applying filters', {
+    tempSite: tempSelectedSiteFilter.value,
+    tempCamera: tempSelectedCameraFilter.value,
+    tempDateFrom: tempDateFrom.value,
+    tempDateTo: tempDateTo.value
+  });
+  
+  // Update actual filter values from temp values
+  selectedSiteFilter.value = tempSelectedSiteFilter.value || '';
+  selectedCameraFilter.value = tempSelectedCameraFilter.value || '';
+  dateFrom.value = tempDateFrom.value;
+  dateTo.value = tempDateTo.value;
+  
+  console.log('applyFilters: Updated actual filters', {
+    actualSite: selectedSiteFilter.value,
+    actualCamera: selectedCameraFilter.value,
+    actualDateFrom: dateFrom.value,
+    actualDateTo: dateTo.value
+  });
+  
+  // Update current site
+  currentSite.value = sites.value.find(s => s.uid === selectedSiteFilter.value) || null;
+  
+  // Save to localStorage
+  localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || '');
+  const cameraToSave = selectedCameraFilter.value && selectedCameraFilter.value !== 'undefined' && selectedCameraFilter.value !== 'null' ? selectedCameraFilter.value : '';
+  localStorage.setItem('lastSelectedCamera', cameraToSave);
+  console.log('applyFilters: Saved to localStorage', {
+    savedSite: selectedSiteFilter.value || '',
+    savedCamera: cameraToSave,
+    selectedCameraDetails: cameras.value.find(c => c.uuid === selectedCameraFilter.value),
+    availableCameraCount: cameras.value.length
+  });
+  
+  // Reset pagination and fetch events
   currentPage.value = 1;
-  fetchEvents();
+  
+  if (selectedSiteFilter.value) {
+    await debouncedFetchEvents();
+  } else {
+    events.value = [];
+  }
+};
+
+// Reset filters to stored values
+const resetFilters = () => {
+  tempSelectedSiteFilter.value = selectedSiteFilter.value || '';
+  tempSelectedCameraFilter.value = selectedCameraFilter.value || '';
+  tempDateFrom.value = dateFrom.value;
+  tempDateTo.value = dateTo.value;
+};
+
+// Reset filters to default values (clear site/camera, reset dates to 1 month range)
+const resetToDefaults = () => {
+  // Reset site and camera filters
+  tempSelectedSiteFilter.value = '';
+  tempSelectedCameraFilter.value = '';
+  
+  // Reset dates to default range (1 month ago to today)
+  const today = new Date();
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(today.getMonth() - 1);
+  
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  
+  const defaultFromDate = formatDate(oneMonthAgo);
+  const defaultToDate = formatDate(today);
+  
+  tempDateFrom.value = defaultFromDate;
+  tempDateTo.value = defaultToDate;
+  
+  // Update localStorage with new defaults
+  localStorage.setItem('eventsDefaultFromDate', defaultFromDate);
+  localStorage.setItem('eventsDefaultToDate', defaultToDate);
+  
+  console.log('Events.vue: Reset to defaults', {
+    tempFromDate: tempDateFrom.value,
+    tempToDate: tempDateTo.value
+  });
 };
 
 
@@ -721,12 +1017,12 @@ const severityKeyMap: Record<string, string> = {
   critical: 'critical',
 };
 
-const typeKeyMap: Record<string, string> = {
-  motion: 'motion',
-  intrusion: 'intrusion',
-  system: 'system',
-  cameraoffline: 'cameraOffline',
-};
+// const typeKeyMap: Record<string, string> = {
+//   motion: 'motion',
+//   intrusion: 'intrusion',
+//   system: 'system',
+//   cameraoffline: 'cameraOffline',
+// };
 
 const getEventTypeBadgeClass = (type: string) => {
   switch (normalizeKey(type)) {
@@ -777,10 +1073,10 @@ const getSeverityLabel = (severity: string) => {
   return key ? t(`appsEventsAlerts.eventsTable.severity.${key}`) : severity;
 };
 
-const getEventTypeLabel = (type: string) => {
-  const key = typeKeyMap[normalizeKey(type)];
-  return key ? t(`appsEventsAlerts.eventsTable.types.${key}`) : type;
-};
+// const getEventTypeLabel = (type: string) => {
+//   const key = typeKeyMap[normalizeKey(type)];
+//   return key ? t(`appsEventsAlerts.eventsTable.types.${key}`) : type;
+// };
 
 const formatNumber = (value: number, maximumFractionDigits = 1) =>
   new Intl.NumberFormat(undefined, {
@@ -834,29 +1130,25 @@ const filteredAndSortedEvents = computed(() => {
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter((event) => {
-      const description = (event.description || '').toLowerCase();
       const camera = (event.camera_name || '').toLowerCase();
-      const location = (event.location || '').toLowerCase();
-      const type = (event.type || '').toLowerCase();
+      // const type = (event.type || '').toLowerCase();
       const status = (event.status || '').toLowerCase();
       const severity = (event.severity || '').toLowerCase();
-      const translatedType = getEventTypeLabel(event.type).toLowerCase();
+      // const translatedType = getEventTypeLabel(event.type).toLowerCase();
 
       return (
-        description.includes(query) ||
         camera.includes(query) ||
-        location.includes(query) ||
-        type.includes(query) ||
+        // type.includes(query) ||
         status.includes(query) ||
-        severity.includes(query) ||
-        translatedType.includes(query)
+        severity.includes(query)
+        // translatedType.includes(query)
       );
     });
   }
 
-  if (selectedEventType.value) {
-    filtered = filtered.filter((event) => event.type === selectedEventType.value);
-  }
+  // if (selectedEventType.value) {
+  //   filtered = filtered.filter((event) => event.type === selectedEventType.value);
+  // }
 
   if (selectedSeverityType.value) {
     filtered = filtered.filter((event) => event.severity === selectedSeverityType.value);
@@ -892,28 +1184,28 @@ const filteredAndSortedEvents = computed(() => {
 });
 
 // Statistics computed properties
-const activeAlerts = computed(() => events.value.filter(e => e.status === 'active').length);
-const criticalAlerts = computed(() => events.value.filter(e => e.severity === 'critical' && e.status === 'active').length);
-const motionEvents = computed(() => events.value.filter(e => e.type === 'motion').length);
-const resolvedToday = computed(() => {
-  const today = new Date().toDateString();
-  return events.value.filter(e => 
-    e.status === 'resolved' && 
-    new Date(e.timestamp).toDateString() === today
-  ).length;
-});
-const totalResolved = computed(() => events.value.filter(e => e.status === 'resolved').length);
-const avgResponseTime = computed(() => 15); // Mock data
+// const activeAlerts = computed(() => events.value.filter(e => e.status === 'active').length);
+// const criticalAlerts = computed(() => events.value.filter(e => e.severity === 'critical' && e.status === 'active').length);
+// const motionEvents = computed(() => events.value.filter(e => e.type === 'motion').length);
+// const resolvedToday = computed(() => {
+//   const today = new Date().toDateString();
+//   return events.value.filter(e => 
+//     e.status === 'resolved' && 
+//     new Date(e.timestamp).toDateString() === today
+//   ).length;
+// });
+// const totalResolved = computed(() => events.value.filter(e => e.status === 'resolved').length);
+// const avgResponseTime = computed(() => 15); // Mock data
 
-const criticalAlertsPercentage = computed(() =>
-  activeAlerts.value > 0 ? Math.round((criticalAlerts.value / activeAlerts.value) * 100) : 0
-);
+// const criticalAlertsPercentage = computed(() =>
+//   activeAlerts.value > 0 ? Math.round((criticalAlerts.value / activeAlerts.value) * 100) : 0
+// );
 
-const resolvedTodayPercentage = computed(() =>
-  totalResolved.value > 0 ? Math.round((resolvedToday.value / totalResolved.value) * 100) : 0
-);
+// const resolvedTodayPercentage = computed(() =>
+//   totalResolved.value > 0 ? Math.round((resolvedToday.value / totalResolved.value) * 100) : 0
+// );
 
-const responseTimePercentage = computed(() => 75); // Mock data
+// const responseTimePercentage = computed(() => 75); // Mock data
 
 // Pagination computed properties
 const visiblePages = computed(() => {
@@ -927,15 +1219,7 @@ const visiblePages = computed(() => {
   return pages;
 });
 
-// Check if there are changes to enable update button
-const hasChanges = computed(() => {
-  if (!selectedEvent.value) return false;
-  
-  const originalStatus = selectedEvent.value.status || '';
-  const originalComment = selectedEvent.value.comment || '';
-  
-  return editStatus.value !== originalStatus || editComment.value !== originalComment;
-});
+
 
 // Methods
 const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
@@ -943,76 +1227,8 @@ const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
   sortOrder.value = sort.order;
 };
 
-const viewAndEditEvent = (event: Event) => {
-  selectedEvent.value = event;
-  // Initialize edit fields with current values
-  editStatus.value = event.status || '';
-  editComment.value = event.comment || '';
-  
-  // Show modal using Bootstrap 5
-  const modalElement = document.getElementById('eventDetailsModal');
-  if (modalElement) {
-    try {
-      const modal = new Modal(modalElement);
-      modal.show();
-    } catch (error) {
-      console.error('Error showing modal:', error);
-    }
-  }
-};
-
-const saveEventChanges = async () => {
-  if (!selectedEvent.value) return;
-  
-  try {
-    isModalLoading.value = true;
-    
-    const updateData = {
-      status: editStatus.value,
-      comment: editComment.value
-    };
-    
-    // TODO: API call untuk update event
-    // await ApiService.put(`events/${selectedEvent.value.uid}`, updateData);
-    
-    // Update local state
-    const index = events.value.findIndex(e => e.uid === selectedEvent.value.uid);
-    if (index !== -1) {
-      events.value[index].status = editStatus.value;
-      if (editComment.value) {
-        events.value[index].comment = editComment.value;
-      }
-    }
-    
-    // Update selected event for immediate UI feedback
-    selectedEvent.value.status = editStatus.value;
-    if (editComment.value) {
-      selectedEvent.value.comment = editComment.value;
-    }
-    
-    console.log('Event updated:', updateData);
-    closeModal();
-    
-  } catch (error) {
-    console.error("Error updating event:", error);
-  } finally {
-    isModalLoading.value = false;
-  }
-};
-
-const updatePaginationInfo = () => {
-  totalItems.value = filteredAndSortedEvents.value.length;
-  totalPages.value = Math.ceil(totalItems.value / itemsPerPage.value);
-  
-  // Adjust current page if it exceeds total pages
-  if (currentPage.value > totalPages.value && totalPages.value > 0) {
-    currentPage.value = totalPages.value;
-  }
-};
-
 const viewEventDetails = (event: Event) => {
   selectedEvent.value = event;
-  console.log('Opening modal for event:', event);
   
   // Show modal using Bootstrap 5
   const modalElement = document.getElementById('eventDetailsModal');
@@ -1020,27 +1236,13 @@ const viewEventDetails = (event: Event) => {
     try {
       const modal = new Modal(modalElement);
       modal.show();
-      console.log('Modal shown successfully');
     } catch (error) {
       console.error('Error showing modal:', error);
-      // Fallback: manually show modal
-      modalElement.classList.add('show');
-      modalElement.style.display = 'block';
-      modalElement.setAttribute('aria-hidden', 'false');
-      
-      // Add backdrop
-      const backdrop = document.createElement('div');
-      backdrop.className = 'modal-backdrop fade show';
-      backdrop.id = 'eventDetailsModalBackdrop';
-      document.body.appendChild(backdrop);
-      
-      // Add body class for modal behavior
-      document.body.classList.add('modal-open');
     }
-  } else {
-    console.error('Modal element not found');
   }
 };
+
+
 
 const closeModal = () => {
   const modalElement = document.getElementById('eventDetailsModal');
@@ -1068,8 +1270,6 @@ const closeModal = () => {
     }
   }
   selectedEvent.value = null;
-  editStatus.value = '';
-  editComment.value = '';
 };
 
 
@@ -1096,40 +1296,110 @@ const handleImageError = (event: any) => {
   event.target.alt = t('appsEventsAlerts.eventsModals.details.imageFallback');
 };
 
-const acknowledgeEvent = async (event: Event) => {
-  try {
-    // TODO: API call to acknowledge event
-    // await ApiService.post(`events/${event.uid}/acknowledge`);
+// const acknowledgeEvent = async (event: Event) => {
+//   try {
+//     // TODO: API call to acknowledge event
+//     // await ApiService.post(`events/${event.uid}/acknowledge`);
     
-    // Update local state
-    const index = events.value.findIndex(e => e.uid === event.uid);
-    if (index !== -1) {
-      events.value[index].status = 'acknowledged';
-    }
-  } catch (error) {
-    console.error("Error acknowledging event:", error);
-  }
-};
+//     // Update local state
+//     const index = events.value.findIndex(e => e.uid === event.event_id);
+//     if (index !== -1) {
+//       events.value[index].status = 'acknowledged';
+//     }
+//   } catch (error) {
+//     console.error("Error acknowledging event:", error);
+//   }
+// };
 
-const resolveEvent = async (event: Event) => {
-  try {
-    // TODO: API call to resolve event
-    // await ApiService.post(`events/${event.uid}/resolve`);
+// const resolveEvent = async (event: Event) => {
+//   try {
+//     // TODO: API call to resolve event
+//     // await ApiService.post(`events/${event.uid}/resolve`);
     
-    // Update local state
-    const index = events.value.findIndex(e => e.uid === event.uid);
-    if (index !== -1) {
-      events.value[index].status = 'resolved';
-    }
-  } catch (error) {
-    console.error("Error resolving event:", error);
-  }
-};
+//     // Update local state
+//     const index = events.value.findIndex(e => e.uid === event.event_id);
+//     if (index !== -1) {
+//       events.value[index].status = 'resolved';
+//     }
+//   } catch (error) {
+//     console.error("Error resolving event:", error);
+//   }
+// };
 
 // Initialize data on component mount
-onMounted(() => {
-  fetchSites();
-  fetchEvents();
+onMounted(async () => {
+  console.log('Events.vue: Component mounted');
+  
+  // Initialize default dates first
+  initializeDefaultDates();
+  
+  // Then load sites
+  await fetchSites();
+  
+  // Initialize selected site filter from localStorage (but don't auto-select first site)
+  const storedSite = localStorage.getItem('lastSelectedSite');
+    if (storedSite && sites.value.some(s => s.uid === storedSite)) {
+      selectedSiteFilter.value = storedSite;
+      tempSelectedSiteFilter.value = storedSite;
+      
+      // Initialize selected camera filter from localStorage with backup recovery
+      const storedCamera = localStorage.getItem('lastSelectedCamera');
+      const backupCamera = localStorage.getItem('lastTempSelectedCamera');
+      
+      let cameraToUse = '';
+      if (storedCamera && storedCamera !== 'null' && storedCamera !== 'undefined') {
+        cameraToUse = storedCamera;
+      } else if (backupCamera && backupCamera !== 'null' && backupCamera !== 'undefined') {
+        cameraToUse = backupCamera;
+        console.log('Events.vue: Using backup camera from localStorage:', backupCamera);
+      }
+      
+      selectedCameraFilter.value = cameraToUse;
+      tempSelectedCameraFilter.value = cameraToUse;
+      
+      console.log('Events.vue: Initialized filters from localStorage', {
+        selectedSite: selectedSiteFilter.value,
+        selectedCamera: selectedCameraFilter.value,
+        tempSite: tempSelectedSiteFilter.value,
+        tempCamera: tempSelectedCameraFilter.value,
+        storedCameraRaw: storedCamera,
+        backupCameraRaw: backupCamera,
+        finalCameraUsed: cameraToUse
+      });
+      
+      console.log('Events.vue: Site and camera filters initialized from localStorage');
+      
+      // Load cameras for the valid stored site
+      await fetchCamerasForFilter(selectedSiteFilter.value);
+      
+      // Only fetch events after sites and cameras are loaded and default dates are set
+      // Wait a bit for DatePicker components to initialize with default values
+      setTimeout(() => {
+        console.log('Events.vue: Initial fetch after DatePicker initialization');
+        fetchEvents();
+      }, 200);
+  } else {
+    // Clear localStorage if stored site doesn't exist
+    localStorage.removeItem('lastSelectedSite');
+    localStorage.removeItem('lastSelectedCamera');
+    selectedSiteFilter.value = '';
+    selectedCameraFilter.value = '';
+    tempSelectedSiteFilter.value = '';
+    tempSelectedCameraFilter.value = '';
+    
+    console.log('Events.vue: Cleared filters, initialized to empty strings', {
+      selectedSite: selectedSiteFilter.value,
+      selectedCamera: selectedCameraFilter.value,
+      tempSite: tempSelectedSiteFilter.value,
+      tempCamera: tempSelectedCameraFilter.value,
+      dateFromValue: dateFrom.value,
+      dateToValue: dateTo.value,
+      tempDateFromValue: tempDateFrom.value,
+      tempDateToValue: tempDateTo.value
+    });
+    
+    console.log('Events.vue: No valid stored site, default dates are set, waiting for user site selection');
+  }
   
   // Add event listener for manual modal backdrop click
   document.addEventListener('click', (e) => {
@@ -1137,5 +1407,12 @@ onMounted(() => {
       closeModal();
     }
   });
+});
+
+// Cleanup timeout on unmount
+onBeforeUnmount(() => {
+  if (fetchTimeout) {
+    clearTimeout(fetchTimeout);
+  }
 });
 </script>

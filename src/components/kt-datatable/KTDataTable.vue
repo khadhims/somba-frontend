@@ -1,42 +1,121 @@
 <template>
   <div class="dataTables_wrapper dt-bootstrap4 no-footer">
-    <TableContent
-      @on-items-select="onItemSelect"
-      @on-sort="onSort"
-      :header="header"
-      :data="dataToDisplay"
-      :checkboxEnabled="checkboxEnabled"
-      :checkboxLabel="checkboxLabel"
-      :empty-table-text="emptyTableText"
-      :sort-label="sortLabel"
-      :sort-order="sortOrder"
-      :loading="loading"
-    >
-      <template v-for="(_, name) in $slots" v-slot:[name]="{ row: item }">
-        <slot :name="name" :row="item" />
-      </template>
-    </TableContent>
-    <TableFooter
-      @page-change="pageChange"
-      :current-page="currentPage"
-      v-model:itemsPerPage="itemsInTable"
-      :count="totalItems"
-      :items-per-page-dropdown-enabled="itemsPerPageDropdownEnabled"
-    />
+    <div class="table-responsive">
+      <table
+        :class="[loading && 'overlay overlay-block']"
+        class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
+      >
+        <!-- Table Header -->
+        <thead class="table-header-modern">
+          <tr>
+            <th v-if="checkboxEnabled" class="checkbox-column">
+              <div class="form-check form-check-sm form-check-custom form-check-solid">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  v-model="headerChecked"
+                  @change="selectAll"
+                />
+              </div>
+            </th>
+            <template v-for="(column, i) in header" :key="i">
+              <th
+                class="table-header-cell"
+                :class="{
+                  'text-center': true,
+                  'sortable': column.sortEnabled,
+                  'active-sort': currentSort.label === column.columnLabel
+                }"
+                @click="handleSort(column.columnLabel, column.sortEnabled)"
+                :style="{
+                  width: column.columnWidth ? `${column.columnWidth}px` : 'auto',
+                  minWidth: column.columnWidth ? `${column.columnWidth}px` : '0',
+                }"
+              >
+                <div class="header-content">
+                  <span class="header-text">{{ column.columnName }}</span>
+                  <i
+                    v-if="currentSort.label === column.columnLabel && column.sortEnabled"
+                    class="sort-icon"
+                    :class="{
+                      'ki-duotone ki-arrow-up': currentSort.order === 'asc',
+                      'ki-duotone ki-arrow-down': currentSort.order === 'desc'
+                    }"
+                  >
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                </div>
+              </th>
+            </template>
+          </tr>
+        </thead>
+
+        <!-- Table Body -->
+        <tbody v-if="dataToDisplay.length !== 0" class="fw-semibold text-gray-600">
+          <template v-for="(row, i) in dataToDisplay" :key="i">
+            <tr>
+              <td v-if="checkboxEnabled">
+                <div class="form-check form-check-sm form-check-custom form-check-solid">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    :value="row[checkboxLabel]"
+                    v-model="selectedItems"
+                    @change="onItemsChange"
+                  />
+                </div>
+              </td>
+              <template v-for="(properties, j) in header" :key="j">
+                <td class="text-start">
+                  <slot :name="`${properties.columnLabel}`" :row="row">
+                    {{ row[properties.columnLabel] }}
+                  </slot>
+                </td>
+              </template>
+            </tr>
+          </template>
+        </tbody>
+        
+        <!-- Empty State -->
+        <tbody v-else>
+          <tr class="odd">
+            <td :colspan="header.length + (checkboxEnabled ? 1 : 0)" class="dataTables_empty">
+              {{ emptyTableText }}
+            </td>
+          </tr>
+        </tbody>
+
+        <!-- Loading Overlay -->
+        <div v-if="loading" class="overlay-wrapper">
+          <div class="overlay-layer bg-dark bg-opacity-5 rounded">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </table>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from "vue";
-import TableContent from "@/components/kt-datatable/table-partials/table-content/TableContent.vue";
-import TableFooter from "@/components/kt-datatable/table-partials/TableFooter.vue";
+import { computed, defineComponent, ref, watch, onMounted } from "vue";
 import type { Sort } from "@/components/kt-datatable/table-partials/models";
+
+interface TableHeader {
+  columnName: string;
+  columnLabel: string;
+  sortEnabled?: boolean;
+  searchable?: boolean;
+  columnWidth?: number;
+}
 
 export default defineComponent({
   name: "kt-datatable",
   props: {
-    header: { type: Array, required: true },
-    data: { type: Array, required: true },
+    header: { type: Array as () => TableHeader[], required: true },
+    data: { type: Array as () => any[], required: true },
     itemsPerPage: { type: Number, default: 10 },
     itemsPerPageDropdownEnabled: {
       type: Boolean,
@@ -62,13 +141,24 @@ export default defineComponent({
     "on-items-select",
     "on-items-per-page-change",
   ],
-  components: {
-    TableContent,
-    TableFooter,
-  },
   setup(props, { emit }) {
     const currentPage = ref(props.currentPage);
     const itemsInTable = ref<number>(props.itemsPerPage);
+    const selectedItems = ref<Array<unknown>>([]);
+    const headerChecked = ref<boolean>(false);
+    const currentSort = ref<Sort>({
+      label: props.sortLabel,
+      order: props.sortOrder,
+    });
+    
+    // Sync itemsInTable with props.itemsPerPage
+    watch(
+      () => props.itemsPerPage,
+      (newValue) => {
+        itemsInTable.value = newValue;
+      },
+      { immediate: true }
+    );
 
     watch(
       () => itemsInTable.value,
@@ -78,21 +168,34 @@ export default defineComponent({
       }
     );
 
+    // Watch data changes to reset selections
+    watch(
+      () => props.data,
+      () => {
+        selectedItems.value = [];
+        headerChecked.value = false;
+      }
+    );
+
+    // Watch selected items to emit changes
+    watch(
+      () => [...selectedItems.value],
+      (currentValue) => {
+        if (currentValue) {
+          emit("on-items-select", currentValue);
+        }
+      }
+    );
+
     const pageChange = (page: number) => {
       currentPage.value = page;
       emit("page-change", page);
     };
 
     const dataToDisplay = computed(() => {
-      if (props.data) {
-        if (props.data.length <= itemsInTable.value) {
-          return props.data;
-        } else {
-          let sliceFrom = (currentPage.value - 1) * itemsInTable.value;
-          return props.data.slice(sliceFrom, sliceFrom + itemsInTable.value);
-        }
-      }
-      return [];
+      // For server-side pagination, just return all data as-is
+      // The server already sends the correct page of data
+      return props.data || [];
     });
 
     const totalItems = computed(() => {
@@ -106,23 +209,195 @@ export default defineComponent({
       return 0;
     });
 
-    const onSort = (sort: Sort) => {
-      emit("on-sort", sort);
+    const handleSort = (label: string, sortEnabled: boolean) => {
+      if (sortEnabled) {
+        if (currentSort.value.label === label) {
+          if (currentSort.value.order === "asc") {
+            currentSort.value.order = "desc";
+          } else {
+            currentSort.value.order = "asc";
+          }
+        } else {
+          currentSort.value.order = "asc";
+          currentSort.value.label = label;
+        }
+        emit("on-sort", currentSort.value);
+      }
     };
 
-    //eslint-disable-next-line
-    const onItemSelect = (selectedItems: any) => {
-      emit("on-items-select", selectedItems);
+    const selectAll = () => {
+      if (headerChecked.value) {
+        // Select all items
+        selectedItems.value = [];
+        // eslint-disable-next-line
+        props.data.forEach((item: any) => {
+          if (item[props.checkboxLabel]) {
+            selectedItems.value.push(item[props.checkboxLabel]);
+          }
+        });
+      } else {
+        // Deselect all
+        selectedItems.value = [];
+      }
     };
+
+    const onItemsChange = () => {
+      // Update header checkbox state based on selected items
+      const totalSelectableItems = props.data.filter((item: any) => item[props.checkboxLabel]).length;
+      headerChecked.value = selectedItems.value.length === totalSelectableItems && totalSelectableItems > 0;
+    };
+
+    onMounted(() => {
+      // Initialize sort
+      if (props.sortLabel) {
+        currentSort.value = {
+          label: props.sortLabel,
+          order: props.sortOrder,
+        };
+        emit("on-sort", currentSort.value);
+      }
+    });
 
     return {
       pageChange,
       dataToDisplay,
-      onSort,
-      onItemSelect,
+      handleSort,
+      selectAll,
+      onItemsChange,
+      selectedItems,
+      headerChecked,
+      currentSort,
       itemsInTable,
       totalItems,
     };
   },
 });
 </script>
+
+<style scoped>
+.table-header-modern {
+  background: var(--bs-gray-100);
+  border: none;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+[data-bs-theme="dark"] .table-header-modern {
+  background: var(--bs-gray-900) !important;
+}
+
+.table-header-cell {
+  padding: 1rem 1.5rem !important;
+  border: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  color: var(--bs-gray-600);
+  transition: all 0.2s ease;
+  position: relative;
+  white-space: nowrap;
+  text-align: center !important;
+}
+
+/* Ensure consistent padding for all table cells */
+.table td {
+  padding: 1rem 1.5rem !important;
+}
+
+/* Override any conflicting Bootstrap table styles */
+.table > :not(caption) > * > * {
+  padding: 1rem 1.5rem !important;
+}
+
+[data-bs-theme="dark"] .table-header-cell {
+  color: #ffffff !important;
+  background-color: var(--bs-gray-900) !important;
+}
+
+.table-header-cell.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.header-text {
+  font-weight: inherit;
+}
+
+.sort-icon {
+  font-size: 0.875rem;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.table-header-cell:hover .sort-icon {
+  opacity: 1;
+}
+
+.checkbox-column {
+  width: 50px;
+  padding: 1rem 1.5rem !important;
+  border: none;
+  background: inherit;
+}
+
+[data-bs-theme="dark"] .checkbox-column {
+  background-color: var(--bs-gray-900) !important;
+}
+
+.checkbox-column .form-check {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* Remove all table borders */
+.table-header-modern tr,
+.table-header-modern th {
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+}
+
+/* Loading overlay */
+.overlay-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+}
+
+.overlay-layer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .table-header-cell,
+  .table td,
+  .table > :not(caption) > * > * {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.8rem;
+  }
+  
+  .checkbox-column {
+    width: 40px;
+    padding: 0.75rem 0.5rem !important;
+  }
+}
+</style>
