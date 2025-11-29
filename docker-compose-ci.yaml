@@ -1,0 +1,16 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.ci
+      args:
+        VITE_APP_NAME: ${VITE_APP_NAME}
+        VITE_APP_VERSION: ${VITE_APP_VERSION}
+        VITE_APP_DEMO: ${VITE_APP_DEMO}
+        VITE_APP_API_URL: ${VITE_APP_API_URL}
+    env_file:
+      - .env
+    ports:
+      - "8090:80"
+    container_name: react-nginx
+    restart: always
