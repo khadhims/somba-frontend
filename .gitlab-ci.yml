@@ -43,7 +43,7 @@ build_and_push_dev:
     - echo "$CI_REGISTRY_PASSWORD" | docker login registry.gitlab.com -u $CI_REGISTRY_USER --password-stdin
   script:
     - |
-      IMAGE_TAG_LATEST="$CI_REGISTRY_IMAGE:dev"
+      IMAGE_URI_LATEST="$CI_REGISTRY_IMAGE:dev"
 
       # Determine version for dev builds
       if [ -n "$CI_COMMIT_TAG" ]; then
@@ -57,9 +57,9 @@ build_and_push_dev:
       # VITE_APP_DEMO is derived from VERSION
       VITE_APP_DEMO="DEMO ${VERSION}"
 
-      IMAGE_TAG="$CI_REGISTRY_IMAGE:$VERSION"
+      IMAGE_URI="$CI_REGISTRY_IMAGE:$VERSION"
 
-      echo "Building DEV image: $IMAGE_TAG"
+      echo "Building DEV image: $IMAGE_URI"
       echo "Using VITE_APP_NAME=$VITE_APP_NAME"
       echo "Using VITE_APP_VERSION=$VERSION"
       echo "Using VITE_APP_DEMO=$VITE_APP_DEMO"
@@ -70,14 +70,14 @@ build_and_push_dev:
         --build-arg VITE_APP_VERSION="$VERSION" \
         --build-arg VITE_APP_DEMO="$VITE_APP_DEMO" \
         --build-arg VITE_APP_API_URL="$VITE_APP_API_URL" \
-        -t "$IMAGE_TAG" \
+        -t "$IMAGE_URI" \
         -f Dockerfile.ci \
         . \
         --progress=plain
 
-      docker push "$IMAGE_TAG"
-      docker tag "$IMAGE_TAG" "$IMAGE_TAG_LATEST"
-      docker push "$IMAGE_TAG_LATEST"
+      docker push "$IMAGE_URI"
+      docker tag "$IMAGE_URI" "$IMAGE_URI_LATEST"
+      docker push "$IMAGE_URI_LATEST"
 
 update_deployment_repo_dev:
   stage: deploy
@@ -116,11 +116,10 @@ update_deployment_repo_dev:
     - |
       # Determine version for dev builds
       if [ -n "$CI_COMMIT_TAG" ]; then
-        VERSION="${CI_COMMIT_TAG}-dev"
+        IMAGE_TAG="${CI_COMMIT_TAG}-dev"
       else
-        VERSION="${CI_COMMIT_SHORT_SHA}-dev"
+        IMAGE_TAG="${CI_COMMIT_SHORT_SHA}-dev"
       fi
-      IMAGE_TAG="$CI_REGISTRY_IMAGE:$VERSION"
       echo "Update using image: $IMAGE_TAG"
       sed -i "s|tag:.*|tag: \"$IMAGE_TAG\"|" deployments/platform/somba-web-ui/values-dev.yaml
       git add deployments/platform/somba-web-ui/values-dev.yaml
@@ -142,7 +141,7 @@ build_and_push_prod:
     - echo "$CI_REGISTRY_PASSWORD" | docker login registry.gitlab.com -u $CI_REGISTRY_USER --password-stdin
   script:
     - |
-      IMAGE_TAG_LATEST="$CI_REGISTRY_IMAGE:latest"
+      IMAGE_URI_LATEST="$CI_REGISTRY_IMAGE:latest"
 
       # Determine version for dev builds
       if [ -n "$CI_COMMIT_TAG" ]; then
@@ -156,9 +155,9 @@ build_and_push_prod:
       # VITE_APP_DEMO is derived from VERSION
       VITE_APP_DEMO="DEMO ${VERSION}"
 
-      IMAGE_TAG="$CI_REGISTRY_IMAGE:$VERSION"
+      IMAGE_URI="$CI_REGISTRY_IMAGE:$VERSION"
 
-      echo "Building DEV image: $IMAGE_TAG"
+      echo "Building DEV image: $IMAGE_URI"
       echo "Using VITE_APP_NAME=$VITE_APP_NAME"
       echo "Using VITE_APP_VERSION=$VERSION"
       echo "Using VITE_APP_DEMO=$VITE_APP_DEMO"
@@ -169,14 +168,14 @@ build_and_push_prod:
         --build-arg VITE_APP_VERSION="$VERSION" \
         --build-arg VITE_APP_DEMO="$VITE_APP_DEMO" \
         --build-arg VITE_APP_API_URL="$VITE_APP_API_URL" \
-        -t "$IMAGE_TAG" \
+        -t "$IMAGE_URI" \
         -f Dockerfile.ci \
         . \
         --progress=plain
 
-      docker push "$IMAGE_TAG"
-      docker tag "$IMAGE_TAG" "$IMAGE_TAG_LATEST"
-      docker push "$IMAGE_TAG_LATEST"
+      docker push "$IMAGE_URI"
+      docker tag "$IMAGE_URI" "$IMAGE_URI_LATEST"
+      docker push "$IMAGE_URI_LATEST"
   needs:
     - build_and_push_dev
 
@@ -218,11 +217,10 @@ update_deployment_repo_prod:
     - |
       # Determine version for prod builds
       if [ -n "$CI_COMMIT_TAG" ]; then
-        VERSION="${CI_COMMIT_TAG}"
+        IMAGE_TAG="${CI_COMMIT_TAG}"
       else
-        VERSION="${CI_COMMIT_SHORT_SHA}"
+        IMAGE_TAG="${CI_COMMIT_SHORT_SHA}"
       fi
-      IMAGE_TAG="$CI_REGISTRY_IMAGE:$VERSION"
       echo "Update using image: $IMAGE_TAG"
       sed -i "s|tag:.*|tag: \"$IMAGE_TAG\"|" deployments/platform/somba-web-ui/values-dev.yaml
       git add deployments/platform/somba-web-ui/values-dev.yaml
