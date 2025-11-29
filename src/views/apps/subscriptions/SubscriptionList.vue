@@ -387,6 +387,7 @@ export default defineComponent({
       {
         columnName: "Actions",
         columnLabel: "actions",
+        sortEnabled: false,
       },
     ]);
 
