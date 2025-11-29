@@ -125,8 +125,8 @@ update_deployment_repo_dev:
       sed -i "s|tag:.*|tag: \"$IMAGE_TAG\"|" deployments/platform/somba-web-ui/values-dev.yaml
       git add deployments/platform/somba-web-ui/values-dev.yaml
       git commit -m "ci: update image tag to $IMAGE_TAG" || echo "No changes"
-    - git push --force origin main
-  dependencies:
+    - git push origin main
+  needs:
     - build_and_push_dev
 
 build_and_push_prod:
@@ -225,7 +225,7 @@ update_deployment_repo_prod:
       sed -i "s|tag:.*|tag: \"$IMAGE_TAG\"|" deployments/platform/somba-web-ui/values-dev.yaml
       git add deployments/platform/somba-web-ui/values-dev.yaml
       git commit -m "ci: update image tag to $IMAGE_TAG" || echo "No changes"
-    - git push --force origin main
-  dependencies:
+    - git push origin main
+  needs:
     - build_and_push_prod
-    # - update_deployment_repo_dev
+    - update_deployment_repo_dev
