@@ -220,8 +220,8 @@ update_deployment_repo_prod:
         IMAGE_TAG="${CI_COMMIT_SHORT_SHA}"
       fi
       echo "Update using image: $IMAGE_TAG"
-      sed -i "s|tag:.*|tag: \"$IMAGE_TAG\"|" deployments/platform/somba-web-ui/values-dev.yaml
-      git add deployments/platform/somba-web-ui/values-dev.yaml
+      sed -i "s|tag:.*|tag: \"$IMAGE_TAG\"|" deployments/platform/somba-web-ui/values-prod.yaml
+      git add deployments/platform/somba-web-ui/values-prod.yaml
       git commit -m "ci: update image tag to $IMAGE_TAG" || echo "No changes"
     - git push origin main
   needs:
