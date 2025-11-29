@@ -60,8 +60,10 @@ build_and_push_dev:
       IMAGE_TAG="$CI_REGISTRY_IMAGE:$VERSION"
 
       echo "Building DEV image: $IMAGE_TAG"
-      echo "VITE_APP_VERSION=$VERSION"
-      echo "VITE_APP_DEMO=$VITE_APP_DEMO"
+      echo "Using VITE_APP_NAME=$VITE_APP_NAME"
+      echo "Using VITE_APP_VERSION=$VERSION"
+      echo "Using VITE_APP_DEMO=$VITE_APP_DEMO"
+      echo "Using VITE_APP_API_URL=$VITE_APP_API_URL"
 
       docker build \
         --build-arg VITE_APP_NAME="$VITE_APP_NAME" \
