@@ -177,6 +177,8 @@ build_and_push_prod:
       docker push "$IMAGE_TAG"
       docker tag "$IMAGE_TAG" "$IMAGE_TAG_LATEST"
       docker push "$IMAGE_TAG_LATEST"
+  needs:
+    - build_and_push_dev
 
 update_deployment_repo_prod:
   stage: deploy
