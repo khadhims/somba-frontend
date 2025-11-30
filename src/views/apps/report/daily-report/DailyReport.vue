@@ -4,9 +4,9 @@
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col-md-4">
-          <h4 class="card-title mb-0">Report Harian Dapur SPPG</h4>
+          <h4 class="card-title mb-0">Report Harian Dapur Makassar</h4>
           <p class="text-muted mb-0">
-            Laporan produksi dan distribusi harian dapur
+            Laporan distribusi makanan area Pantai Losari & sekitarnya
           </p>
         </div>
         <div class="col-md-8">
@@ -862,103 +862,130 @@ const fetchReports = async () => {
     //   }
     // });
     
-    // Mock data for development - More comprehensive data
+    // Mock data for development - Lokasi sekitar Rumah Makan Laelae Makassar
     const today = new Date().toISOString().split('T')[0];
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
     const twoDaysAgo = new Date(Date.now() - 172800000).toISOString().split('T')[0];
     
     const mockData: ReportHarian[] = [
-      // Today's reports
+      // Today's reports - Area Pantai Losari & sekitarnya
       {
         uid: '1',
         tanggal: today,
         jam: '06:00',
-        tujuan_sekolah: 'SDN 1 Jakarta Pusat',
-        driver: 'Budi Santoso',
-        total_porsi: 250,
-        catatan: 'Pengiriman lancar'
+        tujuan_sekolah: 'SDN Inp. Gunung Sari Makassar',
+        driver: 'Andi Mappasessu',
+        total_porsi: 280,
+        catatan: 'Pengiriman lancar, tepat waktu'
       },
       {
         uid: '2',
         tanggal: today,
         jam: '06:30',
-        tujuan_sekolah: 'SDN 2 Jakarta Selatan',
-        driver: 'Ahmad Kusuma',
-        total_porsi: 300,
-        catatan: ''
+        tujuan_sekolah: 'SDN Mangkura Makassar',
+        driver: 'Arief Daeng Tompo',
+        total_porsi: 320,
+        catatan: 'Dekat area Pantai Losari'
       },
       {
         uid: '3',
         tanggal: today,
         jam: '07:00',
-        tujuan_sekolah: 'SDN 3 Jakarta Timur',
-        driver: 'Siti Nurhaliza',
-        total_porsi: 200,
+        tujuan_sekolah: 'SDN Lajangiru Makassar',
+        driver: 'Nurhayati Daeng Sarro',
+        total_porsi: 250,
         catatan: ''
       },
       {
         uid: '4',
         tanggal: today,
         jam: '07:15',
-        tujuan_sekolah: 'SDN 4 Jakarta Barat',
-        driver: 'Budi Santoso',
-        total_porsi: 280,
-        catatan: 'Pengiriman kedua'
+        tujuan_sekolah: 'SDN Baji Pamai Makassar',
+        driver: 'Andi Mappasessu',
+        total_porsi: 290,
+        catatan: 'Pengiriman kedua, area dekat Fort Rotterdam'
       },
       {
         uid: '5',
         tanggal: today,
         jam: '07:30',
-        tujuan_sekolah: 'SDN 5 Jakarta Utara',
-        driver: 'Rudi Hartono',
-        total_porsi: 320,
-        catatan: ''
+        tujuan_sekolah: 'SDN Cambaya Makassar',
+        driver: 'Muhammad Rivai',
+        total_porsi: 310,
+        catatan: 'Dekat Jalan Metro Tanjung Bunga'
+      },
+      {
+        uid: '6',
+        tanggal: today,
+        jam: '07:45',
+        tujuan_sekolah: 'SDN Tanjung Merdeka Makassar',
+        driver: 'Nurhayati Daeng Sarro',
+        total_porsi: 270,
+        catatan: 'Area pelabuhan'
       },
       // Yesterday's reports
       {
-        uid: '6',
-        tanggal: yesterday,
-        jam: '06:00',
-        tujuan_sekolah: 'SDN 1 Jakarta Pusat',
-        driver: 'Ahmad Kusuma',
-        total_porsi: 240,
-        catatan: ''
-      },
-      {
         uid: '7',
         tanggal: yesterday,
-        jam: '06:30',
-        tujuan_sekolah: 'SDN 2 Jakarta Selatan',
-        driver: 'Budi Santoso',
-        total_porsi: 290,
+        jam: '06:00',
+        tujuan_sekolah: 'SDN Inp. Gunung Sari Makassar',
+        driver: 'Arief Daeng Tompo',
+        total_porsi: 275,
         catatan: ''
       },
       {
         uid: '8',
         tanggal: yesterday,
-        jam: '07:15',
-        tujuan_sekolah: 'SDN 3 Jakarta Timur',
-        driver: 'Siti Nurhaliza',
-        total_porsi: 200,
-        catatan: 'Terlambat 15 menit karena macet'
-      },
-      // Two days ago
-      {
-        uid: '9',
-        tanggal: twoDaysAgo,
-        jam: '06:00',
-        tujuan_sekolah: 'SDN 1 Jakarta Pusat',
-        driver: 'Rudi Hartono',
-        total_porsi: 250,
+        jam: '06:30',
+        tujuan_sekolah: 'SDN Mangkura Makassar',
+        driver: 'Andi Mappasessu',
+        total_porsi: 315,
         catatan: ''
       },
       {
+        uid: '9',
+        tanggal: yesterday,
+        jam: '07:00',
+        tujuan_sekolah: 'SDN Lajangiru Makassar',
+        driver: 'Muhammad Rivai',
+        total_porsi: 245,
+        catatan: 'Terlambat 10 menit karena hujan'
+      },
+      {
         uid: '10',
+        tanggal: yesterday,
+        jam: '07:30',
+        tujuan_sekolah: 'SDN Cambaya Makassar',
+        driver: 'Nurhayati Daeng Sarro',
+        total_porsi: 305,
+        catatan: ''
+      },
+      // Two days ago
+      {
+        uid: '11',
+        tanggal: twoDaysAgo,
+        jam: '06:00',
+        tujuan_sekolah: 'SDN Inp. Gunung Sari Makassar',
+        driver: 'Muhammad Rivai',
+        total_porsi: 270,
+        catatan: ''
+      },
+      {
+        uid: '12',
         tanggal: twoDaysAgo,
         jam: '06:45',
-        tujuan_sekolah: 'SDN 6 Jakarta Selatan',
-        driver: 'Ahmad Kusuma',
-        total_porsi: 310,
+        tujuan_sekolah: 'SDN Baji Pamai Makassar',
+        driver: 'Arief Daeng Tompo',
+        total_porsi: 285,
+        catatan: 'Pengiriman lancar'
+      },
+      {
+        uid: '13',
+        tanggal: twoDaysAgo,
+        jam: '07:15',
+        tujuan_sekolah: 'SDN Tanjung Merdeka Makassar',
+        driver: 'Andi Mappasessu',
+        total_porsi: 265,
         catatan: ''
       }
     ];
