@@ -1,53 +1,26 @@
 <template>
-  <!--begin::Alerts Overview-->
+  <!-- Overview Card -->
   <div class="card mb-5">
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col-md-4">
           <h4 class="card-title mb-0">{{ t('appsEventsAlerts.alerts.title') }}</h4>
-          <p class="text-muted mb-0">
-            {{ currentSite ? t('appsEventsAlerts.alerts.subtitleSite', { site: currentSite.name }) : t('appsEventsAlerts.alerts.subtitleAll') }}
-          </p>
+          <p class="text-muted mb-0">{{ currentSite ? t('appsEventsAlerts.alerts.subtitleSite', { site: currentSite.name }) : t('appsEventsAlerts.alerts.subtitleAll') }}</p>
         </div>
         <div class="col-md-8">
           <div class="d-flex justify-content-end align-items-center">
-            <!-- Site Filter -->
             <div class="d-flex align-items-center me-3">
               <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsEventsAlerts.alertsFilters.siteLabel') }}</label>
-              <select
-                v-model="tempSelectedSiteFilter"
-                class="form-select form-select-solid w-200px"
-                :disabled="loadingSites"
-                @change="onTempFilterSiteChange"
-              >
+              <select v-model="tempSelectedSiteFilter" class="form-select form-select-solid w-200px" :disabled="loadingSites" @change="onTempFilterSiteChange">
                 <option value="">{{ t('appsEventsAlerts.alertsFilters.siteAll') }}</option>
-                <option
-                  v-for="site in sites"
-                  :key="site.uid"
-                  :value="site.uid"
-                >
-                  {{ site.name }}
-                </option>
+                <option v-for="site in sites" :key="site.uid" :value="site.uid">{{ site.name }}</option>
               </select>
             </div>
-            
-            <!-- Camera Filter -->
             <div class="d-flex align-items-center">
               <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsEventsAlerts.alertsFilters.cameraLabel') || 'Camera' }}</label>
-              <select
-                v-model="tempSelectedCameraFilter"
-                class="form-select form-select-solid w-200px"
-                :disabled="loadingCameras || !tempSelectedSiteFilter"
-                @change="onTempFilterCameraChange"
-              >
+              <select v-model="tempSelectedCameraFilter" class="form-select form-select-solid w-200px" :disabled="loadingCameras || !tempSelectedSiteFilter" @change="onTempFilterCameraChange">
                 <option value="">{{ t('appsEventsAlerts.alertsFilters.cameraAll') || 'All Cameras' }}</option>
-                <option
-                  v-for="camera in cameras"
-                  :key="camera.uuid"
-                  :value="camera.uuid"
-                >
-                  {{ camera.name }}
-                </option>
+                <option v-for="camera in cameras" :key="camera.uuid" :value="camera.uuid">{{ camera.name }}</option>
               </select>
             </div>
           </div>
@@ -56,445 +29,84 @@
     </div>
   </div>
 
-  <!--begin::Alerts List-->
+  <!-- Alerts List -->
   <div class="card">
-    <!--begin::Card header-->
     <div class="card-header border-0 pt-5">
-      <!--begin::Card title-->
-      <div class="card-title">
-        <h3 class="fw-bold m-0">{{ t('appsEventsAlerts.alerts.title') }}</h3>
-      </div>
-      <!--end::Card title-->
-
-      <!--begin::Card toolbar-->
+      <div class="card-title"><h3 class="fw-bold m-0">{{ t('appsEventsAlerts.alerts.title') }}</h3></div>
       <div class="card-toolbar d-flex justify-content-between align-items-center w-100">
-        <!-- Date Range Filters - Start -->
         <div class="d-flex align-items-center">
           <div class="d-flex align-items-center me-3">
             <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.alertsFilters.fromDateLabel') }}</label>
-            <DatePicker
-              v-model="tempDateFrom"
-              size="sm"
-              :clearable="true"
-              defaultType="monthAgo"
-              style="width: 180px;"
-            />
+            <DatePicker v-model="tempDateFrom" size="sm" :clearable="true" defaultType="monthAgo" style="width:180px;" />
           </div>
-          <div class="d-flex align-items-center me-3">
-            <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.alertsFilters.toDateLabel') }}</label>
-            <DatePicker
-              v-model="tempDateTo"
-              size="sm"
-              :clearable="true"
-              defaultType="today"
-              style="width: 180px;"
-            />
-          </div>
-          <!-- Apply All Filters Button -->
-          <div class="me-3">
-            <button 
-              @click="applyFilters" 
-              class="btn btn-sm btn-primary py-1 px-2"
-              title="Apply All Filters"
-            >
-              <i class="ki-duotone ki-check fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              Apply Filters
-            </button>
-          </div>
-          <!-- Reset Filters Button -->
-          <div class="me-3">
-            <button 
-              @click="resetFilters" 
-              class="btn btn-sm btn-light py-1 px-2"
-              title="Reset to Applied Filters"
-            >
-              <i class="ki-duotone ki-arrows-circle fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              Reset
-            </button>
-          </div>
-          <!-- Reset to Defaults Button -->
-          <div class="me-3">
-            <button 
-              @click="resetToDefaults" 
-              class="btn btn-sm btn-secondary py-1 px-2"
-              title="Reset to Default Values"
-            >
-              <i class="ki-duotone ki-time fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              Defaults
-            </button>
-          </div>
-        </div>
-        
-        <!-- Other Filters - End -->
-        <div class="d-flex align-items-center">
-          <!--begin::Search-->
-          <div class="d-flex align-items-center position-relative my-1 me-3">
-            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            <input
-              type="text"
-              v-model="searchQuery"
-              class="form-control form-control-sm form-control-solid w-200px ps-12"
-              placeholder="Search"
-            />
-          </div>
-          <!--end::Search-->
-
-          <button @click="refreshAlerts" class="btn btn-sm btn-light-primary btn-icon" title="Refresh">
-            <i class="ki-duotone ki-arrows-circle fs-2">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-          </button>
-        </div>
-      </div>
-      <!--end::Card toolbar-->
-    </div>
-    <!--end::Card header-->
-
-    <!--begin::Card body-->
-    <div class="card-body py-3">
-      <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
-        <KTDataTable
-        :data="alerts"
-        :header="tableHeader"
-        :checkbox-enabled="false"
-        :items-per-page-dropdown-enabled="false"
-        :items-per-page="pagination.per_page"
-        :current-page="pagination.page"
-        :total="pagination.total_items"
-        :loading="loading"
-        :sort-label="sortLabel"
-        :sort-order="sortOrder"
-        @on-sort="handleSort"
-        :empty-table-text="t('appsEventsAlerts.alertsTable.empty')"
-      >
-        <template v-slot:alert_name="{ row }">
-          <div class="d-flex align-items-center" style="max-width: 300px; min-width: 250px;">
-            <!-- Thumbnail Image -->
+            <div class="d-flex align-items-center me-3">
+              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.alertsFilters.toDateLabel') }}</label>
+              <DatePicker v-model="tempDateTo" size="sm" :clearable="true" defaultType="today" style="width:180px;" />
+            </div>
             <div class="me-3">
-              <img 
-                v-if="row.image_url"
-                :src="row.image_url" 
-                class="rounded" 
-                alt="Alert Thumbnail"
-                style="width: 60px; height: 60px; object-fit: cover;"
-                @error="handleImageError"
-              />
-              <div v-else class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                <i class="ki-duotone ki-picture fs-2x text-muted">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </div>
+              <button @click="applyFilters" class="btn btn-sm btn-primary py-1 px-2" title="Apply All Filters">
+                <i class="ki-duotone ki-check fs-2"><span class="path1"></span><span class="path2"></span></i>
+                {{ t('common.apply') || 'Apply' }}
+              </button>
             </div>
-            <!-- Violation Name -->
-            <div class="d-flex flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">
-                {{ row.violation_name || 'Unknown Violation' }}
-              </span>
-              <span class="text-muted fs-7">{{ row.camera_name }}</span>
+            <div class="me-3">
+              <button @click="resetFilters" class="btn btn-sm btn-light py-1 px-2" title="Reset to Applied Filters">
+                <i class="ki-duotone ki-arrows-circle fs-2"><span class="path1"></span><span class="path2"></span></i>
+                {{ t('common.reset') || 'Reset' }}
+              </button>
             </div>
+            <div class="me-3">
+              <button @click="resetToDefaults" class="btn btn-sm btn-secondary py-1 px-2" title="Reset to Default Values">
+                <i class="ki-duotone ki-time fs-2"><span class="path1"></span><span class="path2"></span></i>
+                Defaults
+              </button>
+            </div>
+        </div>
+        <div class="d-flex align-items-center">
+          <div class="d-flex align-items-center position-relative my-1 me-3">
+            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4"><span class="path1"></span><span class="path2"></span></i>
+            <input type="text" v-model="searchQuery" class="form-control form-control-sm form-control-solid w-200px ps-12" :placeholder="t('alertsFilters.searchPlaceholder') || 'Search'" />
           </div>
-        </template>
-
-        <template v-slot:duration="{ row }">
-          <span class="text-dark fw-bold fs-6">
-            {{ formatDuration(row.duration_minutes) }}
-          </span>
-        </template>
-
-        <template v-slot:detections="{ row }">
-          <div class="d-flex align-items-center">
-            <span class="badge badge-light-primary fs-6">
-              {{ row.total_detections || 0 }}
-            </span>
-          </div>
-        </template>
-
-        <template v-slot:timestamp="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{
-            row.timestamp && row.timestamp !== 'Unknown Timestamp' ? new Date(row.timestamp).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' }) : row.timestamp || '-'
-          }}</span>
-        </template>
-
-        <template v-slot:status="{ row }">
-          <span
-            class="badge"
-            :class="getStatusBadgeClass(row.status)"
-          >
-            {{ getStatusLabel(row.status) }}
-          </span>
-        </template>
-
-        <template v-slot:actions="{ row }">
-          <button 
-            @click="viewAlertDetail(row)"
-            class="btn btn-sm btn-light-primary btn-icon"
-            title="View Detail"
-            :disabled="loadingDetail"
-          >
-            <i class="ki-duotone ki-eye fs-2">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-            </i>
+          <button @click="refreshAlerts" class="btn btn-sm btn-light-primary btn-icon" title="Refresh">
+            <i class="ki-duotone ki-arrows-circle fs-2"><span class="path1"></span><span class="path2"></span></i>
           </button>
-        </template>
-        </KTDataTable>
+        </div>
       </div>
-      
-      <!--begin::Pagination-->
+    </div>
+    <div class="card-body py-3">
+      <div class="table-responsive" style="max-height:600px; overflow-y:auto;">
+        <AlertsTable
+          :alerts="alerts"
+          :header="tableHeader"
+          :pagination="pagination"
+          :loading="loading"
+          :loading-detail="loadingDetail"
+          :sort-label="sortLabel"
+          :sort-order="sortOrder"
+          @sort="handleSort"
+          @view-detail="viewAlertDetail"
+        />
+      </div>
       <div class="d-flex justify-content-between align-items-center mt-4">
-        <ItemPerPage
-          :model-value="pagination.per_page"
-          :label="t('appsEventsAlerts.alertsTable.pagination.itemsLabel') || 'Items per page:'"
-          :options="[10, 20, 30, 50]"
-          @change="changeItemsPerPage"
-        />
-        <Pagination
-          :page="pagination.page"
-          :per-page="pagination.per_page"
-          :total-items="pagination.total_items"
-          :total-pages="Math.max(1, pagination.total_pages)"
-          @page-change="goToPage"
-        />
+        <ItemPerPage :model-value="pagination.per_page" :label="t('appsEventsAlerts.alertsTable.pagination.itemsLabel') || 'Items per page:'" :options="[10,20,30,50]" @change="changeItemsPerPage" />
+        <Pagination :page="pagination.page" :per-page="pagination.per_page" :total-items="pagination.total_items" :total-pages="Math.max(1, pagination.total_pages)" @page-change="goToPage" />
       </div>
-      <!--end::Pagination-->
     </div>
-    <!--end::Card body-->
   </div>
-  <!--end::Alerts List-->
 
-  <!-- Alert Detail Modal -->
-  <div 
-    v-if="showDetailModal" 
-    class="modal fade show" 
-    style="display: block; background-color: rgba(0,0,0,0.5);"
-    @click.self="closeDetailModal"
-  >
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ t('appsEventsAlerts.alertDetail.title') || 'Alert Detail' }}</h5>
-          <button 
-            type="button" 
-            class="btn-close" 
-            @click="closeDetailModal"
-            aria-label="Close"
-          ></button>
-        </div>
-        
-        <div class="modal-body">
-          <div v-if="loadingDetail" class="text-center py-5">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-          
-          <div v-else-if="selectedAlertDetail" class="row">
-            <!-- Basic Information -->
-            <div class="col-md-6">
-              <h6 class="fw-bold mb-3">{{ t('appsEventsAlerts.alertDetail.basicInfo') || 'Basic Information' }}</h6>
-              <div class="mb-3">
-                <label class="form-label fw-semibold">{{ t('appsEventsAlerts.alertDetail.eventId') || 'Event ID' }}:</label>
-                <p class="mb-0">{{ selectedAlertDetail.event_id || '-' }}</p>
-              </div>
-              <div class="mb-3">
-                <label class="form-label fw-semibold">{{ t('appsEventsAlerts.alertDetail.cameraName') || 'Camera Name' }}:</label>
-                <p class="mb-0">{{ selectedAlertDetail.camera_name || '-' }}</p>
-              </div>
-              <div class="mb-3">
-                <label class="form-label fw-semibold">{{ t('appsEventsAlerts.alertDetail.status') || 'Status' }}:</label>
-                <div v-if="!editMode">
-                  <span class="badge ms-2" :class="getStatusBadgeClass(selectedAlertDetail.status)">
-                    {{ getStatusLabel(selectedAlertDetail.status) }}
-                  </span>
-                </div>
-                <div v-else>
-                  <select v-model="editForm.status" class="form-select form-select-sm mt-2">
-                    <option value="">{{ t('appsEventsAlerts.alertsFilters.selectStatus') || 'Select Status' }}</option>
-                    <option value="not_resolved">{{ t('appsEventsAlerts.alertsTable.status.notResolved') || 'Not Resolved' }}</option>
-                    <option value="resolved">{{ t('appsEventsAlerts.alertsTable.status.resolved') || 'Resolved' }}</option>
-                    <option value="false_alarm">{{ t('appsEventsAlerts.alertsTable.status.falseAlarm') || 'False Alarm' }}</option>
-                  </select>
-                </div>
-              </div>
-              <div class="mb-3">
-                <label class="form-label fw-semibold">{{ t('appsEventsAlerts.alertDetail.duration') || 'Duration' }}:</label>
-                <p class="mb-0">{{ formatDuration(selectedAlertDetail.duration_minutes) }}</p>
-              </div>
-            </div>
-            
-            <!-- Event Details -->
-            <div class="col-md-6">
-              <h6 class="fw-bold mb-3">{{ t('appsEventsAlerts.alertDetail.eventDetails') || 'Event Details' }}</h6>
-              <div class="mb-3">
-                <label class="form-label fw-semibold">{{ t('appsEventsAlerts.alertDetail.eventStart') || 'Event Start' }}:</label>
-                <p class="mb-0">{{ 
-                  selectedAlertDetail.event_start ? 
-                    new Date(selectedAlertDetail.event_start).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : 
-                    '-' 
-                }}</p>
-              </div>
-              <div class="mb-3">
-                <label class="form-label fw-semibold">{{ t('appsEventsAlerts.alertDetail.eventEnd') || 'Event End' }}:</label>
-                <p class="mb-0">{{ 
-                  selectedAlertDetail.event_end ? 
-                    new Date(selectedAlertDetail.event_end).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : 
-                    '-' 
-                }}</p>
-              </div>
-              <div class="mb-3">
-                <label class="form-label fw-semibold">{{ t('appsEventsAlerts.alertDetail.totalDetections') || 'Total Detections' }}:</label>
-                <p class="mb-0">{{ selectedAlertDetail.total_detections || 0 }}</p>
-              </div>
-            </div>
-            
-            <!-- Detected Objects -->
-            <div class="col-12 mt-4" v-if="selectedAlertDetail.detected_objects && selectedAlertDetail.detected_objects.length > 0">
-              <h6 class="fw-bold mb-3">{{ t('appsEventsAlerts.alertDetail.detectedObjects') || 'Detected Objects' }}</h6>
-              <div class="table-responsive">
-                <table class="table table-sm">
-                  <thead>
-                    <tr>
-                      <th>{{ t('appsEventsAlerts.alertDetail.objectType') || 'Object Type' }}</th>
-                      <th>{{ t('appsEventsAlerts.alertDetail.detectionCount') || 'Detection Count' }}</th>
-                      <th>{{ t('appsEventsAlerts.alertDetail.duration') || 'Duration (seconds)' }}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(obj, index) in selectedAlertDetail.detected_objects" :key="index">
-                      <td>{{ obj.object_type || '-' }}</td>
-                      <td>{{ obj.detection_count || 0 }}</td>
-                      <td>{{ formatSecondsShort(obj.duration_seconds) }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            
-            <!-- Activities -->
-            <div class="col-12 mt-4" v-if="selectedAlertDetail.activities && selectedAlertDetail.activities.length > 0">
-              <h6 class="fw-bold mb-3">{{ t('appsEventsAlerts.alertDetail.activities') || 'Activities' }}</h6>
-              <div class="d-flex flex-wrap gap-2">
-                <span v-for="(activity, index) in selectedAlertDetail.activities" :key="index" class="badge badge-light-primary">
-                  {{ activity }}
-                </span>
-              </div>
-            </div>
-            
-            <!-- Comment -->
-            <div class="col-12 mt-4">
-              <h6 class="fw-bold mb-3">{{ t('appsEventsAlerts.alertDetail.comment') || 'Comment' }}</h6>
-              <div v-if="!editMode">
-                <div v-if="selectedAlertDetail.comment" class="p-3 bg-light rounded">
-                  <p class="mb-0">{{ selectedAlertDetail.comment }}</p>
-                </div>
-                <div v-else class="text-muted fst-italic">
-                  {{ t('appsEventsAlerts.alertDetail.noComment') || 'No comment available' }}
-                </div>
-              </div>
-              <div v-else>
-                <textarea 
-                  v-model="editForm.comment" 
-                  class="form-control" 
-                  rows="3" 
-                  :placeholder="t('appsEventsAlerts.alertDetail.commentPlaceholder') || 'Enter comment...'"
-                ></textarea>
-              </div>
-            </div>
-            
-            <!-- Images -->
-            <div class="col-12 mt-4" v-if="selectedAlertDetail.image_url || (selectedAlertDetail.image_urls && selectedAlertDetail.image_urls.length > 0)">
-              <h6 class="fw-bold mb-3">{{ t('appsEventsAlerts.alertDetail.images') || 'Images' }}</h6>
-              <div class="row">
-                <div class="col-md-4 mb-3" v-if="selectedAlertDetail.image_url">
-                  <img 
-                    :src="selectedAlertDetail.image_url" 
-                    class="img-fluid rounded" 
-                    alt="Alert Image"
-                    style="max-height: 200px; object-fit: cover;"
-                  />
-                </div>
-                <div 
-                  class="col-md-4 mb-3" 
-                  v-for="(imageUrl, index) in selectedAlertDetail.image_urls" 
-                  :key="index"
-                >
-                  <img 
-                    :src="imageUrl" 
-                    class="img-fluid rounded" 
-                    alt="Alert Image"
-                    style="max-height: 200px; object-fit: cover;"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div v-else class="text-center py-5">
-            <p class="text-muted">{{ t('appsEventsAlerts.alertDetail.noData') || 'No alert detail available' }}</p>
-          </div>
-        </div>
-        
-        <div class="modal-footer">
-          <div v-if="!editMode" class="d-flex gap-2">
-            <button type="button" class="btn btn-secondary" @click="closeDetailModal">
-              {{ t('common.close') || 'Close' }}
-            </button>
-            <button type="button" class="btn btn-primary" @click="enableEditMode">
-              <i class="ki-duotone ki-pencil fs-2 me-1">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              {{ t('common.edit') || 'Edit' }}
-            </button>
-          </div>
-          <div v-else class="d-flex gap-2">
-            <button type="button" class="btn btn-secondary" @click="cancelEdit">
-              {{ t('common.cancel') || 'Cancel' }}
-            </button>
-            <button 
-              type="button" 
-              class="btn btn-primary" 
-              @click="updateAlert"
-              :disabled="loadingUpdate"
-            >
-              <span v-if="loadingUpdate" class="spinner-border spinner-border-sm me-2"></span>
-              <i v-else class="ki-duotone ki-check fs-2 me-1">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              {{ t('common.update') || 'Update' }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Detail Modal Component -->
+  <AlertDetailModal :show="showDetailModal" :alert="selectedAlertDetail" :loading="loadingDetail" :updating="loadingUpdate" @close="closeDetailModal" @update="handleDetailUpdate" />
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { useI18n } from "vue-i18n";
-import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { useI18n } from 'vue-i18n';
+import AlertsTable from '@/components/apps/events-alerts/AlertsTable.vue';
+import AlertDetailModal from '@/components/apps/events-alerts/AlertDetailModal.vue';
 import Pagination from '@/components/common/Pagination.vue';
 import ItemPerPage from '@/components/ItemPerPage.vue';
 import DatePicker from '@/components/DatePicker.vue';
-import ApiService from "@/core/services/ApiService";
-import { duration } from "moment";
+import ApiService from '@/core/services/ApiService';
 
 const { t } = useI18n();
 
@@ -502,6 +114,7 @@ type detectedObjects = {
   object_type: string;
   duration_seconds: number;
   duration_minutes: number;
+  detection_count?: number;
 }
 
 // Interface definitions
@@ -509,6 +122,7 @@ interface Alert {
   event_id: string;
   camera_uuid: string;
   camera_name: string;
+  violation_name: string;
   event_start: string;
   event_end: string;
   timestamp: string;
@@ -516,7 +130,7 @@ interface Alert {
   total_detections: number;
   detected_objects: detectedObjects[];
   status: string;
-  comments: string;
+  comment: string | null;
   image_url: string;
   image_urls: string[];
   activities: any[];
@@ -526,6 +140,7 @@ interface AlertDetail {
   event_id: string;
   camera_uuid: string;
   camera_name: string;
+  violation_name?: string;
   event_start: string;
   event_end: string;
   duration_minutes: number;
@@ -536,7 +151,7 @@ interface AlertDetail {
     detection_count: number;
   }[];
   status: string;
-  comment: string;
+  comment: string | null;
   image_url: string;
   image_urls: string[];
   activities: any[];
@@ -590,13 +205,7 @@ const pagination = ref({
 const showDetailModal = ref(false);
 const selectedAlertDetail = ref<AlertDetail | null>(null);
 const loadingDetail = ref(false);
-const loadingUpdate = ref(false);
-const editMode = ref(false);
-// Form state for editing
-const editForm = ref({
-  status: '',
-  comment: ''
-});
+const loadingUpdate = ref(false); // retained for modal prop compatibility
 
 // Pagination handlers - simplified like Camera.vue
 let fetchTimeout: number | null = null;
@@ -886,26 +495,7 @@ const fetchAlerts = async () => {
   }
 };
 
-const fetchAlertsByEvents = async (eventId: string) => {
-  loadingDetail.value = true;
-  try {
-    const resp = await ApiService.get(`sites/alerts/${eventId}`);
-    
-    if (resp && resp.data) {
-      // Response langsung berupa object detail alert
-      selectedAlertDetail.value = resp.data;
-      showDetailModal.value = true;
-    } else {
-      console.error('No alert detail data received');
-      selectedAlertDetail.value = null;
-    }
-  } catch (error) {
-    console.error('Error loading alert detail:', error);
-    selectedAlertDetail.value = null;
-  } finally {
-    loadingDetail.value = false;
-  }
-};
+// Removed remote detail fetch; list data already has needed fields.
 
 // Filter alerts
 const filterAlerts = () => {
@@ -1178,22 +768,26 @@ const handleImageError = (event: Event) => {
   }
 };
 
-const viewAlertDetail = (alert: any) => {
-  // Use existing data instead of fetching from API
+const viewAlertDetail = (alert: Alert) => {
   selectedAlertDetail.value = {
     event_id: alert.event_id,
     camera_uuid: alert.camera_uuid,
     camera_name: alert.camera_name,
+    violation_name: alert.violation_name,
     event_start: alert.event_start,
     event_end: alert.event_end,
     duration_minutes: alert.duration_minutes,
     total_detections: alert.total_detections,
-    detected_objects: alert.detected_objects,
+    detected_objects: (alert.detected_objects || []).map(o => ({
+      object_type: o.object_type,
+      duration_seconds: o.duration_seconds,
+      detection_count: (o as any).detection_count ?? 0,
+    })),
     status: alert.status,
     comment: alert.comment,
     image_url: alert.image_url,
     image_urls: alert.image_urls,
-    activities: alert.activities
+    activities: alert.activities,
   };
   showDetailModal.value = true;
 };
@@ -1201,55 +795,18 @@ const viewAlertDetail = (alert: any) => {
 const closeDetailModal = () => {
   showDetailModal.value = false;
   selectedAlertDetail.value = null;
-  editMode.value = false;
-  editForm.value = { status: '', comment: '' };
 };
 
-const enableEditMode = () => {
-  editMode.value = true;
-  // Initialize form with current values
-  if (selectedAlertDetail.value) {
-    editForm.value.status = selectedAlertDetail.value.status || '';
-    editForm.value.comment = selectedAlertDetail.value.comment || '';
-  }
-};
-
-const cancelEdit = () => {
-  editMode.value = false;
-  editForm.value = { status: '', comment: '' };
-};
-
-const updateAlert = async () => {
-  if (!selectedAlertDetail.value?.event_id) {
-    console.error('No event ID found for update');
-    return;
-  }
-
-  loadingUpdate.value = true;
-  try {
-    const response = await ApiService.post(`sites/alerts/${selectedAlertDetail.value.event_id}/update`, {
-      status: editForm.value.status,
-      comment: editForm.value.comment
-    });
-
-    if (response && response.data) {
-      // Update the selected alert detail with new values
-      selectedAlertDetail.value.status = editForm.value.status;
-      selectedAlertDetail.value.comment = editForm.value.comment;
-      
-      // Exit edit mode
-      editMode.value = false;
-      
-      // Refresh the alerts list to show updated data
-      await fetchAlerts();
-      
-      console.log('Alert updated successfully');
-    }
-  } catch (error) {
-    console.error('Error updating alert:', error);
-    // You might want to show an error message to the user here
-  } finally {
-    loadingUpdate.value = false;
+const handleDetailUpdate = (payload: { status: string; comment: string | null }) => {
+  if (!selectedAlertDetail.value) return;
+  // Update local detail
+  selectedAlertDetail.value.status = payload.status;
+  selectedAlertDetail.value.comment = payload.comment;
+  // Reflect in list
+  const idx = alerts.value.findIndex(a => a.event_id === selectedAlertDetail.value?.event_id);
+  if (idx !== -1) {
+    alerts.value[idx].status = payload.status;
+    alerts.value[idx].comment = payload.comment;
   }
 };
 
