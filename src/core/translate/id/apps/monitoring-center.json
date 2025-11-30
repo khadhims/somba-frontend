@@ -21,7 +21,7 @@
 				"progress": "{online}/{total} Terhubung"
 			},
 			"activeAlerts": {
-				"title": "Peringatan Aktif",
+				"title": "Pelanggaran Aktif",
 				"progress": "{count} Kritis"
 			},
 			"storageUsage": {
@@ -65,7 +65,7 @@
 				"status": {
 					"online": "Aktif",
 					"offline": "Non Aktif",
-					"warning": "Peringatan"
+					"warning": "Pelanggaran"
 				},
 				"deviceTypes": {
 					"camera": "Kamera",
@@ -79,8 +79,8 @@
 				}
 			},
 			"alertSummary": {
-				"title": "Ringkasan Peringatan",
-				"empty": "Tidak ada peringatan muncul",
+				"title": "Ringkasan Pelanggaran",
+				"empty": "Tidak ada Pelanggaran muncul",
 				"columns": {
 					"severity": "Tingkat",
 					"message": "Pesan",
@@ -100,7 +100,7 @@
 		},
 		"activities": {
 			"types": {
-				"event": "Kejadian",
+				"event": "Aktifitas",
 				"system": "Sistem",
 				"user": "Pengguna",
 				"maintenance": "Pemeliharaan"
@@ -121,29 +121,29 @@
 			"title": "Ambang Batas Pemantauan Sistem",
 			"thresholds": {
 				"cpu": {
-					"label": "Peringatan Ambang Batas Penggunaan CPU (%)",
-					"warning": "Tingkat peringatan",
+					"label": "Pelanggaran Ambang Batas Penggunaan CPU (%)",
+					"warning": "Tingkat Pelanggaran",
 					"critical": "Tingkat kritis"
 				},
 				"memory": {
-					"label": "Peringatan Ambang Batas Penggunaan Memori (%)",
-					"warning": "Tingkat peringatan",
+					"label": "Pelanggaran Ambang Batas Penggunaan Memori (%)",
+					"warning": "Tingkat Pelanggaran",
 					"critical": "Tingkat kritis"
 				},
 				"storage": {
-					"label": "Peringatan Ambang Batas Penggunaan Penyimpanan (%)",
-					"warning": "Tingkat peringatan",
+					"label": "Pelanggaran Ambang Batas Penggunaan Penyimpanan (%)",
+					"warning": "Tingkat Pelanggaran",
 					"critical": "Tingkat kritis"
 				},
 				"bandwidth": {
-					"label": "Peringatan Ambang Batas Bandwidth Jaringan (%)",
-					"warning": "Tingkat peringatan",
+					"label": "Pelanggaran Ambang Batas Bandwidth Jaringan (%)",
+					"warning": "Tingkat Pelanggaran",
 					"critical": "Tingkat kritis"
 				}
 			},
 			"deviceMonitoring": {
 				"title": "Pemantauan Kesehatan Perangkat",
-				"cameraOfflineAlert": "Peringatan ketika kamera offline",
+				"cameraOfflineAlert": "Pelanggaran ketika kamera offline",
 				"nvrHealthCheck": "Pemantauan kesehatan sistem NVR",
 				"offlineTimeout": {
 					"label": "Timeout Offline Perangkat (menit)",
@@ -184,7 +184,7 @@
 				"systemHealth": "Kesehatan Sistem",
 				"performanceCharts": "Grafik Performa",
 				"deviceStatus": "Tabel Status Perangkat",
-				"alertSummary": "Ringkasan Peringatan",
+				"alertSummary": "Ringkasan Pelanggaran",
 				"recentActivities": "Aktivitas Terbaru"
 			},
 			"chartSettings": {
@@ -231,7 +231,7 @@
 				"reportTypes": {
 					"label": "Jenis Laporan",
 					"systemHealth": "Ringkasan Kesehatan Sistem",
-					"alertSummary": "Ringkasan Peringatan",
+					"alertSummary": "Ringkasan Pelanggaran",
 					"deviceStatus": "Status Perangkat"
 				},
 				"emailRecipients": {
@@ -266,7 +266,7 @@
 				"includeData": {
 					"label": "Sertakan Data",
 					"performanceMetrics": "Metrik Performa",
-					"alertHistory": "Riwayat Peringatan",
+					"alertHistory": "Riwayat Pelanggaran",
 					"deviceLogs": "Log Perangkat"
 				},
 				"actions": {

@@ -1,23 +1,23 @@
 {
 	"events": {
-		"title": "Manajemen Kejadian",
-		"subtitleAll": "Pantau dan kelola kejadian keamanan di semua Lokasi",
-		"subtitleSite": "Pantau dan kelola kejadian keamanan untuk {site}"
+		"title": "Manajemen Aktifitas",
+		"subtitleAll": "Pantau dan kelola Aktifitas keamanan di semua Lokasi",
+		"subtitleSite": "Pantau dan kelola Aktifitas keamanan untuk {site}"
 	},
 	"alerts": {
-		"title": "Manajemen Peringatan",
-		"subtitleAll": "Pantau dan kelola peringatan keamanan di semua Lokasi",
-		"subtitleSite": "Pantau dan kelola peringatan keamanan untuk {site}"
+		"title": "Manajemen Pelanggaran",
+		"subtitleAll": "Pantau dan kelola Pelanggaran keamanan di semua Lokasi",
+		"subtitleSite": "Pantau dan kelola Pelanggaran keamanan untuk {site}"
 	},
 	"eventsFilters": {
 		"fromDateLabel": "Dari:",
 		"toDateLabel": "Ke:",
 		"siteLabel": "Lokasi:",
 		"cameraLabel": "Kamera:",
-		"cameraAll":"Semua Kamera",
+		"cameraAll": "Semua Kamera",
 		"siteAll": "Semua Lokasi",
 		"sampleSite": "Lokasi A",
-		"searchPlaceholder": "Cari kejadian...",
+		"searchPlaceholder": "Cari Aktifitas...",
 		"typeLabel": "Tipe:",
 		"typeAll": "Semua Tipe",
 		"severityLabel": "Level:",
@@ -34,7 +34,7 @@
 		"cameraAll": "Semua Kamera",
 		"siteAll": "Semua Lokasi",
 		"sampleSite": "Lokasi A",
-		"searchPlaceholder": "Cari peringatan...",
+		"searchPlaceholder": "Cari Pelanggaran...",
 		"typeLabel": "Tipe:",
 		"typeAll": "Semua Tipe",
 		"severityLabel": "Level Keparahan:",
@@ -67,15 +67,15 @@
 	},
 	"alertsCards": {
 		"activeAlerts": {
-			"title": "Peringatan Aktif",
+			"title": "Pelanggaran Aktif",
 			"progress": "{count} Kritis"
 		},
 		"criticalAlerts": {
-			"title": "Peringatan Kritis",
+			"title": "Pelanggaran Kritis",
 			"progress": "Perlu Tindakan"
 		},
 		"acknowledgedAlerts": {
-			"title": "Peringatan Diakui",
+			"title": "Pelanggaran Diakui",
 			"progress": "{count} Tertangani"
 		},
 		"responseTime": {
@@ -132,9 +132,9 @@
 		}
 	},
 	"alertsTable": {
-		"title": "Peringatan Terbaru",
+		"title": "Pelanggaran Terbaru",
 		"columns": {
-			"alert": "Nama Peringatan",
+			"alert": "Nama Pelanggaran",
 			"camera": "Nama Kamera",
 			"timestamp": "Waktu",
 			"activities": "Aktivitas",
@@ -143,9 +143,9 @@
 			"responseTime": "Waktu Respon",
 			"actions": "Aksi"
 		},
-		"empty": "Tidak ada peringatan",
+		"empty": "Tidak ada Pelanggaran",
 		"noLocation": "Tanpa lokasi",
-		"generatedDescription": "Peringatan dipicu - level {severity}",
+		"generatedDescription": "Pelanggaran dipicu - level {severity}",
 		"pagination": {
 			"info": "Menampilkan {start} sampai {end} dari {total} entri",
 			"itemsLabel": "Item"
@@ -198,9 +198,9 @@
 	},
 	"eventsModals": {
 		"details": {
-			"title": "Detail Kejadian",
-			"image": "Gambar Kejadian:",
-			"eventName": "Nama Kejadian:",
+			"title": "Detail Aktifitas",
+			"image": "Gambar Aktifitas:",
+			"eventName": "Nama Aktifitas:",
 			"cameraName": "Nama Kamera:",
 			"status": "Status:",
 			"description": "Deskripsi:",
@@ -211,13 +211,13 @@
 			"avgDetection": "Rata-rata Inferensi:",
 			"comments": "Komentar:",
 			"comment": "Komentar",
-			"commentPlaceholder": "Tulis catatan untuk Kejadian ini...",
-			"eventIdHint": "ID Kejadian:",
+			"commentPlaceholder": "Tulis catatan untuk Aktifitas ini...",
+			"eventIdHint": "ID Aktifitas:",
 			"imageFallback": "Gambar tidak tersedia"
 		},
 		"edit": {
-			"title": "Ubah Kejadian",
-			"eventType": "Tipe Kejadian:",
+			"title": "Ubah Aktifitas",
+			"eventType": "Tipe Aktifitas:",
 			"severity": "Level:",
 			"currentStatus": "Status Saat Ini:",
 			"process": "Proses:",
@@ -229,15 +229,15 @@
 			"updateStatus": "Perbarui Status:",
 			"selectStatus": "Pilih status baru...",
 			"comment": "Komentar:",
-			"commentPlaceholder": "Tulis catatan untuk Kejadian ini...",
-			"eventId": "ID Kejadian:"
+			"commentPlaceholder": "Tulis catatan untuk Aktifitas ini...",
+			"eventId": "ID Aktifitas:"
 		}
 	},
 	"alertsModals": {
 		"details": {
-			"title": "Detail Peringatan",
-			"image": "Gambar Peringatan:",
-			"alertName": "Nama Peringatan:",
+			"title": "Detail Pelanggaran",
+			"image": "Gambar Pelanggaran:",
+			"alertName": "Nama Pelanggaran:",
 			"cameraUuid": "UUID Kamera:",
 			"status": "Status:",
 			"description": "Deskripsi:",
@@ -249,13 +249,13 @@
 			"assignedTo": "Ditugaskan Ke:",
 			"comments": "Komentar:",
 			"comment": "Komentar",
-			"commentPlaceholder": "Tulis catatan untuk peringatan ini...",
-			"alertIdHint": "ID Peringatan:",
+			"commentPlaceholder": "Tulis catatan untuk Pelanggaran ini...",
+			"alertIdHint": "ID Pelanggaran:",
 			"imageFallback": "Gambar tidak tersedia"
 		},
 		"edit": {
-			"title": "Ubah Peringatan",
-			"alertType": "Tipe Peringatan:",
+			"title": "Ubah Pelanggaran",
+			"alertType": "Tipe Pelanggaran:",
 			"severity": "Level Keparahan:",
 			"currentStatus": "Status Saat Ini:",
 			"assignedTo": "Ditugaskan Ke:",
@@ -266,8 +266,8 @@
 			"selectStatus": "Pilih status baru...",
 			"selectAssignee": "Pilih petugas...",
 			"comment": "Komentar:",
-			"commentPlaceholder": "Tulis catatan untuk peringatan ini...",
-			"alertId": "ID Peringatan:"
+			"commentPlaceholder": "Tulis catatan untuk Pelanggaran ini...",
+			"alertId": "ID Pelanggaran:"
 		}
 	},
 	"eventsForm": {
@@ -300,13 +300,13 @@
 		"batchProcess": "Proses Batch Event"
 	},
 	"alertsBulkActions": {
-		"selectedItems": "{{count}} peringatan dipilih",
-		"deleteSelected": "Hapus Peringatan Yang Dipilih",
+		"selectedItems": "{{count}} Pelanggaran dipilih",
+		"deleteSelected": "Hapus Pelanggaran Yang Dipilih",
 		"markAsAcknowledged": "Tandai Sebagai Diakui",
 		"markAsResolved": "Tandai Sebagai Selesai",
 		"escalateSelected": "Eskalasi Yang Dipilih",
 		"assignTo": "Tugaskan Ke",
-		"exportSelected": "Ekspor Peringatan Yang Dipilih"
+		"exportSelected": "Ekspor Pelanggaran Yang Dipilih"
 	},
 	"eventsToast": {
 		"success": {
@@ -327,23 +327,23 @@
 	},
 	"alertsToast": {
 		"success": {
-			"acknowledged": "Peringatan berhasil diakui",
-			"resolved": "Peringatan berhasil diselesaikan",
-			"escalated": "Peringatan berhasil dieskalasi",
-			"assigned": "Peringatan berhasil ditugaskan",
-			"deleted": "Peringatan berhasil dihapus",
-			"bulkDeleted": "{{count}} peringatan berhasil dihapus",
-			"statusUpdated": "Status peringatan berhasil diperbarui",
-			"exported": "{{count}} peringatan berhasil diekspor"
+			"acknowledged": "Pelanggaran berhasil diakui",
+			"resolved": "Pelanggaran berhasil diselesaikan",
+			"escalated": "Pelanggaran berhasil dieskalasi",
+			"assigned": "Pelanggaran berhasil ditugaskan",
+			"deleted": "Pelanggaran berhasil dihapus",
+			"bulkDeleted": "{{count}} Pelanggaran berhasil dihapus",
+			"statusUpdated": "Status Pelanggaran berhasil diperbarui",
+			"exported": "{{count}} Pelanggaran berhasil diekspor"
 		},
 		"error": {
-			"acknowledgeFailed": "Gagal mengakui peringatan",
-			"resolveFailed": "Gagal menyelesaikan peringatan",
-			"escalateFailed": "Gagal mengeskaloasi peringatan",
-			"assignFailed": "Gagal menugaskan peringatan",
-			"deleteFailed": "Gagal menghapus peringatan",
-			"loadFailed": "Gagal memuat data peringatan",
-			"exportFailed": "Gagal mengekspor peringatan"
+			"acknowledgeFailed": "Gagal mengakui Pelanggaran",
+			"resolveFailed": "Gagal menyelesaikan Pelanggaran",
+			"escalateFailed": "Gagal mengeskaloasi Pelanggaran",
+			"assignFailed": "Gagal menugaskan Pelanggaran",
+			"deleteFailed": "Gagal menghapus Pelanggaran",
+			"loadFailed": "Gagal memuat data Pelanggaran",
+			"exportFailed": "Gagal mengekspor Pelanggaran"
 		}
 	},
 	"format": {
@@ -351,8 +351,8 @@
 	},
 	"settings": {
 		"header": {
-			"title": "Pengaturan Kegiatan & Peringatan",
-			"description": "Atur deteksi kegiatan dan notifikasi peringatan"
+			"title": "Pengaturan Kegiatan & Pelanggaran",
+			"description": "Atur deteksi kegiatan dan notifikasi Pelanggaran"
 		},
 		"eventDetection": {
 			"title": "Deteksi Event",
@@ -372,19 +372,19 @@
 				"label": "Pemantauan Sistem",
 				"description": "Pantau kesehatan kamera dan NVR",
 				"cameraOffline": "Deteksi Kamera Offline",
-				"lowDiskSpace": "Peringatan Ruang Disk Rendah",
+				"lowDiskSpace": "Pelanggaran Ruang Disk Rendah",
 				"networkIssues": "Deteksi Gangguan Jaringan"
 			},
 			"saveButton": "Simpan Pengaturan Event"
 		},
 		"notifications": {
-			"title": "Notifikasi Peringatan",
+			"title": "Notifikasi Pelanggaran",
 			"email": {
 				"label": "Notifikasi Email",
-				"description": "Kirim notifikasi peringatan melalui email",
+				"description": "Kirim notifikasi Pelanggaran melalui email",
 				"recipients": "Penerima Email",
 				"placeholder": "Masukkan alamat email, satu per baris",
-				"threshold": "Ambang Level Peringatan",
+				"threshold": "Ambang Level Pelanggaran",
 				"options": {
 					"low": "Rendah",
 					"medium": "Sedang",
@@ -394,10 +394,10 @@
 			},
 			"sms": {
 				"label": "Notifikasi SMS",
-				"description": "Kirim peringatan kritis melalui SMS",
+				"description": "Kirim Pelanggaran kritis melalui SMS",
 				"numbers": "Nomor Telepon",
 				"placeholder": "Masukkan nomor telepon, satu per baris",
-				"threshold": "Ambang Peringatan SMS",
+				"threshold": "Ambang Pelanggaran SMS",
 				"options": {
 					"high": "Tinggi",
 					"critical": "Kritis"
