@@ -182,86 +182,16 @@
 
     <!--begin::Card body-->
     <div class="card-body py-3">
-      <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
-        <KTDataTable
-        :data="filteredAndSortedEvents"
+      <EventsTable
+        :events="filteredAndSortedEvents"
         :header="tableHeader"
-        :checkbox-enabled="false"
-        :items-per-page-dropdown-enabled="false"
-        :items-per-page="itemsPerPage"
-        :current-page="currentPage"
-        :total="totalItems"
+        :pagination="{ page: currentPage, per_page: itemsPerPage, total_items: totalItems, total_pages: totalPages }"
         :loading="loading"
         :sort-label="sortLabel"
         :sort-order="sortOrder"
-        @on-sort="handleSort"
-        :empty-table-text="t('appsEventsAlerts.eventsTable.empty')"
-      >
-        <template v-slot:event_name="{ row }">
-          <div style="max-width: 200px; min-width: 180px;">
-            <span class="text-dark fw-bold text-hover-primary fs-6" style="word-break: break-all;">
-              {{ row.event_name }}
-            </span>
-          </div>
-        </template>
-
-        <template v-slot:camera_name="{ row }">
-          <div class="d-flex align-items-center" style="max-width: 200px; min-width: 180px;">
-            <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold fs-6" style="word-break: break-all;">{{ row.camera_name }}</span>
-              <span class="text-muted fw-semibold d-block fs-7">{{ row.location || t('appsEventsAlerts.eventsTable.noLocation') }}</span>
-            </div>
-          </div>
-        </template>
-
-        <template v-slot:startTime="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{
-            row.event_start ? new Date(row.event_start).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-'
-          }}</span>
-          <span class="text-muted fw-semibold d-block fs-7">
-            {{ row.event_start ? new Date(row.event_start).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false }).substring(0, 5) : '-' }}
-            <span v-if="row.event_end"> - {{ new Date(row.event_end).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false }).substring(0, 5) }}</span>
-          </span>
-        </template>
-
-        <template v-slot:duration="{ row }">
-          <span class="text-dark fw-bold fs-6">
-            {{ row.duration_minutes ?? t('appsEventsAlerts.format.notAvailable') }}
-          </span>
-        </template>
-
-        <template v-slot:avg_seconds_with_detection="{ row }">
-          <span class="text-dark fw-bold fs-6">
-            {{ row.avg_seconds_with_detection }}
-          </span>
-        </template>
-
-        <template v-slot:status="{ row }">
-          <span
-            class="badge"
-            :class="getStatusBadgeClass(row.status)"
-          >
-            {{ getStatusLabel(row.status) }}
-          </span>
-        </template>
-
-        <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end flex-shrink-0">
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm"
-              @click="viewEventDetails(row)"
-              :title="t('appsEventsAlerts.table.actions.view')"
-            >
-              <i class="ki-duotone ki-eye fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-              </i>
-            </button>
-          </div>
-        </template>
-        </KTDataTable>
-      </div>
+        @sort="handleSort"
+        @view-detail="viewEventDetails"
+      />
       
       <!--begin::Pagination-->
       <div class="d-flex justify-content-between align-items-center mt-4">
@@ -285,85 +215,13 @@
   </div>
   <!--end::Events List-->
 
-  <!--begin::Event Details Modal-->
-  <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="modal-title fw-bold" id="eventDetailsModalLabel">{{ t('appsEventsAlerts.eventsModals.details.title') }}</h3>
-          <button type="button" class="btn-close" @click="closeModal" :aria-label="t('appsEventsAlerts.actions.close')"></button>
-        </div>
-        <div class="modal-body" v-if="selectedEvent">
-          <!--begin::Event Image-->
-          <div class="row mb-6" v-if="selectedEvent.image_url">
-            <div class="col-12">
-              <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.image') }}</label>
-              <div class="text-center">
-                <img 
-                  :src="selectedEvent.image_url" 
-                  :alt="selectedEvent.description"
-                  class="img-fluid rounded border"
-                  style="max-height: 300px; object-fit: contain;"
-                  @error="handleImageError"
-                />
-              </div>
-            </div>
-          </div>
-          <!--end::Event Image-->
-
-          <!--begin::Event Info Grid-->
-          <div class="row g-6">
-            <!--begin::Left Column-->
-            <div class="col-md-6">
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.eventName') }}</label>
-                <p class="text-gray-800 mb-0 fs-4 font-monospace">{{ selectedEvent.event_name }}</p>
-              </div>
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.cameraName') }}</label>
-                <p class="text-gray-800 mb-0 fs-4 font-monospace">{{ selectedEvent.camera_name }}</p>
-              </div>
-              
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.status') }}</label>
-                <div>
-                  <span class="badge fs-5" :class="getStatusBadgeClass(selectedEvent.status)" style="padding: 8px 12px;">
-                    {{ getStatusLabel(selectedEvent.status) }}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <!--end::Left Column-->
-            <!--begin::Right Column-->
-            <div class="col-md-6">
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.startTime') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.event_start) }}</p>
-              </div>
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.endTime') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ formatDateTime(selectedEvent.event_end) }}</p>
-              </div>
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.duration') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.duration_minutes }}</p>
-              </div>
-              <div class="mb-4">
-                <label class="fw-semibold fs-4 mb-2">{{ t('appsEventsAlerts.eventsModals.details.avgDetection') }}</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ selectedEvent.avg_seconds_with_detection }}</p>
-              </div>
-            </div>
-            <!--end::Right Column-->
-          </div>
-          <!--end::Event Info Grid-->
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary fs-5 px-4 py-2" @click="closeModal">{{ t('appsEventsAlerts.actions.close') }}</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--end::Event Details Modal-->
+  <!-- Event Detail Modal -->
+  <EventDetailModal
+    :show="showDetailModal"
+    :event="selectedEvent"
+    :loading="loadingDetail"
+    @close="closeModal"
+  />
 </template>
 
 <script setup lang="ts">
@@ -376,6 +234,8 @@ import Pagination from '@/components/common/Pagination.vue';
 import ItemPerPage from '@/components/ItemPerPage.vue';
 import DatePicker from '@/components/DatePicker.vue';
 import ApiService from "@/core/services/ApiService";
+import EventsTable from '@/components/apps/events-alerts/EventsTable.vue';
+import EventDetailModal from '@/components/apps/events-alerts/EventDetailModal.vue';
 
 const { t } = useI18n();
 
@@ -394,7 +254,8 @@ interface Event {
   total_minutes?: number;
   avg_seconds_with_detection?: number;
   status: 'active' | 'acknowledged' | 'resolved';
-  imge_url?: string;
+  image_url?: string;
+  image_urls?: string[];
   activities?: any[];
 }
 
@@ -470,6 +331,8 @@ const totalItems = ref(0);
 const totalPages = ref(0);
 // Modal state
 const selectedEvent = ref<any>(null);
+const showDetailModal = ref(false);
+const loadingDetail = ref(false);
 
 // Pagination handlers
 let fetchTimeout: number | null = null;
@@ -666,7 +529,8 @@ const fetchEvents = async () => {
         avg_seconds_with_detection: item.avg_seconds_with_detection,
         // type: 'motion', // default type - adjust if API provides type later
         status: item.status || 'active',
-        image_url: '',
+        image_url: item.image_url || '',
+        image_urls: item.image_urls || [],
         activities: item.activities || [],
       }
     });
@@ -1229,46 +1093,13 @@ const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
 
 const viewEventDetails = (event: Event) => {
   selectedEvent.value = event;
-  
-  // Show modal using Bootstrap 5
-  const modalElement = document.getElementById('eventDetailsModal');
-  if (modalElement) {
-    try {
-      const modal = new Modal(modalElement);
-      modal.show();
-    } catch (error) {
-      console.error('Error showing modal:', error);
-    }
-  }
+  showDetailModal.value = true;
 };
 
 
 
 const closeModal = () => {
-  const modalElement = document.getElementById('eventDetailsModal');
-  if (modalElement) {
-    try {
-      const modal = Modal.getInstance(modalElement);
-      if (modal) {
-        modal.hide();
-      }
-    } catch (error) {
-      console.error('Error hiding modal:', error);
-      // Fallback: manually hide modal
-      modalElement.classList.remove('show');
-      modalElement.style.display = 'none';
-      modalElement.setAttribute('aria-hidden', 'true');
-      
-      // Remove backdrop
-      const backdrop = document.getElementById('eventDetailsModalBackdrop');
-      if (backdrop) {
-        backdrop.remove();
-      }
-      
-      // Remove body class
-      document.body.classList.remove('modal-open');
-    }
-  }
+  showDetailModal.value = false;
   selectedEvent.value = null;
 };
 

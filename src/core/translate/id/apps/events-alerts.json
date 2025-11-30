@@ -214,11 +214,13 @@
 			"duration": "Durasi (menit):",
 			"totalMinutes": "Total Menit:",
 			"avgDetection": "Rata-rata Inferensi:",
+			"activities": "Aktivitas:",
 			"comments": "Komentar:",
 			"comment": "Komentar",
 			"commentPlaceholder": "Tulis catatan untuk Aktifitas ini...",
 			"eventIdHint": "ID Aktifitas:",
-			"imageFallback": "Gambar tidak tersedia"
+			"imageFallback": "Gambar tidak tersedia",
+			"noData": "Data event tidak tersedia"
 		},
 		"edit": {
 			"title": "Ubah Aktifitas",

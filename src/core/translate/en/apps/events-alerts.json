@@ -224,6 +224,7 @@
 			"title": "Event Details",
 			"image": "Event Image:",
 			"eventId": "Event ID:",
+			"eventName": "Event Name:",
 			"cameraName": "Camera Name:",
 			"status": "Status:",
 			"description": "Description:",
@@ -232,11 +233,13 @@
 			"duration": "Duration:",
 			"totalMinutes": "Total Minutes:",
 			"avgDetection": "Average Detection Time:",
+			"activities": "Activities:",
 			"comments": "Comments:",
 			"comment": "Comment",
 			"commentPlaceholder": "Leave a comment about this event...",
 			"eventIdHint": "Event ID:",
-			"imageFallback": "Image not available"
+			"imageFallback": "Image not available",
+			"noData": "Event data not available"
 		},
 		"edit": {
 			"title": "Edit Event",
