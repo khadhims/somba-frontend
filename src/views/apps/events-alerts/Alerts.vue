@@ -136,21 +136,6 @@
         
         <!-- Other Filters - End -->
         <div class="d-flex align-items-center">
-          <!-- Severity Filter -->
-          <div class="me-3">
-            <select
-              v-model="selectedSeverityType"
-              @change="filterAlerts"
-              class="form-select form-select-sm form-select-solid w-150px"
-            >
-              <option value="">{{ t('appsEventsAlerts.alertsFilters.severityAll') }}</option>
-              <option value="low">{{ t('appsEventsAlerts.alertsTable.severity.low') }}</option>
-              <option value="medium">{{ t('appsEventsAlerts.alertsTable.severity.medium') }}</option>
-              <option value="high">{{ t('appsEventsAlerts.alertsTable.severity.high') }}</option>
-              <option value="critical">{{ t('appsEventsAlerts.alertsTable.severity.critical') }}</option>
-            </select>
-          </div>
-
           <!--begin::Search-->
           <div class="d-flex align-items-center position-relative my-1 me-3">
             <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
@@ -196,24 +181,45 @@
         :empty-table-text="t('appsEventsAlerts.alertsTable.empty')"
       >
         <template v-slot:alert_name="{ row }">
-          <div style="max-width: 200px; min-width: 180px;">
-            <span class="text-dark fw-bold text-hover-primary fs-6" style="word-break: break-all;">
-              {{ row.name }}
-            </span>
+          <div class="d-flex align-items-center" style="max-width: 300px; min-width: 250px;">
+            <!-- Thumbnail Image -->
+            <div class="me-3">
+              <img 
+                v-if="row.image_url"
+                :src="row.image_url" 
+                class="rounded" 
+                alt="Alert Thumbnail"
+                style="width: 60px; height: 60px; object-fit: cover;"
+                @error="handleImageError"
+              />
+              <div v-else class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                <i class="ki-duotone ki-picture fs-2x text-muted">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </div>
+            </div>
+            <!-- Violation Name -->
+            <div class="d-flex flex-column">
+              <span class="text-dark fw-bold text-hover-primary fs-6">
+                {{ row.violation_name || 'Unknown Violation' }}
+              </span>
+              <span class="text-muted fs-7">{{ row.camera_name }}</span>
+            </div>
           </div>
         </template>
 
-        <template v-slot:severity="{ row }">
-          <span class="badge" :class="getSeverityBadgeClass(row.severity)">
-            {{ getSeverityLabel(row.severity) }}
+        <template v-slot:duration="{ row }">
+          <span class="text-dark fw-bold fs-6">
+            {{ formatDuration(row.duration_minutes) }}
           </span>
         </template>
 
-        <template v-slot:activities="{ row }">
-          <div class="d-flex align-items-center" style="max-width: 200px; min-width: 180px;">
-            <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold fs-6" style="word-break: break-all;">{{ row.activities }}</span>
-            </div>
+        <template v-slot:detections="{ row }">
+          <div class="d-flex align-items-center">
+            <span class="badge badge-light-primary fs-6">
+              {{ row.total_detections || 0 }}
+            </span>
           </div>
         </template>
 
@@ -319,11 +325,9 @@
                 <div v-else>
                   <select v-model="editForm.status" class="form-select form-select-sm mt-2">
                     <option value="">{{ t('appsEventsAlerts.alertsFilters.selectStatus') || 'Select Status' }}</option>
-                    <option value="active">{{ t('appsEventsAlerts.alertsTable.status.active') || 'Active' }}</option>
-                    <option value="acknowledged">{{ t('appsEventsAlerts.alertsTable.status.acknowledged') || 'Acknowledged' }}</option>
+                    <option value="not_resolved">{{ t('appsEventsAlerts.alertsTable.status.notResolved') || 'Not Resolved' }}</option>
                     <option value="resolved">{{ t('appsEventsAlerts.alertsTable.status.resolved') || 'Resolved' }}</option>
-                    <option value="unresolved">{{ t('appsEventsAlerts.alertsTable.status.unresolved') || 'Unresolved' }}</option>
-                    <option value="falsedetection">{{ t('appsEventsAlerts.alertsTable.status.falseDetection') || 'False Detection' }}</option>
+                    <option value="false_alarm">{{ t('appsEventsAlerts.alertsTable.status.falseAlarm') || 'False Alarm' }}</option>
                   </select>
                 </div>
               </div>
@@ -561,8 +565,6 @@ const searchQuery = ref("");
 // Header filter state (site and camera)
 const selectedSiteFilter = ref<string>("");
 const selectedCameraFilter = ref<string>("");
-const selectedEventType = ref("");
-const selectedSeverityType = ref("");
 // Date range filters
 const dateFrom = ref<string | null>(null);
 const dateTo = ref<string | null>(null);
@@ -681,16 +683,16 @@ const tableHeader = computed(() => [
     searchable: true,
   },
   {
-    columnName: t('appsEventsAlerts.alertsTable.columns.severity'),
-    columnLabel: 'severity',
+    columnName: t('appsEventsAlerts.alertsTable.columns.duration'),
+    columnLabel: 'duration',
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('appsEventsAlerts.alertsTable.columns.activities'),
-    columnLabel: 'activities',
+    columnName: t('appsEventsAlerts.alertsTable.columns.detections'),
+    columnLabel: 'detections',
     sortEnabled: true,
-    searchable: true,
+    searchable: false,
   },
   {
     columnName: t('appsEventsAlerts.alertsTable.columns.timestamp'),
@@ -813,14 +815,30 @@ const fetchAlerts = async () => {
       
       // Handle the response structure: { data: [...], pagination: {...} }
       if (Array.isArray(payload.data)) {
-        alerts.value = payload.data.map((item: any) => ({
-          event_id: item.event_id || `alert-${Date.now()}-${Math.random()}`, // Generate ID if not provided
-          name: item.name || 'Unnamed Alert',
-          activities: (Array.isArray(item.activities) && item.activities.length > 0) ? item.activities : "No activities",
-          timestamp: item.timestamp || 'Unknown Timestamp',
-          status: item.status ?? 'No Status',
-          severity: item.severity ?? 'Unknown Severity',
-        }));
+        alerts.value = payload.data.map((item: any) => {
+          // Get violation name from first detected object
+          const violationName = item.detected_objects && item.detected_objects.length > 0 
+            ? item.detected_objects[0].object_type 
+            : 'Unknown Violation';
+          
+          return {
+            event_id: item.event_id || `alert-${Date.now()}-${Math.random()}`,
+            camera_uuid: item.camera_uuid || '',
+            camera_name: item.camera_name || 'Unknown Camera',
+            violation_name: violationName,
+            event_start: item.event_start || '',
+            event_end: item.event_end || '',
+            timestamp: item.event_start || 'Unknown Timestamp',
+            duration_minutes: item.duration_minutes || 0,
+            total_detections: item.total_detections || 0,
+            detected_objects: item.detected_objects || [],
+            status: item.status || 'not_resolved',
+            image_url: item.image_url || '',
+            image_urls: item.image_urls || [],
+            activities: item.activities || [],
+            comment: item.comment || null,
+          };
+        });
         
         // Update pagination from API response
         if (payload.pagination) {
@@ -1015,12 +1033,9 @@ const resetToDefaults = () => {
 const normalizeKey = (value?: string) => (value ?? '').toLowerCase().replace(/[\s_-]/g, '');
 
 const statusKeyMap: Record<string, string> = {
-  active: 'active',
-  acknowledged: 'acknowledged',
-  resolved: 'resolved',
-  unresolved: 'unresolved',
   notresolved: 'notResolved',
-  falsedetection: 'falseDetection',
+  resolved: 'resolved',
+  falsealarm: 'falseAlarm',
 };
 
 const severityKeyMap: Record<string, string> = {
@@ -1069,10 +1084,9 @@ const getSeverityBadgeClass = (severity: string) => {
 
 const getStatusBadgeClass = (status: string) => {
   const normalized = normalizeKey(status);
-  if (normalized === 'active' || normalized === 'unresolved') return 'badge-light-danger';
-  if (normalized === 'acknowledged') return 'badge-light-warning';
-  if (normalized === 'resolved' || normalized === 'notresolved') return 'badge-light-success';
-  if (normalized === 'falsedetection') return 'badge-light-info';
+  if (normalized === 'notresolved') return 'badge-light-danger';
+  if (normalized === 'resolved') return 'badge-light-success';
+  if (normalized === 'falsealarm') return 'badge-light-info';
   if (!status || status === 'No Status') return 'badge-light-secondary';
   return 'badge-light-secondary'; // Default return
 };
@@ -1148,12 +1162,40 @@ const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
   sortOrder.value = sort.order;
 };
 
-const viewAlertDetail = (alert: any) => {
-  if (alert.event_id) {
-    fetchAlertsByEvents(alert.event_id);
-  } else {
-    console.warn('No event_id found in alert:', alert);
+const handleImageError = (event: Event) => {
+  const target = event.target as HTMLImageElement;
+  target.style.display = 'none';
+  const parent = target.parentElement;
+  if (parent) {
+    parent.innerHTML = `
+      <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+        <i class="ki-duotone ki-picture fs-2x text-muted">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </div>
+    `;
   }
+};
+
+const viewAlertDetail = (alert: any) => {
+  // Use existing data instead of fetching from API
+  selectedAlertDetail.value = {
+    event_id: alert.event_id,
+    camera_uuid: alert.camera_uuid,
+    camera_name: alert.camera_name,
+    event_start: alert.event_start,
+    event_end: alert.event_end,
+    duration_minutes: alert.duration_minutes,
+    total_detections: alert.total_detections,
+    detected_objects: alert.detected_objects,
+    status: alert.status,
+    comment: alert.comment,
+    image_url: alert.image_url,
+    image_urls: alert.image_urls,
+    activities: alert.activities
+  };
+  showDetailModal.value = true;
 };
 
 const closeDetailModal = () => {
