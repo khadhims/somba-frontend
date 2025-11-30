@@ -21,6 +21,7 @@ import enComponentsMembership from "@/core/translate/en/components/membership.js
 import idComponentsMembership from "@/core/translate/id/components/membership.json";
 import enDashboard from "@/core/translate/en/dashboard.json";
 import idDashboard from "@/core/translate/id/dashboard.json";
+import idCommon from "@/core/translate/id/common.json";
 
 export const APP_LOCALE_STORAGE_KEY = "app_locale";
 const LEGACY_LOCALE_STORAGE_KEY = "lang";
@@ -555,6 +556,7 @@ mergeDeep(messages.en, { components: { membership: enComponentsMembership } });
 mergeDeep(messages.id, { components: { membership: idComponentsMembership } });
 mergeDeep(messages.en, { dashboard: enDashboard });
 mergeDeep(messages.id, { dashboard: idDashboard });
+mergeDeep(messages.id, { common: idCommon });
 
 const defaultLocale = readStoredLocale();
 

@@ -41,6 +41,7 @@
 		"severityAll": "Semua Level",
 		"statusLabel": "Status:",
 		"statusAll": "Semua Status",
+		"selectStatus": "Pilih Status",
 		"assigneeLabel": "Petugas:",
 		"assigneeAll": "Semua Petugas",
 		"priorityLabel": "Prioritas:",
@@ -140,6 +141,8 @@
 			"activities": "Aktivitas",
 			"severity": "Level Keparahan",
 			"status": "Status",
+			"duration": "Durasi",
+			"detections": "Deteksi",
 			"responseTime": "Waktu Respon",
 			"actions": "Aksi"
 		},
@@ -160,6 +163,8 @@
 			"active": "Aktif",
 			"acknowledged": "Diakui",
 			"resolved": "Selesai",
+			"notResolved": "Belum Selesai",
+			"falseAlarm": "Alarm Palsu",
 			"escalated": "Dieskalasi",
 			"dismissed": "Diabaikan",
 			"unknown": "Tidak diketahui"
@@ -232,6 +237,27 @@
 			"commentPlaceholder": "Tulis catatan untuk Aktifitas ini...",
 			"eventId": "ID Aktifitas:"
 		}
+	},
+	"alertDetail": {
+		"title": "Detail Pelanggaran",
+		"basicInfo": "Informasi Dasar",
+		"eventDetails": "Detail Event",
+		"detectedObjects": "Objek Terdeteksi",
+		"activities": "Aktivitas",
+		"comment": "Komentar",
+		"images": "Gambar",
+		"eventId": "ID Event",
+		"cameraName": "Nama Kamera",
+		"status": "Status",
+		"duration": "Durasi",
+		"eventStart": "Waktu Mulai",
+		"eventEnd": "Waktu Selesai",
+		"totalDetections": "Total Deteksi",
+		"objectType": "Tipe Objek",
+		"detectionCount": "Jumlah Deteksi",
+		"noComment": "Tidak ada komentar",
+		"commentPlaceholder": "Masukkan komentar...",
+		"noData": "Data pelanggaran tidak tersedia"
 	},
 	"alertsModals": {
 		"details": {
@@ -347,7 +373,11 @@
 		}
 	},
 	"format": {
-		"notAvailable": "Tidak tersedia"
+		"notAvailable": "Tidak tersedia",
+		"minutesShort": "{value} mnt",
+		"secondsShort": "{value} dtk",
+		"minutesLong": "{value} menit",
+		"secondsLong": "{value} detik"
 	},
 	"settings": {
 		"header": {
