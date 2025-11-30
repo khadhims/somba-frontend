@@ -41,9 +41,7 @@
       <span class="text-dark fw-bold fs-6">{{ formatDuration(row.duration_minutes) }}</span>
     </template>
 
-    <template #avg_seconds_with_detection="{ row }">
-      <span class="text-dark fw-bold fs-6">{{ formatSeconds(row.avg_seconds_with_detection) }}</span>
-    </template>
+    
 
     <template #timestamp="{ row }">
       <span class="text-dark fw-bold d-block fs-6">{{ formatDate(row.event_start) }}</span>
@@ -106,10 +104,7 @@ const formatDuration = (minutes?: number | null) => {
   return t('appsEventsAlerts.format.minutesLong', { value: formatNumber(Math.max(0, minutes||0), 2) });
 };
 
-const formatSeconds = (seconds?: number | null) => {
-  if (seconds === undefined || seconds === null || Number.isNaN(seconds)) return t('appsEventsAlerts.format.notAvailable');
-  return t('appsEventsAlerts.format.secondsShort', { value: formatNumber(Math.max(0, seconds), 1) });
-};
+// avg_seconds_with_detection hidden per request
 
 const formatDate = (value?: string) => {
   if (!value) return '-';

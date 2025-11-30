@@ -426,19 +426,13 @@ const tableHeader = computed(() => [
   },
   {
     columnName: t('appsEventsAlerts.eventsTable.columns.timestamp'),
-    columnLabel: 'startTime',
+    columnLabel: 'timestamp',
     sortEnabled: true,
     searchable: false,
   },
   {
     columnName: t('appsEventsAlerts.eventsTable.columns.duration'),
     columnLabel: 'duration',
-    sortEnabled: true,
-    searchable: false,
-  },
-  {
-    columnName: t('appsEventsAlerts.eventsTable.columns.avgDetection'),
-    columnLabel: 'avg_seconds_with_detection',
     sortEnabled: true,
     searchable: false,
   },
