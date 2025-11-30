@@ -65,7 +65,7 @@
         <div class="d-flex align-items-center">
           <div class="d-flex align-items-center position-relative my-1 me-3">
             <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4"><span class="path1"></span><span class="path2"></span></i>
-            <input type="text" v-model="searchQuery" class="form-control form-control-sm form-control-solid w-200px ps-12" :placeholder="t('alertsFilters.searchPlaceholder') || 'Search'" />
+            <input type="text" v-model="searchQuery" class="form-control form-control-sm form-control-solid w-200px ps-12" :placeholder="t('appsEventsAlerts.alertsFilters.searchPlaceholder') || 'Search'" />
           </div>
           <button @click="refreshAlerts" class="btn btn-sm btn-light-primary btn-icon" title="Refresh">
             <i class="ki-duotone ki-arrows-circle fs-2"><span class="path1"></span><span class="path2"></span></i>

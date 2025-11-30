@@ -66,8 +66,29 @@
               <!-- Right Column: Info -->
               <div class="col-lg-7">
                 <div class="d-flex flex-column gap-4">
-                  <!-- Status & Camera -->
-                  <div class="d-flex flex-wrap gap-3 align-items-center">
+                  <!-- Edit Form (when in edit mode) -->
+                  <div v-if="localEditMode" class="edit-form-block p-4 border rounded bg-light">
+                    <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                      <i class="ki-duotone ki-pencil fs-3 text-primary"><span class="path1"></span><span class="path2"></span></i>
+                      {{ t('appsEventsAlerts.alertDetail.editTitle') || 'Ubah Status & Komentar' }}
+                    </h6>
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold small mb-2">{{ t('appsEventsAlerts.alertDetail.status') || 'Status' }}</label>
+                      <select v-model="localEditForm.status" class="form-select">
+                        <option value="">{{ t('appsEventsAlerts.alertsFilters.selectStatus') || 'Pilih Status' }}</option>
+                        <option value="not_resolved">{{ t('appsEventsAlerts.alertsTable.status.notResolved') || 'Belum Selesai' }}</option>
+                        <option value="resolved">{{ t('appsEventsAlerts.alertsTable.status.resolved') || 'Selesai' }}</option>
+                        <option value="false_alarm">{{ t('appsEventsAlerts.alertsTable.status.falseAlarm') || 'Alarm Palsu' }}</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="form-label fw-semibold small mb-2">{{ t('appsEventsAlerts.alertDetail.comment') || 'Komentar' }}</label>
+                      <textarea v-model="localEditForm.comment" class="form-control" rows="4" :placeholder="t('appsEventsAlerts.alertDetail.commentPlaceholder') || 'Masukkan komentar...'" />
+                    </div>
+                  </div>
+
+                  <!-- Status & Camera (view mode) -->
+                  <div v-else class="d-flex flex-wrap gap-3 align-items-center">
                     <div>
                       <span class="badge" :class="statusBadge(alert.status)">{{ statusLabel(alert.status) }}</span>
                     </div>
@@ -76,7 +97,7 @@
                   </div>
 
                   <!-- Detected Objects -->
-                  <div v-if="alert.detected_objects && alert.detected_objects.length" class="detected-objects">
+                  <div v-if="!localEditMode && alert.detected_objects && alert.detected_objects.length" class="detected-objects">
                     <h6 class="section-title">{{ t('appsEventsAlerts.alertDetail.detectedObjects') || 'Objek Terdeteksi' }}</h6>
                     <div class="row g-3">
                       <div v-for="(obj, i) in alert.detected_objects" :key="i" class="col-md-6">
@@ -92,7 +113,7 @@
                   </div>
 
                   <!-- Event Timing -->
-                  <div class="timing row g-3">
+                  <div v-if="!localEditMode" class="timing row g-3">
                     <div class="col-md-6">
                       <div class="timing-item p-3 rounded border bg-white h-100">
                         <div class="label small text-muted mb-1">{{ t('appsEventsAlerts.alertDetail.eventStart') || 'Mulai' }}</div>
@@ -107,16 +128,11 @@
                     </div>
                   </div>
 
-                  <!-- Comment -->
-                  <div class="comment-block">
+                  <!-- Comment (view mode) -->
+                  <div v-if="!localEditMode" class="comment-block">
                     <h6 class="section-title">{{ t('appsEventsAlerts.alertDetail.comment') || 'Komentar' }}</h6>
-                    <div v-if="!localEditMode">
-                      <div v-if="alert.comment" class="p-3 bg-light rounded border">{{ alert.comment }}</div>
-                      <div v-else class="text-muted fst-italic small">{{ t('appsEventsAlerts.alertDetail.noComment') || 'Tidak ada komentar' }}</div>
-                    </div>
-                    <div v-else>
-                      <textarea v-model="localEditForm.comment" class="form-control" rows="3" :placeholder="t('appsEventsAlerts.alertDetail.commentPlaceholder') || 'Masukkan komentar...'" />
-                    </div>
+                    <div v-if="alert.comment" class="p-3 bg-light rounded border">{{ alert.comment }}</div>
+                    <div v-else class="text-muted fst-italic small">{{ t('appsEventsAlerts.alertDetail.noComment') || 'Tidak ada komentar' }}</div>
                   </div>
 
                   <!-- Images Extra Strip when editing -->
@@ -133,13 +149,16 @@
           </div>
           <div class="d-flex gap-2">
             <template v-if="alert">
-              <button v-if="!localEditMode" type="button" class="btn btn-primary" @click="enableEdit">{{ t('common.edit') || 'Ubah' }}</button>
+              <button v-if="!localEditMode" type="button" class="btn btn-primary" @click="enableEdit">
+                <i class="ki-duotone ki-pencil fs-2 me-1"><span class="path1"></span><span class="path2"></span></i>
+                {{ t('common.edit') || 'Ubah' }}
+              </button>
               <template v-else>
-                <button type="button" class="btn btn-light" @click="cancelEdit">{{ t('common.cancel') || 'Batal' }}</button>
+                <button type="button" class="btn btn-light" :disabled="updating" @click="cancelEdit">{{ t('common.cancel') || 'Batal' }}</button>
                 <button type="button" class="btn btn-success" :disabled="updating" @click="submitUpdate">
                   <span v-if="updating" class="spinner-border spinner-border-sm me-2"></span>
                   <i v-else class="ki-duotone ki-check fs-2 me-1"><span class="path1"></span><span class="path2"></span></i>
-                  {{ t('common.update') || 'Perbarui' }}
+                  {{ updating ? (t('common.saving') || 'Menyimpan...') : (t('common.update') || 'Simpan') }}
                 </button>
               </template>
             </template>
@@ -169,12 +188,13 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import ApiService from '@/core/services/ApiService';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
 
 const props = defineProps<{ 
   show: boolean;
   alert: any | null;
   loading: boolean;
-  updating?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -233,9 +253,65 @@ watch(() => props.alert, (val) => {
 
 const enableEdit = () => { localEditMode.value = true; };
 const cancelEdit = () => { localEditMode.value = false; localEditForm.value.comment = props.alert?.comment || ''; localEditForm.value.status = props.alert?.status || ''; };
-const submitUpdate = () => {
-  emit('update', { status: localEditForm.value.status, comment: localEditForm.value.comment });
-  localEditMode.value = false;
+
+const updating = ref(false);
+const submitUpdate = async () => {
+  if (!props.alert?.event_id) {
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Event ID tidak ditemukan',
+      toast: true,
+      position: 'top-end',
+      timer: 3000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+    });
+    return;
+  }
+
+  updating.value = true;
+  try {
+    const payload = {
+      status: localEditForm.value.status,
+      comment: localEditForm.value.comment,
+    };
+
+    await ApiService.post(
+      `/control-plane/api/sites/alerts/${props.alert.event_id}/update`,
+      payload
+    );
+
+    // Emit update event untuk mengupdate parent
+    emit('update', { status: localEditForm.value.status, comment: localEditForm.value.comment });
+    localEditMode.value = false;
+
+    // Tampilkan notifikasi sukses
+    await Swal.fire({
+      icon: 'success',
+      title: t('common.success') || 'Berhasil',
+      text: t('appsEventsAlerts.alertDetail.updateSuccess') || 'Status dan komentar berhasil diperbarui',
+      toast: true,
+      position: 'top-end',
+      timer: 3000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+    });
+  } catch (error: any) {
+    console.error('Error updating alert:', error);
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.response?.data?.message || error.message || 'Gagal memperbarui data',
+      toast: true,
+      position: 'top-end',
+      timer: 3000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+    });
+  } finally {
+    updating.value = false;
+  }
 };
 const emitClose = () => emit('close');
 
@@ -276,6 +352,8 @@ const statusLabel = (status:string) => {
 .detail-wrapper { min-height: 400px; }
 .section-title { font-weight:600; margin-bottom: .75rem; display:flex; align-items:center; gap:.5rem; }
 .section-title::before { content:''; width:6px; height:18px; background: var(--bs-primary); border-radius:4px; }
+.edit-form-block { background: linear-gradient(135deg, #f8f9fa, #ffffff); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+.edit-form-block h6 { color: var(--bs-primary); }
 .gallery-nav { position:absolute; top:50%; transform:translateY(-50%); z-index:2; }
 .gallery-nav.left { left:10px; }
 .gallery-nav.right { right:10px; }

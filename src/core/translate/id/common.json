@@ -4,6 +4,7 @@
 	"update": "Perbarui",
 	"cancel": "Batal",
 	"save": "Simpan",
+	"saving": "Menyimpan...",
 	"delete": "Hapus",
 	"loading": "Memuat...",
 	"search": "Cari",
@@ -12,5 +13,6 @@
 	"reset": "Reset",
 	"confirm": "Konfirmasi",
 	"yes": "Ya",
-	"no": "Tidak"
+	"no": "Tidak",
+	"success": "Berhasil"
 }

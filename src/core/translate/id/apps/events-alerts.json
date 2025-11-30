@@ -246,6 +246,7 @@
 		"activities": "Aktivitas",
 		"comment": "Komentar",
 		"images": "Gambar",
+		"editTitle": "Ubah Status & Komentar",
 		"eventId": "ID Event",
 		"cameraName": "Nama Kamera",
 		"status": "Status",
@@ -257,7 +258,8 @@
 		"detectionCount": "Jumlah Deteksi",
 		"noComment": "Tidak ada komentar",
 		"commentPlaceholder": "Masukkan komentar...",
-		"noData": "Data pelanggaran tidak tersedia"
+		"noData": "Data pelanggaran tidak tersedia",
+		"updateSuccess": "Status dan komentar berhasil diperbarui"
 	},
 	"alertsModals": {
 		"details": {
