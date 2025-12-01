@@ -230,7 +230,7 @@ const dragThreshold = 50; // Minimum drag distance to trigger scroll
 const sistemMonitoring = ref([]);
 const navigationApps = ref([]);
 
-const STORAGE_KEY = 'dashboardSelectedSite';
+const STORAGE_KEY = 'lastSelectedSite';
 const sites = ref<Site[]>([]);
 const selectedSite = ref<string>(
   (typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null) ||

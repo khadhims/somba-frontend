@@ -20,7 +20,7 @@
               <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsEventsAlerts.alertsFilters.cameraLabel') || 'Camera' }}</label>
               <select v-model="tempSelectedCameraFilter" class="form-select form-select-solid w-200px" :disabled="loadingCameras || !tempSelectedSiteFilter" @change="onTempFilterCameraChange">
                 <option value="">{{ t('appsEventsAlerts.alertsFilters.cameraAll') || 'All Cameras' }}</option>
-                <option v-for="camera in cameras" :key="camera.uuid" :value="camera.uuid">{{ camera.name }}</option>
+                <option v-for="camera in cameras" :key="camera.uid" :value="camera.uid">{{ camera.name }}</option>
               </select>
             </div>
           </div>
@@ -37,11 +37,11 @@
         <div class="d-flex align-items-center">
           <div class="d-flex align-items-center me-3">
             <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.alertsFilters.fromDateLabel') }}</label>
-            <DatePicker v-model="tempDateFrom" size="sm" :clearable="true" defaultType="monthAgo" style="width:180px;" />
+            <DatePicker ref="dateFromPicker" v-model="tempDateFrom" size="sm" :clearable="true" storageKey="alertsDefaultFromDate" style="width:180px;" />
           </div>
             <div class="d-flex align-items-center me-3">
               <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.alertsFilters.toDateLabel') }}</label>
-              <DatePicker v-model="tempDateTo" size="sm" :clearable="true" defaultType="today" style="width:180px;" />
+              <DatePicker ref="dateToPicker" v-model="tempDateTo" size="sm" :clearable="true" storageKey="alertsDefaultToDate" style="width:180px;" />
             </div>
             <div class="me-3">
               <button @click="applyFilters" class="btn btn-sm btn-primary py-1 px-2" title="Apply All Filters">
@@ -163,9 +163,9 @@ interface Site {
 }
 
 interface Camera {
-  uuid: string;
+  uid: string;
   name: string;
-  site_uuid: string;
+  site_uid: string;
   status?: string;
 }
 
@@ -210,11 +210,11 @@ const loadingUpdate = ref(false); // retained for modal prop compatibility
 // Pagination handlers - simplified like Camera.vue
 let fetchTimeout: number | null = null;
 
-// Initialize default dates (1 month ago to today)
+// Initialize default dates (1 week ago to today)
 const initializeDefaultDates = () => {
   const today = new Date();
-  const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(today.getMonth() - 1);
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(today.getDate() - 7);
   
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -223,7 +223,7 @@ const initializeDefaultDates = () => {
     return `${year}-${month}-${day}`;
   };
   
-  const defaultFromDate = formatDate(oneMonthAgo);
+  const defaultFromDate = formatDate(oneWeekAgo);
   const defaultToDate = formatDate(today);
   
   // Check if dates are already stored in localStorage
@@ -234,7 +234,6 @@ const initializeDefaultDates = () => {
     // Store default dates in localStorage
     localStorage.setItem('alertsDefaultFromDate', defaultFromDate);
     localStorage.setItem('alertsDefaultToDate', defaultToDate);
-    console.log('Alerts.vue: Set default dates in localStorage:', { defaultFromDate, defaultToDate });
   }
   
   // Set reactive date values from localStorage
@@ -245,13 +244,6 @@ const initializeDefaultDates = () => {
   dateTo.value = toDate;
   tempDateFrom.value = fromDate;
   tempDateTo.value = toDate;
-  
-  console.log('Alerts.vue: Initialized default dates:', {
-    dateFrom: dateFrom.value,
-    dateTo: dateTo.value,
-    tempDateFrom: tempDateFrom.value,
-    tempDateTo: tempDateTo.value
-  });
 };
 
 const debouncedFetchAlerts = () => {
@@ -267,14 +259,9 @@ const goToPage = (page: number) => {
 };
 
 const changeItemsPerPage = (newPerPage: number) => {
-  console.log('Alerts changeItemsPerPage called with:', newPerPage);
-  console.log('Current per_page value before change:', pagination.value.per_page);
   
   // Force update the reactive value
   pagination.value.per_page = newPerPage;
-  
-  console.log('per_page value after change:', pagination.value.per_page);
-  console.log('Will send to API: page_size =', pagination.value.per_page);
   
   // Reset to first page
   pagination.value.page = 1;
@@ -404,7 +391,6 @@ const fetchAlerts = async () => {
     // Add camera filter if set
     if (selectedCameraFilter.value && selectedCameraFilter.value !== '' && selectedCameraFilter.value !== 'undefined') {
       params.camera_uuid = selectedCameraFilter.value;
-      console.log('Adding camera_uuid to query params:', selectedCameraFilter.value);
     }
     
     // Add date range filters if set
@@ -415,7 +401,7 @@ const fetchAlerts = async () => {
       params.to_date = dateTo.value;
     }
     
-    const resp = await ApiService.query(`sites/${selectedSiteFilter.value}/alerts`, {
+    const resp = await ApiService.query(`sites/${selectedSiteFilter.value}/alerts/`, {
       params: Object.keys(params).length > 0 ? params : undefined
     });
     
@@ -453,9 +439,6 @@ const fetchAlerts = async () => {
         if (payload.pagination) {
           const p = payload.pagination;
           
-          console.log('Alerts API pagination response:', p);
-          console.log('Our sent parameters:', { page: pagination.value.page, page_size: pagination.value.per_page });
-          
           pagination.value.page = p.page || 1;
           pagination.value.total_items = p.total_items || alerts.value.length;
           pagination.value.next_page = p.next_page || null;
@@ -472,14 +455,6 @@ const fetchAlerts = async () => {
           } else {
             pagination.value.total_pages = Math.ceil(pagination.value.total_items / pagination.value.per_page);
           }
-          
-          console.log('Alerts pagination calculated:', {
-            page: pagination.value.page,
-            per_page: pagination.value.per_page,
-            total_items: pagination.value.total_items,
-            total_pages: pagination.value.total_pages,
-            apiTotalPages: p.total_pages
-          });
         }
       } else {
         alerts.value = [];
@@ -528,37 +503,16 @@ const onTempFilterSiteChange = async () => {
 
 const onTempFilterCameraChange = () => {
   // Just update temp state, no API call
-  console.log('onTempFilterCameraChange: Camera filter changed', {
-    value: tempSelectedCameraFilter.value,
-    type: typeof tempSelectedCameraFilter.value,
-    isUndefined: tempSelectedCameraFilter.value === undefined,
-    isNull: tempSelectedCameraFilter.value === null,
-    isEmpty: tempSelectedCameraFilter.value === '',
-    stringValue: String(tempSelectedCameraFilter.value)
-  });
 };
 
 // Apply all filters at once
 const applyFilters = async () => {
-  console.log('applyFilters: Applying filters', {
-    tempSite: tempSelectedSiteFilter.value,
-    tempCamera: tempSelectedCameraFilter.value,
-    tempDateFrom: tempDateFrom.value,
-    tempDateTo: tempDateTo.value
-  });
   
   // Update actual filter values from temp values
   selectedSiteFilter.value = tempSelectedSiteFilter.value || '';
   selectedCameraFilter.value = tempSelectedCameraFilter.value || '';
   dateFrom.value = tempDateFrom.value;
   dateTo.value = tempDateTo.value;
-  
-  console.log('applyFilters: Updated actual filters', {
-    actualSite: selectedSiteFilter.value,
-    actualCamera: selectedCameraFilter.value,
-    actualDateFrom: dateFrom.value,
-    actualDateTo: dateTo.value
-  });
   
   // Update current site
   currentSite.value = sites.value.find(s => s.uid === selectedSiteFilter.value) || null;
@@ -585,16 +539,16 @@ const resetFilters = () => {
   tempDateTo.value = dateTo.value;
 };
 
-// Reset filters to default values (clear site/camera, reset dates to 1 month range)
+// Reset filters to default values (clear site/camera, reset dates to 1 week range)
 const resetToDefaults = () => {
   // Reset site and camera filters
   tempSelectedSiteFilter.value = '';
   tempSelectedCameraFilter.value = '';
   
-  // Reset dates to default range (1 month ago to today)
+  // Reset dates to default range (1 week ago to today)
   const today = new Date();
-  const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(today.getMonth() - 1);
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(today.getDate() - 7);
   
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -603,7 +557,7 @@ const resetToDefaults = () => {
     return `${year}-${month}-${day}`;
   };
   
-  const defaultFromDate = formatDate(oneMonthAgo);
+  const defaultFromDate = formatDate(oneWeekAgo);
   const defaultToDate = formatDate(today);
   
   tempDateFrom.value = defaultFromDate;
@@ -612,11 +566,6 @@ const resetToDefaults = () => {
   // Update localStorage with new defaults
   localStorage.setItem('alertsDefaultFromDate', defaultFromDate);
   localStorage.setItem('alertsDefaultToDate', defaultToDate);
-  
-  console.log('Alerts.vue: Reset to defaults', {
-    tempFromDate: tempDateFrom.value,
-    tempToDate: tempDateTo.value
-  });
 };
 
 // Helpers for badge styling and translated labels
@@ -815,43 +764,45 @@ onMounted(async () => {
   try {
     // Initialize default dates first
     initializeDefaultDates();
-    
     await fetchSites();
-    
-    // Initialize selected site filter from localStorage (but don't auto-select first site)
+    // Determine initial site: prefer stored value, otherwise first site in list
     const storedSite = localStorage.getItem('lastSelectedSite');
+    let initialSiteUid = '';
     if (storedSite && sites.value.some(s => s.uid === storedSite)) {
-      selectedSiteFilter.value = storedSite;
-      tempSelectedSiteFilter.value = storedSite;
-      localStorage.setItem('lastSelectedSite', selectedSiteFilter.value);
-      
-      // Initialize selected camera filter from localStorage
+      initialSiteUid = storedSite;
+    } else if (sites.value.length > 0) {
+      initialSiteUid = sites.value[0].uid;
+    }
+    
+    if (initialSiteUid) {
+      // Set selected site and temp selection
+      selectedSiteFilter.value = initialSiteUid;
+      localStorage.setItem('lastSelectedSite', initialSiteUid);
+      // Load cameras for the selected site
+      await fetchCameras(initialSiteUid);
+      // Determine initial camera: prefer stored value, otherwise first camera in list
       const storedCamera = localStorage.getItem('lastSelectedCamera');
-      selectedCameraFilter.value = storedCamera && storedCamera !== 'null' && storedCamera !== 'undefined' ? storedCamera : '';
-      tempSelectedCameraFilter.value = selectedCameraFilter.value;
+      let initialCameraUid = '';
+      if (storedCamera && cameras.value.some(c => c.uid === storedCamera)) {
+        initialCameraUid = storedCamera;
+      } else if (cameras.value.length > 0) {
+        initialCameraUid = cameras.value[0].uid;
+      }
       
-      console.log('Alerts.vue: Initialized filters from localStorage', {
-        selectedSite: selectedSiteFilter.value,
-        selectedCamera: selectedCameraFilter.value,
-        tempSite: tempSelectedSiteFilter.value,
-        tempCamera: tempSelectedCameraFilter.value
-      });
-      
-      console.log('Alerts.vue: Site and camera filters initialized from localStorage');
-      
-      // Load cameras and alerts only if we have a valid stored site
-      await fetchCameras(selectedSiteFilter.value);
+      selectedCameraFilter.value = initialCameraUid;
+      if (initialCameraUid) {
+        localStorage.setItem('lastSelectedCamera', initialCameraUid);
+      }
+      // Fetch alerts for the selected site (and camera if set)
       await fetchAlerts();
     } else {
-      // Clear localStorage if stored site doesn't exist
+      // No sites available — clear stored selections
       localStorage.removeItem('lastSelectedSite');
       localStorage.removeItem('lastSelectedCamera');
       selectedSiteFilter.value = '';
       selectedCameraFilter.value = '';
       tempSelectedSiteFilter.value = '';
       tempSelectedCameraFilter.value = '';
-      
-      console.log('Alerts.vue: No valid stored site, default dates are set, waiting for user site selection');
     }
   } catch (error) {
     console.error('Error initializing alerts:', error);

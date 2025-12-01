@@ -65,31 +65,10 @@ interface Props {
   helpText?: string
   size?: 'sm' | 'md' | 'lg'
   variant?: 'solid' | 'outline'
-  defaultType?: 'today' | 'monthAgo' | 'weekAgo' | 'yearAgo' | null
+  storageKey?: string
 }
 
-// Helper functions for default dates
-const getDefaultDate = (type: string | null): string | null => {
-  if (!type) return null
-  
-  const date = new Date()
-  
-  switch (type) {
-    case 'today':
-      return date.toISOString().split('T')[0]
-    case 'monthAgo':
-      date.setMonth(date.getMonth() - 1)
-      return date.toISOString().split('T')[0]
-    case 'weekAgo':
-      date.setDate(date.getDate() - 7)
-      return date.toISOString().split('T')[0]
-    case 'yearAgo':
-      date.setFullYear(date.getFullYear() - 1)
-      return date.toISOString().split('T')[0]
-    default:
-      return null
-  }
-}
+// Note: default date types removed — initialization uses `modelValue` or `storageKey` only.
 
 interface Emits {
   (e: 'update:modelValue', value: string | null): void
@@ -104,23 +83,31 @@ const props = withDefaults(defineProps<Props>(), {
   size: 'md',
   variant: 'solid',
   clearable: true,
-  defaultType: null
+  storageKey: undefined
 })
 
 const emit = defineEmits<Emits>()
 
-const localValue = ref(props.modelValue || getDefaultDate(props.defaultType))
+const localValue = ref(props.modelValue)
 const dateInput = ref<HTMLInputElement>()
 
-// Use nextTick to emit initial default value to prevent immediate multiple calls
+// Initialize value from props, localStorage, or defaultType
 onMounted(async () => {
-  // Emit initial default value if it exists, but only after component is mounted
-  if (!props.modelValue && props.defaultType) {
-    const defaultValue = getDefaultDate(props.defaultType)
-    if (defaultValue && defaultValue !== localValue.value) {
-      await nextTick()
-      emit('update:modelValue', defaultValue)
+  let initialValue = props.modelValue
+
+  // If no modelValue provided, try to get from localStorage (storageKey)
+  if (!initialValue && props.storageKey) {
+    const storedValue = localStorage.getItem(props.storageKey)
+    if (storedValue) {
+      initialValue = storedValue
     }
+  }
+
+  // Update local value and emit if we found a value
+  if (initialValue) {
+    localValue.value = initialValue
+    await nextTick()
+    emit('update:modelValue', initialValue)
   }
 })
 
@@ -141,6 +128,11 @@ const inputClasses = computed(() => {
 // Watchers
 watch(() => props.modelValue, (newValue) => {
   localValue.value = newValue
+  if (props.storageKey && newValue) {
+    localStorage.setItem(props.storageKey, newValue)
+  } else if (props.storageKey && newValue === null) {
+    localStorage.removeItem(props.storageKey)
+  }
 })
 
 // Methods
