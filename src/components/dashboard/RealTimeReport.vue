@@ -14,14 +14,20 @@
  * - Responsive design with hover effects
  */
 
-import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick, watch, computed } from 'vue';
+import DatePicker from '@/components/DatePicker.vue';
+import { useI18n } from 'vue-i18n';
+import ApiService from '@/core/services/ApiService';
+import mockEventActivity from '@/assets/mockupData/dashboard/event_activity.json';
+
+const { t } = useI18n();
 
 // ========================
 // COMPONENT CONFIGURATION
 // ========================
 
 // Component state
-const vegaReady = ref(false);
+const chartsReady = ref(false);
 const isRendering = ref(false);
 
 // Props definition
@@ -38,6 +44,11 @@ const props = defineProps({
         type: Boolean,
         default: true
     }
+    ,
+    siteUid: {
+        type: String,
+        default: null
+    }
 });
 
 // ========================
@@ -47,11 +58,17 @@ const props = defineProps({
 // Filter state for process tracking chart
 const selectedStatuses = ref(['active', 'completed', 'scheduled']);
 
-// Date picker state
+// Date range state (from_date / to_date)
 const selectedDate = ref(new Date());
 const showDatePicker = ref(false);
 const currentMonth = ref(new Date().getMonth());
 const currentYear = ref(new Date().getFullYear());
+const fromDate = ref('');
+const toDate = ref('');
+const fromDateKey = 'lastSelectedFromDate';
+const toDateKey = 'lastSelectedToDate';
+const legacyFromDateKey = 'globalFromDate';
+const legacyToDateKey = 'globalToDate';
 
 // API data state
 const apiData = ref([]);
@@ -66,6 +83,8 @@ let playInterval = null;
 let currentPlayheadPosition = null;
 let playheadPopups = []; // Auto-play popups (temporary)
 let hoverPreview = null; // Hover preview popup (single, small)
+let alertsAutoRefreshInterval = null;
+const hasInitiallyLoaded = ref(false); // Flag to prevent duplicate initial loads
 
 // Modal states
 const showImageModal = ref(false);
@@ -73,6 +92,245 @@ const modalImageSrc = ref('');
 const modalImageAlt = ref('');
 const showDetailModal = ref(false);
 const modalDetailData = ref(null);
+const detailImageIndex = ref(0);
+const detailModalImages = computed(() => {
+    const detail = modalDetailData.value;
+    if (!detail) {
+        return [];
+    }
+    const images = Array.isArray(detail.image_urls) ? detail.image_urls.filter(Boolean) : [];
+    const uniqueImages = images.filter((url, index, self) => self.indexOf(url) === index);
+    if (detail.image_url) {
+        const currentIndex = uniqueImages.indexOf(detail.image_url);
+        if (currentIndex > 0) {
+            uniqueImages.splice(currentIndex, 1);
+            uniqueImages.unshift(detail.image_url);
+        } else if (currentIndex === -1) {
+            uniqueImages.unshift(detail.image_url);
+        }
+    }
+    return uniqueImages;
+});
+const currentDetailImage = computed(() => detailModalImages.value[detailImageIndex.value] ?? null);
+const hasMultipleDetailImages = computed(() => detailModalImages.value.length > 1);
+
+watch(modalDetailData, () => {
+    detailImageIndex.value = 0;
+});
+
+watch(detailModalImages, (images) => {
+    if (detailImageIndex.value >= images.length) {
+        detailImageIndex.value = 0;
+    }
+});
+
+const showNextDetailImage = () => {
+    if (detailModalImages.value.length <= 1) {
+        return;
+    }
+    detailImageIndex.value = (detailImageIndex.value + 1) % detailModalImages.value.length;
+};
+
+const showPreviousDetailImage = () => {
+    if (detailModalImages.value.length <= 1) {
+        return;
+    }
+    detailImageIndex.value = (detailImageIndex.value - 1 + detailModalImages.value.length) % detailModalImages.value.length;
+};
+
+// Shared mapping helpers
+const detectionToProcessMap = {
+    apd: 'Persiapan',
+    apd_without_mask: 'Persiapan',
+    person: 'Masak',
+    helmet: 'Persiapan',
+    food: 'Pemorsian',
+    plate: 'Pemorsian',
+    tray: 'Pengiriman',
+    cleaning: 'Cuci Nampan'
+};
+
+const cameraFallbackActivities = {
+    'cam01-ruang masak': ['masak'],
+    'cam05-ruang pemorsian': ['pemorsian'],
+    'cam04-ruang persiapan': ['persiapan']
+};
+
+const activityKeyToProcessName = {
+    persiapan: 'Persiapan',
+    masak: 'Masak',
+    pemorsian: 'Pemorsian',
+    pengiriman: 'Pengiriman',
+    ambilnampan: 'Ambil Nampan',
+    cucinampan: 'Cuci Nampan',
+    cucitray: 'Cuci Nampan',
+    selesai: 'Selesai'
+};
+
+const normalizeCameraNameKey = (value) => {
+    if (value === null || value === undefined) {
+        return '';
+    }
+    return String(value).toLowerCase().trim();
+};
+
+const normalizeActivityKey = (value) => {
+    if (value === null || value === undefined) {
+        return '';
+    }
+    return String(value)
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .replace(/[\s_-]/g, '')
+        .trim();
+};
+
+const formatActivityLabel = (value) => {
+    if (value === null || value === undefined) {
+        return '';
+    }
+    const cleaned = String(value).replace(/[_-]+/g, ' ').trim();
+    if (!cleaned) {
+        return '';
+    }
+    return cleaned
+        .split(/\s+/)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+};
+
+const canonicalizeActivityLabel = (value) => {
+    const key = normalizeActivityKey(value);
+    if (!key) {
+        return '';
+    }
+    return activityKeyToProcessName[key] ?? formatActivityLabel(value ?? '');
+};
+
+const resolveActivityFromCamera = (cameraName) => {
+    const normalized = normalizeCameraNameKey(cameraName);
+    if (!normalized) {
+        return [];
+    }
+
+    for (const [pattern, activities] of Object.entries(cameraFallbackActivities)) {
+        if (normalized.includes(pattern)) {
+            if (Array.isArray(activities)) {
+                return [...activities];
+            }
+            return [];
+        }
+    }
+
+    return [];
+};
+
+const normalizeActivitiesValue = (value, cameraName) => {
+    const resolved = [];
+
+    const pushCandidate = (candidate) => {
+        if (candidate === null || candidate === undefined) {
+            return;
+        }
+        const canonical = canonicalizeActivityLabel(candidate);
+        if (canonical) {
+            resolved.push(canonical);
+        }
+    };
+
+    if (Array.isArray(value) && value.length) {
+        value.forEach((item) => {
+            if (typeof item === 'string' || typeof item === 'number') {
+                pushCandidate(item);
+            } else if (item && typeof item === 'object') {
+                const candidate = item.label ?? item.name ?? item.activity ?? item.value ?? item.title;
+                pushCandidate(candidate);
+            }
+        });
+    }
+
+    if (!resolved.length && typeof value === 'string' && value.trim()) {
+        pushCandidate(value);
+    }
+
+    if (!resolved.length && cameraName) {
+        const fallbackActivities = resolveActivityFromCamera(cameraName);
+        fallbackActivities.forEach((activity) => {
+            if (typeof activity === 'string' || typeof activity === 'number') {
+                pushCandidate(activity);
+            }
+        });
+    }
+
+    const unique = Array.from(new Set(resolved));
+    return unique;
+};
+
+const enrichAlertWithActivities = (alert) => {
+    if (!alert || typeof alert !== 'object') {
+        return alert;
+    }
+
+    const activities = normalizeActivitiesValue(alert.activities, alert.camera_name);
+    return {
+        ...alert,
+        activities
+    };
+};
+
+const enrichAlertsWithActivities = (items) => {
+    if (!Array.isArray(items)) {
+        return [];
+    }
+    return items.map((entry) => enrichAlertWithActivities(entry));
+};
+
+const statusMap = {
+    not_resolved: 'active',
+    resolved: 'completed',
+    in_progress: 'active'
+};
+
+const normalizeStatusKey = (value) => {
+    if (value === null || value === undefined) {
+        return '';
+    }
+    return String(value).toLowerCase().replace(/[\s_-]/g, '');
+};
+
+const detailStatusBadgeClass = (status) => {
+    const key = normalizeStatusKey(status);
+    if (key === 'resolved' || key === 'completed') {
+        return 'badge-light-success';
+    }
+    if (key === 'notresolved' || key === 'active') {
+        return 'badge-light-danger';
+    }
+    if (key === 'falsealarm') {
+        return 'badge-light-info';
+    }
+    if (key === 'scheduled') {
+        return 'badge-light-warning';
+    }
+    return 'badge-light-secondary';
+};
+
+const detailStatusLabel = (status) => {
+    const key = normalizeStatusKey(status);
+    if (key === 'resolved' || key === 'completed') {
+        return 'Selesai';
+    }
+    if (key === 'notresolved' || key === 'active') {
+        return 'Belum Selesai';
+    }
+    if (key === 'falsealarm') {
+        return 'Alarm Palsu';
+    }
+    if (key === 'scheduled') {
+        return 'Terjadwal';
+    }
+    return status || 'Tidak diketahui';
+};
 
 // Generate calendar days for date picker
 const generateCalendarDays = () => {
@@ -123,116 +381,539 @@ const nextMonth = () => {
 // API AND DATA FUNCTIONS
 // ========================
 
-// Filter mockup dataset so it is shown only on its original dates
-const filterMockupDataByDate = (dataset, targetDate) => {
-    if (!Array.isArray(dataset)) {
-        return [];
-    }
-
-    const day = targetDate.getDate();
-    const month = targetDate.getMonth();
-    const year = targetDate.getFullYear();
-
-    return dataset.filter((item) => {
-        const itemDate = new Date(item.startTime);
-        return (
-            itemDate.getDate() === day &&
-            itemDate.getMonth() === month &&
-            itemDate.getFullYear() === year
-        );
-    });
-};
-
-// Fetch activity data from API with mockup fallback
-const fetchActivityData = async () => {
+// Fetch alerts for selected site between fromDate and toDate (with mockup fallback)
+const fetchAlerts = async () => {
     isLoading.value = true;
     apiError.value = null;
-    
     try {
-        const date = selectedDate.value;
-        const yyyy = date.getFullYear();
-        const mm = String(date.getMonth() + 1).padStart(2, '0');
-        const dd = String(date.getDate()).padStart(2, '0');
-        const dateStr = `${yyyy}-${mm}-${dd}`;
-        
-        // Try API call first
-        const response = await window.axios.get(`/activity/day`, {
-            params: { date: dateStr },
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (response.status !== 200) throw new Error('Gagal mengambil data aktivitas');
-        
-        const data = response.data;
-        if (!Array.isArray(data) || data.length === 0) {
+        const site = props.siteUid || window.localStorage.getItem('lastSelectedSite');
+        if (!site) {
             apiData.value = [];
-            apiError.value = 'Tidak ada data aktivitas untuk tanggal ini.';
-            console.info(`[RealTimeReport] API returned no activity data for ${dateStr}`);
+            apiError.value = 'Site tidak dipilih.';
+            isLoading.value = false;
             return;
         }
 
-        apiData.value = data;
-        console.log('Successfully loaded data from API:', data);
-    } catch (err) {
-        console.warn('API call failed, falling back to mockup data:', err?.message || err);
-        
-        try {
-            const mockupModule = await import('@/assets/mockupData/dashboard/event_activity.json');
-            const allFallbackData = mockupModule.default || mockupModule;
-            const filteredFallback = filterMockupDataByDate(allFallbackData, selectedDate.value);
+        const f = fromDate.value;
+        const t = toDate.value;
 
-            if (!filteredFallback.length) {
-                apiData.value = [];
-                apiError.value = 'Data demo tidak tersedia untuk tanggal ini.';
-                console.info('[RealTimeReport] Demo data not available for selected date');
-            } else {
-                apiData.value = filteredFallback;
-                apiError.value = 'Menggunakan data demo (API tidak tersedia).';
-                console.log('Successfully loaded fallback mockup data:', filteredFallback);
-            }
-        } catch (fallbackErr) {
-            console.error('Both API and mockup data failed:', fallbackErr);
-            apiError.value = 'Tidak dapat memuat data aktivitas.';
-            apiData.value = [];
+        const baseResource = `/sites/${site}/alerts/`;
+        const baseParams = {
+            from_date: f,
+            to_date: t,
+            // camera_uuid: 'fb3a2107-befe-4aa9-b099-f642dc65cc3d',
+            page_size: 100
+        };
+        const baseHeaders = {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        };
+        const axiosInstance = ApiService.vueInstance?.axios;
+        if (!axiosInstance) {
+            throw new Error('Axios instance belum diinisialisasi. Pastikan ApiService.init sudah dipanggil.');
         }
+        const baseUrl = axiosInstance.defaults?.baseURL ?? '';
+
+        const aggregatedData = [];
+        const visitedLinks = new Set();
+        const pagingState = {
+            nextLink: null,
+            currentPage: 1,
+            lastPage: null,
+            hasMetaNext: false
+        };
+        const MAX_PAGES = 50;
+        const shouldPaginate = false; // Temporary: only fetch page 1
+
+        const fetchPage = async (pageNumber) => {
+            const params = { ...baseParams };
+            if (pageNumber != null) {
+                params.page = pageNumber;
+            }
+            const config = {
+                params,
+                headers: baseHeaders
+            };
+            return ApiService.query(baseResource, config);
+        };
+
+        const processPayload = (payload) => {
+            const items = extractAlertsFromPayload(payload);
+            if (items.length) {
+                aggregatedData.push(...items);
+            }
+
+            const info = resolvePaginationInfo(payload);
+            if (info.currentPage != null && !Number.isNaN(info.currentPage)) {
+                pagingState.currentPage = info.currentPage;
+            }
+            if (info.lastPage != null && !Number.isNaN(info.lastPage)) {
+                pagingState.lastPage = info.lastPage;
+            }
+
+            if (info.nextLink) {
+                pagingState.nextLink = normalizeNextLink(info.nextLink, baseResource, baseUrl);
+            } else {
+                pagingState.nextLink = null;
+            }
+
+            pagingState.hasMetaNext = Boolean(
+                info.hasNext ||
+                (info.currentPage != null && info.lastPage != null && info.currentPage < info.lastPage)
+            );
+
+            return items.length;
+        };
+
+        let response = await fetchPage(pagingState.currentPage);
+        if (response.status !== 200 && response.status !== 201) {
+            throw new Error('Gagal mengambil data alerts');
+        }
+
+        let payload = response.data;
+        processPayload(payload);
+
+        let iteration = 1;
+        while (shouldPaginate && iteration < MAX_PAGES && (pagingState.nextLink || pagingState.hasMetaNext)) {
+            iteration += 1;
+            const previousCount = aggregatedData.length;
+
+            if (pagingState.nextLink) {
+                const normalizedLink = normalizeNextLink(pagingState.nextLink, baseResource, baseUrl);
+                if (!normalizedLink) {
+                    pagingState.nextLink = null;
+                } else if (visitedLinks.has(normalizedLink)) {
+                    console.warn('[RealTimeReport] Duplicate next link detected, stopping pagination to avoid loop:', normalizedLink);
+                    pagingState.nextLink = null;
+                } else {
+                    visitedLinks.add(normalizedLink);
+                    payload = (await axiosInstance.get(normalizedLink, { headers: baseHeaders })).data;
+                    processPayload(payload);
+                }
+            } else if (pagingState.hasMetaNext) {
+                const nextPageNumber = (pagingState.currentPage ?? 1) + 1;
+                pagingState.currentPage = nextPageNumber;
+                response = await fetchPage(nextPageNumber);
+                payload = response.data;
+                processPayload(payload);
+            } else {
+                break;
+            }
+
+            if (aggregatedData.length === previousCount) {
+                console.warn('[RealTimeReport] Pagination did not return additional data, stopping to avoid infinite loop.');
+                break;
+            }
+        }
+
+        if (iteration >= MAX_PAGES) {
+            console.warn(`[RealTimeReport] Reached pagination cap of ${MAX_PAGES} iterations. Some data may not be loaded.`);
+        }
+
+        if (!aggregatedData.length) {
+            apiData.value = enrichAlertsWithActivities(mockEventActivity);
+            apiError.value = null;
+            return;
+        }
+
+        apiError.value = null;
+        apiData.value = enrichAlertsWithActivities(aggregatedData);
+    } catch (err) {
+        // fallback to mockup
+        console.error('API error, response format or anoher thing occurs:', err);
+        apiData.value = enrichAlertsWithActivities(mockEventActivity);
+        apiError.value = null;
     } finally {
         isLoading.value = false;
     }
 };
 
-// Generate process tracking data (now supports mapping original process names)
+const startAlertsAutoRefresh = () => {
+    if (typeof window === 'undefined') {
+        return;
+    }
+    if (alertsAutoRefreshInterval) {
+        clearInterval(alertsAutoRefreshInterval);
+    }
+    alertsAutoRefreshInterval = window.setInterval(() => {
+        if (typeof document !== 'undefined' && document.hidden) {
+            return;
+        }
+        if (!isLoading.value) {
+            void fetchAlerts();
+        }
+    }, 300000);
+};
+
+const stopAlertsAutoRefresh = () => {
+    if (alertsAutoRefreshInterval) {
+        clearInterval(alertsAutoRefreshInterval);
+        alertsAutoRefreshInterval = null;
+    }
+};
+
+const convertToIsoString = (value) => {
+    if (value === null || value === undefined) {
+        return null;
+    }
+    if (value instanceof Date) {
+        const timestamp = value.getTime();
+        if (Number.isNaN(timestamp)) {
+            return null;
+        }
+        return value.toISOString();
+    }
+    if (typeof value === 'number') {
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? null : date.toISOString();
+    }
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+};
+
+const calculateDurationMinutes = (startIso, endIso) => {
+    if (!startIso || !endIso) {
+        return null;
+    }
+    const startDate = new Date(startIso);
+    const endDate = new Date(endIso);
+    const diffMs = endDate.getTime() - startDate.getTime();
+    if (Number.isNaN(diffMs) || diffMs < 0) {
+        return null;
+    }
+    return Math.round(diffMs / (1000 * 60));
+};
+
+const extractAlertsFromPayload = (payload) => {
+    if (!payload) {
+        return [];
+    }
+    if (Array.isArray(payload)) {
+        return payload;
+    }
+    const candidateKeys = ['data', 'results', 'items', 'alerts', 'records', 'rows'];
+    for (const key of candidateKeys) {
+        const value = payload?.[key];
+        if (Array.isArray(value)) {
+            return value;
+        }
+    }
+    return [];
+};
+
+const normalizeNextLink = (link, baseResource, baseUrl = '') => {
+    if (!link || typeof link !== 'string') {
+        return null;
+    }
+    const trimmed = link.trim();
+    if (!trimmed) {
+        return null;
+    }
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+        return trimmed;
+    }
+    const defaultOrigin = typeof window !== 'undefined' && window.location ? window.location.origin : 'http://localhost';
+    let reference;
+    try {
+        reference = baseUrl
+            ? new URL(baseUrl, defaultOrigin)
+            : new URL(baseResource, defaultOrigin);
+    } catch {
+        reference = new URL(defaultOrigin);
+    }
+
+    try {
+        const resolved = new URL(trimmed, reference);
+        if (resolved.origin === reference.origin) {
+            return resolved.pathname + resolved.search;
+        }
+        return resolved.toString();
+    } catch {
+        if (trimmed.startsWith('/')) {
+            return trimmed;
+        }
+        if (trimmed.startsWith('?')) {
+            return `${baseResource}${trimmed}`;
+        }
+        return trimmed;
+    }
+};
+
+const resolvePaginationInfo = (payload) => {
+    const info = {
+        nextLink: null,
+        currentPage: null,
+        lastPage: null,
+        hasNext: false
+    };
+
+    if (!payload || typeof payload !== 'object') {
+        return info;
+    }
+
+    const potentialNextLinks = [
+        payload?.links?.next,
+        payload?.meta?.links?.next,
+        payload?.meta?.next_page_url,
+        payload?.meta?.next,
+        payload?.meta?.pagination?.next,
+        payload?.meta?.pagination?.next_page_url,
+        payload?.pagination?.next,
+        payload?.pagination?.next_page_url,
+        payload?.next,
+        payload?.next_page_url
+    ];
+
+    for (const link of potentialNextLinks) {
+        if (typeof link === 'string' && link) {
+            info.nextLink = link;
+            break;
+        }
+    }
+
+    const metaCandidates = [payload?.meta?.pagination, payload?.pagination, payload?.meta];
+    metaCandidates.forEach((meta) => {
+        if (!meta || typeof meta !== 'object') {
+            return;
+        }
+
+        if (info.currentPage == null) {
+            const currentCandidates = [
+                meta.current_page,
+                meta.currentPage,
+                meta.page,
+                meta.page_index,
+                meta.pageIndex,
+                meta.pagination?.page
+            ];
+            for (const candidate of currentCandidates) {
+                if (typeof candidate === 'number' && !Number.isNaN(candidate)) {
+                    info.currentPage = candidate;
+                    break;
+                }
+            }
+        }
+
+        if (info.lastPage == null) {
+            const lastCandidates = [
+                meta.last_page,
+                meta.lastPage,
+                meta.total_pages,
+                meta.totalPages,
+                meta.page_count,
+                meta.pageCount,
+                meta.pagination?.pageCount
+            ];
+            for (const candidate of lastCandidates) {
+                if (typeof candidate === 'number' && !Number.isNaN(candidate)) {
+                    info.lastPage = candidate;
+                    break;
+                }
+            }
+        }
+
+        if (!info.hasNext) {
+            const nextIndicators = [
+                meta.has_next,
+                meta.hasNext,
+                meta.has_more,
+                meta.hasMore,
+                meta.next_page,
+                meta.nextPage,
+                meta.pagination?.has_next,
+                meta.pagination?.hasNext
+            ];
+            info.hasNext = nextIndicators.some((flag) => {
+                if (typeof flag === 'boolean') {
+                    return flag;
+                }
+                if (typeof flag === 'number') {
+                    const current = info.currentPage ?? 0;
+                    return flag > current;
+                }
+                return false;
+            });
+        }
+
+        if (!info.hasNext && typeof meta.next_page_url === 'string' && meta.next_page_url) {
+            info.hasNext = true;
+            if (!info.nextLink) {
+                info.nextLink = meta.next_page_url;
+            }
+        }
+    });
+
+    if (!info.hasNext && info.currentPage != null && info.lastPage != null) {
+        info.hasNext = info.currentPage < info.lastPage;
+    }
+
+    if (!info.hasNext) {
+        const inlineNext = payload?.next_page ?? payload?.nextPage ?? null;
+        if (typeof inlineNext === 'number') {
+            const current = info.currentPage ?? 0;
+            info.hasNext = inlineNext > current;
+        }
+    }
+
+    return info;
+};
+
+const extractPointSnapshot = (point) => {
+    if (!point) {
+        return null;
+    }
+
+    const startIso = convertToIsoString(point.start ?? point.startDate ?? point.displayStartTime ?? null);
+    const endIso = convertToIsoString(point.end ?? point.endDate ?? point.displayEndTime ?? null);
+    const resolvedIdRaw = point.event_id ?? point.eventId ?? point.id ?? point.uid ?? null;
+    const resolvedId = resolvedIdRaw != null ? String(resolvedIdRaw) : null;
+
+    const pointImages = Array.isArray(point.image_urls) ? point.image_urls.filter(Boolean) : [];
+    const dedupedImages = pointImages.filter((url, index, self) => self.indexOf(url) === index);
+    let primaryImage = point.image_url || null;
+    if (!primaryImage && dedupedImages.length > 0) {
+        primaryImage = dedupedImages[0];
+    } else if (primaryImage) {
+        const existingIndex = dedupedImages.indexOf(primaryImage);
+        if (existingIndex > 0) {
+            dedupedImages.splice(existingIndex, 1);
+            dedupedImages.unshift(primaryImage);
+        } else if (existingIndex === -1) {
+            dedupedImages.unshift(primaryImage);
+        }
+    }
+
+    return {
+        id: resolvedId,
+        eventId: resolvedId,
+        event_id: resolvedId,
+        name: point.name ?? point.process ?? null,
+        process: point.process ?? point.name ?? null,
+        status: point.status ?? null,
+        raw_status: point.raw_status ?? null,
+        color: point.color ?? null,
+        start: startIso,
+        end: endIso,
+        duration_minutes: point.duration_minutes ?? calculateDurationMinutes(startIso, endIso),
+        image_url: primaryImage,
+        image_urls: dedupedImages,
+        camera_name: point.camera_name ?? null,
+        total_detections: point.total_detections ?? null,
+        detected_objects: point.detected_objects ?? [],
+        activities: normalizeActivitiesValue(point.activities, point.camera_name)
+    };
+};
+
+const normalizeAlertDetail = (detail, fallbackPoint = null) => {
+    if (!detail && !fallbackPoint) {
+        return null;
+    }
+
+    const pointReference = fallbackPoint ? { ...fallbackPoint } : {};
+    const primaryDetection = Array.isArray(detail?.detected_objects) && detail.detected_objects.length > 0
+        ? detail.detected_objects[0]
+        : null;
+    const inferredProcess = pointReference.name || pointReference.process ||
+        (primaryDetection ? detectionToProcessMap[primaryDetection.object_type] : undefined);
+
+    const resolvedEventIdRaw = detail?.event_id ?? pointReference.event_id ?? pointReference.eventId ?? pointReference.id ?? pointReference.uid ?? null;
+    const resolvedEventId = resolvedEventIdRaw != null ? String(resolvedEventIdRaw) : null;
+    const startIso = convertToIsoString(detail?.event_start) ?? convertToIsoString(pointReference.start ?? pointReference.startDate ?? null);
+    const endIso = convertToIsoString(detail?.event_end) ?? convertToIsoString(pointReference.end ?? pointReference.endDate ?? null);
+    const normalizedDurationMinutes = typeof detail?.duration_minutes === 'number'
+        ? detail.duration_minutes
+        : calculateDurationMinutes(startIso, endIso);
+
+    const imageCandidates = [];
+    if (Array.isArray(detail?.image_urls)) {
+        imageCandidates.push(...detail.image_urls.filter(Boolean));
+    }
+    if (detail?.image_url) {
+        imageCandidates.unshift(detail.image_url);
+    }
+    if (Array.isArray(pointReference.image_urls)) {
+        imageCandidates.push(...pointReference.image_urls.filter(Boolean));
+    }
+    if (pointReference.image_url) {
+        imageCandidates.push(pointReference.image_url);
+    }
+
+    const dedupedImages = imageCandidates.filter(Boolean).filter((url, index, self) => self.indexOf(url) === index);
+    const resolvedImage = dedupedImages.length > 0 ? dedupedImages[0] : null;
+
+    return {
+        ...pointReference,
+        ...detail,
+        id: resolvedEventId ?? pointReference.id ?? pointReference.event_id ?? pointReference.eventId ?? null,
+        eventId: resolvedEventId,
+        event_id: resolvedEventId,
+        name: inferredProcess ?? detail?.camera_name ?? 'Event Alert',
+        process: inferredProcess ?? detail?.camera_name ?? 'Event Alert',
+        status: detail?.status ? (statusMap[detail.status] || detail.status) : (pointReference.status || 'active'),
+        raw_status: detail?.status ?? pointReference.status ?? null,
+        start: startIso,
+        end: endIso,
+        duration_minutes: normalizedDurationMinutes,
+        total_detections: detail?.total_detections ?? pointReference.total_detections ?? null,
+        detected_objects: detail?.detected_objects ?? pointReference.detected_objects ?? [],
+        comment: detail?.comment ?? pointReference.comment ?? null,
+        image_url: resolvedImage,
+        image_urls: dedupedImages,
+        camera_name: detail?.camera_name ?? pointReference.camera_name ?? null,
+        activities: normalizeActivitiesValue(
+            detail?.activities ?? pointReference.activities,
+            detail?.camera_name ?? pointReference.camera_name ?? null
+        )
+    };
+};
+
+const fetchAlertById = async (eventId) => {
+    if (!eventId) {
+        throw new Error('Event ID tidak valid');
+    }
+    try {
+        const response = await ApiService.get(`/sites/alerts/${eventId}`);
+        if (!response || (response.status !== 200 && response.status !== 201)) {
+            throw new Error('Gagal mengambil detail event');
+        }
+        const payload = response.data?.data ?? response.data ?? null;
+        if (!payload) {
+            throw new Error('Detail event kosong');
+        }
+        return payload;
+    } catch (error) {
+        console.error(`[RealTimeReport] fetchAlertById failed for ${eventId}:`, error);
+        throw error;
+    }
+};
+
+// Generate process tracking data (now supports mapping detection objects to processes)
 const generateProcessTrackingData = () => {
     const rawData = apiData.value;
-
-    const processMap = {
-        'Masak': 'Masak',
-        'Persiapan': 'Persiapan',
-        'Pemorsian': 'Pemorsian',
-        'Pemorsiran': 'Pemorsian', // typo mapping (if typo comes from API)
-        'Pengiriman': 'Pengiriman',
-        'Ambil Nampan': 'Ambil Nampan',
-        'Cuci Nampan': 'Cuci Nampan',
-        'Selesai': 'Selesai'
+    const getProcessFromDetection = (item) => {
+        if (item.process && typeof item.process === 'string') {
+            return item.process;
+        }
+        // Check if item has detected_objects array
+        if (item.detected_objects && Array.isArray(item.detected_objects) && item.detected_objects.length > 0) {
+            const firstDetection = item.detected_objects[0];
+            return detectionToProcessMap[firstDetection.object_type] || 'Persiapan';
+        }
+        // Fallback to camera name or default
+        if (item.camera_name && item.camera_name.includes('Kitchen')) {
+            return 'Masak';
+        } else if (item.camera_name && item.camera_name.includes('Prep')) {
+            return 'Persiapan';
+        }
+        
+        return 'Persiapan'; // Default fallback
     };
 
-    const getCanonicalProcess = (original) => {
-        if (!original) return 'Lainnya';
-        const base = original.split(' - ')[0].trim();
-        return processMap[base] || 'Lainnya';
-    };
-
-    // Parse ISO8601 string and add 6 hours for local timezone adjustment
+    // Parse ISO8601 string - no timezone adjustment needed for this API
     const parseTimeAdd6Hours = (timeStr) => {
         if (!timeStr) return null;
         const date = new Date(timeStr);
         if (isNaN(date.getTime())) return null;
-        
-        // Add 6 hours for timezone adjustment
-        date.setHours(date.getHours() + 6);
-        
         // Store display time in local format
         const localHour = date.getHours();
         const localMinute = date.getMinutes();
@@ -242,21 +923,82 @@ const generateProcessTrackingData = () => {
         return date;
     };
 
-    const validData = [];
-    rawData.forEach((item, idx) => {
-        const process = getCanonicalProcess(item.process);
-        // Skip unknown processes (mapped to 'Lainnya')
-        if (process === 'Lainnya') {
-            return;
+    const resolveTimeField = (item, fields) => {
+        for (const field of fields) {
+            if (item[field]) {
+                return item[field];
+            }
         }
+        return null;
+    };
+
+    const validData = [];
+    rawData.forEach((item) => {
+
+        const rawActivities = item.activities;
+        const hadApiActivities = Array.isArray(rawActivities)
+            ? rawActivities.length > 0
+            : typeof rawActivities === 'string' && rawActivities.trim().length > 0;
+
+        const normalizedActivities = normalizeActivitiesValue(rawActivities, item.camera_name);
+        const primaryActivity = normalizedActivities.length ? normalizedActivities[0] : null;
+
+        // Prefer explicit activities (including camera fallbacks) before detection-based inference
+        const process = primaryActivity ?? getProcessFromDetection(item);
+        const processSource = primaryActivity
+            ? (hadApiActivities ? 'activities-api' : 'activities-fallback')
+            : 'detection';
+        
+        // Get mapped status
+        const mappedStatus = statusMap[item.status] || item.status || 'active';
+        
         let start, end;
         let valid = true;
         try {
-            start = parseTimeAdd6Hours(item.startTime);
-            end = parseTimeAdd6Hours(item.endTime);
+            // Use event_start/event_end fields or fall back to other timestamp fields
+            const startTime = resolveTimeField(item, [
+                'event_start',
+                'start_time',
+                'timestamp',
+                'detected_at',
+                'created_at'
+            ]);
+
+            let endTime = resolveTimeField(item, [
+                'event_end',
+                'end_time',
+                'resolved_at',
+                'updated_at'
+            ]);
+            
+            if (!startTime) {
+                valid = false;
+            } else {
+                start = parseTimeAdd6Hours(startTime);
+
+                if (endTime) {
+                    end = parseTimeAdd6Hours(endTime);
+                }
+            }
+
+            if (start && !end) {
+                // Fallback: if end is still null but start exists
+                const fallbackEnd = new Date(start.getTime() + 60 * 1000);
+                fallbackEnd.displayTime = `${fallbackEnd.getHours().toString().padStart(2, '0')}:${fallbackEnd.getMinutes().toString().padStart(2, '0')}`;
+                fallbackEnd.originalHour = fallbackEnd.getHours();
+                fallbackEnd.originalMinute = fallbackEnd.getMinutes();
+                end = fallbackEnd;
+            } else if (start && end && end.getTime() <= start.getTime()) {
+                const adjustedEnd = new Date(start.getTime() + 60 * 1000);
+                adjustedEnd.displayTime = `${adjustedEnd.getHours().toString().padStart(2, '0')}:${adjustedEnd.getMinutes().toString().padStart(2, '0')}`;
+                adjustedEnd.originalHour = adjustedEnd.getHours();
+                adjustedEnd.originalMinute = adjustedEnd.getMinutes();
+                end = adjustedEnd;
+            }
             
             // Validate local time: should be between 00:00 and 23:59
             if (
+                !start || !end ||
                 isNaN(start.getTime()) || isNaN(end.getTime()) ||
                 start.getHours() < 0 || start.getHours() > 23 ||
                 end.getHours() < 0 || end.getHours() > 23 ||
@@ -271,17 +1013,72 @@ const generateProcessTrackingData = () => {
         if (!valid) {
             return;
         }
-        validData.push({
+        const imageCandidates = [];
+        if (Array.isArray(item.image_urls)) {
+            imageCandidates.push(...item.image_urls.filter(Boolean));
+        }
+        if (item.image_url) {
+            imageCandidates.push(item.image_url);
+        }
+        if (item.thumbnail) {
+            imageCandidates.push(item.thumbnail);
+        }
+        if (item.thumbnail_url) {
+            imageCandidates.push(item.thumbnail_url);
+        }
+        if (item.image_path) {
+            imageCandidates.push(item.image_path);
+        }
+        if (item.image) {
+            imageCandidates.push(item.image);
+        }
+        if (item.media_url) {
+            imageCandidates.push(item.media_url);
+        }
+
+        const dedupedImages = imageCandidates
+            .filter(Boolean)
+            .filter((url, index, self) => self.indexOf(url) === index);
+
+        if (item.image_url) {
+            const existingIndex = dedupedImages.indexOf(item.image_url);
+            if (existingIndex > 0) {
+                dedupedImages.splice(existingIndex, 1);
+                dedupedImages.unshift(item.image_url);
+            } else if (existingIndex === -1) {
+                dedupedImages.unshift(item.image_url);
+            }
+        }
+
+        const primaryImage = dedupedImages[0] ?? null;
+
+        const processedItem = {
             ...item,
             process,
             start,
             end,
             label: '',
-            color: item.status === 'completed' ? '#10B981' :
-                   item.status === 'active' ? '#3B82F6' :
+            status: mappedStatus,
+            image_url: primaryImage,
+            image_urls: dedupedImages,
+            color: mappedStatus === 'completed' ? '#10B981' :
+                   mappedStatus === 'active' ? '#3B82F6' :
                    '#9CA3AF'
-        });
+        };
+
+        const resolvedEventId = item.event_id ?? item.eventId ?? item.id ?? item.uid ?? item.alert_id ?? item.alertId ?? null;
+        if (resolvedEventId) {
+            processedItem.eventId = resolvedEventId;
+            if (!processedItem.event_id) {
+                processedItem.event_id = resolvedEventId;
+            }
+        }
+
+        processedItem.activities = normalizedActivities;
+        
+        validData.push(processedItem);
     });
+
     return validData;
 };
 
@@ -294,7 +1091,8 @@ const selectDate = async (date) => {
     if (date) {
         selectedDate.value = date;
         showDatePicker.value = false;
-        await fetchActivityData();
+        await fetchAlerts();
+        startAlertsAutoRefresh();
         // Chart will be rendered automatically by watcher
     }
 };
@@ -400,7 +1198,6 @@ const setupChartEvents = () => {
                             if (isPlaying.value) return; // Don't allow modal during auto-play
 
                             const point = this;
-                            console.log('[RealTimeReport] Point clicked:', point.name, point);
 
                             // Open detail modal instead of pinned popup
                             openDetailModal(point);
@@ -425,17 +1222,26 @@ const updateChartWithFilter = () => {
     try {
         // For Highcharts Gantt, we need to update the series data
         if (chartInstance.series && chartInstance.series[0]) {
-            chartInstance.series[0].setData(filteredData.map((item, idx) => ({
-                id: 'task-' + idx,
-                name: item.process,
-                start: item.start.getTime(),
-                end: item.end.getTime(),
-                y: ["Persiapan", "Masak", "Pemorsian", "Pengiriman", "Ambil Nampan", "Cuci Nampan", "Selesai"].indexOf(item.process),
-                color: item.color,
-                status: item.status,
-                visible: true,
-                image_path: item.image_path
-            })), true);
+            const updatedSeriesData = filteredData.map((item, idx) => {
+                const resolvedEventId = item.event_id ?? item.eventId ?? item.id ?? item.uid ?? item.alert_id ?? item.alertId ?? `task-${idx}`;
+                return {
+                    id: String(resolvedEventId),
+                    eventId: resolvedEventId,
+                    event_id: resolvedEventId,
+                    name: item.process,
+                    start: item.start.getTime(),
+                    end: item.end.getTime(),
+                    y: ["Persiapan", "Masak", "Pemorsian", "Pengiriman", "Ambil Nampan", "Cuci Nampan", "Selesai"].indexOf(item.process),
+                    color: item.color,
+                    status: item.status,
+                    visible: true,
+                    image_url: item.image_url,
+                    activities: Array.isArray(item.activities)
+                        ? [...item.activities]
+                        : normalizeActivitiesValue(item.activities, item.camera_name)
+                };
+            });
+            chartInstance.series[0].setData(updatedSeriesData, true);
         }
     } catch (error) {
         console.error('Error updating chart data:', error);
@@ -633,14 +1439,14 @@ const showMultiplePlayheadPopups = (dataPoints, playheadTime) => {
     // Add event listeners for all popup images after a short delay to ensure DOM is ready
     setTimeout(() => {
         dataPoints.forEach((dataPoint, index) => {
-            if (dataPoint.image_path) {
+            if (dataPoint.image_url) {
                 const uniqueImageId = `popup-image-${dataPoint.process.replace(/\s+/g, '-')}-${index}`;
                 const imageElement = document.getElementById(uniqueImageId);
                 if (imageElement) {
                     imageElement.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        const imgUrl = `https://somba-sppg.latto.co.id/cdn/notif${dataPoint.image_path}`;
+                        const imgUrl = dataPoint.image_url;
                         modalImageSrc.value = imgUrl;
                         modalImageAlt.value = `Rekaman ${dataPoint.process}`;
                         showImageModal.value = true;
@@ -702,8 +1508,8 @@ const createSinglePlayheadPopup = (dataPoint, x, y, chart, index) => {
             </div>`;
 
     // Add image thumbnail if available
-    if (dataPoint.image_path) {
-        const imgUrl = `https://somba-sppg.latto.co.id/cdn/notif${dataPoint.image_path}`;
+    if (dataPoint.image_url) {
+        const imgUrl = dataPoint.image_url;
         const uniqueImageId = `popup-image-${dataPoint.process.replace(/\s+/g, '-')}-${index}`;
         popupContent += `
             <div style="margin-bottom: 8px;">
@@ -932,8 +1738,8 @@ const showHoverPreview = (point, mouseX, mouseY) => {
             </div>`;
 
     // Add small thumbnail if image exists
-    if (point.image_path) {
-        const imgUrl = `https://somba-sppg.latto.co.id/cdn/notif${point.image_path}`;
+    if (point.image_url) {
+        const imgUrl = point.image_url;
         previewContent += `
             <div style="
                 width: 60px;
@@ -1014,9 +1820,51 @@ const hideHoverPreview = () => {
 };
 
 // Detail Modal Functions
+const fetchAlertDetail = async (eventId, fallbackPoint = null) => {
+    const normalizedEventId = eventId != null ? String(eventId) : null;
+    if (!normalizedEventId) {
+        modalDetailData.value = {
+            ...(fallbackPoint || {}),
+            error: 'Event ID tidak tersedia.'
+        };
+        showDetailModal.value = true;
+        return;
+    }
+
+    try {
+        modalDetailData.value = fallbackPoint
+            ? { ...fallbackPoint, eventId: normalizedEventId, event_id: normalizedEventId, isLoading: true }
+            : { eventId: normalizedEventId, event_id: normalizedEventId, isLoading: true };
+
+        const detailPayload = await fetchAlertById(normalizedEventId);
+        const normalizedDetail = normalizeAlertDetail(detailPayload, fallbackPoint ?? modalDetailData.value ?? null);
+        modalDetailData.value = normalizedDetail || {
+            ...(fallbackPoint || {}),
+            eventId: normalizedEventId,
+            event_id: normalizedEventId
+        };
+    } catch (error) {
+        console.error('[RealTimeReport] Failed to fetch alert detail:', error);
+        modalDetailData.value = {
+            ...(fallbackPoint || {}),
+            eventId: normalizedEventId,
+            event_id: normalizedEventId,
+            error: 'Gagal mengambil detail event.'
+        };
+    } finally {
+        showDetailModal.value = true;
+    }
+};
+
 const openDetailModal = (point) => {
-    modalDetailData.value = point;
-    showDetailModal.value = true;
+    const snapshot = extractPointSnapshot(point);
+    const eventId = snapshot?.eventId || snapshot?.event_id || null;
+    if (eventId) {
+        fetchAlertDetail(eventId, snapshot);
+    } else if (snapshot) {
+        modalDetailData.value = snapshot;
+        showDetailModal.value = true;
+    }
 };
 
 const closeDetailModal = () => {
@@ -1026,6 +1874,9 @@ const closeDetailModal = () => {
 
 // Function to open image modal from detail modal
 const openImageFromDetail = (imageSrc, imageAlt) => {
+    if (!imageSrc) {
+        return;
+    }
     modalImageSrc.value = imageSrc;
     modalImageAlt.value = imageAlt;
     showImageModal.value = true;
@@ -1051,6 +1902,9 @@ const formatDuration = (point) => {
 
 // Function to download image from URL (used in modal)
 const downloadImageFromUrl = async (imageUrl, fileName) => {
+    if (!imageUrl) {
+        return;
+    }
     try {
         const response = await fetch(imageUrl);
         const blob = await response.blob();
@@ -1100,7 +1954,7 @@ const loadHighchartsGantt = async () => {
         await loadScript('https://code.highcharts.com/gantt/highcharts-gantt.js');
         await loadScript('https://code.highcharts.com/modules/exporting.js');
         await loadScript('https://code.highcharts.com/modules/accessibility.js');
-        vegaReady.value = true;
+        chartsReady.value = true;
         await nextTick();
         
         if (apiData.value && apiData.value.length > 0) {
@@ -1127,6 +1981,36 @@ const loadScript = (src) => {
         script.onerror = reject;
         document.head.appendChild(script);
     });
+};
+
+// Initialize fromDate/toDate defaults (yesterday -> today)
+const initializeDefaultDates = () => {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const toY = today.getFullYear();
+    const toM = String(today.getMonth() + 1).padStart(2, '0');
+    const toD = String(today.getDate()).padStart(2, '0');
+    const fromY = yesterday.getFullYear();
+    const fromM = String(yesterday.getMonth() + 1).padStart(2, '0');
+    const fromD = String(yesterday.getDate()).padStart(2, '0');
+
+    toDate.value = `${toY}-${toM}-${toD}`;
+    fromDate.value = `${fromY}-${fromM}-${fromD}`;
+
+    // default selected date points to the end of the range
+    selectedDate.value = new Date(toDate.value);
+
+    // persist defaults locally
+    try {
+        window.localStorage.setItem(fromDateKey, fromDate.value);
+        window.localStorage.setItem(toDateKey, toDate.value);
+        window.localStorage.removeItem(legacyFromDateKey);
+        window.localStorage.removeItem(legacyToDateKey);
+    } catch (e) {
+        // ignore storage errors
+    }
 };
 
 // Render Highcharts Gantt chart with timeline bar, zoom, and current time indicator
@@ -1156,6 +2040,7 @@ const renderHighchartsGantt = () => {
         .sort((a, b) => processList.indexOf(a.process) - processList.indexOf(b.process) || a.start - b.start);
         
     let seriesData = sortedChartData.map((item, idx) => {
+        const resolvedEventId = item.event_id ?? item.eventId ?? item.id ?? item.uid ?? item.alert_id ?? item.alertId ?? `task-${idx}`;
         // Get display times directly from the actual Date objects for consistency
         const startDisplayTime = `${item.start.getHours().toString().padStart(2, '0')}:${item.start.getMinutes().toString().padStart(2, '0')}`;
         const endDisplayTime = `${item.end.getHours().toString().padStart(2, '0')}:${item.end.getMinutes().toString().padStart(2, '0')}`;
@@ -1169,7 +2054,9 @@ const renderHighchartsGantt = () => {
             `0.${Math.round(durationMinutes/60*10)/10}`;
 
         return {
-            id: 'task-' + idx,
+            id: String(resolvedEventId),
+            eventId: resolvedEventId,
+            event_id: resolvedEventId,
             name: item.process,
             start: item.start.getTime(),
             end: item.end.getTime(),
@@ -1181,23 +2068,26 @@ const renderHighchartsGantt = () => {
             displayStartTime: startDisplayTime,
             displayEndTime: endDisplayTime,
             // Store image path and calculated duration for tooltip
-            image_path: item.image_path,
+            image_url: item.image_url,
             duration: calculatedDuration,
             // Store the original Date objects for accurate calculations
             startDate: item.start,
-            endDate: item.end
+            endDate: item.end,
+            activities: Array.isArray(item.activities)
+                ? [...item.activities]
+                : normalizeActivitiesValue(item.activities, item.camera_name)
         };
     });
-    // Set range for the selected day in local time (WIB/GMT+7)
-    let selectedDay = new Date(selectedDate.value);
+    const rangeStartInput = fromDate.value ? new Date(fromDate.value) : new Date(selectedDate.value);
+    const rangeEndInput = toDate.value ? new Date(toDate.value) : new Date(selectedDate.value);
 
-    // Create date objects for start and end of the day in local time
-    let dayStart = new Date(selectedDay.getFullYear(), selectedDay.getMonth(), selectedDay.getDate(), 0, 0, 0, 0);
-    let dayEnd = new Date(selectedDay.getFullYear(), selectedDay.getMonth(), selectedDay.getDate(), 23, 59, 59, 999);
+    // Normalize to start/end of their respective days in local time
+    const dayStart = new Date(rangeStartInput.getFullYear(), rangeStartInput.getMonth(), rangeStartInput.getDate(), 0, 0, 0, 0);
+    const dayEnd = new Date(rangeEndInput.getFullYear(), rangeEndInput.getMonth(), rangeEndInput.getDate(), 23, 59, 59, 999);
 
-    // Use timestamps for chart range
-    let xMin = dayStart.getTime();
-    let xMax = dayEnd.getTime();
+    // Use timestamps for chart range (can span multiple days)
+    const xMin = dayStart.getTime();
+    const xMax = dayEnd.getTime();
 
     // Add dummy points for processes without data to maintain Y-axis structure
     processList.forEach((proc, i) => {
@@ -1220,7 +2110,7 @@ const renderHighchartsGantt = () => {
     
     // Current time indicator for today only
     const now = new Date();
-    const isToday = now.toDateString() === selectedDay.toDateString();
+    const isToday = now.getTime() >= xMin && now.getTime() <= xMax;
 
     // Ensure that data bounds are strictly within the selected day
     seriesData = seriesData.map(item => {
@@ -1229,6 +2119,11 @@ const renderHighchartsGantt = () => {
         item.end = Math.min(item.end, xMax);
         return item;
     });
+    
+    const captionText = dayStart.toDateString() === dayEnd.toDateString()
+        ? formatDate(dayStart)
+        : `${formatDate(dayStart)} - ${formatDate(dayEnd)}`;
+    
     chartInstance = window.Highcharts.ganttChart(chartContainer, {
         chart: {
             height: 350,
@@ -1404,7 +2299,7 @@ const renderHighchartsGantt = () => {
         xAxis: {
             type: 'datetime',
             min: xMin,
-            max: xMin + 2 * 60 * 60 * 1000, // 2 jam pertama
+            max: xMax,
             startOfWeek: 0,
             dateTimeLabelFormats: {
                 day: '%A, %e %b'
@@ -1459,7 +2354,7 @@ const renderHighchartsGantt = () => {
         },
         // Set explicit date format for chart header
         caption: {
-            text: formatDate(selectedDate.value),
+            text: captionText,
             style: {
                 color: '#1F2937',
                 fontWeight: 'bold',
@@ -1555,8 +2450,8 @@ const renderHighchartsGantt = () => {
                 </div>`;
 
                 // Image section if available
-                if (point.image_path) {
-                    const imgUrl = `https://somba-sppg.latto.co.id/cdn/notif${point.image_path}`;
+                if (point.image_url) {
+                    const imgUrl = point.image_url;
                     html += `
                     <div style="margin-bottom: 8px;">
                         <div style="
@@ -1669,14 +2564,16 @@ const renderHighchartsGantt = () => {
 
 // Watch API data and update chart when data changes
 watch(apiData, () => {
-    if (!vegaReady.value) return;
+    if (!chartsReady.value) {
+        return;
+    }
     setTimeout(() => {
         renderHighchartsGantt();
     }, 100);
 }, { deep: true });
 
-// Watch vegaReady: render chart when library is ready and data is available
-watch(vegaReady, (ready) => {
+// Watch chartsReady: render chart when library is ready and data is available
+watch(chartsReady, (ready) => {
     if (ready && apiData.value && apiData.value.length > 0) {
         setTimeout(() => {
             renderHighchartsGantt();
@@ -1695,14 +2592,96 @@ watch(playSpeed, (newSpeed) => {
     }
 });
 
+// Watch siteUid prop: fetch data when site changes or when initially available
+watch(() => props.siteUid, (newSiteUid, oldSiteUid) => {
+    // Handle initial load when siteUid becomes available for the first time
+    if (newSiteUid && !hasInitiallyLoaded.value && chartsReady.value && fromDate.value && toDate.value) {
+        hasInitiallyLoaded.value = true;
+        fetchAlerts();
+        return;
+    }
+    
+    // Handle site changes after initial load
+    if (newSiteUid && newSiteUid !== oldSiteUid && hasInitiallyLoaded.value && chartsReady.value && fromDate.value && toDate.value) {
+        fetchAlerts();
+    }
+}, { immediate: false });
+
 onMounted(async () => {
-    await fetchActivityData();
-    loadHighchartsGantt();
+    // Clean up old/conflicting localStorage keys
+    try {
+        window.localStorage.removeItem('datePicker.selected');
+        window.localStorage.removeItem('realTimeReport.fromDate');
+        window.localStorage.removeItem('realTimeReport.toDate');
+    } catch (e) {
+        // ignore cleanup errors
+    }
+
+    // restore stored range or initialize defaults
+    try {
+        let storedFrom = window.localStorage.getItem(fromDateKey);
+        let storedTo = window.localStorage.getItem(toDateKey);
+
+        if (!storedFrom || !storedTo) {
+            const legacyFrom = window.localStorage.getItem(legacyFromDateKey);
+            const legacyTo = window.localStorage.getItem(legacyToDateKey);
+            if (legacyFrom && legacyTo) {
+                storedFrom = legacyFrom;
+                storedTo = legacyTo;
+                window.localStorage.setItem(fromDateKey, legacyFrom);
+                window.localStorage.setItem(toDateKey, legacyTo);
+                window.localStorage.removeItem(legacyFromDateKey);
+                window.localStorage.removeItem(legacyToDateKey);
+            }
+        }
+
+        if (storedFrom && storedTo) {
+            fromDate.value = storedFrom;
+            toDate.value = storedTo;
+            selectedDate.value = new Date(storedTo);
+        } else {
+            initializeDefaultDates();
+        }
+    } catch (e) {
+        initializeDefaultDates();
+    }
+
+    // Ensure dates are set before fetching alerts
+    await nextTick();
+    
+    // Load Highcharts first, then fetch data and render
+    await loadHighchartsGantt();
+    
+    // Try to fetch alerts immediately if site is available
+    const initialSite = props.siteUid || window.localStorage.getItem('lastSelectedSite');
+    if (initialSite && fromDate.value && toDate.value && !hasInitiallyLoaded.value) {
+        hasInitiallyLoaded.value = true;
+        await fetchAlerts();
+    }
+    
+    startAlertsAutoRefresh();
+});
+
+// persist date changes
+watch([fromDate, toDate], ([f, t]) => {
+    try {
+        if (f) window.localStorage.setItem(fromDateKey, f);
+        if (t) window.localStorage.setItem(toDateKey, t);
+        window.localStorage.removeItem(legacyFromDateKey);
+        window.localStorage.removeItem(legacyToDateKey);
+    } catch (e) {}
+
+    if (t) {
+        selectedDate.value = new Date(t);
+    } else if (f) {
+        selectedDate.value = new Date(f);
+    }
 });
 
 onUnmounted(() => {
     // Clean up any intervals or event listeners
     stopAutoPlay();
+    stopAlertsAutoRefresh();
     hidePlayheadPopups();
     hideHoverPreview();
     closeDetailModal();
@@ -1725,176 +2704,33 @@ onUnmounted(() => {
     <!-- Real Time Process Monitoring Dashboard -->
     <div class="card card-flush">
         <!-- Header Section -->
-        <div class="card-header py-5">
-                <!-- Title -->
-                <div class="d-flex align-items-center mb-4">
-                    <div class="symbol symbol-40px me-3">
-                        <div class="symbol-label bg-light-primary">
-                            <i class="ki-duotone ki-chart-simple text-primary fs-2x">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                            </i>
-                        </div>
-                    </div>
-                    <div>
-                        <h2 class="fs-1 fw-bold text-gray-900 mb-1">{{ title }}</h2>
-                        <p class="fs-6 text-muted">{{ subtitle }}</p>
-                    </div>
-                </div>
-                
-                <!-- Controls Row: Date Picker, Auto-play Controls, Status Legend -->
-                <div v-if="showFilters" class="row g-3 align-items-center col-lg-12">
-                    <!-- Date Picker -->
+            <div class="card-header py-4">
+                <!-- Row 1: Title + Status Legend -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <!-- Title (Left) -->
                     <div class="col-auto">
-                        <div class="dropdown">
-                            <button
-                                class="btn btn-light-primary btn-sm dropdown-toggle d-flex align-items-center"
-                                type="button"
-                                @click="showDatePicker = !showDatePicker"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                            >
-                                <i class="ki-duotone ki-calendar text-primary fs-6 me-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                </i>
-                                <span class="fw-semibold">{{ formatDate(selectedDate) }}</span>
-                            </button>
-
-                            <!-- Calendar Dropdown -->
-                            <div
-                                v-if="showDatePicker"
-                                class="dropdown-menu show p-0"
-                                style="min-width: 320px; z-index: 1050;"
-                            >
-                                <div class="p-5">
-                                <!-- Calendar Header -->
-                                <div class="d-flex align-items-center justify-content-between mb-4">
-                                    <button
-                                        @click="previousMonth"
-                                        class="btn btn-icon btn-light btn-sm"
-                                    >
-                                        <i class="ki-duotone ki-arrow-left fs-4">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                        </i>
-                                    </button>
-                                    <h4 class="fs-4 fw-bold text-gray-800">
-                                        {{ monthNames[currentMonth] }} {{ currentYear }}
-                                    </h4>
-                                    <button
-                                        @click="nextMonth"
-                                        class="btn btn-icon btn-light btn-sm"
-                                    >
-                                        <i class="ki-duotone ki-arrow-right fs-4">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                        </i>
-                                    </button>
+                        <div class="d-flex align-items-center">
+                            <div class="symbol symbol-45px me-4">
+                                <div class="symbol-label bg-light-primary">
+                                    <i class="ki-duotone ki-chart-simple text-primary fs-2x">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
+                                    </i>
                                 </div>
-
-                                    <!-- Day Headers -->
-                                    <div class="row g-1 mb-2">
-                                        <div
-                                            v-for="day in dayNames"
-                                            :key="day"
-                                            class="col text-center"
-                                        >
-                                            <div class="fs-8 fw-bold text-muted p-1">
-                                                {{ day }}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Calendar Days Grid -->
-                                    <div class="row g-1 mb-4">
-                                        <div
-                                            v-for="(date, index) in calendarDays"
-                                            :key="index"
-                                            class="col text-center"
-                                            style="flex: 0 0 14.285714%;"
-                                        >
-                                            <button
-                                                v-if="date"
-                                                @click="selectDate(date)"
-                                                :class="[
-                                                    'btn btn-sm w-100 p-1',
-                                                    isSelected(date) ? 'btn-primary text-white' :
-                                                    isToday(date) ? 'btn-light-primary text-primary fw-bold' :
-                                                    'btn-light text-gray-700'
-                                                ]"
-                                                style="min-height: 32px; font-size: 12px;"
-                                            >
-                                                {{ date.getDate() }}
-                                            </button>
-                                            <div v-else style="height: 32px;"></div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Quick Actions -->
-                                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                                        <button
-                                            @click="selectDate(new Date())"
-                                            class="btn btn-light-primary btn-sm"
-                                        >
-                                            <i class="ki-duotone ki-calendar fs-6 me-1">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                            Hari Ini
-                                        </button>
-                                        <button
-                                            @click="showDatePicker = false"
-                                            class="btn btn-light btn-sm"
-                                        >
-                                            Tutup
-                                        </button>
-                                    </div>
-                                </div>
+                            </div>
+                            <div>
+                                <h2 class="fs-1 fw-bold text-gray-900 mb-1">{{ title }}</h2>
+                                <p class="fs-6 text-muted mb-0">{{ subtitle }}</p>
                             </div>
                         </div>
                     </div>
-                    <!-- Auto-play Controls (Center) -->
-                    <div class="col d-flex justify-content-center">
-                        <div class="d-flex align-items-center bg-light rounded px-3 py-1">
-                            <span class="fs-7 fw-semibold text-gray-700 me-3">Kontrol:</span>
-                            <select
-                                v-model="playSpeed"
-                                class="form-select form-select-sm me-2 py-1"
-                                :disabled="isPlaying"
-                                style="width: 120px; font-size: 12px;"
-                            >
-                                <option :value="1000">Cepat (1s)</option>
-                                <option :value="2000">Normal (2s)</option>
-                                <option :value="3000">Lambat (3s)</option>
-                            </select>
-                            <button
-                                @click="toggleAutoPlay"
-                                :class="[
-                                    'btn btn-sm d-flex align-items-center py-1',
-                                    isPlaying ? 'btn-danger' : 'btn-success'
-                                ]"
-                                :disabled="!apiData || apiData.length === 0"
-                            >
-                                <i :class="[
-                                    'me-1 fs-6',
-                                    isPlaying ? 'ki-duotone ki-stop-circle' : 'ki-duotone ki-play'
-                                ]">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                </i>
-                                {{ isPlaying ? 'Berhenti' : 'Putar' }}
-                            </button>
-                        </div>
-                    </div>
-
                     <!-- Status Legend (Right) -->
-                    <div class="col-5 d-flex justify-content-end">
-                        <div class="d-flex align-items-center rounded px-3 py-1">
-                            <span class="fs-7 fw-semibold text-gray-700 me-3">Status:</span>
-                            <div class="d-flex align-items-center">
+                    <div class="col-auto ms-auto d-flex align-items-center" v-if="showFilters">
+                        <div class="d-flex align-items-center rounded px-4 py-2">
+                            <span class="fs-7 fw-bold text-gray-700 me-3">Status:</span>
+                            <div class="d-flex align-items-center gap-1">
                                 <button
                                     @click="toggleStatusFilter('active')"
                                     :class="[
@@ -1928,43 +2764,105 @@ onUnmounted(() => {
                                         style="width: 8px; height: 8px;"
                                     ></div>
                                     <span class="fw-medium">Selesai</span>
-                                    </button>
+                                </button>
                                 <button
                                     @click="toggleStatusFilter('scheduled')"
                                     :class="[
-                                        'd-flex align-items-center px-2 py-1 rounded me-2 border',
+                                        'd-flex align-items-center px-2 py-1 rounded border',
                                         isStatusSelected('scheduled')
                                             ? 'bg-gray-100 text-gray-600 border-gray-400'
                                             : 'bg-white text-muted border-1 border-gray-300'
                                     ]"
                                     style="font-size: 11px;"
                                 >
-                                    <div 
-                                        class="rounded-circle me-2"
-                                        :class="isStatusSelected('scheduled') ? 'bg-gray-600' : 'bg-gray-300'"
-                                        style="width: 8px; height: 8px;"
-                                    ></div>
-                                    <span class="fw-medium">Terjadwal</span>
+                                <div 
+                                    class="rounded-circle me-2"
+                                    :class="isStatusSelected('scheduled') ? 'bg-gray-600' : 'bg-gray-300'"
+                                    style="width: 8px; height: 8px;"
+                                ></div>
+                                <span class="fw-medium">Terjadwal</span>
                                 </button>
-                                </div>
                             </div>
-                            <!-- Filter Counter & Reset -->
-                            <div class="d-flex align-items-center ms-3 ps-3 border-start border-2 border-gray-400">
-                                <span class="fs-8 text-muted me-2">
-                                    {{ selectedStatuses.length }}/3 aktif
-                                </span>
-                                <button
-                                    v-if="selectedStatuses.length > 0"
-                                    @click="resetFilters"
-                                    class="btn btn-link btn-sm text-primary p-0"
-                                    style="font-size: 11px; text-decoration: underline;"
+                        </div>
+                        <!-- Filter Counter & Reset -->
+                        <div class="d-flex align-items-center ps-3 ms-2 border-start border-2 border-gray-300">
+                            <span class="fs-8 text-muted me-2 fw-medium">
+                                {{ selectedStatuses.length }}/3 aktif
+                            </span>
+                            <button
+                                v-if="selectedStatuses.length > 0"
+                                @click="resetFilters"
+                                class="btn btn-link btn-sm text-primary p-0 fw-medium"
+                                style="font-size: 11px; text-decoration: underline;"
+                             >
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row 2: Date Picker + Auto-play Controls -->
+                <div v-if="showFilters" class="p-3">
+                    <div class="row g-3 align-items-center">
+                        <!-- Date Range Inputs -->
+                        <div class="col-auto d-flex align-items-center gap-3">
+                            <DatePicker
+                                v-model="fromDate"
+                                :label="t('appsEventsAlerts.alertsFilters.fromDateLabel')"
+                                size="sm"
+                                storage-key="lastSelectedFromDate"
+                            />
+
+                            <DatePicker
+                                v-model="toDate"
+                                :label="t('appsEventsAlerts.alertsFilters.toDateLabel')"
+                                size="sm"
+                                storage-key="lastSelectedToDate"
+                            />
+
+                            <button class="btn btn-primary btn-sm px-3 py-1" @click="fetchAlerts">
+                                <i class="ki-duotone ki-arrows-circle fs-6 me-1">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                                Muat
+                            </button>
+                        </div>
+                        <!-- Auto-play Controls -->
+                        <div class="col-auto">
+                            <div class="d-flex align-items-center px-3 py-1">
+                                <span class="fs-7 fw-bold text-gray-700 me-3">Kontrol:</span>
+                                <select
+                                    v-model="playSpeed"
+                                    class="form-select form-select-sm me-3"
+                                    :disabled="isPlaying"
+                                    style="width: 130px; font-size: 12px;"
                                 >
-                                    Reset
+                                    <option :value="1000">Cepat (1s)</option>
+                                    <option :value="2000">Normal (2s)</option>
+                                    <option :value="3000">Lambat (3s)</option>
+                                </select>
+                                <button
+                                    @click="toggleAutoPlay"
+                                    :class="[
+                                        'btn btn-sm d-flex align-items-center px-3 py-1',
+                                        isPlaying ? 'btn-danger' : 'btn-success'
+                                    ]"
+                                    :disabled="!apiData || apiData.length === 0"
+                                >
+                                    <i :class="[
+                                        'me-1 fs-6',
+                                        isPlaying ? 'ki-duotone ki-stop-circle' : 'ki-duotone ki-play'
+                                    ]">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    {{ isPlaying ? 'Berhenti' : 'Putar' }}
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
+             </div>
         </div>
 
         <!-- Chart Area -->
@@ -2009,7 +2907,7 @@ onUnmounted(() => {
                 <p class="text-muted mb-1">Tidak ada data aktivitas untuk tanggal ini.</p>
                 <p class="fs-6 text-gray-400 mb-4">Silakan pilih tanggal lain atau coba lagi nanti.</p>
                 <button
-                    @click="fetchActivityData"
+                    @click="fetchAlerts"
                     class="btn btn-primary btn-sm"
                 >
                     <i class="ki-duotone ki-arrows-circle fs-6 me-1">
@@ -2166,19 +3064,16 @@ onUnmounted(() => {
                             </div>
                             
                             <!-- Status Badge -->
-                            <div class="mb-4">
+                            <div class="mb-4" v-if="modalDetailData.status">
                                 <span
-                                    v-if="modalDetailData.status"
-                                    :class="{
-                                        'badge-success': modalDetailData.status === 'completed',
-                                        'badge-primary': modalDetailData.status === 'active',
-                                        'badge-secondary': modalDetailData.status === 'scheduled'
-                                    }"
-                                    class="badge badge-lg d-inline-flex align-items-center"
+                                    class="badge badge-lg d-inline-flex align-items-center fw-semibold"
+                                    :class="detailStatusBadgeClass(modalDetailData.status)"
                                 >
-                                    <div class="badge badge-circle badge-light-white pulse me-2" style="width: 6px; height: 6px;"></div>
-                                    {{ modalDetailData.status === 'completed' ? 'Selesai' : 
-                                       modalDetailData.status === 'active' ? 'Aktif' : 'Terjadwal' }}
+                                    <i class="ki-duotone ki-information fs-5 me-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    {{ detailStatusLabel(modalDetailData.status) }}
                                 </span>
                             </div>
 
@@ -2225,7 +3120,7 @@ onUnmounted(() => {
                     <!-- Modal Body -->
                     <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                         <!-- Image Section -->
-                        <div v-if="modalDetailData.image_path" class="mb-6">
+                        <div v-if="detailModalImages.length" class="mb-6">
                             <div class="d-flex align-items-center mb-4">
                                 <div class="symbol symbol-30px bg-light-primary me-3">
                                     <div class="symbol-label">
@@ -2240,14 +3135,18 @@ onUnmounted(() => {
                             </div>
                             
                             <div class="position-relative bg-light rounded border overflow-hidden">
-                                <img
-                                    :src="`https://somba-sppg.latto.co.id/cdn/notif${modalDetailData.image_path}`"
-                                    :alt="`Rekaman ${modalDetailData.name}`"
-                                    class="img-fluid cursor-pointer"
-                                    style="height: 300px; width: 100%; object-fit: cover;"
-                                    @click="openImageFromDetail(`https://somba-sppg.latto.co.id/cdn/notif${modalDetailData.image_path}`, `Rekaman ${modalDetailData.name}`)"
-                                    @error="$event.target.style.display = 'none'; $event.target.nextElementSibling.style.display = 'block'"
-                                />
+                                <transition name="fade" mode="out-in">
+                                    <img
+                                        v-if="currentDetailImage"
+                                        :key="currentDetailImage"
+                                        :src="currentDetailImage"
+                                        :alt="`Rekaman ${modalDetailData.name}`"
+                                        class="img-fluid cursor-pointer"
+                                        style="height: 300px; width: 100%; object-fit: cover;"
+                                        @click="openImageFromDetail(currentDetailImage, `Rekaman ${modalDetailData.name}`)"
+                                        @error="$event.target.style.display = 'none'; $event.target.nextElementSibling.style.display = 'block'"
+                                    />
+                                </transition>
                                 
                                 <!-- Error State -->
                                 <div class="d-none p-8 text-center bg-light d-flex flex-column align-items-center justify-content-center" style="height: 300px;">
@@ -2263,11 +3162,42 @@ onUnmounted(() => {
                                     <p class="text-gray-400 fs-6">Terjadi kesalahan saat memuat gambar</p>
                                 </div>
 
+                                <button
+                                    v-if="hasMultipleDetailImages"
+                                    @click.stop="showPreviousDetailImage"
+                                    class="btn btn-icon btn-light-primary position-absolute top-50 start-0 translate-middle-y ms-3 shadow-sm"
+                                    title="Sebelumnya"
+                                >
+                                    <i class="ki-duotone ki-left fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                </button>
+
+                                <button
+                                    v-if="hasMultipleDetailImages"
+                                    @click.stop="showNextDetailImage"
+                                    class="btn btn-icon btn-light-primary position-absolute top-50 end-0 translate-middle-y me-3 shadow-sm"
+                                    title="Berikutnya"
+                                >
+                                    <i class="ki-duotone ki-right fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                </button>
+
+                                <div
+                                    v-if="hasMultipleDetailImages"
+                                    class="position-absolute bottom-0 end-0 bg-dark bg-opacity-50 text-white px-3 py-1 m-3 rounded"
+                                >
+                                    {{ detailImageIndex + 1 }} / {{ detailModalImages.length }}
+                                </div>
+
                                 <!-- Hover Overlay -->
                                 <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 opacity-0 d-flex align-items-end justify-content-center pb-4 hover-overlay">
                                     <div class="d-flex">
                                         <button
-                                            @click="openImageFromDetail(`https://somba-sppg.latto.co.id/cdn/notif${modalDetailData.image_path}`, `Rekaman ${modalDetailData.name}`)"
+                                            @click="openImageFromDetail(currentDetailImage, `Rekaman ${modalDetailData.name}`)"
                                             class="btn btn-primary btn-sm me-2"
                                             title="Lihat ukuran penuh"
                                         >
@@ -2278,7 +3208,7 @@ onUnmounted(() => {
                                             Perbesar
                                         </button>
                                         <button
-                                            @click="downloadImageFromUrl(`https://somba-sppg.latto.co.id/cdn/notif${modalDetailData.image_path}`, `Rekaman ${modalDetailData.name}`)"
+                                            @click="downloadImageFromUrl(currentDetailImage, `Rekaman ${modalDetailData.name}`)"
                                             class="btn btn-success btn-sm"
                                             title="Download gambar"
                                         >
@@ -2318,6 +3248,43 @@ onUnmounted(() => {
                                 </div>
                                 <h5 class="fs-4 fw-semibold text-gray-700 mb-2">Tidak Ada Dokumentasi</h5>
                                 <p class="text-muted">Tidak ada rekaman visual untuk aktivitas ini</p>
+                            </div>
+                        </div>
+
+                        <!-- Status & Comment Section -->
+                        <div class="card border mb-6">
+                            <div class="card-body">
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span
+                                            v-if="modalDetailData.status"
+                                            class="badge badge-lg fw-semibold"
+                                            :class="detailStatusBadgeClass(modalDetailData.status)"
+                                        >
+                                            {{ detailStatusLabel(modalDetailData.status) }}
+                                        </span>
+                                        <span v-if="modalDetailData.camera_name" class="text-muted fw-semibold">{{ modalDetailData.camera_name }}</span>
+                                    </div>
+                                    <span
+                                        v-if="modalDetailData.raw_status && modalDetailData.raw_status !== modalDetailData.status"
+                                        class="badge badge-light text-muted fw-semibold"
+                                    >
+                                        Status API: {{ modalDetailData.raw_status }}
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <h5 class="fw-bold text-gray-800 mb-3">Komentar</h5>
+                                    <div
+                                        v-if="modalDetailData.comment"
+                                        class="p-4 bg-light rounded border border-dashed border-gray-300 text-gray-700"
+                                    >
+                                        {{ modalDetailData.comment }}
+                                    </div>
+                                    <div v-else class="text-muted fst-italic">
+                                        Tidak ada komentar
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

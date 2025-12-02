@@ -37,11 +37,11 @@
         <div class="d-flex align-items-center">
           <div class="d-flex align-items-center me-3">
             <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.alertsFilters.fromDateLabel') }}</label>
-            <DatePicker ref="dateFromPicker" v-model="tempDateFrom" size="sm" :clearable="true" storageKey="alertsDefaultFromDate" style="width:180px;" />
+            <DatePicker ref="dateFromPicker" v-model="tempDateFrom" size="sm" :clearable="true" style="width:180px;" />
           </div>
             <div class="d-flex align-items-center me-3">
               <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.alertsFilters.toDateLabel') }}</label>
-              <DatePicker ref="dateToPicker" v-model="tempDateTo" size="sm" :clearable="true" storageKey="alertsDefaultToDate" style="width:180px;" />
+              <DatePicker ref="dateToPicker" v-model="tempDateTo" size="sm" :clearable="true" style="width:180px;" />
             </div>
             <div class="me-3">
               <button @click="applyFilters" class="btn btn-sm btn-primary py-1 px-2" title="Apply All Filters">
@@ -210,40 +210,54 @@ const loadingUpdate = ref(false); // retained for modal prop compatibility
 // Pagination handlers - simplified like Camera.vue
 let fetchTimeout: number | null = null;
 
-// Initialize default dates (1 week ago to today)
+const FROM_DATE_STORAGE_KEY = 'lastSelectedFromDate';
+const TO_DATE_STORAGE_KEY = 'lastSelectedToDate';
+const LEGACY_FROM_DATE_STORAGE_KEY = 'globalFromDate';
+const LEGACY_TO_DATE_STORAGE_KEY = 'globalToDate';
+
+// Initialize default dates (yesterday to today)
 const initializeDefaultDates = () => {
   const today = new Date();
-  const oneWeekAgo = new Date();
-  oneWeekAgo.setDate(today.getDate() - 7);
-  
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
-  
-  const defaultFromDate = formatDate(oneWeekAgo);
+
+  const defaultFromDate = formatDate(yesterday);
   const defaultToDate = formatDate(today);
-  
-  // Check if dates are already stored in localStorage
-  const storedFromDate = localStorage.getItem('alertsDefaultFromDate');
-  const storedToDate = localStorage.getItem('alertsDefaultToDate');
-  
+
+  let storedFromDate = localStorage.getItem(FROM_DATE_STORAGE_KEY);
+  let storedToDate = localStorage.getItem(TO_DATE_STORAGE_KEY);
+
   if (!storedFromDate || !storedToDate) {
-    // Store default dates in localStorage
-    localStorage.setItem('alertsDefaultFromDate', defaultFromDate);
-    localStorage.setItem('alertsDefaultToDate', defaultToDate);
+    const legacyFrom = localStorage.getItem(LEGACY_FROM_DATE_STORAGE_KEY);
+    const legacyTo = localStorage.getItem(LEGACY_TO_DATE_STORAGE_KEY);
+    if (legacyFrom && legacyTo) {
+      storedFromDate = legacyFrom;
+      storedToDate = legacyTo;
+      localStorage.setItem(FROM_DATE_STORAGE_KEY, legacyFrom);
+      localStorage.setItem(TO_DATE_STORAGE_KEY, legacyTo);
+      localStorage.removeItem(LEGACY_FROM_DATE_STORAGE_KEY);
+      localStorage.removeItem(LEGACY_TO_DATE_STORAGE_KEY);
+    }
   }
-  
-  // Set reactive date values from localStorage
-  const fromDate = localStorage.getItem('alertsDefaultFromDate') || defaultFromDate;
-  const toDate = localStorage.getItem('alertsDefaultToDate') || defaultToDate;
-  
-  dateFrom.value = fromDate;
-  dateTo.value = toDate;
-  tempDateFrom.value = fromDate;
-  tempDateTo.value = toDate;
+
+  if (!storedFromDate || !storedToDate) {
+    storedFromDate = defaultFromDate;
+    storedToDate = defaultToDate;
+    localStorage.setItem(FROM_DATE_STORAGE_KEY, storedFromDate);
+    localStorage.setItem(TO_DATE_STORAGE_KEY, storedToDate);
+  }
+
+  dateFrom.value = storedFromDate;
+  dateTo.value = storedToDate;
+  tempDateFrom.value = storedFromDate;
+  tempDateTo.value = storedToDate;
 };
 
 const debouncedFetchAlerts = () => {
@@ -539,16 +553,16 @@ const resetFilters = () => {
   tempDateTo.value = dateTo.value;
 };
 
-// Reset filters to default values (clear site/camera, reset dates to 1 week range)
+// Reset filters to default values (clear site/camera, reset dates to yesterday-today)
 const resetToDefaults = () => {
   // Reset site and camera filters
   tempSelectedSiteFilter.value = '';
   tempSelectedCameraFilter.value = '';
   
-  // Reset dates to default range (1 week ago to today)
+  // Reset dates to default range (yesterday to today)
   const today = new Date();
-  const oneWeekAgo = new Date();
-  oneWeekAgo.setDate(today.getDate() - 7);
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
   
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -557,15 +571,17 @@ const resetToDefaults = () => {
     return `${year}-${month}-${day}`;
   };
   
-  const defaultFromDate = formatDate(oneWeekAgo);
+  const defaultFromDate = formatDate(yesterday);
   const defaultToDate = formatDate(today);
   
   tempDateFrom.value = defaultFromDate;
   tempDateTo.value = defaultToDate;
   
   // Update localStorage with new defaults
-  localStorage.setItem('alertsDefaultFromDate', defaultFromDate);
-  localStorage.setItem('alertsDefaultToDate', defaultToDate);
+  localStorage.setItem(FROM_DATE_STORAGE_KEY, defaultFromDate);
+  localStorage.setItem(TO_DATE_STORAGE_KEY, defaultToDate);
+  localStorage.removeItem(LEGACY_FROM_DATE_STORAGE_KEY);
+  localStorage.removeItem(LEGACY_TO_DATE_STORAGE_KEY);
 };
 
 // Helpers for badge styling and translated labels
@@ -777,6 +793,8 @@ onMounted(async () => {
     if (initialSiteUid) {
       // Set selected site and temp selection
       selectedSiteFilter.value = initialSiteUid;
+      tempSelectedSiteFilter.value = initialSiteUid;
+      currentSite.value = sites.value.find(s => s.uid === initialSiteUid) || null;
       localStorage.setItem('lastSelectedSite', initialSiteUid);
       // Load cameras for the selected site
       await fetchCameras(initialSiteUid);
@@ -790,6 +808,7 @@ onMounted(async () => {
       }
       
       selectedCameraFilter.value = initialCameraUid;
+      tempSelectedCameraFilter.value = initialCameraUid;
       if (initialCameraUid) {
         localStorage.setItem('lastSelectedCamera', initialCameraUid);
       }
@@ -803,6 +822,7 @@ onMounted(async () => {
       selectedCameraFilter.value = '';
       tempSelectedSiteFilter.value = '';
       tempSelectedCameraFilter.value = '';
+      currentSite.value = null;
     }
   } catch (error) {
     console.error('Error initializing alerts:', error);

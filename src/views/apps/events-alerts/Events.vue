@@ -336,41 +336,54 @@ const loadingDetail = ref(false);
 
 // Pagination handlers
 let fetchTimeout: number | null = null;
+const FROM_DATE_STORAGE_KEY = 'lastSelectedFromDate';
+const TO_DATE_STORAGE_KEY = 'lastSelectedToDate';
+const LEGACY_FROM_DATE_STORAGE_KEY = 'globalFromDate';
+const LEGACY_TO_DATE_STORAGE_KEY = 'globalToDate';
 
 // Initialize default dates (1 week ago to today)
 const initializeDefaultDates = () => {
   const today = new Date();
-  const oneWeekAgo = new Date();
-  oneWeekAgo.setDate(today.getDate() - 7);
-  
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
-  
-  const defaultFromDate = formatDate(oneWeekAgo);
+
+  const defaultFromDate = formatDate(yesterday);
   const defaultToDate = formatDate(today);
-  
-  // Check if dates are already stored in localStorage
-  const storedFromDate = localStorage.getItem('eventsDefaultFromDate');
-  const storedToDate = localStorage.getItem('eventsDefaultToDate');
-  
+
+  let storedFromDate = localStorage.getItem(FROM_DATE_STORAGE_KEY);
+  let storedToDate = localStorage.getItem(TO_DATE_STORAGE_KEY);
+
   if (!storedFromDate || !storedToDate) {
-    // Store default dates in localStorage
-    localStorage.setItem('eventsDefaultFromDate', defaultFromDate);
-    localStorage.setItem('eventsDefaultToDate', defaultToDate);
+    const legacyFrom = localStorage.getItem(LEGACY_FROM_DATE_STORAGE_KEY);
+    const legacyTo = localStorage.getItem(LEGACY_TO_DATE_STORAGE_KEY);
+    if (legacyFrom && legacyTo) {
+      storedFromDate = legacyFrom;
+      storedToDate = legacyTo;
+      localStorage.setItem(FROM_DATE_STORAGE_KEY, legacyFrom);
+      localStorage.setItem(TO_DATE_STORAGE_KEY, legacyTo);
+      localStorage.removeItem(LEGACY_FROM_DATE_STORAGE_KEY);
+      localStorage.removeItem(LEGACY_TO_DATE_STORAGE_KEY);
+    }
   }
-  
-  // Set reactive date values from localStorage
-  const fromDate = localStorage.getItem('eventsDefaultFromDate') || defaultFromDate;
-  const toDate = localStorage.getItem('eventsDefaultToDate') || defaultToDate;
-  
-  dateFrom.value = fromDate;
-  dateTo.value = toDate;
-  tempDateFrom.value = fromDate;
-  tempDateTo.value = toDate;
+
+  if (!storedFromDate || !storedToDate) {
+    storedFromDate = defaultFromDate;
+    storedToDate = defaultToDate;
+    localStorage.setItem(FROM_DATE_STORAGE_KEY, storedFromDate);
+    localStorage.setItem(TO_DATE_STORAGE_KEY, storedToDate);
+  }
+
+  dateFrom.value = storedFromDate;
+  dateTo.value = storedToDate;
+  tempDateFrom.value = storedFromDate;
+  tempDateTo.value = storedToDate;
 };
 
 const debouncedFetchEvents = () => {
@@ -442,7 +455,7 @@ const fetchEvents = async () => {
   if (loading.value) {
     return;
   }
-  
+
   loading.value = true;
   try {
     // Determine site uid to request - prefer selectedSiteFilter, fallback to first loaded site
@@ -545,6 +558,27 @@ const fetchEvents = async () => {
     loading.value = false;
   }
 };
+
+watch([dateFrom, dateTo], ([from, to]) => {
+  try {
+    if (from) {
+      localStorage.setItem(FROM_DATE_STORAGE_KEY, from);
+    } else {
+      localStorage.removeItem(FROM_DATE_STORAGE_KEY);
+    }
+
+    if (to) {
+      localStorage.setItem(TO_DATE_STORAGE_KEY, to);
+    } else {
+      localStorage.removeItem(TO_DATE_STORAGE_KEY);
+    }
+
+    localStorage.removeItem(LEGACY_FROM_DATE_STORAGE_KEY);
+    localStorage.removeItem(LEGACY_TO_DATE_STORAGE_KEY);
+  } catch (error) {
+    console.warn('Unable to persist date filters to localStorage', error);
+  }
+});
 
 // Fetch sites from API (following Camera.vue pattern)
 const fetchSites = async () => {
@@ -729,6 +763,8 @@ const applyFilters = async () => {
   localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || '');
   const cameraToSave = selectedCameraFilter.value && selectedCameraFilter.value !== 'undefined' && selectedCameraFilter.value !== 'null' ? selectedCameraFilter.value : '';
   localStorage.setItem('lastSelectedCamera', cameraToSave);
+  localStorage.setItem(FROM_DATE_STORAGE_KEY, dateFrom.value);
+  localStorage.setItem(TO_DATE_STORAGE_KEY, dateTo.value);
   
   // Reset pagination and fetch events
   currentPage.value = 1;
@@ -754,10 +790,10 @@ const resetToDefaults = () => {
   tempSelectedSiteFilter.value = '';
   tempSelectedCameraFilter.value = '';
   
-  // Reset dates to default range (1 week ago to today)
+  // Reset dates to default range (yesterday to today)
   const today = new Date();
-  const oneWeekAgo = new Date();
-  oneWeekAgo.setDate(today.getDate() - 7);
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
   
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -766,15 +802,15 @@ const resetToDefaults = () => {
     return `${year}-${month}-${day}`;
   };
   
-  const defaultFromDate = formatDate(oneWeekAgo);
+  const defaultFromDate = formatDate(yesterday);
   const defaultToDate = formatDate(today);
   
   tempDateFrom.value = defaultFromDate;
   tempDateTo.value = defaultToDate;
   
   // Update localStorage with new defaults
-  localStorage.setItem('eventsDefaultFromDate', defaultFromDate);
-  localStorage.setItem('eventsDefaultToDate', defaultToDate);
+  localStorage.setItem(FROM_DATE_STORAGE_KEY, defaultFromDate);
+  localStorage.setItem(TO_DATE_STORAGE_KEY, defaultToDate);
 };
 
 
