@@ -179,6 +179,7 @@
                         :title="t('dashboard.sections.realTimeReport.componentTitle')"
                         :subtitle="t('dashboard.sections.realTimeReport.componentSubtitle')"
                         :showFilters="true"
+                        :site-uid="selectedSite"
                       />
                     </div>
 
@@ -208,6 +209,9 @@ interface Site {
   name: string;
 }
 
+// i18n helper
+const { t } = useI18n();
+
 // Reactive data untuk live activities dari API
 const liveActivities = ref([]);
 const loading = ref(true);
@@ -230,7 +234,7 @@ const dragThreshold = 50; // Minimum drag distance to trigger scroll
 const sistemMonitoring = ref([]);
 const navigationApps = ref([]);
 
-const STORAGE_KEY = 'dashboardSelectedSite';
+const STORAGE_KEY = 'lastSelectedSite';
 const sites = ref<Site[]>([]);
 const selectedSite = ref<string>(
   (typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null) ||
@@ -248,9 +252,6 @@ const mockLiveActivities = liveActivityMock as Record<string, MockActivity[]>;
 
 // Router setup
 const router = useRouter();
-
-// I18n setup
-const { t } = useI18n();
 
 // Site selection and header info
 // Current date and auto update info
@@ -499,12 +500,12 @@ const setupAutoRefresh = () => {
     clearInterval(autoRefreshInterval.value);
   }
   
-  // Set new interval (2 minutes = 120000 milliseconds)
+  // Set new interval (5 minutes = 300000 milliseconds)
   autoRefreshInterval.value = setInterval(() => {
     if (!isManualRefreshing.value && selectedSite.value) {
       loadLiveActivities();
     }
-  }, 120000); // 2 minutes
+  }, 300000); // 5 minutes
 };
 
 // Clear auto-refresh interval
@@ -555,8 +556,6 @@ const loadLiveActivities = async () => {
       last_activity_timestamp: item?.last_activity_timestamp ?? null,
       currently_active: Boolean(item?.currently_active ?? item?.is_active),
     }));
-
-    console.log('live activities successfully loaded:');
   } catch (err) {
     console.error('loadLiveActivities failed:', err);
     error.value = err instanceof Error ? err.message : 'Gagal memuat aktivitas.';

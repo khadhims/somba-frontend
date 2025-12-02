@@ -77,7 +77,7 @@
               v-model="tempDateFrom"
               size="sm"
               :clearable="true"
-              defaultType="monthAgo"
+              
               style="width: 180px;"
             />
           </div>
@@ -87,7 +87,7 @@
               v-model="tempDateTo"
               size="sm"
               :clearable="true"
-              defaultType="today"
+              
               style="width: 180px;"
             />
           </div>
@@ -336,49 +336,54 @@ const loadingDetail = ref(false);
 
 // Pagination handlers
 let fetchTimeout: number | null = null;
+const FROM_DATE_STORAGE_KEY = 'lastSelectedFromDate';
+const TO_DATE_STORAGE_KEY = 'lastSelectedToDate';
+const LEGACY_FROM_DATE_STORAGE_KEY = 'globalFromDate';
+const LEGACY_TO_DATE_STORAGE_KEY = 'globalToDate';
 
-// Initialize default dates (1 month ago to today)
+// Initialize default dates (1 week ago to today)
 const initializeDefaultDates = () => {
   const today = new Date();
-  const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(today.getMonth() - 1);
-  
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
-  
-  const defaultFromDate = formatDate(oneMonthAgo);
+
+  const defaultFromDate = formatDate(yesterday);
   const defaultToDate = formatDate(today);
-  
-  // Check if dates are already stored in localStorage
-  const storedFromDate = localStorage.getItem('eventsDefaultFromDate');
-  const storedToDate = localStorage.getItem('eventsDefaultToDate');
-  
+
+  let storedFromDate = localStorage.getItem(FROM_DATE_STORAGE_KEY);
+  let storedToDate = localStorage.getItem(TO_DATE_STORAGE_KEY);
+
   if (!storedFromDate || !storedToDate) {
-    // Store default dates in localStorage
-    localStorage.setItem('eventsDefaultFromDate', defaultFromDate);
-    localStorage.setItem('eventsDefaultToDate', defaultToDate);
-    console.log('Events.vue: Set default dates in localStorage:', { defaultFromDate, defaultToDate });
+    const legacyFrom = localStorage.getItem(LEGACY_FROM_DATE_STORAGE_KEY);
+    const legacyTo = localStorage.getItem(LEGACY_TO_DATE_STORAGE_KEY);
+    if (legacyFrom && legacyTo) {
+      storedFromDate = legacyFrom;
+      storedToDate = legacyTo;
+      localStorage.setItem(FROM_DATE_STORAGE_KEY, legacyFrom);
+      localStorage.setItem(TO_DATE_STORAGE_KEY, legacyTo);
+      localStorage.removeItem(LEGACY_FROM_DATE_STORAGE_KEY);
+      localStorage.removeItem(LEGACY_TO_DATE_STORAGE_KEY);
+    }
   }
-  
-  // Set reactive date values from localStorage
-  const fromDate = localStorage.getItem('eventsDefaultFromDate') || defaultFromDate;
-  const toDate = localStorage.getItem('eventsDefaultToDate') || defaultToDate;
-  
-  dateFrom.value = fromDate;
-  dateTo.value = toDate;
-  tempDateFrom.value = fromDate;
-  tempDateTo.value = toDate;
-  
-  console.log('Events.vue: Initialized default dates:', {
-    dateFrom: dateFrom.value,
-    dateTo: dateTo.value,
-    tempDateFrom: tempDateFrom.value,
-    tempDateTo: tempDateTo.value
-  });
+
+  if (!storedFromDate || !storedToDate) {
+    storedFromDate = defaultFromDate;
+    storedToDate = defaultToDate;
+    localStorage.setItem(FROM_DATE_STORAGE_KEY, storedFromDate);
+    localStorage.setItem(TO_DATE_STORAGE_KEY, storedToDate);
+  }
+
+  dateFrom.value = storedFromDate;
+  dateTo.value = storedToDate;
+  tempDateFrom.value = storedFromDate;
+  tempDateTo.value = storedToDate;
 };
 
 const debouncedFetchEvents = () => {
@@ -394,14 +399,9 @@ const goToPage = (page: number) => {
 };
 
 const changeItemsPerPage = (newPerPage: number) => {
-  console.log('changeItemsPerPage called with:', newPerPage);
-  console.log('Current itemsPerPage value before change:', itemsPerPage.value);
   
   // Force update the reactive value
   itemsPerPage.value = newPerPage;
-  
-  console.log('itemsPerPage value after change:', itemsPerPage.value);
-  console.log('Will send to API: page_size =', itemsPerPage.value);
   
   // Reset to first page
   currentPage.value = 1;
@@ -453,10 +453,9 @@ const tableHeader = computed(() => [
 // Fetch events from API (uses mock response shape as fallback)
 const fetchEvents = async () => {
   if (loading.value) {
-    console.log('fetchEvents: Already loading, skipping duplicate call');
     return;
   }
-  
+
   loading.value = true;
   try {
     // Determine site uid to request - prefer selectedSiteFilter, fallback to first loaded site
@@ -479,7 +478,6 @@ const fetchEvents = async () => {
     // Add camera filter if set
     if (selectedCameraFilter.value && selectedCameraFilter.value !== '' && selectedCameraFilter.value !== 'undefined') {
       params.camera_uuid = selectedCameraFilter.value;
-      console.log('Adding camera_uuid to query params:', selectedCameraFilter.value);
     }
     
     // Add date range filters if set
@@ -532,9 +530,6 @@ const fetchEvents = async () => {
     // Use pagination from API response
     const pagination = payload?.pagination || {};
     
-    console.log('API pagination response:', pagination);
-    console.log('Our sent parameters:', { page: currentPage.value, page_size: itemsPerPage.value });
-    
     // Use pagination values from API response
     if (typeof pagination.total_items === "number") {
       totalItems.value = pagination.total_items;
@@ -550,14 +545,6 @@ const fetchEvents = async () => {
       console.warn(`API returned different per_page: ${pagination.per_page}, but keeping user selection: ${itemsPerPage.value}`);
     }
     
-    console.log('Final pagination state:', {
-      currentPage: currentPage.value,
-      itemsPerPage: itemsPerPage.value,
-      totalItems: totalItems.value,
-      totalPages: totalPages.value,
-      fromAPI: pagination
-    });
-
     // Apply client-side filters if header filters are set
     if (selectedSiteFilter.value) {
       events.value = events.value.filter(e => !e.site_uid || e.site_uid === selectedSiteFilter.value);
@@ -571,6 +558,27 @@ const fetchEvents = async () => {
     loading.value = false;
   }
 };
+
+watch([dateFrom, dateTo], ([from, to]) => {
+  try {
+    if (from) {
+      localStorage.setItem(FROM_DATE_STORAGE_KEY, from);
+    } else {
+      localStorage.removeItem(FROM_DATE_STORAGE_KEY);
+    }
+
+    if (to) {
+      localStorage.setItem(TO_DATE_STORAGE_KEY, to);
+    } else {
+      localStorage.removeItem(TO_DATE_STORAGE_KEY);
+    }
+
+    localStorage.removeItem(LEGACY_FROM_DATE_STORAGE_KEY);
+    localStorage.removeItem(LEGACY_TO_DATE_STORAGE_KEY);
+  } catch (error) {
+    console.warn('Unable to persist date filters to localStorage', error);
+  }
+});
 
 // Fetch sites from API (following Camera.vue pattern)
 const fetchSites = async () => {
@@ -607,10 +615,7 @@ const fetchSites = async () => {
     }
     loadingCameras.value = true;
     try {    
-      console.log('Fetching cameras for site:', siteUid);
       const resp = await ApiService.get(`sites/${siteUid}/cameras`);
-      
-      console.log('Raw camera API response:', resp);
       
       // Parse response - handle direct array or wrapped response
       let rawCameras: any[] = [];
@@ -629,8 +634,6 @@ const fetchSites = async () => {
         console.warn('No data received from cameras API');
         rawCameras = [];
       }
-      
-      console.log('Raw cameras data:', rawCameras);
       
       // Map all camera data to expected structure, preserving all original fields
       cameras.value = rawCameras.map((camera: any) => ({
@@ -653,8 +656,6 @@ const fetchSites = async () => {
         created_by: camera.created_by
       }));
       
-      console.log('Mapped cameras for dropdown:', cameras.value);
-      console.log('Camera count:', cameras.value.length);
       
     } catch (error) {
       console.error('Error loading cameras for site', siteUid, ':', error);
@@ -693,7 +694,6 @@ const fetchSites = async () => {
       });
 
       camerasCache.value[siteUid] = map;
-      console.log('Cached cameras for site:', siteUid, map);
     } catch (err) {
       console.warn('Failed to load cameras for site', siteUid, err);
       // set empty map to avoid retry storm
@@ -734,30 +734,10 @@ const onTempFilterSiteChange = async () => {
 
 const onTempFilterCameraChange = () => {
   // Just update temp state, no API call
-  console.log('onTempFilterCameraChange: Camera filter changed', {
-    value: tempSelectedCameraFilter.value,
-    type: typeof tempSelectedCameraFilter.value,
-    isUndefined: tempSelectedCameraFilter.value === undefined,
-    isNull: tempSelectedCameraFilter.value === null,
-    isEmpty: tempSelectedCameraFilter.value === '',
-    stringValue: String(tempSelectedCameraFilter.value)
-  });
-  
-  // Also log available cameras for debugging
-  console.log('Available cameras for selection:', cameras.value.map(c => ({ 
-    uuid: c.uuid, 
-    uid: c.uid, 
-    name: c.name,
-    site_uid: c.site_uid,
-    site_name: c.site_name,
-    model: c.model,
-    video_recorder_name: c.video_recorder_name
-  })));
   
   // Save temp camera selection for persistence (backup method)
   if (tempSelectedCameraFilter.value && tempSelectedCameraFilter.value !== '' && tempSelectedCameraFilter.value !== 'undefined') {
     localStorage.setItem('lastTempSelectedCamera', tempSelectedCameraFilter.value);
-    console.log('Saved temp camera to localStorage:', tempSelectedCameraFilter.value);
   }
 };
 
@@ -769,25 +749,12 @@ const onFilterNvrChange = () => {
 
 // Apply all filters at once
 const applyFilters = async () => {
-  console.log('applyFilters: Applying filters', {
-    tempSite: tempSelectedSiteFilter.value,
-    tempCamera: tempSelectedCameraFilter.value,
-    tempDateFrom: tempDateFrom.value,
-    tempDateTo: tempDateTo.value
-  });
   
   // Update actual filter values from temp values
   selectedSiteFilter.value = tempSelectedSiteFilter.value || '';
   selectedCameraFilter.value = tempSelectedCameraFilter.value || '';
   dateFrom.value = tempDateFrom.value;
   dateTo.value = tempDateTo.value;
-  
-  console.log('applyFilters: Updated actual filters', {
-    actualSite: selectedSiteFilter.value,
-    actualCamera: selectedCameraFilter.value,
-    actualDateFrom: dateFrom.value,
-    actualDateTo: dateTo.value
-  });
   
   // Update current site
   currentSite.value = sites.value.find(s => s.uid === selectedSiteFilter.value) || null;
@@ -796,12 +763,8 @@ const applyFilters = async () => {
   localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || '');
   const cameraToSave = selectedCameraFilter.value && selectedCameraFilter.value !== 'undefined' && selectedCameraFilter.value !== 'null' ? selectedCameraFilter.value : '';
   localStorage.setItem('lastSelectedCamera', cameraToSave);
-  console.log('applyFilters: Saved to localStorage', {
-    savedSite: selectedSiteFilter.value || '',
-    savedCamera: cameraToSave,
-    selectedCameraDetails: cameras.value.find(c => c.uuid === selectedCameraFilter.value),
-    availableCameraCount: cameras.value.length
-  });
+  localStorage.setItem(FROM_DATE_STORAGE_KEY, dateFrom.value);
+  localStorage.setItem(TO_DATE_STORAGE_KEY, dateTo.value);
   
   // Reset pagination and fetch events
   currentPage.value = 1;
@@ -821,16 +784,16 @@ const resetFilters = () => {
   tempDateTo.value = dateTo.value;
 };
 
-// Reset filters to default values (clear site/camera, reset dates to 1 month range)
+// Reset filters to default values (clear site/camera, reset dates to 1 week range)
 const resetToDefaults = () => {
   // Reset site and camera filters
   tempSelectedSiteFilter.value = '';
   tempSelectedCameraFilter.value = '';
   
-  // Reset dates to default range (1 month ago to today)
+  // Reset dates to default range (yesterday to today)
   const today = new Date();
-  const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(today.getMonth() - 1);
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
   
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -839,20 +802,15 @@ const resetToDefaults = () => {
     return `${year}-${month}-${day}`;
   };
   
-  const defaultFromDate = formatDate(oneMonthAgo);
+  const defaultFromDate = formatDate(yesterday);
   const defaultToDate = formatDate(today);
   
   tempDateFrom.value = defaultFromDate;
   tempDateTo.value = defaultToDate;
   
   // Update localStorage with new defaults
-  localStorage.setItem('eventsDefaultFromDate', defaultFromDate);
-  localStorage.setItem('eventsDefaultToDate', defaultToDate);
-  
-  console.log('Events.vue: Reset to defaults', {
-    tempFromDate: tempDateFrom.value,
-    tempToDate: tempDateTo.value
-  });
+  localStorage.setItem(FROM_DATE_STORAGE_KEY, defaultFromDate);
+  localStorage.setItem(TO_DATE_STORAGE_KEY, defaultToDate);
 };
 
 
@@ -1153,85 +1111,68 @@ const handleImageError = (event: any) => {
 
 // Initialize data on component mount
 onMounted(async () => {
-  console.log('Events.vue: Component mounted');
-  
-  // Initialize default dates first
-  initializeDefaultDates();
-  
-  // Then load sites
-  await fetchSites();
-  
-  // Initialize selected site filter from localStorage (but don't auto-select first site)
-  const storedSite = localStorage.getItem('lastSelectedSite');
+  try {
+    // Initialize default dates first
+    initializeDefaultDates();
+
+    // Then load sites
+    await fetchSites();
+
+    // Determine initial site: prefer stored value, otherwise first site in list
+    const storedSite = localStorage.getItem('lastSelectedSite');
+    let initialSiteUid = '';
     if (storedSite && sites.value.some(s => s.uid === storedSite)) {
-      selectedSiteFilter.value = storedSite;
-      tempSelectedSiteFilter.value = storedSite;
-      
-      // Initialize selected camera filter from localStorage with backup recovery
+      initialSiteUid = storedSite;
+    } else if (sites.value.length > 0) {
+      initialSiteUid = sites.value[0].uid;
+    }
+
+    if (initialSiteUid) {
+      // Set selected site and temp selection
+      selectedSiteFilter.value = initialSiteUid;
+      tempSelectedSiteFilter.value = initialSiteUid;
+      localStorage.setItem('lastSelectedSite', initialSiteUid);
+
+      // Load cameras for the selected site
+      await fetchCamerasForFilter(initialSiteUid);
+
+      // Determine initial camera: prefer stored value, otherwise first camera in list
       const storedCamera = localStorage.getItem('lastSelectedCamera');
-      const backupCamera = localStorage.getItem('lastTempSelectedCamera');
-      
-      let cameraToUse = '';
-      if (storedCamera && storedCamera !== 'null' && storedCamera !== 'undefined') {
-        cameraToUse = storedCamera;
-      } else if (backupCamera && backupCamera !== 'null' && backupCamera !== 'undefined') {
-        cameraToUse = backupCamera;
-        console.log('Events.vue: Using backup camera from localStorage:', backupCamera);
+      let initialCameraUid = '';
+      if (storedCamera && cameras.value.some(c => c.uid === storedCamera)) {
+        initialCameraUid = storedCamera;
+      } else if (cameras.value.length > 0) {
+        initialCameraUid = cameras.value[0].uid;
       }
-      
-      selectedCameraFilter.value = cameraToUse;
-      tempSelectedCameraFilter.value = cameraToUse;
-      
-      console.log('Events.vue: Initialized filters from localStorage', {
-        selectedSite: selectedSiteFilter.value,
-        selectedCamera: selectedCameraFilter.value,
-        tempSite: tempSelectedSiteFilter.value,
-        tempCamera: tempSelectedCameraFilter.value,
-        storedCameraRaw: storedCamera,
-        backupCameraRaw: backupCamera,
-        finalCameraUsed: cameraToUse
-      });
-      
-      console.log('Events.vue: Site and camera filters initialized from localStorage');
-      
-      // Load cameras for the valid stored site
-      await fetchCamerasForFilter(selectedSiteFilter.value);
-      
+
+      selectedCameraFilter.value = initialCameraUid;
+      tempSelectedCameraFilter.value = initialCameraUid;
+      if (initialCameraUid) localStorage.setItem('lastSelectedCamera', initialCameraUid);
+
       // Only fetch events after sites and cameras are loaded and default dates are set
       // Wait a bit for DatePicker components to initialize with default values
       setTimeout(() => {
-        console.log('Events.vue: Initial fetch after DatePicker initialization');
         fetchEvents();
       }, 200);
-  } else {
-    // Clear localStorage if stored site doesn't exist
-    localStorage.removeItem('lastSelectedSite');
-    localStorage.removeItem('lastSelectedCamera');
-    selectedSiteFilter.value = '';
-    selectedCameraFilter.value = '';
-    tempSelectedSiteFilter.value = '';
-    tempSelectedCameraFilter.value = '';
-    
-    console.log('Events.vue: Cleared filters, initialized to empty strings', {
-      selectedSite: selectedSiteFilter.value,
-      selectedCamera: selectedCameraFilter.value,
-      tempSite: tempSelectedSiteFilter.value,
-      tempCamera: tempSelectedCameraFilter.value,
-      dateFromValue: dateFrom.value,
-      dateToValue: dateTo.value,
-      tempDateFromValue: tempDateFrom.value,
-      tempDateToValue: tempDateTo.value
-    });
-    
-    console.log('Events.vue: No valid stored site, default dates are set, waiting for user site selection');
-  }
-  
-  // Add event listener for manual modal backdrop click
-  document.addEventListener('click', (e) => {
-    if ((e.target as HTMLElement)?.id === 'eventDetailsModalBackdrop') {
-      closeModal();
+    } else {
+      // No sites available — clear stored selections
+      localStorage.removeItem('lastSelectedSite');
+      localStorage.removeItem('lastSelectedCamera');
+      selectedSiteFilter.value = '';
+      selectedCameraFilter.value = '';
+      tempSelectedSiteFilter.value = '';
+      tempSelectedCameraFilter.value = '';
     }
-  });
+
+    // Add event listener for manual modal backdrop click
+    document.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement)?.id === 'eventDetailsModalBackdrop') {
+        closeModal();
+      }
+    });
+  } catch (error) {
+    console.error('Error initializing events page:', error);
+  }
 });
 
 // Cleanup timeout on unmount
