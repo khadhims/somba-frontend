@@ -71,3 +71,17 @@ import { useAuthStore } from "@/stores/auth";
     router.push({ name: "sign-in" }).catch(() => {});
   }
 })();
+
+// Global handler: when refresh token flow fails in ApiService,
+// purge auth and redirect user to sign-in.
+window.addEventListener("auth:refresh_failed", () => {
+  try {
+    const store = useAuthStore();
+    // logout will purge tokens and user state
+    store.logout();
+  } catch (err) {
+    // ignore if store call fails
+  }
+  // ensure navigation to sign-in
+  router.push({ name: "sign-in" }).catch(() => {});
+});
