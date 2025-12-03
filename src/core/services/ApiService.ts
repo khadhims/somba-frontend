@@ -16,6 +16,11 @@ class ApiService {
   // refresh token handling
   private static isRefreshing = false;
   private static refreshSubscribers: Array<(token: string) => void> = [];
+  // track consecutive refresh failures to avoid hammering the refresh endpoint
+  private static refreshFailCount = 0;
+  private static lastRefreshFailAt: number | null = null;
+  private static MAX_REFRESH_RETRIES = 2;
+  private static REFRESH_FAIL_COOLDOWN_MS = 60_000; // reset fail count after 60s
   // default endpoint for token refresh — change if your backend uses a different path
   private static refreshEndpoint = "auth/refresh";
   // active request counting to avoid loader getting stuck
@@ -49,6 +54,20 @@ class ApiService {
     const refreshToken = JwtService.getRefreshToken();
     if (!refreshToken) {
       return Promise.reject(new Error("No refresh token"));
+    }
+
+    // If we've failed refresh many times recently, avoid another immediate attempt
+    if (ApiService.refreshFailCount >= ApiService.MAX_REFRESH_RETRIES) {
+      if (
+        ApiService.lastRefreshFailAt &&
+        Date.now() - ApiService.lastRefreshFailAt > ApiService.REFRESH_FAIL_COOLDOWN_MS
+      ) {
+        // cooldown expired — reset counters and allow retry
+        ApiService.refreshFailCount = 0;
+        ApiService.lastRefreshFailAt = null;
+      } else {
+        return Promise.reject(new Error("Refresh retry limit exceeded"));
+      }
     }
 
     // call refresh endpoint — backend contract assumed to return { access_token, refresh_token }
@@ -151,6 +170,10 @@ class ApiService {
                 JwtService.saveRefreshToken(data.refresh_token);
               }
 
+              // reset failure tracking on success
+              ApiService.refreshFailCount = 0;
+              ApiService.lastRefreshFailAt = null;
+
               // set header for future requests
               ApiService.setHeader();
               ApiService.onRrefreshed(newToken);
@@ -160,17 +183,49 @@ class ApiService {
               return ApiService.vueInstance.axios(originalRequest);
             }
 
-            // if refresh didn't return a token, purge stored tokens
+            // if refresh didn't return a token, purge stored tokens and count as failure
             JwtService.destroyToken();
             JwtService.destroyRefreshToken();
+            ApiService.refreshFailCount += 1;
+            ApiService.lastRefreshFailAt = Date.now();
             return Promise.reject(error);
           } catch (e) {
             // refresh failed — cleanup
             JwtService.destroyToken();
             JwtService.destroyRefreshToken();
+            // mark a failed attempt
+            ApiService.refreshFailCount += 1;
+            ApiService.lastRefreshFailAt = Date.now();
+
             // notify app that refresh failed so it can logout/redirect
             try {
+              console.debug('[ApiService] refresh token request failed, dispatching auth:refresh_failed (failCount=' + ApiService.refreshFailCount + ')');
+              // clear axios auth header to avoid further requests with stale token
+              try {
+                if (ApiService.vueInstance && (ApiService.vueInstance as any).axios) {
+                  (ApiService.vueInstance as any).axios.defaults.headers.common['Authorization'] = '';
+                }
+              } catch (hh) {}
+
               window.dispatchEvent(new CustomEvent("auth:refresh_failed"));
+
+              // If we've exceeded the retry limit, perform a hard redirect fallback immediately
+              if (ApiService.refreshFailCount >= ApiService.MAX_REFRESH_RETRIES) {
+                try {
+                  if (typeof window !== 'undefined') {
+                    window.location.href = '/sign-in';
+                  }
+                } catch (redirErr) { console.debug('[ApiService] hard redirect failed', redirErr); }
+              } else {
+                // otherwise keep a short fallback redirect to ensure app moves to sign-in
+                setTimeout(() => {
+                  try {
+                    if (typeof window !== 'undefined') {
+                      window.location.href = '/sign-in';
+                    }
+                  } catch (redirErr) { console.debug('[ApiService] hard redirect failed', redirErr); }
+                }, 250);
+              }
             } catch (evErr) {
               // ignore
             }

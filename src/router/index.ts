@@ -427,9 +427,10 @@ const router = createRouter({
   },
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
   const configStore = useConfigStore();
+  console.debug('[router] beforeEach', { to: to.fullPath, from: from.fullPath });
 
   // current page view title
   const translatedTitle = to.meta.pageTitle ? i18n.global.t(to.meta.pageTitle as string) : to.meta.pageTitle;
@@ -438,17 +439,34 @@ router.beforeEach((to, from, next) => {
   // reset config to initial state
   configStore.resetLayoutConfig();
 
-  // verify auth token before each page change
-  authStore.verifyAuth();
-
-  // before page access check if page requires authentication
+  // If the route requires authentication, verify the token and wait for the result
   if (to.meta.middleware == "auth") {
-    if (authStore.isAuthenticated) {
-      next();
-    } else {
+    // show a short loading indicator while we verify
+    try {
+      try { window.dispatchEvent(new CustomEvent('loading:start')); } catch (e) {}
+
+      try {
+        await authStore.verifyAuth();
+      } catch (e) {
+        console.debug('[router] verifyAuth threw', e);
+      }
+
+      console.debug('[router] after verifyAuth isAuthenticated=', authStore.isAuthenticated);
+
+      if (authStore.isAuthenticated) {
+        next();
+      } else {
+        next({ name: "sign-in" });
+      }
+    } catch (e) {
+      // verification/refresh failed
       next({ name: "sign-in" });
+    } finally {
+      try { window.dispatchEvent(new CustomEvent('loading:stop')); } catch (e) {}
     }
   } else {
+    // non-protected route: continue immediately but still kick off a background verify
+    authStore.verifyAuth().catch(() => {});
     next();
   }
 });
