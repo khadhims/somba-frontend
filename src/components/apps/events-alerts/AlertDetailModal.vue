@@ -278,7 +278,7 @@ const submitUpdate = async () => {
     };
 
     await ApiService.post(
-      `/control-plane/api/sites/alerts/${props.alert.event_id}/update`,
+      `sites/alerts/${props.alert.event_id}/update`,
       payload
     );
 

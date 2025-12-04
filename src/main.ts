@@ -35,14 +35,53 @@ import { initVeeValidate } from "@/core/plugins/vee-validate";
 import { initKtIcon } from "@/core/plugins/keenthemes";
 
 import "@/core/plugins/prismjs";
+import { useAuthStore } from "@/stores/auth";
 
 const app = createApp(App);
-
 // create pinia instance so we can call stores before mount
 const pinia = createPinia();
 app.use(pinia);
 app.use(router);
 app.use(ElementPlus);
+// Global handler: when refresh token flow fails in ApiService,
+// purge auth and redirect user to sign-in. Listener is installed
+// early (before ApiService.init) so we don't miss events fired during
+// startup or immediate requests.
+window.addEventListener("auth:refresh_failed", () => {
+  try {
+    const store = useAuthStore();
+    // logout will purge tokens and user state
+    store.logout();
+  } catch (err) {
+    // ignore if store call fails
+  }
+  // Try SPA navigation first, then fallback to a full-page redirect
+  router.push({ name: "sign-in" }).catch(() => {});
+
+  setTimeout(() => {
+    try {
+      if (router.currentRoute && router.currentRoute.value?.name !== "sign-in") {
+        const url = router.resolve({ name: "sign-in" }).href || "/";
+        window.location.href = url;
+      }
+    } catch (e) {
+      window.location.href = "/";
+    }
+  }, 200);
+});
+
+// Listen to storage events (other tabs) - if token removed in another tab, force logout/redirect here too
+window.addEventListener('storage', (evt) => {
+  try {
+    if (evt.key === 'id_token' && evt.newValue === null) {
+      try {
+        const store = useAuthStore();
+        store.logout();
+      } catch (e) {}
+      try { router.push({ name: 'sign-in' }).catch(() => {}); } catch (e) {}
+    }
+  } catch (e) {}
+});
 
 ApiService.init(app);
 initApexCharts(app);
@@ -56,10 +95,10 @@ app.directive("tooltip", (el) => {
   new Tooltip(el);
 });
 
-app.mount("#app");
-
+// Do not mount app until we have attempted initial auth verification.
+// Mounting earlier could render protected pages before we know auth state.
+// We'll mount after the startup verifyAuth call below.
 // Verify auth on startup and redirect to sign-in on failure
-import { useAuthStore } from "@/stores/auth";
 (async () => {
   try {
     const store = useAuthStore();
@@ -69,5 +108,12 @@ import { useAuthStore } from "@/stores/auth";
     // couldn't verify or refresh, redirect to sign-in
     // allow router to be ready
     router.push({ name: "sign-in" }).catch(() => {});
+  }
+  // Now mount the app after auth verification attempt completes.
+  try {
+    app.mount("#app");
+  } catch (mountErr) {
+    // fallback: still try to mount
+    try { (document.getElementById('app') as HTMLElement | null) && app.mount('#app'); } catch (e) {}
   }
 })();
