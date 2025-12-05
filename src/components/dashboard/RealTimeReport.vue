@@ -397,7 +397,7 @@ const fetchAlerts = async () => {
         const f = fromDate.value;
         const t = toDate.value;
 
-        const baseResource = `/sites/${site}/alerts/`;
+        const baseResource = `/sites/${site}/alerts`;
         const baseParams = {
             from_date: f,
             to_date: t,

@@ -415,7 +415,7 @@ const fetchAlerts = async () => {
       params.to_date = dateTo.value;
     }
     
-    const resp = await ApiService.query(`sites/${selectedSiteFilter.value}/alerts/`, {
+    const resp = await ApiService.query(`sites/${selectedSiteFilter.value}/alerts`, {
       params: Object.keys(params).length > 0 ? params : undefined
     });
     
