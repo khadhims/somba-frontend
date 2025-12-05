@@ -743,27 +743,44 @@ i, .ki-duotone, .fas, .far, .fab {
 }
 
 .card {
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   transform: translateZ(0);
   will-change: transform;
+  position: relative;
+  z-index: 1;
 }
 
 .card:hover {
-  transform: translateY(-2px) translateZ(0);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px) translateZ(0);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  z-index: 10;
 }
 
 .symbol {
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   transform: translateZ(0);
+  position: relative;
+  z-index: 1;
 }
 
 .card:hover .symbol {
-  transform: scale(1.05) translateZ(0);
+  transform: scale(1.08) translateZ(0);
+}
+
+/* Prevent hover effects on touch devices */
+@media (hover: none) {
+  .card:hover {
+    transform: translateZ(0);
+    box-shadow: none;
+  }
+  
+  .card:hover .symbol {
+    transform: scale(1) translateZ(0);
+  }
 }
 
 .dashboard-section-header {
@@ -891,13 +908,15 @@ i, .ki-duotone, .fas, .far, .fab {
   position: relative;
   padding: 0.5rem;
   margin: -0.5rem;
+  overflow: hidden;
 }
 
 .activities-carousel {
-  overflow: visible;
+  overflow: hidden;
   cursor: grab;
   user-select: none;
   padding: 0.5rem 0;
+  position: relative;
 }
 
 .activities-carousel:active {
@@ -908,11 +927,14 @@ i, .ki-duotone, .fas, .far, .fab {
   display: flex;
   gap: 20px;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 }
 
 .carousel-item-wrapper {
   flex: 0 0 calc(25% - 15px);
   min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* Pagination Dots */
@@ -1030,20 +1052,23 @@ i, .ki-duotone, .fas, .far, .fab {
   
   .activities-carousel-wrapper {
     padding: 0 0.5rem;
+    margin: 0;
   }
   
   .activities-carousel-track {
-    gap: 0;
+    gap: 10px;
   }
 
   .dashboard-section-header {
     flex-direction: column;
     align-items: stretch;
+    padding: 1rem;
   }
 
   .dashboard-section-header .card-toolbar {
     width: 100%;
     justify-content: space-between;
+    margin-top: 1rem;
   }
 
   .dashboard-section-header .header-meta {
@@ -1054,6 +1079,25 @@ i, .ki-duotone, .fas, .far, .fab {
 
   .dashboard-section-header .header-meta-item {
     width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .row {
+    margin: 0;
+  }
+  
+  .col-6 {
+    padding: 0.25rem;
+  }
+  
+  /* Stack columns vertically on mobile */
+  .row > [class*="col-"] {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 }
 
@@ -1094,6 +1138,70 @@ i, .ki-duotone, .fas, .far, .fab {
   .col-6 {
     flex: 0 0 auto;
     width: 100%;
+  }
+  
+  .app-page {
+    padding: 0.5rem;
+  }
+  
+  .container-fluid {
+    padding: 0.5rem;
+  }
+  
+  /* Improve button spacing on mobile */
+  .btn-group {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  /* Better form controls */
+  .form-select-sm {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+  }
+  
+  /* Optimize text sizes */
+  .fs-1 {
+    font-size: 1.75rem !important;
+  }
+  
+  .fs-2 {
+    font-size: 1.5rem !important;
+  }
+  
+  /* Better touch targets */
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .pagination-dot {
+    width: 12px;
+    height: 12px;
+    margin: 0 2px;
+  }
+  
+  .pagination-dot.active {
+    width: 24px;
+  }
+}
+
+/* Tablet optimization */
+@media (max-width: 768px) and (min-width: 577px) {
+  .carousel-item-wrapper {
+    flex: 0 0 calc(50% - 10px);
+  }
+  
+  .activities-carousel-track {
+    gap: 15px;
+  }
+  
+  .dashboard-section-header {
+    padding: 1.25rem;
+  }
+  
+  .card {
+    margin-bottom: 1rem;
   }
 }
 
