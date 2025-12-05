@@ -58,11 +58,12 @@ const props = defineProps({
 // Filter state for process tracking chart
 const selectedStatuses = ref(['active', 'completed', 'scheduled']);
 
-// Date range state (from_date / to_date)
+// Date range state (from_date / to_date) - using single picker
 const selectedDate = ref(new Date());
 const showDatePicker = ref(false);
 const currentMonth = ref(new Date().getMonth());
 const currentYear = ref(new Date().getFullYear());
+const selectedDateValue = ref(''); // Single date picker value
 const fromDate = ref('');
 const toDate = ref('');
 const fromDateKey = 'lastSelectedFromDate';
@@ -867,24 +868,33 @@ const normalizeAlertDetail = (detail, fallbackPoint = null) => {
     };
 };
 
+// Helper function to find alert in local apiData without network requests
+const getAlertFromLocalData = (eventId) => {
+    if (!eventId) return null;
+    const id = String(eventId);
+    return apiData.value.find(item => {
+        const candidates = [
+            item.event_id, item.eventId, item.id, item.uid, 
+            item.alert_id, item.alertId
+        ];
+        return candidates.some(c => c != null && String(c) === id);
+    }) ?? null;
+};
+
 const fetchAlertById = async (eventId) => {
     if (!eventId) {
-        throw new Error('Event ID tidak valid');
+        console.warn('fetchAlertById: Event ID is required');
+        return null;
     }
-    try {
-        const response = await ApiService.get(`/sites/alerts/${eventId}`);
-        if (!response || (response.status !== 200 && response.status !== 201)) {
-            throw new Error('Gagal mengambil detail event');
-        }
-        const payload = response.data?.data ?? response.data ?? null;
-        if (!payload) {
-            throw new Error('Detail event kosong');
-        }
-        return payload;
-    } catch (error) {
-        console.error(`[RealTimeReport] fetchAlertById failed for ${eventId}:`, error);
-        throw error;
+    
+    // Search in local data only (no API fallback)
+    const localAlert = getAlertFromLocalData(eventId);
+    if (localAlert) {
+        return localAlert;
     }
+    
+    console.warn(`Alert with ID ${eventId} not found in local data`);
+    return null;
 };
 
 // Generate process tracking data (now supports mapping detection objects to processes)
@@ -1086,14 +1096,35 @@ const generateProcessTrackingData = () => {
 // UTILITY FUNCTIONS
 // ========================
 
-// Select date and fetch data
-const selectDate = async (date) => {
-    if (date) {
-        selectedDate.value = date;
-        showDatePicker.value = false;
+// Handle single date picker change - sets both from and to dates
+const handleSelectedDateChange = async (newDateValue) => {
+    if (newDateValue) {
+        // Set both fromDate and toDate to the same selected date
+        fromDate.value = newDateValue;
+        toDate.value = newDateValue;
+        selectedDateValue.value = newDateValue;
+        selectedDate.value = new Date(newDateValue);
+        
+        // Persist to localStorage with same value for both keys
+        try {
+            window.localStorage.setItem(fromDateKey, newDateValue);
+            window.localStorage.setItem(toDateKey, newDateValue);
+        } catch (e) {
+            // ignore storage errors
+        }
+        
         await fetchAlerts();
         startAlertsAutoRefresh();
         // Chart will be rendered automatically by watcher
+    }
+};
+
+// Legacy select date function for backwards compatibility
+const selectDate = async (date) => {
+    if (date) {
+        const dateStr = date.toISOString().split('T')[0];
+        await handleSelectedDateChange(dateStr);
+        showDatePicker.value = false;
     }
 };
 
@@ -1836,20 +1867,33 @@ const fetchAlertDetail = async (eventId, fallbackPoint = null) => {
             ? { ...fallbackPoint, eventId: normalizedEventId, event_id: normalizedEventId, isLoading: true }
             : { eventId: normalizedEventId, event_id: normalizedEventId, isLoading: true };
 
-        const detailPayload = await fetchAlertById(normalizedEventId);
-        const normalizedDetail = normalizeAlertDetail(detailPayload, fallbackPoint ?? modalDetailData.value ?? null);
+        // Try to get from local data first (faster, no network)
+        const localAlert = getAlertFromLocalData(normalizedEventId);
+        if (localAlert) {
+            const normalizedDetail = normalizeAlertDetail(localAlert, fallbackPoint ?? modalDetailData.value ?? null);
+            modalDetailData.value = normalizedDetail || {
+                ...(fallbackPoint || {}),
+                eventId: normalizedEventId,
+                event_id: normalizedEventId
+            };
+            return;
+        }
+
+        // If not found in local data, use fallback point data
+        const normalizedDetail = normalizeAlertDetail(null, fallbackPoint ?? modalDetailData.value ?? null);
         modalDetailData.value = normalizedDetail || {
             ...(fallbackPoint || {}),
             eventId: normalizedEventId,
-            event_id: normalizedEventId
+            event_id: normalizedEventId,
+            error: 'Detail tidak ditemukan dalam data lokal.'
         };
     } catch (error) {
-        console.error('[RealTimeReport] Failed to fetch alert detail:', error);
+        console.error('[RealTimeReport] Failed to process alert detail:', error);
         modalDetailData.value = {
             ...(fallbackPoint || {}),
             eventId: normalizedEventId,
             event_id: normalizedEventId,
-            error: 'Gagal mengambil detail event.'
+            error: 'Gagal memproses detail event.'
         };
     } finally {
         showDetailModal.value = true;
@@ -1983,29 +2027,27 @@ const loadScript = (src) => {
     });
 };
 
-// Initialize fromDate/toDate defaults (yesterday -> today)
+// Initialize fromDate/toDate defaults (today for both)
 const initializeDefaultDates = () => {
     const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-
+    
     const toY = today.getFullYear();
     const toM = String(today.getMonth() + 1).padStart(2, '0');
     const toD = String(today.getDate()).padStart(2, '0');
-    const fromY = yesterday.getFullYear();
-    const fromM = String(yesterday.getMonth() + 1).padStart(2, '0');
-    const fromD = String(yesterday.getDate()).padStart(2, '0');
+    const todayStr = `${toY}-${toM}-${toD}`;
 
-    toDate.value = `${toY}-${toM}-${toD}`;
-    fromDate.value = `${fromY}-${fromM}-${fromD}`;
+    // Set both fromDate and toDate to today (same value)
+    toDate.value = todayStr;
+    fromDate.value = todayStr;
+    selectedDateValue.value = todayStr;
 
-    // default selected date points to the end of the range
-    selectedDate.value = new Date(toDate.value);
+    // default selected date points to today
+    selectedDate.value = new Date(todayStr);
 
-    // persist defaults locally
+    // persist defaults locally - both keys have the same value (today)
     try {
-        window.localStorage.setItem(fromDateKey, fromDate.value);
-        window.localStorage.setItem(toDateKey, toDate.value);
+        window.localStorage.setItem(fromDateKey, todayStr);
+        window.localStorage.setItem(toDateKey, todayStr);
         window.localStorage.removeItem(legacyFromDateKey);
         window.localStorage.removeItem(legacyToDateKey);
     } catch (e) {
@@ -2607,6 +2649,13 @@ watch(() => props.siteUid, (newSiteUid, oldSiteUid) => {
     }
 }, { immediate: false });
 
+// Watch selectedDateValue changes
+watch(selectedDateValue, (newValue) => {
+    if (newValue) {
+        handleSelectedDateChange(newValue);
+    }
+});
+
 onMounted(async () => {
     // Clean up old/conflicting localStorage keys
     try {
@@ -2617,28 +2666,26 @@ onMounted(async () => {
         // ignore cleanup errors
     }
 
-    // restore stored range or initialize defaults
+    // Initialize date from localStorage or default to today
     try {
-        let storedFrom = window.localStorage.getItem(fromDateKey);
-        let storedTo = window.localStorage.getItem(toDateKey);
-
-        if (!storedFrom || !storedTo) {
-            const legacyFrom = window.localStorage.getItem(legacyFromDateKey);
-            const legacyTo = window.localStorage.getItem(legacyToDateKey);
-            if (legacyFrom && legacyTo) {
-                storedFrom = legacyFrom;
-                storedTo = legacyTo;
-                window.localStorage.setItem(fromDateKey, legacyFrom);
-                window.localStorage.setItem(toDateKey, legacyTo);
-                window.localStorage.removeItem(legacyFromDateKey);
-                window.localStorage.removeItem(legacyToDateKey);
-            }
-        }
-
-        if (storedFrom && storedTo) {
+        const storedFrom = window.localStorage.getItem(fromDateKey) || window.localStorage.getItem(legacyFromDateKey);
+        const storedTo = window.localStorage.getItem(toDateKey) || window.localStorage.getItem(legacyToDateKey);
+        
+        if (storedFrom && storedTo && storedFrom === storedTo) {
+            // If both dates are the same (preferred single date mode)
+            selectedDateValue.value = storedFrom;
             fromDate.value = storedFrom;
             toDate.value = storedTo;
+            selectedDate.value = new Date(storedFrom);
+        } else if (storedTo) {
+            // If they differ, use toDate and sync both to it
+            selectedDateValue.value = storedTo;
+            fromDate.value = storedTo;
+            toDate.value = storedTo;
             selectedDate.value = new Date(storedTo);
+            // Update localStorage to sync both keys
+            window.localStorage.setItem(fromDateKey, storedTo);
+            window.localStorage.setItem(toDateKey, storedTo);
         } else {
             initializeDefaultDates();
         }
@@ -2662,7 +2709,7 @@ onMounted(async () => {
     startAlertsAutoRefresh();
 });
 
-// persist date changes
+// persist date changes - single date mode
 watch([fromDate, toDate], ([f, t]) => {
     try {
         if (f) window.localStorage.setItem(fromDateKey, f);
@@ -2671,10 +2718,14 @@ watch([fromDate, toDate], ([f, t]) => {
         window.localStorage.removeItem(legacyToDateKey);
     } catch (e) {}
 
-    if (t) {
-        selectedDate.value = new Date(t);
-    } else if (f) {
-        selectedDate.value = new Date(f);
+    // In single date mode, both f and t should be the same
+    // Update selectedDate and selectedDateValue to stay in sync
+    const dateToUse = t || f; // prefer t (toDate) if available
+    if (dateToUse) {
+        selectedDate.value = new Date(dateToUse);
+        if (selectedDateValue.value !== dateToUse) {
+            selectedDateValue.value = dateToUse;
+        }
     }
 });
 
@@ -2704,13 +2755,15 @@ onUnmounted(() => {
     <!-- Real Time Process Monitoring Dashboard -->
     <div class="card card-flush">
         <!-- Header Section -->
-            <div class="card-header py-4">
-                <!-- Row 1: Title + Status Legend -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <!-- Title (Left) -->
-                    <div class="col-auto">
+        <div class="card-header py-6">
+            <!-- 2x2 Grid Layout -->
+            <div class="container-fluid">
+                <div class="row g-4 d-flex align-items-center">
+                    <!-- Row 1: Title (Left) + Status Filters (Right) -->
+                    <div class="col-12 col-lg-6 d-flex justify-content-between">
+                        <!-- Title Section -->
                         <div class="d-flex align-items-center">
-                            <div class="symbol symbol-45px me-4">
+                            <div class="symbol symbol-45px me-3">
                                 <div class="symbol-label bg-light-primary">
                                     <i class="ki-duotone ki-chart-simple text-primary fs-2x">
                                         <span class="path1"></span>
@@ -2726,145 +2779,120 @@ onUnmounted(() => {
                             </div>
                         </div>
                     </div>
-                    <!-- Status Legend (Right) -->
-                    <div class="col-auto ms-auto d-flex align-items-center" v-if="showFilters">
-                        <div class="d-flex align-items-center rounded px-4 py-2">
-                            <span class="fs-7 fw-bold text-gray-700 me-3">Status:</span>
-                            <div class="d-flex align-items-center gap-1">
-                                <button
-                                    @click="toggleStatusFilter('active')"
-                                    :class="[
-                                        'd-flex align-items-center px-2 py-1 rounded me-2 border',
-                                        isStatusSelected('active')
-                                            ? 'bg-primary text-white'
-                                            : 'bg-white text-muted border'
-                                    ]"
-                                    style="font-size: 11px;"
-                                >
-                                    <div 
-                                        class="rounded-circle me-2"
-                                        :class="isStatusSelected('active') ? 'bg-white' : 'bg-primary'"
-                                        style="width: 8px; height: 8px;"
-                                    ></div>
-                                    <span class="fw-medium">Aktif</span>
-                                </button>
-                                <button
-                                    @click="toggleStatusFilter('completed')"
-                                    :class="[
-                                        'd-flex align-items-center px-2 py-1 rounded me-2 border',
-                                        isStatusSelected('completed')
-                                            ? 'bg-success text-white'
-                                            : 'bg-white text-muted border-1 border-green-300'
-                                    ]"
-                                    style="font-size: 11px;"
-                                >
-                                    <div 
-                                        class="rounded-circle me-2"
-                                        :class="isStatusSelected('completed') ? 'bg-white' : 'bg-success'"
-                                        style="width: 8px; height: 8px;"
-                                    ></div>
-                                    <span class="fw-medium">Selesai</span>
-                                </button>
-                                <button
-                                    @click="toggleStatusFilter('scheduled')"
-                                    :class="[
-                                        'd-flex align-items-center px-2 py-1 rounded border',
-                                        isStatusSelected('scheduled')
-                                            ? 'bg-gray-100 text-gray-600 border-gray-400'
-                                            : 'bg-white text-muted border-1 border-gray-300'
-                                    ]"
-                                    style="font-size: 11px;"
-                                >
+                    <div class="col-12 col-lg-6" v-if="showFilters">
+                        <!-- Status Filters -->
+                        <div class="d-flex flex-wrap align-items-center justify-content-lg-end gap-2">
+                            <span class="fs-7 fw-bold text-gray-700 me-2">Status:</span>
+                            <button
+                                @click="toggleStatusFilter('active')"
+                                :class="[
+                                    'btn btn-sm d-flex align-items-center px-3 py-1',
+                                    isStatusSelected('active') ? 'btn-primary' : 'btn-light-primary'
+                                ]"
+                            >
                                 <div 
                                     class="rounded-circle me-2"
-                                    :class="isStatusSelected('scheduled') ? 'bg-gray-600' : 'bg-gray-300'"
+                                    :class="isStatusSelected('active') ? 'bg-white' : 'bg-primary'"
+                                    style="width: 8px; height: 8px;"
+                                ></div>
+                                <span class="fw-medium">Aktif</span>
+                            </button>
+                            <button
+                                @click="toggleStatusFilter('completed')"
+                                :class="[
+                                    'btn btn-sm d-flex align-items-center px-3 py-1',
+                                    isStatusSelected('completed') ? 'btn-success' : 'btn-light-success'
+                                ]"
+                            >
+                                <div 
+                                    class="rounded-circle me-2"
+                                    :class="isStatusSelected('completed') ? 'bg-white' : 'bg-success'"
+                                    style="width: 8px; height: 8px;"
+                                ></div>
+                                <span class="fw-medium">Selesai</span>
+                            </button>
+                            <button
+                                @click="toggleStatusFilter('scheduled')"
+                                :class="[
+                                    'btn btn-sm d-flex align-items-center px-3 py-1',
+                                    isStatusSelected('scheduled') ? 'btn-secondary' : 'btn-light-secondary'
+                                ]"
+                            >
+                                <div 
+                                    class="rounded-circle me-2"
+                                    :class="isStatusSelected('scheduled') ? 'bg-white' : 'bg-secondary'"
                                     style="width: 8px; height: 8px;"
                                 ></div>
                                 <span class="fw-medium">Terjadwal</span>
-                                </button>
+                            </button>
+                            <div class="badge badge-light-info ms-2">
+                                {{ selectedStatuses.length }}/3
                             </div>
                         </div>
-                        <!-- Filter Counter & Reset -->
-                        <div class="d-flex align-items-center ps-3 ms-2 border-start border-2 border-gray-300">
-                            <span class="fs-8 text-muted me-2 fw-medium">
-                                {{ selectedStatuses.length }}/3 aktif
-                            </span>
-                            <button
-                                v-if="selectedStatuses.length > 0"
-                                @click="resetFilters"
-                                class="btn btn-link btn-sm text-primary p-0 fw-medium"
-                                style="font-size: 11px; text-decoration: underline;"
-                             >
-                                Reset
-                            </button>
-                        </div>
                     </div>
-                </div>
-                <!-- Row 2: Date Picker + Auto-play Controls -->
-                <div v-if="showFilters" class="p-3">
-                    <div class="row g-3 align-items-center">
-                        <!-- Date Range Inputs -->
-                        <div class="col-auto d-flex align-items-center gap-3">
-                            <DatePicker
-                                v-model="fromDate"
-                                :label="t('appsEventsAlerts.alertsFilters.fromDateLabel')"
-                                size="sm"
-                                storage-key="lastSelectedFromDate"
-                            />
-
-                            <DatePicker
-                                v-model="toDate"
-                                :label="t('appsEventsAlerts.alertsFilters.toDateLabel')"
-                                size="sm"
-                                storage-key="lastSelectedToDate"
-                            />
-
-                            <button class="btn btn-primary btn-sm px-3 py-1" @click="fetchAlerts">
-                                <i class="ki-duotone ki-arrows-circle fs-6 me-1">
+                    <!-- Row 2: Date Picker (Left) + Auto-play Controls (Right) -->
+                    <div class="col-12 col-lg-6" v-if="showFilters">
+                        <!-- Date Picker Section -->
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="fs-7 fw-bold text-gray-700">Tanggal:</span>
+                            <div style="width: 160px;">
+                                <DatePicker
+                                    v-model="selectedDateValue"
+                                    label=""
+                                    size="sm"
+                                    storage-key="lastSelectedFromDate"
+                                    @update:model-value="handleSelectedDateChange"
+                                />
+                            </div>
+                            <button 
+                                class="btn btn-light-primary btn-sm d-flex align-items-center px-3 py-2" 
+                                @click="fetchAlerts"
+                                :disabled="isLoading"
+                            >
+                                <i class="ki-duotone ki-arrows-circle fs-6 me-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                 </i>
                                 Muat
                             </button>
                         </div>
-                        <!-- Auto-play Controls -->
-                        <div class="col-auto">
-                            <div class="d-flex align-items-center px-3 py-1">
-                                <span class="fs-7 fw-bold text-gray-700 me-3">Kontrol:</span>
-                                <select
-                                    v-model="playSpeed"
-                                    class="form-select form-select-sm me-3"
-                                    :disabled="isPlaying"
-                                    style="width: 130px; font-size: 12px;"
-                                >
-                                    <option :value="1000">Cepat (1s)</option>
-                                    <option :value="2000">Normal (2s)</option>
-                                    <option :value="3000">Lambat (3s)</option>
-                                </select>
-                                <button
-                                    @click="toggleAutoPlay"
-                                    :class="[
-                                        'btn btn-sm d-flex align-items-center px-3 py-1',
-                                        isPlaying ? 'btn-danger' : 'btn-success'
-                                    ]"
-                                    :disabled="!apiData || apiData.length === 0"
-                                >
-                                    <i :class="[
-                                        'me-1 fs-6',
-                                        isPlaying ? 'ki-duotone ki-stop-circle' : 'ki-duotone ki-play'
-                                    ]">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                    {{ isPlaying ? 'Berhenti' : 'Putar' }}
-                                </button>
-                            </div>
+                    </div>
+                    <div class="col-12 col-lg-6" v-if="showFilters">
+                        <!-- Auto-play Controls Section -->
+                        <div class="d-flex align-items-center justify-content-lg-end gap-3">
+                            <span class="fs-7 fw-bold text-gray-700">Kontrol:</span>
+                            <select
+                                v-model="playSpeed"
+                                class="form-select form-select-sm"
+                                :disabled="isPlaying"
+                                style="width: 140px;  height: 30px;"
+                            >
+                                <option :value="1000">Cepat (1s)</option>
+                                <option :value="2000">Normal (2s)</option>
+                                <option :value="3000">Lambat (3s)</option>
+                            </select>
+                            <button
+                                @click="toggleAutoPlay"
+                                :class="[
+                                    'btn btn-sm d-flex align-items-center px-3 py-1',
+                                    isPlaying ? 'btn-danger' : 'btn-success'
+                                ]"
+                                :disabled="!apiData || apiData.length === 0"
+                            >
+                                <i :class="[
+                                    'me-2 fs-6',
+                                    isPlaying ? 'ki-duotone ki-stop-circle' : 'ki-duotone ki-play'
+                                ]">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                                {{ isPlaying ? 'Stop' : 'Play' }}
+                            </button>
                         </div>
                     </div>
                 </div>
-             </div>
+            </div>
         </div>
-
         <!-- Chart Area -->
         <div class="card-body">
             <!-- Auto-play indicator -->
@@ -2922,6 +2950,7 @@ onUnmounted(() => {
             <div v-else class="bg-white rounded border p-4">
                 <div id="process-tracking-chart" class="w-100" style="height: 400px;"></div>
             </div>
+        </div>
     </div>
 
     <!-- Full Screen Image Modal -->
@@ -3020,311 +3049,235 @@ onUnmounted(() => {
             </div>
         </div>
 
+        <!-- Detail Modal removed - now using teleport version -->
+
+    <!-- Move existing modals to body using teleport -->
+    <teleport to="body">
         <!-- Detail Modal -->
-        <div
-            v-if="showDetailModal && modalDetailData"
-            class="modal fade show d-block"
-            tabindex="-1"
-            style="z-index: 8888; background-color: rgba(0,0,0,0.7);"
-            @click="closeDetailModal"
-        >
-            <div class="modal-dialog modal-lg modal-dialog-centered" @click.stop>
-                <div class="modal-content">
+        <div v-if="showDetailModal" class="modal show d-block" tabindex="-1" style="z-index: 2000; background-color: rgba(0,0,0,0.6);" @click.self="closeDetailModal">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 960px;">
+                <div class="modal-content shadow-lg border-0">
                     <!-- Modal Header -->
-                    <div class="modal-header bg-primary text-white">
-                        <!-- Close Button -->
+                    <div class="modal-header bg-primary position-relative">
+                        <h1 class="modal-title fs-3 text-white fw-bold">
+                            {{ modalDetailData?.process || modalDetailData?.name || 'Detail Aktivitas' }}
+                        </h1>
                         <button
                             @click="closeDetailModal"
                             type="button"
-                            class="btn btn-icon btn-sm btn-light btn-active-light-primary ms-auto"
-                            title="Tutup detail"
-                        >
-                            <i class="ki-duotone ki-cross fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                            </i>
-                        </button>
-
-                        <!-- Header Content -->
-                        <div class="w-100">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="symbol symbol-40px me-3">
-                                    <div class="symbol-label bg-white bg-opacity-20">
-                                        <i class="ki-duotone ki-notepad text-white fs-2x">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 class="fs-2 fw-bold mb-1">{{ modalDetailData.name }}</h3>
-                                    <p class="text-white text-opacity-75 fs-6 mb-0">Detail Aktivitas Proses</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Status Badge -->
-                            <div class="mb-4" v-if="modalDetailData.status">
-                                <span
-                                    class="badge badge-lg d-inline-flex align-items-center fw-semibold"
-                                    :class="detailStatusBadgeClass(modalDetailData.status)"
-                                >
-                                    <i class="ki-duotone ki-information fs-5 me-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                    {{ detailStatusLabel(modalDetailData.status) }}
-                                </span>
-                            </div>
-
-                            <!-- Time Info -->
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    <div class="d-flex align-items-center bg-white bg-opacity-10 rounded p-3">
-                                        <div class="symbol symbol-30px bg-white bg-opacity-20 me-3">
-                                            <div class="symbol-label">
-                                                <i class="ki-duotone ki-time text-white fs-4">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <p class="text-white text-opacity-75 fs-8 text-uppercase fw-bold mb-1">Waktu Pelaksanaan</p>
-                                            <p class="fw-bold fs-4 text-white mb-0">{{ formatTime(modalDetailData.start) }} - {{ formatTime(modalDetailData.end) }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <div class="d-flex align-items-center bg-white bg-opacity-10 rounded p-3">
-                                        <div class="symbol symbol-30px bg-white bg-opacity-20 me-3">
-                                            <div class="symbol-label">
-                                                <i class="ki-duotone ki-timer text-white fs-4">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                </i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <p class="text-white text-opacity-75 fs-8 text-uppercase fw-bold mb-1">Total Durasi</p>
-                                            <p class="fw-bold fs-4 text-white mb-0">{{ formatDuration(modalDetailData) }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                            class="btn-close btn-close-white"
+                            aria-label="Close"
+                        ></button>
                     </div>
 
                     <!-- Modal Body -->
-                    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-                        <!-- Image Section -->
-                        <div v-if="detailModalImages.length" class="mb-6">
-                            <div class="d-flex align-items-center mb-4">
-                                <div class="symbol symbol-30px bg-light-primary me-3">
+                    <div class="modal-body p-0" v-if="modalDetailData">
+                        <div class="container-fluid p-6">
+                            <!-- Error State -->
+                            <div v-if="modalDetailData.error" class="alert alert-danger d-flex align-items-center mb-6" role="alert">
+                                <div class="symbol symbol-30px bg-light-danger me-4">
                                     <div class="symbol-label">
-                                        <i class="ki-duotone ki-camera text-primary fs-4">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i>
-                                    </div>
-                                </div>
-                                <h4 class="fs-3 fw-bold text-gray-800 mb-0">Dokumentasi Visual</h4>
-                            </div>
-                            
-                            <div class="position-relative bg-light rounded border overflow-hidden">
-                                <transition name="fade" mode="out-in">
-                                    <img
-                                        v-if="currentDetailImage"
-                                        :key="currentDetailImage"
-                                        :src="currentDetailImage"
-                                        :alt="`Rekaman ${modalDetailData.name}`"
-                                        class="img-fluid cursor-pointer"
-                                        style="height: 300px; width: 100%; object-fit: cover;"
-                                        @click="openImageFromDetail(currentDetailImage, `Rekaman ${modalDetailData.name}`)"
-                                        @error="$event.target.style.display = 'none'; $event.target.nextElementSibling.style.display = 'block'"
-                                    />
-                                </transition>
-                                
-                                <!-- Error State -->
-                                <div class="d-none p-8 text-center bg-light d-flex flex-column align-items-center justify-content-center" style="height: 300px;">
-                                    <div class="symbol symbol-60px bg-light-gray-400 mb-4">
-                                        <div class="symbol-label">
-                                            <i class="ki-duotone ki-picture text-gray-400 fs-2x">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </div>
-                                    </div>
-                                    <p class="text-muted fw-semibold mb-1">Gambar tidak dapat dimuat</p>
-                                    <p class="text-gray-400 fs-6">Terjadi kesalahan saat memuat gambar</p>
-                                </div>
-
-                                <button
-                                    v-if="hasMultipleDetailImages"
-                                    @click.stop="showPreviousDetailImage"
-                                    class="btn btn-icon btn-light-primary position-absolute top-50 start-0 translate-middle-y ms-3 shadow-sm"
-                                    title="Sebelumnya"
-                                >
-                                    <i class="ki-duotone ki-left fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                </button>
-
-                                <button
-                                    v-if="hasMultipleDetailImages"
-                                    @click.stop="showNextDetailImage"
-                                    class="btn btn-icon btn-light-primary position-absolute top-50 end-0 translate-middle-y me-3 shadow-sm"
-                                    title="Berikutnya"
-                                >
-                                    <i class="ki-duotone ki-right fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                </button>
-
-                                <div
-                                    v-if="hasMultipleDetailImages"
-                                    class="position-absolute bottom-0 end-0 bg-dark bg-opacity-50 text-white px-3 py-1 m-3 rounded"
-                                >
-                                    {{ detailImageIndex + 1 }} / {{ detailModalImages.length }}
-                                </div>
-
-                                <!-- Hover Overlay -->
-                                <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 opacity-0 d-flex align-items-end justify-content-center pb-4 hover-overlay">
-                                    <div class="d-flex">
-                                        <button
-                                            @click="openImageFromDetail(currentDetailImage, `Rekaman ${modalDetailData.name}`)"
-                                            class="btn btn-primary btn-sm me-2"
-                                            title="Lihat ukuran penuh"
-                                        >
-                                            <i class="ki-duotone ki-resize fs-6 me-1">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                            Perbesar
-                                        </button>
-                                        <button
-                                            @click="downloadImageFromUrl(currentDetailImage, `Rekaman ${modalDetailData.name}`)"
-                                            class="btn btn-success btn-sm"
-                                            title="Download gambar"
-                                        >
-                                            <i class="ki-duotone ki-cloud-download fs-6 me-1">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                            Download
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- No Image Section -->
-                        <div v-else class="mb-6">
-                            <div class="d-flex align-items-center mb-4">
-                                <div class="symbol symbol-30px bg-light-secondary me-3">
-                                    <div class="symbol-label">
-                                        <i class="ki-duotone ki-picture text-secondary fs-4">
+                                        <i class="ki-duotone ki-cross-circle text-danger fs-4">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
                                         </i>
                                     </div>
                                 </div>
-                                <h4 class="fs-3 fw-bold text-gray-800 mb-0">Dokumentasi Visual</h4>
-                            </div>
-                            
-                            <div class="p-8 text-center bg-light rounded border border-dashed border-gray-300">
-                                <div class="symbol symbol-60px bg-light-secondary d-inline-flex mb-4">
-                                    <div class="symbol-label">
-                                        <i class="ki-duotone ki-picture text-secondary fs-2x">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                        </i>
-                                    </div>
+                                <div>
+                                    <h5 class="mb-1">Terjadi Kesalahan</h5>
+                                    <div class="fw-semibold">{{ modalDetailData.error }}</div>
                                 </div>
-                                <h5 class="fs-4 fw-semibold text-gray-700 mb-2">Tidak Ada Dokumentasi</h5>
-                                <p class="text-muted">Tidak ada rekaman visual untuk aktivitas ini</p>
                             </div>
-                        </div>
 
-                        <!-- Status & Comment Section -->
-                        <div class="card border mb-6">
-                            <div class="card-body">
-                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <span
-                                            v-if="modalDetailData.status"
-                                            class="badge badge-lg fw-semibold"
-                                            :class="detailStatusBadgeClass(modalDetailData.status)"
-                                        >
+                            <!-- Success Content -->
+                            <div v-else>
+                                <!-- Status Card -->
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-start justify-content-start">
+                                        <span :class="detailStatusBadgeClass(modalDetailData.status)" class="badge badge-lg fs-6 fw-bold">
                                             {{ detailStatusLabel(modalDetailData.status) }}
                                         </span>
-                                        <span v-if="modalDetailData.camera_name" class="text-muted fw-semibold">{{ modalDetailData.camera_name }}</span>
-                                    </div>
-                                    <span
-                                        v-if="modalDetailData.raw_status && modalDetailData.raw_status !== modalDetailData.status"
-                                        class="badge badge-light text-muted fw-semibold"
-                                    >
-                                        Status API: {{ modalDetailData.raw_status }}
-                                    </span>
-                                </div>
-
-                                <div>
-                                    <h5 class="fw-bold text-gray-800 mb-3">Komentar</h5>
-                                    <div
-                                        v-if="modalDetailData.comment"
-                                        class="p-4 bg-light rounded border border-dashed border-gray-300 text-gray-700"
-                                    >
-                                        {{ modalDetailData.comment }}
-                                    </div>
-                                    <div v-else class="text-muted fst-italic">
-                                        Tidak ada komentar
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Additional Info Card -->
-                        <div class="card bg-light-primary border border-primary border-dashed">
-                            <div class="card-body">
-                                <div class="d-flex align-items-start">
-                                    <div class="symbol symbol-30px bg-light-primary me-4">
-                                        <div class="symbol-label">
-                                            <i class="ki-duotone ki-information-5 text-primary fs-4">
+                                <!-- Timing Information -->
+                                <div class="text-start mb-4" v-if="modalDetailData.start || modalDetailData.end">
+                                    <div class="d-flex justify-content-start align-items-start gap-3">
+                                        <div v-if="modalDetailData.start" class="text-muted">
+                                            <i class="ki-duotone ki-timer fs-6 me-1">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
                                                 <span class="path3"></span>
                                             </i>
+                                            {{ formatTime(modalDetailData.start) }}
+                                        </div>
+                                        <span v-if="modalDetailData.start && modalDetailData.end" class="text-muted">-</span>
+                                        <div v-if="modalDetailData.end" class="text-muted">
+                                            {{ formatTime(modalDetailData.end) }}
                                         </div>
                                     </div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="fw-bold text-primary mb-3 fs-4">Informasi Tambahan</h5>
-                                        <div class="text-primary fs-6">
-                                            <p class="d-flex align-items-center mb-2">
-                                                <i class="ki-duotone ki-mouse text-primary fs-6 me-2">
+                                </div>
+
+                                <!-- Combined Section: Visual Documentation and Status & Comment in one row -->
+                                <div class="row g-4 mb-4">
+                                    <!-- Visual Documentation Column -->
+                                    <div class="col-md-6">
+                                        <div v-if="currentDetailImage" class="h-100">
+                                            <h5 class="fs-5 fw-bold text-gray-800 mb-3 d-flex align-items-center">
+                                                <i class="ki-duotone ki-picture text-primary fs-5 me-2">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
                                                 </i>
-                                                Klik gambar untuk melihat dalam ukuran penuh
-                                            </p>
-                                            <p class="d-flex align-items-center mb-2">
-                                                <i class="ki-duotone ki-cloud-download text-success fs-6 me-2">
+                                                Dokumentasi Visual
+                                            </h5>
+
+                                            <div class="position-relative d-flex justify-content-center">
+                                                <img 
+                                                    :src="currentDetailImage" 
+                                                    class="img-fluid rounded border cursor-pointer shadow-sm" 
+                                                    @click="openImageFromDetail(currentDetailImage, `Rekaman ${modalDetailData.name}`)"
+                                                    style="max-width: 100%; height: auto;"
+                                                    @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='block'"
+                                                >
+                                                
+                                                <!-- Error fallback -->
+                                                <div class="d-none border border-dashed border-gray-300 rounded p-4 text-center bg-light">
+                                                    <i class="ki-duotone ki-picture text-gray-400 fs-2x mb-2">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                    </i>
+                                                    <p class="text-muted mb-0">Gambar tidak dapat dimuat</p>
+                                                </div>
+
+                                                <button
+                                                    v-if="hasMultipleDetailImages"
+                                                    @click.stop="showPreviousDetailImage"
+                                                    class="btn btn-icon btn-sm btn-light-primary position-absolute top-50 start-0 translate-middle-y ms-2 shadow-sm"
+                                                    title="Sebelumnya"
+                                                >
+                                                    <i class="ki-duotone ki-left fs-6">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                    </i>
+                                                </button>
+
+                                                <button
+                                                    v-if="hasMultipleDetailImages"
+                                                    @click.stop="showNextDetailImage"
+                                                    class="btn btn-icon btn-sm btn-light-primary position-absolute top-50 end-0 translate-middle-y me-2 shadow-sm"
+                                                    title="Berikutnya"
+                                                >
+                                                    <i class="ki-duotone ki-right fs-6">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                    </i>
+                                                </button>
+
+                                                <div
+                                                    v-if="hasMultipleDetailImages"
+                                                    class="position-absolute bottom-0 end-0 bg-dark bg-opacity-75 text-white px-2 py-1 m-2 rounded fs-7"
+                                                >
+                                                    {{ detailImageIndex + 1 }} / {{ detailModalImages.length }}
+                                                </div>
+
+                                                <!-- Hover Overlay -->
+                                                <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 opacity-0 d-flex align-items-end justify-content-center pb-3 hover-overlay">
+                                                    <div class="d-flex">
+                                                        <button
+                                                            @click="openImageFromDetail(currentDetailImage, `Rekaman ${modalDetailData.name}`)"
+                                                            class="btn btn-primary btn-sm me-2"
+                                                            title="Lihat ukuran penuh"
+                                                        >
+                                                            <i class="ki-duotone ki-resize fs-6 me-1">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                            </i>
+                                                            Perbesar
+                                                        </button>
+                                                        <button
+                                                            @click="downloadImageFromUrl(currentDetailImage, `Rekaman ${modalDetailData.name}`)"
+                                                            class="btn btn-success btn-sm"
+                                                            title="Download gambar"
+                                                        >
+                                                            <i class="ki-duotone ki-cloud-download fs-6">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                            </i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- No Image Section -->
+                                        <div v-else class="h-100">
+                                            <h5 class="fs-5 fw-bold text-gray-800 mb-3 d-flex align-items-center">
+                                                <i class="ki-duotone ki-picture text-secondary fs-5 me-2">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
                                                 </i>
-                                                Tombol download tersedia untuk menyimpan gambar
-                                            </p>
-                                            <p class="d-flex align-items-center mb-0">
-                                                <i class="ki-duotone ki-cross-circle text-danger fs-6 me-2">
+                                                Dokumentasi Visual
+                                            </h5>
+                                            
+                                            <div class="p-4 text-center bg-light rounded border border-dashed border-gray-300">
+                                                <i class="ki-duotone ki-picture text-secondary fs-2x mb-3">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
                                                 </i>
-                                                Klik di luar modal atau tombol X untuk menutup
+                                                <h6 class="fw-semibold text-gray-700 mb-1">Tidak Ada Dokumentasi</h6>
+                                                <p class="text-muted fs-7 mb-0">Tidak ada rekaman visual</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Status & Comment Column -->
+                                    <div class="col-md-6">
+                                        <h5 class="fs-5 fw-bold text-gray-800 mb-3 d-flex align-items-center">
+                                            <i class="ki-duotone ki-notepad-edit text-info fs-5 me-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            Status & Komentar
+                                        </h5>
+                                        
+                                        <div class="bg-light rounded p-3 mb-3">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="ki-duotone ki-message-text text-secondary fs-6 me-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                </i>
+                                                <span class="fw-semibold text-gray-700 fs-6">Komentar:</span>
+                                            </div>
+                                            <p class="text-gray-700 fs-6 mb-2">
+                                                {{ modalDetailData.comment || modalDetailData.description || 'Tidak ada komentar tambahan untuk aktivitas ini.' }}
                                             </p>
+                                            <div class="fs-7 text-muted">
+                                                <i class="ki-duotone ki-time fs-7 me-1">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                                Terakhir diperbarui: {{ formatTime(modalDetailData.updated_at || modalDetailData.start) }}
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Help Section -->
+                                        <div class="alert alert-primary py-2 mb-0">
+                                            <div class="d-flex align-items-start">
+                                                <i class="ki-duotone ki-information text-primary fs-6 me-2 mt-1">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                </i>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="fw-bold text-primary mb-2 fs-6">Tips:</h6>
+                                                    <ul class="text-primary fs-7 mb-0 ps-3">
+                                                        <li>Klik gambar untuk melihat dalam ukuran penuh</li>
+                                                        <li>Gunakan tombol download untuk menyimpan gambar</li>
+                                                        <li>Klik di luar modal untuk menutup</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -3334,85 +3287,167 @@ onUnmounted(() => {
                 </div>
             </div>
         </div>
-</template>
+        
+        <!-- Image Modal -->
+        <div
+            v-if="showImageModal"
+            class="modal show d-block"
+            style="z-index: 2100; background-color: rgba(0,0,0,0.95);"
+            @click.self="closeImageModal"
+        >
+            <div class="modal-dialog modal-fullscreen d-flex align-items-center justify-content-center p-3">
+                <div class="position-relative w-100 h-100 d-flex align-items-center justify-content-center">
+                    <button
+                        @click="closeImageModal"
+                        class="btn btn-sm btn-light position-absolute top-0 end-0 m-3 opacity-75 hover-opacity-100 rounded-circle"
+                        style="z-index: 10; width: 40px; height: 40px;"
+                    >
+                        <i class="ki-duotone ki-cross fs-3">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </button>
+                    <img 
+                        :src="modalImageSrc" 
+                        :alt="modalImageAlt" 
+                        class="img-fluid rounded shadow-lg" 
+                        style="max-height: 95vh; max-width: 95vw; object-fit: contain;"
+                    >
+                </div>
+            </div>
+        </div>
+    </teleport>
+</template><style lang="scss" scoped>
+// Variables
+$transition-fast: 0.2s ease;
+$transition-normal: 0.3s ease;
+$shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.15);
+$shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 
-<style scoped>
-/* Hover effects untuk overlay */
+// Colors
+$primary-color: #3b82f6;
+$success-color: #10b981;
+$secondary-color: #6c757d;
+$info-color: #0dcaf0;
+
+// Hover effects
 .hover-overlay {
-    transition: opacity 0.3s ease;
+    transition: all $transition-normal;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 5;
+    border-radius: inherit;
+
+    &:hover,
+    &.active {
+        opacity: 1 !important;
+        visibility: visible;
+    }
 }
 
-.hover-overlay:hover {
-    opacity: 1 !important;
+*:hover > .hover-overlay {
+    opacity: 1;
+    visibility: visible;
 }
 
-/* Pulse animation untuk indicator */
+// Animations
 .pulse {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes pulse {
-    0%, 100% {
-        opacity: 1;
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+// Modal improvements
+.modal {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+
+    &-content {
+        box-shadow: $shadow-modal;
     }
-    50% {
-        opacity: .5;
+}
+
+// Image states
+.img-fluid {
+    transition: all $transition-normal;
+
+    &:hover {
+        transform: scale(1.02);
     }
 }
 
-/* Custom width utilities */
-.w-8px {
-    width: 8px;
+// Button improvements
+.btn {
+    transition: all $transition-fast;
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: $shadow-subtle;
+    }
+
+    // Button variants
+    &-light-primary {
+        background-color: rgba($primary-color, 0.1);
+        border-color: rgba($primary-color, 0.3);
+        color: $primary-color;
+    }
+
+    &-light-success {
+        background-color: rgba($success-color, 0.1);
+        border-color: rgba($success-color, 0.3);
+        color: $success-color;
+    }
+
+    &-light-secondary {
+        background-color: rgba($secondary-color, 0.1);
+        border-color: rgba($secondary-color, 0.3);
+        color: $secondary-color;
+    }
 }
 
-.h-8px {
-    height: 8px;
+// Badge styles
+.badge-light-info {
+    background-color: rgba($info-color, 0.1);
+    color: $info-color;
+    font-size: 0.75rem;
+    font-weight: 600;
 }
 
-.w-10px {
-    width: 10px;
+// Utility classes
+.w-8px { width: 8px; }
+.h-8px { height: 8px; }
+.w-10px { width: 10px; }
+.h-10px { height: 10px; }
+.w-15px { width: 15px; }
+.h-15px { height: 15px; }
+
+.rotate-180 { 
+    transform: rotate(180deg); 
 }
 
-.h-10px {
-    height: 10px;
+.me-auto { 
+    margin-right: auto; 
 }
 
-.w-15px {
-    width: 15px;
+// Grid and layout
+.card-header {
+    .container-fluid {
+        padding: 0;
+    }
+    
+    .row {
+        align-items: center;
+    }
 }
 
-.h-15px {
-    height: 15px;
-}
-
-/* Hover effects untuk buttons */
-.btn:hover {
-    transform: translateY(-1px);
-    transition: all 0.2s ease;
-}
-
-/* Rotate transform */
-.rotate-180 {
-    transform: rotate(180deg);
-}
-
-/* Calendar grid responsiveness */
 .row.g-1 > .col {
     flex: 0 0 14.2857%;
 }
 
-/* Image hover effect */
-.img-fluid:hover {
-    transform: scale(1.02);
-    transition: transform 0.3s ease;
-}
-
-/* Custom spacing */
-.me-auto {
-    margin-right: auto;
-}
-
-/* Status filter active states */
+// Status filter hover states
 .bg-light-primary:hover {
     background-color: var(--bs-primary-bg-subtle) !important;
 }
@@ -3423,5 +3458,215 @@ onUnmounted(() => {
 
 .bg-light-secondary:hover {
     background-color: var(--bs-secondary-bg-subtle) !important;
+}
+
+// Responsive design with SASS
+// Touch devices
+@media (hover: none) and (pointer: coarse) {
+    .hover-overlay {
+        opacity: 0.8;
+        visibility: visible;
+    }
+    
+    .btn {
+        min-height: 44px;
+        min-width: 44px;
+
+        &:hover {
+            transform: none;
+            box-shadow: none;
+        }
+    }
+    
+    .card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+// Desktop and large tablets
+@media (max-width: 1200px) {
+    .modal-dialog {
+        max-width: 90vw !important;
+        margin: 1rem;
+    }
+
+    .controls-section .row {
+        gap: 1rem;
+    }
+    
+    .filter-group .d-flex {
+        justify-content: center;
+    }
+    
+    .filter-stats {
+        justify-content: center;
+        margin-top: 1rem;
+        flex-basis: 100%;
+    }
+}
+
+// Tablets
+@media (max-width: 992px) {
+    .header-title-section {
+        .d-flex {
+            text-align: center;
+            justify-content: center;
+        }
+        
+        h1 {
+            font-size: 1.75rem !important;
+        }
+    }
+    
+    .status-filter-section .d-flex {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .filter-group {
+        order: 1;
+        
+        .d-flex {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    }
+    
+    .filter-stats {
+        order: 2;
+        justify-content: center;
+        margin-top: 0;
+    }
+    
+    .controls-section {
+        .row {
+            flex-direction: column;
+        }
+        
+        .col-12 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    .modal-body {
+        .row {
+            flex-direction: column;
+        }
+        
+        .col-md-6 {
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+    }
+}
+
+// Small tablets and large phones
+@media (max-width: 768px) {
+    .card-header {
+        padding: 1.5rem 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .header-title-section {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        
+        .symbol-50px {
+            width: 40px !important;
+            height: 40px !important;
+        }
+        
+        h1 {
+            font-size: 1.5rem !important;
+            margin-bottom: 0.5rem;
+        }
+        
+        p {
+            font-size: 0.875rem !important;
+        }
+    }
+    
+    .status-filter-section,
+    .controls-section {
+        margin-bottom: 1.5rem;
+        
+        .bg-white {
+            padding: 1rem;
+        }
+    }
+    
+    .btn-sm {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .form-select-solid {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .control-group .d-flex {
+        flex-direction: column;
+        gap: 0.75rem;
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+    
+    #process-tracking-chart {
+        height: 280px !important;
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
+}
+
+// Mobile phones
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100vw - 1rem) !important;
+    }
+    
+    .modal-fullscreen .modal-dialog {
+        margin: 0;
+        max-width: 100vw !important;
+        height: 100vh;
+    }
+    
+    .card-header .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .status-filters {
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    
+    .btn-group {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+    
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    .position-absolute.top-0.end-0 {
+        position: fixed !important;
+        top: 1rem !important;
+        right: 1rem !important;
+    }
 }
 </style>
