@@ -19,6 +19,7 @@ import DatePicker from '@/components/DatePicker.vue';
 import { useI18n } from 'vue-i18n';
 import ApiService from '@/core/services/ApiService';
 import mockEventActivity from '@/assets/mockupData/dashboard/event_activity.json';
+import { toGMT8ISOString, formatDateTimeGMT8, toMomentGMT8 } from '@/core/helpers/timezone';
 
 const { t } = useI18n();
 
@@ -562,14 +563,13 @@ const convertToIsoString = (value) => {
         if (Number.isNaN(timestamp)) {
             return null;
         }
-        return value.toISOString();
+        return toGMT8ISOString(value.toISOString());
     }
     if (typeof value === 'number') {
         const date = new Date(value);
-        return Number.isNaN(date.getTime()) ? null : date.toISOString();
+        return Number.isNaN(date.getTime()) ? null : toGMT8ISOString(date.toISOString());
     }
-    const parsed = new Date(value);
-    return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+    return toGMT8ISOString(String(value));
 };
 
 const calculateDurationMinutes = (startIso, endIso) => {
@@ -919,17 +919,28 @@ const generateProcessTrackingData = () => {
         return 'Persiapan'; // Default fallback
     };
 
-    // Parse ISO8601 string - no timezone adjustment needed for this API
+    // Parse API timestamp into a Date, while keeping display fields in GMT+8.
+    // Note: API strings without timezone are treated as UTC (see timezone helper).
     const parseTimeAdd6Hours = (timeStr) => {
         if (!timeStr) return null;
-        const date = new Date(timeStr);
-        if (isNaN(date.getTime())) return null;
-        // Store display time in local format
-        const localHour = date.getHours();
-        const localMinute = date.getMinutes();
-        date.displayTime = `${localHour.toString().padStart(2, '0')}:${localMinute.toString().padStart(2, '0')}`;
-        date.originalHour = localHour;
-        date.originalMinute = localMinute;
+
+        const isoGmt8 = toGMT8ISOString(String(timeStr));
+        if (!isoGmt8) return null;
+
+        const date = new Date(isoGmt8);
+        if (Number.isNaN(date.getTime())) return null;
+
+        const displayTime = formatDateTimeGMT8(String(timeStr), 'HH:mm') ?? formatDateTimeGMT8(isoGmt8, 'HH:mm');
+        if (displayTime) {
+            date.displayTime = displayTime;
+        }
+
+        const momentValue = toMomentGMT8(String(timeStr)) ?? toMomentGMT8(isoGmt8);
+        if (momentValue) {
+            date.originalHour = momentValue.hours();
+            date.originalMinute = momentValue.minutes();
+        }
+
         return date;
     };
 
@@ -994,15 +1005,27 @@ const generateProcessTrackingData = () => {
             if (start && !end) {
                 // Fallback: if end is still null but start exists
                 const fallbackEnd = new Date(start.getTime() + 60 * 1000);
-                fallbackEnd.displayTime = `${fallbackEnd.getHours().toString().padStart(2, '0')}:${fallbackEnd.getMinutes().toString().padStart(2, '0')}`;
-                fallbackEnd.originalHour = fallbackEnd.getHours();
-                fallbackEnd.originalMinute = fallbackEnd.getMinutes();
+                const fallbackDisplay = formatDateTimeGMT8(fallbackEnd.toISOString(), 'HH:mm');
+                if (fallbackDisplay) {
+                    fallbackEnd.displayTime = fallbackDisplay;
+                }
+                const fallbackMoment = toMomentGMT8(fallbackEnd.toISOString());
+                if (fallbackMoment) {
+                    fallbackEnd.originalHour = fallbackMoment.hours();
+                    fallbackEnd.originalMinute = fallbackMoment.minutes();
+                }
                 end = fallbackEnd;
             } else if (start && end && end.getTime() <= start.getTime()) {
                 const adjustedEnd = new Date(start.getTime() + 60 * 1000);
-                adjustedEnd.displayTime = `${adjustedEnd.getHours().toString().padStart(2, '0')}:${adjustedEnd.getMinutes().toString().padStart(2, '0')}`;
-                adjustedEnd.originalHour = adjustedEnd.getHours();
-                adjustedEnd.originalMinute = adjustedEnd.getMinutes();
+                const adjustedDisplay = formatDateTimeGMT8(adjustedEnd.toISOString(), 'HH:mm');
+                if (adjustedDisplay) {
+                    adjustedEnd.displayTime = adjustedDisplay;
+                }
+                const adjustedMoment = toMomentGMT8(adjustedEnd.toISOString());
+                if (adjustedMoment) {
+                    adjustedEnd.originalHour = adjustedMoment.hours();
+                    adjustedEnd.originalMinute = adjustedMoment.minutes();
+                }
                 end = adjustedEnd;
             }
             
@@ -1494,8 +1517,8 @@ const createSinglePlayheadPopup = (dataPoint, x, y, chart, index) => {
     const startDate = new Date(dataPoint.start.getTime());
     const endDate = new Date(dataPoint.end.getTime());
 
-    const startTime = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
-    const endTime = `${endDate.getHours().toString().padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}`;
+    const startTime = formatDateTimeGMT8(startDate.toISOString(), 'HH:mm') ?? '';
+    const endTime = formatDateTimeGMT8(endDate.toISOString(), 'HH:mm') ?? '';
 
     // Calculate accurate duration in hours and minutes
     const durationMs = endDate.getTime() - startDate.getTime();
@@ -1740,8 +1763,8 @@ const showHoverPreview = (point, mouseX, mouseY) => {
     // Calculate display times
     const startDate = new Date(point.start);
     const endDate = new Date(point.end);
-    const startTime = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
-    const endTime = `${endDate.getHours().toString().padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}`;
+    const startTime = formatDateTimeGMT8(startDate.toISOString(), 'HH:mm') ?? '';
+    const endTime = formatDateTimeGMT8(endDate.toISOString(), 'HH:mm') ?? '';
 
     // Create small hover preview content
     let previewContent = `
@@ -1929,8 +1952,7 @@ const openImageFromDetail = (imageSrc, imageAlt) => {
 
 // Helper functions for modal display
 const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    return formatDateTimeGMT8(dateString, 'HH:mm') ?? '';
 };
 
 const formatDuration = (point) => {
@@ -2084,8 +2106,8 @@ const renderHighchartsGantt = () => {
     let seriesData = sortedChartData.map((item, idx) => {
         const resolvedEventId = item.event_id ?? item.eventId ?? item.id ?? item.uid ?? item.alert_id ?? item.alertId ?? `task-${idx}`;
         // Get display times directly from the actual Date objects for consistency
-        const startDisplayTime = `${item.start.getHours().toString().padStart(2, '0')}:${item.start.getMinutes().toString().padStart(2, '0')}`;
-        const endDisplayTime = `${item.end.getHours().toString().padStart(2, '0')}:${item.end.getMinutes().toString().padStart(2, '0')}`;
+        const startDisplayTime = item.start?.displayTime ?? formatDateTimeGMT8(item.start?.toISOString?.(), 'HH:mm') ?? '';
+        const endDisplayTime = item.end?.displayTime ?? formatDateTimeGMT8(item.end?.toISOString?.(), 'HH:mm') ?? '';
 
         // Calculate duration for consistency
         const durationMs = item.end.getTime() - item.start.getTime();
@@ -2298,7 +2320,7 @@ const renderHighchartsGantt = () => {
                         chart.dynamicCrosshairLabel.destroy();
                     }
                     chart.dynamicCrosshairLabel = chart.renderer.label(
-                        Highcharts.dateFormat('%H:%M', Math.round(xValue)),
+                        chart.time.dateFormat('%H:%M', Math.round(xValue)),
                         xAxis.toPixels(xValue) + 4,
                         chart.plotTop + 5,
                         null,
@@ -2330,13 +2352,9 @@ const renderHighchartsGantt = () => {
         },
         title: { text: '' },
         time: {
-            // Don't use timezone setting - rely on local browser time instead
-            useUTC: false,
-            // Force timezone to match local time
-            getTimezoneOffset: function (timestamp) {
-                // Return 0 to ensure the chart uses the dates as-is
-                return 0;
-            }
+            // Render chart times in the browser's local timezone.
+            // This ensures the day starts at 00:00 (not 16:00 UTC).
+            useUTC: false
         },
         xAxis: {
             type: 'datetime',
@@ -2427,8 +2445,8 @@ const renderHighchartsGantt = () => {
                 // Use consistent time calculation from the actual timestamps
                 const startDate = new Date(point.start);
                 const endDate = new Date(point.end);
-                const startTime = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
-                const endTime = `${endDate.getHours().toString().padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}`;
+                const startTime = formatDateTimeGMT8(startDate.toISOString(), 'HH:mm') ?? '';
+                const endTime = formatDateTimeGMT8(endDate.toISOString(), 'HH:mm') ?? '';
 
                 // Calculate accurate duration
                 const durationMs = endDate.getTime() - startDate.getTime();

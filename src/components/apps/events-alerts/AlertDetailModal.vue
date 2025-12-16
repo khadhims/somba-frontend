@@ -190,6 +190,7 @@ import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ApiService from '@/core/services/ApiService';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
+import { formatDateTimeGMT8 } from '@/core/helpers/timezone';
 
 const props = defineProps<{ 
   show: boolean;
@@ -318,7 +319,9 @@ const emitClose = () => emit('close');
 // Formatting & helpers
 const formatDateTime = (value?: string) => {
   if (!value) return '-';
-  try { return new Date(value).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }); } catch { return value; }
+  // Use GMT+8 formatter with Indonesian locale format
+  const formatted = formatDateTimeGMT8(value, 'DD/MM/YYYY HH:mm:ss');
+  return formatted || value;
 };
 const formatNumber = (value:number, maximumFractionDigits=1) => new Intl.NumberFormat(undefined, { maximumFractionDigits, minimumFractionDigits:0 }).format(value);
 const formatSecondsShort = (seconds?: number | null) => {

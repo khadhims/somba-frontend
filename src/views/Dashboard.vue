@@ -30,10 +30,7 @@
                             </span>
                             <span class="header-meta-item fs-8">
                               <span class="icon-wrapper" @click="handleManualRefresh" style="cursor: pointer;" title="Klik untuk refresh manual">
-                                <i class="ki-duotone ki-arrows-circle fs-6 text-primary">
-                                  <span class="path1"></span>
-                                  <span class="path2"></span>
-                                </i>
+                                <div class="pi pi-sync"></div>
                               </span>
                               <span class="meta-text">Otomatis update tiap {{ autoUpdateInterval }} menit</span>
                             </span>
@@ -138,26 +135,146 @@
                       </div>
                     </div>
                     <!-- Divider -->
-                    <!-- <div class="separator separator-dashed my-3"></div> -->
-                    <!-- Section 2: Sistem Monitoring -->
-                    <!-- <div class="card-body" style="padding: 1rem;"> -->
-                      <!-- <div class="d-flex flex-wrap" style="gap: 0.5rem;"> -->
-                        <!-- Loop untuk menampilkan Sistem Monitoring menggunakan Card5 -->
-                        <!-- <MonitorCard5
-                          v-for="monitor in sistemMonitoring"
-                          :key="monitor.activity_uid"
-                          :activity-name="monitor.activity_name"
-                          :icon="monitor.icon"
-                          :bg-color="monitor.bgColor"
-                          :monitor-value="monitor.value"
-                          :monitor-description="monitor.description"
-                          :hide-status="true"
-                          :hide-description="false"
-                        /> -->
-                      <!-- </div>
-                    </div> -->
+                    <div class="separator separator-dashed my-0"></div>
+
+                    <!-- Section 2: Recent Alerts -->
+                    <div class="card-header border-0 pt-3 pb-2">
+                      <div class="card-title">
+                        <h3 class="fw-bold m-0 d-flex align-items-center gap-2">
+                          <i class="pi pi-exclamation-triangle fs-2 text-danger"></i>
+                          {{ t('dashboard.alerts.title') || 'Pelanggaran Terbaru' }}
+                        </h3>
+                      </div>
+                    </div>
+                    <div class="card-body py-3">
+                      <div class="row g-4">
+                        <!-- Left Column: Alerts Table -->
+                        <div class="col-lg-8">
+                          <div class="table-responsive">
+                            <table class="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3">
+                              <thead>
+                                <tr class="fw-bold text-muted">
+                                  <th class="min-w-150px">{{ t('dashboard.alerts.table.violation') || 'Nama Pelanggaran' }}</th>
+                                  <th class="min-w-100px">{{ t('dashboard.alerts.table.duration') || 'Durasi' }}</th>
+                                  <th class="min-w-80px">{{ t('dashboard.alerts.table.detection') || 'Deteksi' }}</th>
+                                  <th class="min-w-140px">{{ t('dashboard.alerts.table.time') || 'Waktu' }}</th>
+                                  <th class="min-w-100px">{{ t('dashboard.alerts.table.status') || 'Status' }}</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr v-if="loadingAlerts">
+                                  <td colspan="5" class="text-center py-8">
+                                    <div class="spinner-border text-primary" role="status">
+                                      <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                  </td>
+                                </tr>
+                                <tr v-else-if="!alerts.length">
+                                  <td colspan="5" class="text-center py-8 text-muted">
+                                    <i class="pi pi-info-circle fs-2x mb-2"></i>
+                                    <div>{{ t('dashboard.alerts.table.empty') || 'Tidak ada data pelanggaran' }}</div>
+                                  </td>
+                                </tr>
+                                <tr
+                                  v-else
+                                  v-for="alert in recentAlerts"
+                                  :key="alert.event_id"
+                                  class="alert-row cursor-pointer"
+                                  @click="openAlertDetail(alert)"
+                                >
+                                  <td>
+                                    <div class="d-flex align-items-center">
+                                      <div>
+                                        <div class="fw-bold text-dark">{{ alert.alert_type }}</div>
+                                        <div class="text-muted fs-7">{{ alert.camera_name }}</div>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <span class="text-dark fw-semibold">
+                                      {{ formatDuration(alert.duration_minutes) }}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    <span class="badge badge-light-primary">{{ alert.detection_count }}x</span>
+                                  </td>
+                                  <td>
+                                    <span class="text-dark">{{ formatDateTime(alert.event_start) }}</span>
+                                  </td>
+                                  <td>
+                                    <span class="badge" :class="statusBadge(alert.status)">
+                                      {{ statusLabel(alert.status) }}
+                                    </span>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <!-- Right Column: Summary Cards -->
+                        <div class="col-lg-4">
+                          <div class="d-flex flex-column gap-2">
+                            <div class="card bg-light-primary border-0">
+                              <div class="card-body p-3">
+                                <div class="d-flex align-items-center gap-3">
+                                  <div class="symbol symbol-50px flex-shrink-0">
+                                    <div class="symbol-label bg-primary">
+                                      <i class="pi pi-exclamation-circle fs-2 text-white"></i>
+                                    </div>
+                                  </div>
+                                  <div class="flex-grow-1">
+                                    <div class="text-gray-600 fw-semibold fs-7 mb-1">
+                                      {{ t('dashboard.alerts.summary.totalToday.title') || 'Total Hari Ini' }}
+                                    </div>
+                                    <div class="d-flex align-items-baseline gap-2">
+                                      <div class="fs-2 fw-bolder text-primary">{{ totalAlertsToday }}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="card bg-light-danger border-0">
+                              <div class="card-body p-3">
+                                <div class="d-flex align-items-center gap-3">
+                                  <div class="symbol symbol-50px flex-shrink-0">
+                                    <div class="symbol-label bg-danger">
+                                      <i class="pi pi-flag-fill fs-2 text-white"></i>
+                                    </div>
+                                  </div>
+                                  <div class="flex-grow-1">
+                                    <div class="text-gray-600 fw-semibold fs-7 mb-1">
+                                      {{ t('dashboard.alerts.summary.unresolvedToday.title') || 'Belum Selesai' }}
+                                    </div>
+                                    <div class="fs-2 fw-bolder text-danger">{{ unresolvedAlertsToday }}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="card bg-light-success border-0">
+                              <div class="card-body p-3">
+                                <div class="d-flex align-items-center gap-3">
+                                  <div class="symbol symbol-50px flex-shrink-0">
+                                    <div class="symbol-label bg-success">
+                                      <i class="pi pi-check-circle fs-2 text-white"></i>
+                                    </div>
+                                  </div>
+                                  <div class="flex-grow-1">
+                                    <div class="text-gray-600 fw-semibold fs-7 mb-1">
+                                      {{ t('dashboard.alerts.summary.resolvedToday.title') || 'Selesai' }}
+                                    </div>
+                                    <div class="d-flex align-items-baseline gap-2">
+                                      <div class="fs-2 fw-bolder text-success">{{ resolvedAlertsToday }}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     <!-- Divider -->
-                    <div class="separator separator-dashed my-3"></div>
+                    <div class="separator separator-dashed my-0"></div>
                     <!-- Section 3: Real Time Report -->
                     <div class="card-header border-0 pt-3 pb-2">
                       <div class="card-title">
@@ -192,17 +309,29 @@
       </div>
     </div>
   </div>
+
+  <!-- Alert Detail Modal -->
+  <AlertDetailModal
+    :show="showAlertModal"
+    :alert="selectedAlert"
+    :loading="loadingAlertDetail"
+    @close="closeAlertModal"
+    @update="handleAlertUpdate"
+  />
 </template>
 
 <script setup lang="ts">
 import Card5 from '@/components/cards/Card5.vue';
-import MonitorCard5 from '@/components/cards/Card5.vue';
 import RealTimeReport from '@/components/dashboard/RealTimeReport.vue';
+import AlertDetailModal from '@/components/apps/events-alerts/AlertDetailModal.vue';
 import { ref, onMounted, computed, onBeforeUnmount, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import ApiService from '@/core/services/ApiService';
 import liveActivityMock from '@/assets/mockupData/dashboard/live_activity.json';
+import summaryAlertsMock from '@/assets/mockupData/dashboard/summary_alerts.json';
+import { todayDate } from '@/core/data/events';
+import { convertToGMT8, formatDateTimeGMT8, getCurrentDateTimeGMT8, toMomentGMT8 } from '@/core/helpers/timezone';
 
 interface Site {
   uid: string;
@@ -216,6 +345,14 @@ const { t } = useI18n();
 const liveActivities = ref([]);
 const loading = ref(true);
 const error = ref(null);
+
+// Reactive data untuk alerts
+const alerts = ref([]);
+const recentAlerts = computed(() => alerts.value.slice(0, 5));
+const loadingAlerts = ref(false);
+const selectedAlert = ref(null);
+const showAlertModal = ref(false);
+const loadingAlertDetail = ref(false);
 
 // Auto-refresh functionality
 const autoRefreshInterval = ref(null);
@@ -250,6 +387,16 @@ type MockActivity = {
 
 const mockLiveActivities = liveActivityMock as Record<string, MockActivity[]>;
 
+type SummaryAlerts = {
+  total_today: number;
+  unresolved_today: number;
+  resolved_today: number;
+  as_of: string | null;
+};
+
+const summaryAlerts = ref<SummaryAlerts | null>(null);
+const loadingSummaryAlerts = ref(false);
+
 // Router setup
 const router = useRouter();
 
@@ -264,6 +411,48 @@ const currentDate = computed(() => {
 });
 
 const autoUpdateInterval = ref(2);
+
+// Computed properties for alert statistics
+// NOTE: Counts come from `sites/{site_uid}/alerts-summary` (mocked for now).
+const totalAlertsToday = computed(() => summaryAlerts.value?.total_today ?? 0);
+const unresolvedAlertsToday = computed(() => summaryAlerts.value?.unresolved_today ?? 0);
+const resolvedAlertsToday = computed(() => summaryAlerts.value?.resolved_today ?? 0);
+
+// Local function (requested): endpoint `sites/{site_uid}/alerts-summary` (mock for now)
+const fetchSummaryAlerts = async (siteUid: string): Promise<SummaryAlerts> => {
+  // TODO: Replace with real endpoint once available.
+  // const { data } = await ApiService.get(`sites/${siteUid}/alerts-summary`, { params: { date: getCurrentDateTimeGMT8('YYYY-MM-DD') } });
+  // return data;
+
+  const raw: any = (summaryAlertsMock as any)?.default ?? summaryAlertsMock;
+
+  return {
+    total_today: Number(raw?.total_today ?? 0),
+    unresolved_today: Number(raw?.unresolved_today ?? 0),
+    resolved_today: Number(raw?.resolved_today ?? 0),
+    as_of:
+      raw?.as_of !== undefined && raw?.as_of !== null
+        ? convertToGMT8(String(raw.as_of))
+        : getCurrentDateTimeGMT8('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+  };
+};
+
+const loadSummaryAlerts = async () => {
+  if (!selectedSite.value) {
+    summaryAlerts.value = null;
+    return;
+  }
+
+  loadingSummaryAlerts.value = true;
+  try {
+    summaryAlerts.value = await fetchSummaryAlerts(selectedSite.value);
+  } catch (err) {
+    console.error('loadSummaryAlerts failed:', err);
+    summaryAlerts.value = null;
+  } finally {
+    loadingSummaryAlerts.value = false;
+  }
+};
 
 // Function to handle site change
 // Mapping icon dan warna untuk setiap aktivitas
@@ -362,123 +551,29 @@ const handleTouchEnd = () => {
   }
 };
 
-
-// Function untuk load sistem monitoring mockup data
-const loadSistemMonitoringData = () => {
-  // Mockup data untuk sistem monitoring (format sesuai Card5)
-  sistemMonitoring.value = [
-    {
-      activity_uid: 'monitor_1',
-      activity_name: t('dashboard.monitoring.totalCameras.title'),
-      last_activity_timestamp: new Date().toISOString(),
-      currently_active: true,
-      icon: 'fas fa-video',
-      bgColor: '#2196f3',
-      value: 9,
-      description: t('dashboard.monitoring.totalCameras.description')
-    },
-    {
-      activity_uid: 'monitor_2',
-      activity_name: t('dashboard.monitoring.activeCameras.title'),
-      last_activity_timestamp: new Date().toISOString(),
-      currently_active: true,
-      icon: 'fas fa-check',
-      bgColor: '#4caf50',
-      value: 9,
-      description: t('dashboard.monitoring.activeCameras.description')
-    },
-    {
-      activity_uid: 'monitor_3',
-      activity_name: t('dashboard.monitoring.inactiveCameras.title'),
-      last_activity_timestamp: new Date(Date.now() - 24*60*60*1000).toISOString(),
-      currently_active: false,
-      icon: 'fas fa-times',
-      bgColor: '#f44336',
-      value: 0,
-      description: t('dashboard.monitoring.inactiveCameras.description')
-    },
-    {
-      activity_uid: 'monitor_4',
-      activity_name: t('dashboard.monitoring.totalSppg.title'),
-      last_activity_timestamp: new Date().toISOString(),
-      currently_active: true,
-      icon: 'fas fa-chart-bar',
-      bgColor: '#9c27b0',
-      value: 1,
-      description: t('dashboard.monitoring.totalSppg.description')
-    },
-    {
-      activity_uid: 'monitor_5',
-      activity_name: t('dashboard.monitoring.distributionLocations.title'),
-      last_activity_timestamp: new Date().toISOString(),
-      currently_active: true,
-      icon: 'fas fa-home',
-      bgColor: '#ff9800',
-      value: 8,
-      description: t('dashboard.monitoring.distributionLocations.description')
-    }
-  ];
+// Alert modal handlers
+const openAlertDetail = async (alert: any) => {
+  selectedAlert.value = alert;
+  showAlertModal.value = true;
 };
 
-// Function untuk load navigation apps data
-const loadNavigationAppsData = () => {
-  // Data apps berdasarkan gambar yang diberikan
-  navigationApps.value = [
-    {
-      activity_uid: 'app_1',
-      activity_name: t('dashboard.navigation.liveView.title'),
-      route: t('dashboard.routes.liveView'),
-      icon: 'fas fa-video',
-      bgColor: '#2196f3',
-      description: t('dashboard.navigation.liveView.description')
-    },
-    {
-      activity_uid: 'app_2', 
-      activity_name: t('dashboard.navigation.events.title'),
-      route: t('dashboard.routes.events'),
-      icon: 'fas fa-exclamation-triangle',
-      bgColor: '#f44336',
-      description: t('dashboard.navigation.events.description')
-    },
-    {
-      activity_uid: 'app_3',
-      activity_name: t('dashboard.navigation.alerts.title'),
-      route: t('dashboard.routes.alerts'),
-      icon: 'fas fa-bell',
-      bgColor: '#ff9800',
-      description: t('dashboard.navigation.alerts.description')
-    },
-    {
-      activity_uid: 'app_4',
-      activity_name: t('dashboard.navigation.dailyReport.title'),
-      route: t('dashboard.routes.dailyReport'),
-      icon: 'fas fa-chart-line',
-      bgColor: '#4caf50',
-      description: t('dashboard.navigation.dailyReport.description')
-    },
-    {
-      activity_uid: 'app_5',
-      activity_name: t('dashboard.navigation.recording.title'),
-      route: t('dashboard.routes.recording'),
-      icon: 'fas fa-play-circle',
-      bgColor: '#9c27b0',
-      description: t('dashboard.navigation.recording.description')
-    },
-    {
-      activity_uid: 'app_6',
-      activity_name: t('dashboard.navigation.monitoringCenter.title'),
-      route: t('dashboard.routes.monitoringCenter'),
-      icon: 'fas fa-desktop',
-      bgColor: '#00bcd4',
-      description: t('dashboard.navigation.monitoringCenter.description')
-    }
-  ];
+const closeAlertModal = () => {
+  showAlertModal.value = false;
+  selectedAlert.value = null;
 };
 
-// Function untuk navigasi ke apps
-const navigateToApp = (route) => {
-  // Navigasi menggunakan Vue Router
-  router.push(route);
+const handleAlertUpdate = (payload: { status: string; comment: string }) => {
+  if (selectedAlert.value) {
+    selectedAlert.value.status = payload.status;
+    selectedAlert.value.comment = payload.comment;
+    
+    // Update in alerts array
+    const index = alerts.value.findIndex(a => a.event_id === selectedAlert.value.event_id);
+    if (index !== -1) {
+      alerts.value[index].status = payload.status;
+      alerts.value[index].comment = payload.comment;
+    }
+  }
 };
 
 // Manual refresh handler
@@ -526,18 +621,6 @@ const loadLiveActivities = async () => {
       return;
     }
 
-    // const dummyData = mockLiveActivities[selectedSite.value];
-    // if (dummyData) {
-    //   liveActivities.value = dummyData.map((item) => ({
-    //     activity_uid: item.activity_uid,
-    //     activity_name: item.activity_name,
-    //     last_activity_timestamp: item.last_activity_timestamp,
-    //     currently_active: item.currently_active,
-    //   }));
-    //   error.value = null;
-    //   return;
-    // }
-
     const { data } = await ApiService.get(
       `sites/${selectedSite.value}/live-activities`
     );
@@ -553,7 +636,7 @@ const loadLiveActivities = async () => {
     liveActivities.value = list.map((item: any, index: number) => ({
       activity_uid: String(item?.activity_uid ?? item?.uid ?? index),
       activity_name: String(item?.activity_name ?? item?.name ?? 'Aktivitas'),
-      last_activity_timestamp: item?.last_activity_timestamp ?? null,
+      last_activity_timestamp: convertToGMT8(item?.last_activity_timestamp),
       currently_active: Boolean(item?.currently_active ?? item?.is_active),
     }));
   } catch (err) {
@@ -568,6 +651,63 @@ const loadLiveActivities = async () => {
     }));
   } finally {
     loading.value = false;
+  }
+};
+
+const fetchAlerts = async () => {
+  if (!selectedSite.value) {
+    alerts.value = [];
+    return;
+  }
+
+  loadingAlerts.value = true;
+  try {
+    const { data } = await ApiService.query(
+      `sites/${selectedSite.value}/alerts`,
+      {
+        params: {
+          page: 1,
+          page_size: 5,
+          from_date: new Date().toISOString().split('T')[0],
+          to_date: new Date().toISOString().split('T')[0],
+        }
+      }
+    );
+
+    const list = Array.isArray(data)
+      ? data
+      : Array.isArray(data?.data)
+      ? data.data
+      : Array.isArray(data?.results)
+      ? data.results
+      : [];
+
+    const mapped = list.map((item: any) => ({
+      event_id: item?.event_id || item?.id,
+      alert_type: item?.detected_objects[0].display_name || 'Unknown',
+      duration_minutes: item?.duration_minutes || 0,
+      detection_count: item?.detected_objects[0].detection_count || 0,
+      event_start: convertToGMT8(item?.event_start),
+      event_end: convertToGMT8(item?.event_end),
+      status: item?.status || 'not_resolved',
+      camera_name: item?.camera_name || '-',
+      image_url: item?.image_url || '',
+      image_urls: item?.image_urls || [],
+      detected_objects: item?.detected_objects || [],
+      comment: item?.comment || ''
+    }));
+
+    // Sort newest-first so the table can safely take the first 5
+    alerts.value = mapped.sort((a: any, b: any) => {
+      const bTime = toMomentGMT8(b?.event_start)?.valueOf?.() ?? 0;
+      const aTime = toMomentGMT8(a?.event_start)?.valueOf?.() ?? 0;
+      return bTime - aTime;
+    });
+  } catch (err) {
+    console.error('fetchAlerts failed:', err);
+    alerts.value = [];
+  } finally {
+    loadingAlerts.value = false;
   }
 };
 
@@ -665,6 +805,53 @@ const getTranslatedActivityName = (activityName) => {
   return t(translationKey, activityName); // Fallback to original name if translation not found
 };
 
+// Helper functions for alerts
+const normalizeKey = (v?: string) => (v || '').toLowerCase().replace(/[\s_-]/g, '');
+
+const formatDateTime = (value?: string) => {
+  if (!value) return '-';
+  // Use GMT+8 formatter with Indonesian locale format
+  const formatted = formatDateTimeGMT8(value, 'DD/MM/YYYY HH:mm');
+  return formatted || value;
+};
+
+const formatNumber = (value: number, maximumFractionDigits = 1) =>
+  new Intl.NumberFormat(undefined, {
+    maximumFractionDigits,
+    minimumFractionDigits: 0
+  }).format(value);
+
+const formatDuration = (minutes?: number | null) => {
+  if (minutes === undefined || minutes === null || Number.isNaN(minutes))
+    return t('appsEventsAlerts.format.notAvailable') || '-';
+  if ((minutes || 0) < 1)
+    return t('appsEventsAlerts.format.secondsLong', {
+      value: formatNumber(Math.max(0, (minutes || 0) * 60), 0)
+    }) || `${formatNumber(Math.max(0, (minutes || 0) * 60), 0)} detik`;
+  return t('appsEventsAlerts.format.minutesLong', {
+    value: formatNumber(Math.max(0, minutes || 0), 1)
+  }) || `${formatNumber(Math.max(0, minutes || 0), 1)} menit`;
+};
+
+const statusBadge = (status: string) => {
+  const k = normalizeKey(status);
+  if (k === 'notresolved') return 'badge-light-danger';
+  if (k === 'resolved') return 'badge-light-success';
+  if (k === 'falsealarm') return 'badge-light-info';
+  return 'badge-light-secondary';
+};
+
+const statusLabel = (status: string) => {
+  const k = normalizeKey(status);
+  if (k === 'notresolved')
+    return t('appsEventsAlerts.alertsTable.status.notResolved') || 'Belum Selesai';
+  if (k === 'resolved')
+    return t('appsEventsAlerts.alertsTable.status.resolved') || 'Selesai';
+  if (k === 'falsealarm')
+    return t('appsEventsAlerts.alertsTable.status.falseAlarm') || 'Alarm Palsu';
+  return status || '-';
+};
+
 // Update cards per view based on window size
 const updateCardsPerView = () => {
   const width = window.innerWidth;
@@ -687,10 +874,10 @@ const updateCardsPerView = () => {
 
 // Mount lifecycle
 onMounted(() => {
-  loadSistemMonitoringData();
-  loadNavigationAppsData();
   updateCardsPerView();
   fetchSites();
+  fetchAlerts();
+  loadSummaryAlerts();
   setupAutoRefresh(); // Setup auto-refresh when component mounts
   window.addEventListener('resize', updateCardsPerView);
 });
@@ -710,7 +897,8 @@ watch(selectedSite, async (uid, oldUid) => {
   }
 
   await loadLiveActivities();
-  loadSistemMonitoringData();
+  fetchAlerts();
+  loadSummaryAlerts();
   
   // Restart auto-refresh when site changes
   setupAutoRefresh();
@@ -1276,5 +1464,121 @@ i, .ki-duotone, .fas, .far, .fab {
 .dark .text-danger,
 .app-dark .text-danger {
   color: #ef4444 !important;
+}
+
+/* Alerts Section Styles */
+.alert-row {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.alert-row:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+  transform: translateY(-1px);
+}
+
+[data-bs-theme="dark"] .alert-row:hover,
+.dark .alert-row:hover,
+.app-dark .alert-row:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.alert-row td {
+  vertical-align: middle;
+}
+
+.alert-row .symbol img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Summary Cards Animation */
+.card.bg-light-primary,
+.card.bg-light-danger,
+.card.bg-light-success {
+  transition: all 0.3s ease;
+}
+
+.card.bg-light-primary:hover,
+.card.bg-light-danger:hover,
+.card.bg-light-success:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Badge styles for dark mode */
+[data-bs-theme="dark"] .badge-light-danger,
+.dark .badge-light-danger,
+.app-dark .badge-light-danger {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+[data-bs-theme="dark"] .badge-light-success,
+.dark .badge-light-success,
+.app-dark .badge-light-success {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+[data-bs-theme="dark"] .badge-light-info,
+.dark .badge-light-info,
+.app-dark .badge-light-info {
+  background-color: rgba(6, 182, 212, 0.2);
+  color: #22d3ee;
+}
+
+/* Responsive table on mobile */
+@media (max-width: 992px) {
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+  
+  .min-w-150px {
+    min-width: 120px !important;
+  }
+  
+  .min-w-100px {
+    min-width: 80px !important;
+  }
+  
+  .min-w-80px {
+    min-width: 60px !important;
+  }
+  
+  .min-w-140px {
+    min-width: 100px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .alert-row .symbol {
+    width: 35px !important;
+    height: 35px !important;
+  }
+  
+  .alert-row .fs-7 {
+    font-size: 0.75rem !important;
+  }
+  
+  .card.bg-light-primary .card-body,
+  .card.bg-light-danger .card-body,
+  .card.bg-light-success .card-body {
+    padding: 1rem !important;
+  }
+  
+  .symbol-50px {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .fs-2x {
+    font-size: 1.5rem !important;
+  }
 }
 </style>

@@ -105,5 +105,37 @@
 		"dailyReport": "/apps/daily-report",
 		"recording": "/apps/recording",
 		"monitoringCenter": "/apps/monitoring-center"
+	},
+	"alerts": {
+		"title": "Recent Alerts",
+		"subtitle": "Monitor recent violations in real-time",
+		"table": {
+			"violation": "Violation Name",
+			"duration": "Duration",
+			"detection": "Detection",
+			"time": "Time",
+			"status": "Status",
+			"empty": "No alert data",
+			"loading": "Loading alert data..."
+		},
+		"summary": {
+			"totalToday": {
+				"title": "Total Violations",
+				"description": "Today"
+			},
+			"unresolvedToday": {
+				"title": "Unresolved",
+				"description": "Needs action"
+			},
+			"resolvedToday": {
+				"title": "Resolved",
+				"description": "Today"
+			}
+		},
+		"status": {
+			"notResolved": "Not Resolved",
+			"resolved": "Resolved",
+			"falseAlarm": "False Alarm"
+		}
 	}
 }

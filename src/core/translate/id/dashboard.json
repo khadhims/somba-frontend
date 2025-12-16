@@ -105,5 +105,37 @@
 		"dailyReport": "/apps/daily-report",
 		"recording": "/apps/recording",
 		"monitoringCenter": "/apps/monitoring-center"
+	},
+	"alerts": {
+		"title": "Pelanggaran Terbaru",
+		"subtitle": "Pantau pelanggaran terkini secara real-time",
+		"table": {
+			"violation": "Nama Pelanggaran",
+			"duration": "Durasi",
+			"detection": "Deteksi",
+			"time": "Waktu",
+			"status": "Status",
+			"empty": "Tidak ada data pelanggaran",
+			"loading": "Memuat data pelanggaran..."
+		},
+		"summary": {
+			"totalToday": {
+				"title": "Total Pelanggaran",
+				"description": "Hari ini"
+			},
+			"unresolvedToday": {
+				"title": "Belum Selesai",
+				"description": "Perlu tindakan"
+			},
+			"resolvedToday": {
+				"title": "Selesai",
+				"description": "Hari ini"
+			}
+		},
+		"status": {
+			"notResolved": "Belum Selesai",
+			"resolved": "Selesai",
+			"falseAlarm": "Alarm Palsu"
+		}
 	}
 }

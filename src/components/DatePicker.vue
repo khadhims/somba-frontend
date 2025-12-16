@@ -16,7 +16,7 @@
         ref="dateInput"
         v-model="localValue"
         type="date"
-        :class="inputClasses"
+        :class="inputClasses + ' w-90px'"
         :placeholder="placeholder"
         :disabled="disabled"
         :readonly="readonly"
@@ -27,17 +27,6 @@
         @focus="handleFocus"
         @blur="handleBlur"
       />
-      <button
-        v-if="clearable && localValue"
-        type="button"
-        class="btn btn-icon btn-active-light-primary w-30px h-16px"
-        @click="clearDate"
-      >
-        <i class="ki-duotone ki-cross fs-2">
-          <span class="path1"></span>
-          <span class="path2"></span>
-        </i>
-      </button>
     </div>
     <div v-if="errorMessage" class="invalid-feedback d-block">
       {{ errorMessage }}
@@ -205,20 +194,17 @@ defineExpose({
   font-size: 0.875rem;
 }
 
-.btn-icon {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 3;
-  border: none;
-  background: transparent;
-  width: 20px;
-  height: 20px;
+.date-clear-btn {
+  height: 28px;
+  width: 28px;
   padding: 0;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid var(--bs-border-color);
+  border-left: 0;
+  background-color: var(--bs-gray-100);
+  flex: 0 0 auto;
 }
 
 .form-control:focus {
