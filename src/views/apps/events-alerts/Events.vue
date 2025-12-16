@@ -103,7 +103,7 @@
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-              Apply Filters
+              {{ t('common.apply') || 'Apply' }}
             </button>
           </div>
           <!-- Reset Filters Button -->
@@ -236,6 +236,7 @@ import DatePicker from '@/components/DatePicker.vue';
 import ApiService from "@/core/services/ApiService";
 import EventsTable from '@/components/apps/events-alerts/EventsTable.vue';
 import EventDetailModal from '@/components/apps/events-alerts/EventDetailModal.vue';
+import { convertToGMT8 } from '@/core/helpers/timezone';
 
 const { t } = useI18n();
 
@@ -514,8 +515,8 @@ const fetchEvents = async () => {
         camera_name: item.camera_name || '',
         event_id: item.event_id || '',
         event_name: item.event_name || '',
-        event_start: item.event_start,
-        event_end: item.event_end,
+        event_start: convertToGMT8(item.event_start),
+        event_end: convertToGMT8(item.event_end),
         duration_minutes: item.duration_minutes,
         total_minutes: item.total_minutes,
         avg_seconds_with_detection: item.avg_seconds_with_detection,

@@ -108,13 +108,13 @@ const formatDuration = (minutes?: number | null) => {
 
 const formatDate = (value?: string) => {
   if (!value) return '-';
-  try { return new Date(value).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' }); } catch { return value; }
+  try { return new Date(value).toLocaleDateString('id-ID', { timeZone: 'Asia/Makassar' }); } catch { return value; }
 };
 
 const formatTime = (value?: string) => {
   if (!value) return '-';
   try { 
-    const timeStr = new Date(value).toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false });
+    const timeStr = new Date(value).toLocaleTimeString('id-ID', { timeZone: 'Asia/Makassar', hour12: false });
     return timeStr.substring(0, 5);
   } catch { return value; }
 };

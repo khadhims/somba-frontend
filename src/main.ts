@@ -16,6 +16,7 @@ import "dropzone/dist/dropzone.css";
 import "@vueform/multiselect/themes/default.css";
 import "prism-themes/themes/prism-shades-of-purple.css";
 import "element-plus/dist/index.css";
+import "primeicons/primeicons.css";
 import "@/assets/keenicons/duotone/style.css";
 import "@/assets/keenicons/outline/style.css";
 import "@/assets/keenicons/solid/style.css";
