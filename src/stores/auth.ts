@@ -181,6 +181,8 @@ export const useAuthStore = defineStore("auth", () => {
   function verifyAuth() {
     const token = JwtService.getToken();
     if (!token) {
+      const r = JwtService.getRefreshToken();
+      if (r) return refresh();
       purgeAuth();
       return Promise.reject(new Error("No token"));
     }

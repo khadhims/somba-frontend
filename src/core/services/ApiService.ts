@@ -15,8 +15,10 @@ class ApiService {
 
   // refresh token handling
   private static isRefreshing = false;
-  private static refreshSubscribers: Array<(token: string) => void> = [];
-  // track consecutive refresh failures to avoid hammering the refresh endpoint
+  private static refreshSubscribers: Array<{
+    resolve: (token: string) => void;
+    reject: (err: any) => void;
+  }> = [];  // track consecutive refresh failures to avoid hammering the refresh endpoint
   private static refreshFailCount = 0;
   private static lastRefreshFailAt: number | null = null;
   private static MAX_REFRESH_RETRIES = 2;
@@ -41,12 +43,22 @@ class ApiService {
     ApiService.setupInterceptors();
   }
 
-  private static subscribeTokenRefresh(cb: (token: string) => void) {
-    ApiService.refreshSubscribers.push(cb);
+  private static subscribeTokenRefresh(
+    resolve: (token: string) => void,
+    reject: (err: any) => void
+  ) {
+    ApiService.refreshSubscribers.push({ resolve, reject });
   }
 
-  private static onRrefreshed(token: string) {
-    ApiService.refreshSubscribers.forEach((cb) => cb(token));
+  // CHANGE: fix name + handle success
+  private static onRefreshed(token: string) {
+    ApiService.refreshSubscribers.forEach((s) => s.resolve(token));
+    ApiService.refreshSubscribers = [];
+  }
+
+  // NEW: handle failure for queued requests
+  private static onRefreshFailed(err: any) {
+    ApiService.refreshSubscribers.forEach((s) => s.reject(err));
     ApiService.refreshSubscribers = [];
   }
 
@@ -66,7 +78,11 @@ class ApiService {
         ApiService.refreshFailCount = 0;
         ApiService.lastRefreshFailAt = null;
       } else {
-        return Promise.reject(new Error("Refresh retry limit exceeded"));
+        return ApiService.vueInstance.axios.post(
+          ApiService.refreshEndpoint,
+          { refresh_token: refreshToken },
+          { _skipAuthRefresh: true } as any
+        );
       }
     }
 
@@ -142,18 +158,44 @@ class ApiService {
         } catch (e) {}
 
         const { config, response } = error;
-        const originalRequest = config;
+        const originalRequest = error?.config;
 
+        // NEW: if this request is marked to skip refresh handling, just reject
+        if (originalRequest?._skipAuthRefresh) {
+          return Promise.reject(error);
+        }
+
+        const requestUrl: string = originalRequest?.url ?? "";
+        const isRefreshCall =
+          requestUrl.includes(ApiService.refreshEndpoint) ||
+          requestUrl.endsWith(`/${ApiService.refreshEndpoint}`);
+        
+        if (response && response.status === 401 && isRefreshCall) {
+          // cleanup + notify
+          JwtService.destroyToken();
+          JwtService.destroyRefreshToken();
+          try {
+            window.dispatchEvent(new CustomEvent("auth:refresh_failed"));
+          } catch {}
+          return Promise.reject(error);
+        } 
+        
         if (response && response.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
 
           if (ApiService.isRefreshing) {
-            // queue the request until token is refreshed
+            // queue the request until token is refreshed OR failed
             return new Promise((resolve, reject) => {
-              ApiService.subscribeTokenRefresh((token: string) => {
-                originalRequest.headers["Authorization"] = `Bearer ${token}`;
-                resolve(ApiService.vueInstance.axios(originalRequest));
-              });
+              ApiService.subscribeTokenRefresh(
+                (token: string) => {
+                  originalRequest.headers = originalRequest.headers || {};
+                  originalRequest.headers["Authorization"] = `Bearer ${token}`;
+                  resolve(ApiService.vueInstance.axios(originalRequest));
+                },
+                (err: any) => {
+                  reject(err);
+                }
+              );
             });
           }
 
@@ -176,9 +218,10 @@ class ApiService {
 
               // set header for future requests
               ApiService.setHeader();
-              ApiService.onRrefreshed(newToken);
+              ApiService.onRefreshed(newToken);
 
               // retry original request with new token
+              originalRequest.headers = originalRequest.headers || {};
               originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
               return ApiService.vueInstance.axios(originalRequest);
             }
@@ -186,6 +229,8 @@ class ApiService {
             // if refresh didn't return a token, purge stored tokens and count as failure
             JwtService.destroyToken();
             JwtService.destroyRefreshToken();
+            // NEW: fail queued requests too
+            ApiService.onRefreshFailed(error);
             ApiService.refreshFailCount += 1;
             ApiService.lastRefreshFailAt = Date.now();
             return Promise.reject(error);
@@ -193,10 +238,11 @@ class ApiService {
             // refresh failed — cleanup
             JwtService.destroyToken();
             JwtService.destroyRefreshToken();
+            // NEW: fail queued requests too
+            ApiService.onRefreshFailed(e);
             // mark a failed attempt
             ApiService.refreshFailCount += 1;
             ApiService.lastRefreshFailAt = Date.now();
-
             // notify app that refresh failed so it can logout/redirect
             try {
               console.debug('[ApiService] refresh token request failed, dispatching auth:refresh_failed (failCount=' + ApiService.refreshFailCount + ')');
@@ -234,7 +280,6 @@ class ApiService {
             ApiService.isRefreshing = false;
           }
         }
-
         return Promise.reject(error);
       }
     );
