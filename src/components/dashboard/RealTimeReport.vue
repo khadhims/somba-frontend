@@ -2320,7 +2320,7 @@ const renderHighchartsGantt = () => {
                         chart.dynamicCrosshairLabel.destroy();
                     }
                     chart.dynamicCrosshairLabel = chart.renderer.label(
-                        Highcharts.dateFormat('%H:%M', Math.round(xValue)),
+                        chart.time.dateFormat('%H:%M', Math.round(xValue)),
                         xAxis.toPixels(xValue) + 4,
                         chart.plotTop + 5,
                         null,
@@ -2352,13 +2352,9 @@ const renderHighchartsGantt = () => {
         },
         title: { text: '' },
         time: {
-            // Render chart times in GMT+8 (UTC+8) for consistency.
-            useUTC: true,
-            getTimezoneOffset: function (timestamp) {
-                // Highcharts expects offset in minutes, like Date#getTimezoneOffset.
-                // GMT+8 => -480 minutes.
-                return -480;
-            }
+            // Render chart times in the browser's local timezone.
+            // This ensures the day starts at 00:00 (not 16:00 UTC).
+            useUTC: false
         },
         xAxis: {
             type: 'datetime',

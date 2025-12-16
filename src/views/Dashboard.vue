@@ -30,10 +30,7 @@
                             </span>
                             <span class="header-meta-item fs-8">
                               <span class="icon-wrapper" @click="handleManualRefresh" style="cursor: pointer;" title="Klik untuk refresh manual">
-                                <i class="ki-duotone ki-arrows-circle fs-6 text-primary">
-                                  <span class="path1"></span>
-                                  <span class="path2"></span>
-                                </i>
+                                <div class="pi pi-sync"></div>
                               </span>
                               <span class="meta-text">Otomatis update tiap {{ autoUpdateInterval }} menit</span>
                             </span>
@@ -138,7 +135,146 @@
                       </div>
                     </div>
                     <!-- Divider -->
-                    <div class="separator separator-dashed my-3"></div>
+                    <div class="separator separator-dashed my-0"></div>
+
+                    <!-- Section 2: Recent Alerts -->
+                    <div class="card-header border-0 pt-3 pb-2">
+                      <div class="card-title">
+                        <h3 class="fw-bold m-0 d-flex align-items-center gap-2">
+                          <i class="pi pi-exclamation-triangle fs-2 text-danger"></i>
+                          {{ t('dashboard.alerts.title') || 'Pelanggaran Terbaru' }}
+                        </h3>
+                      </div>
+                    </div>
+                    <div class="card-body py-3">
+                      <div class="row g-4">
+                        <!-- Left Column: Alerts Table -->
+                        <div class="col-lg-8">
+                          <div class="table-responsive">
+                            <table class="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3">
+                              <thead>
+                                <tr class="fw-bold text-muted">
+                                  <th class="min-w-150px">{{ t('dashboard.alerts.table.violation') || 'Nama Pelanggaran' }}</th>
+                                  <th class="min-w-100px">{{ t('dashboard.alerts.table.duration') || 'Durasi' }}</th>
+                                  <th class="min-w-80px">{{ t('dashboard.alerts.table.detection') || 'Deteksi' }}</th>
+                                  <th class="min-w-140px">{{ t('dashboard.alerts.table.time') || 'Waktu' }}</th>
+                                  <th class="min-w-100px">{{ t('dashboard.alerts.table.status') || 'Status' }}</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr v-if="loadingAlerts">
+                                  <td colspan="5" class="text-center py-8">
+                                    <div class="spinner-border text-primary" role="status">
+                                      <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                  </td>
+                                </tr>
+                                <tr v-else-if="!alerts.length">
+                                  <td colspan="5" class="text-center py-8 text-muted">
+                                    <i class="pi pi-info-circle fs-2x mb-2"></i>
+                                    <div>{{ t('dashboard.alerts.table.empty') || 'Tidak ada data pelanggaran' }}</div>
+                                  </td>
+                                </tr>
+                                <tr
+                                  v-else
+                                  v-for="alert in recentAlerts"
+                                  :key="alert.event_id"
+                                  class="alert-row cursor-pointer"
+                                  @click="openAlertDetail(alert)"
+                                >
+                                  <td>
+                                    <div class="d-flex align-items-center">
+                                      <div>
+                                        <div class="fw-bold text-dark">{{ alert.alert_type }}</div>
+                                        <div class="text-muted fs-7">{{ alert.camera_name }}</div>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <span class="text-dark fw-semibold">
+                                      {{ formatDuration(alert.duration_minutes) }}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    <span class="badge badge-light-primary">{{ alert.detection_count }}x</span>
+                                  </td>
+                                  <td>
+                                    <span class="text-dark">{{ formatDateTime(alert.event_start) }}</span>
+                                  </td>
+                                  <td>
+                                    <span class="badge" :class="statusBadge(alert.status)">
+                                      {{ statusLabel(alert.status) }}
+                                    </span>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <!-- Right Column: Summary Cards -->
+                        <div class="col-lg-4">
+                          <div class="d-flex flex-column gap-2">
+                            <div class="card bg-light-primary border-0">
+                              <div class="card-body p-3">
+                                <div class="d-flex align-items-center gap-3">
+                                  <div class="symbol symbol-50px flex-shrink-0">
+                                    <div class="symbol-label bg-primary">
+                                      <i class="pi pi-exclamation-circle fs-2 text-white"></i>
+                                    </div>
+                                  </div>
+                                  <div class="flex-grow-1">
+                                    <div class="text-gray-600 fw-semibold fs-7 mb-1">
+                                      {{ t('dashboard.alerts.summary.totalToday.title') || 'Total Hari Ini' }}
+                                    </div>
+                                    <div class="d-flex align-items-baseline gap-2">
+                                      <div class="fs-2 fw-bolder text-primary">{{ totalAlertsToday }}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="card bg-light-danger border-0">
+                              <div class="card-body p-3">
+                                <div class="d-flex align-items-center gap-3">
+                                  <div class="symbol symbol-50px flex-shrink-0">
+                                    <div class="symbol-label bg-danger">
+                                      <i class="pi pi-flag-fill fs-2 text-white"></i>
+                                    </div>
+                                  </div>
+                                  <div class="flex-grow-1">
+                                    <div class="text-gray-600 fw-semibold fs-7 mb-1">
+                                      {{ t('dashboard.alerts.summary.unresolvedToday.title') || 'Belum Selesai' }}
+                                    </div>
+                                    <div class="fs-2 fw-bolder text-danger">{{ unresolvedAlertsToday }}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="card bg-light-success border-0">
+                              <div class="card-body p-3">
+                                <div class="d-flex align-items-center gap-3">
+                                  <div class="symbol symbol-50px flex-shrink-0">
+                                    <div class="symbol-label bg-success">
+                                      <i class="pi pi-check-circle fs-2 text-white"></i>
+                                    </div>
+                                  </div>
+                                  <div class="flex-grow-1">
+                                    <div class="text-gray-600 fw-semibold fs-7 mb-1">
+                                      {{ t('dashboard.alerts.summary.resolvedToday.title') || 'Selesai' }}
+                                    </div>
+                                    <div class="d-flex align-items-baseline gap-2">
+                                      <div class="fs-2 fw-bolder text-success">{{ resolvedAlertsToday }}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Divider -->
+                    <div class="separator separator-dashed my-0"></div>
                     <!-- Section 3: Real Time Report -->
                     <div class="card-header border-0 pt-3 pb-2">
                       <div class="card-title">
@@ -164,152 +300,6 @@
                       />
                     </div>
 
-                  </div>
-                </div>
-              </div>
-
-              <!-- Section 4: Recent Alerts -->
-              <div class="col-12">
-                <div class="card dashboard-main-card">
-                  <div class="card-header border-0 pt-3 pb-2">
-                    <div class="card-title">
-                      <h3 class="fw-bold m-0 d-flex align-items-center gap-2">
-                        <i class="pi pi-exclamation-triangle fs-2 text-danger"></i>
-                        {{ t('dashboard.alerts.title') || 'Pelanggaran Terbaru' }}
-                      </h3>
-                    </div>
-                  </div>
-                  <div class="card-body py-3">
-                    <div class="row g-4">
-                      <!-- Left Column: Alerts Table -->
-                      <div class="col-lg-8">
-                        <div class="table-responsive">
-                          <table class="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3">
-                            <thead>
-                              <tr class="fw-bold text-muted">
-                                <th class="min-w-150px">{{ t('dashboard.alerts.table.violation') || 'Nama Pelanggaran' }}</th>
-                                <th class="min-w-100px">{{ t('dashboard.alerts.table.duration') || 'Durasi' }}</th>
-                                <th class="min-w-80px">{{ t('dashboard.alerts.table.detection') || 'Deteksi' }}</th>
-                                <th class="min-w-140px">{{ t('dashboard.alerts.table.time') || 'Waktu' }}</th>
-                                <th class="min-w-100px">{{ t('dashboard.alerts.table.status') || 'Status' }}</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr v-if="loadingAlerts">
-                                <td colspan="5" class="text-center py-8">
-                                  <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr v-else-if="!alerts.length">
-                                <td colspan="5" class="text-center py-8 text-muted">
-                                  <i class="pi pi-info-circle fs-2x mb-2"></i>
-                                  <div>{{ t('dashboard.alerts.table.empty') || 'Tidak ada data pelanggaran' }}</div>
-                                </td>
-                              </tr>
-                              <tr
-                                v-else
-                                v-for="alert in recentAlerts"
-                                :key="alert.event_id"
-                                class="alert-row cursor-pointer"
-                                @click="openAlertDetail(alert)"
-                              >
-                                <td>
-                                  <div class="d-flex align-items-center">
-                                    <div>
-                                      <div class="fw-bold text-dark">{{ alert.alert_type }}</div>
-                                      <div class="text-muted fs-7">{{ alert.camera_name }}</div>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span class="text-dark fw-semibold">
-                                    {{ formatDuration(alert.duration_minutes) }}
-                                  </span>
-                                </td>
-                                <td>
-                                  <span class="badge badge-light-primary">{{ alert.detection_count }}x</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark">{{ formatDateTime(alert.event_start) }}</span>
-                                </td>
-                                <td>
-                                  <span class="badge" :class="statusBadge(alert.status)">
-                                    {{ statusLabel(alert.status) }}
-                                  </span>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-
-                      <!-- Right Column: Summary Cards -->
-                      <div class="col-lg-4">
-                        <div class="d-flex flex-column gap-3">
-                          <!-- Total Alerts Today -->
-                          <div class="card bg-light-primary border-0">
-                            <div class="card-body p-4">
-                              <div class="text-center mb-3">
-                                <div class="symbol symbol-60px mx-auto mb-3">
-                                  <div class="symbol-label bg-primary">
-                                    <i class="pi pi-exclamation-circle fs-2x text-white"></i>
-                                  </div>
-                                </div>
-                                <div class="text-gray-600 fw-semibold fs-7 mb-2">
-                                  {{ t('dashboard.alerts.summary.totalToday.title') || 'Total Hari Ini' }}
-                                </div>
-                                <div class="fs-2x fw-bolder text-primary">{{ totalAlertsToday }}</div>
-                              </div>
-                              <div class="text-center text-gray-600 fs-8">
-                                {{ t('dashboard.alerts.summary.totalToday.description') || 'Total pelanggaran terdeteksi' }}
-                              </div>
-                            </div>
-                          </div>
-
-                          <!-- Unresolved Alerts Today -->
-                          <div class="card bg-light-danger border-0">
-                            <div class="card-body p-4">
-                              <div class="text-center mb-3">
-                                <div class="symbol symbol-60px mx-auto mb-3">
-                                  <div class="symbol-label bg-danger">
-                                    <i class="pi pi-times-circle fs-2x text-white"></i>
-                                  </div>
-                                </div>
-                                <div class="text-gray-600 fw-semibold fs-7 mb-2">
-                                  {{ t('dashboard.alerts.summary.unresolvedToday.title') || 'Belum Selesai' }}
-                                </div>
-                                <div class="fs-2x fw-bolder text-danger">{{ unresolvedAlertsToday }}</div>
-                              </div>
-                              <div class="text-center text-gray-600 fs-8">
-                                {{ t('dashboard.alerts.summary.unresolvedToday.description') || 'Perlu ditindaklanjuti' }}
-                              </div>
-                            </div>
-                          </div>
-
-                          <!-- Resolved Alerts Today -->
-                          <div class="card bg-light-success border-0">
-                            <div class="card-body p-4">
-                              <div class="text-center mb-3">
-                                <div class="symbol symbol-60px mx-auto mb-3">
-                                  <div class="symbol-label bg-success">
-                                    <i class="pi pi-check-circle fs-2x text-white"></i>
-                                  </div>
-                                </div>
-                                <div class="text-gray-600 fw-semibold fs-7 mb-2">
-                                  {{ t('dashboard.alerts.summary.resolvedToday.title') || 'Selesai' }}
-                                </div>
-                                <div class="fs-2x fw-bolder text-success">{{ resolvedAlertsToday }}</div>
-                              </div>
-                              <div class="text-center text-gray-600 fs-8">
-                                {{ t('dashboard.alerts.summary.resolvedToday.description') || 'Telah ditangani' }}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -339,8 +329,9 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import ApiService from '@/core/services/ApiService';
 import liveActivityMock from '@/assets/mockupData/dashboard/live_activity.json';
+import summaryAlertsMock from '@/assets/mockupData/dashboard/summary_alerts.json';
 import { todayDate } from '@/core/data/events';
-import { convertToGMT8, formatDateTimeGMT8, toMomentGMT8 } from '@/core/helpers/timezone';
+import { convertToGMT8, formatDateTimeGMT8, getCurrentDateTimeGMT8, toMomentGMT8 } from '@/core/helpers/timezone';
 
 interface Site {
   uid: string;
@@ -396,6 +387,16 @@ type MockActivity = {
 
 const mockLiveActivities = liveActivityMock as Record<string, MockActivity[]>;
 
+type SummaryAlerts = {
+  total_today: number;
+  unresolved_today: number;
+  resolved_today: number;
+  as_of: string | null;
+};
+
+const summaryAlerts = ref<SummaryAlerts | null>(null);
+const loadingSummaryAlerts = ref(false);
+
 // Router setup
 const router = useRouter();
 
@@ -412,16 +413,46 @@ const currentDate = computed(() => {
 const autoUpdateInterval = ref(2);
 
 // Computed properties for alert statistics
-// NOTE: Counts are based on the full API response (not limited to 5 rows).
-const totalAlertsToday = computed(() => alerts.value.length);
+// NOTE: Counts come from `sites/{site_uid}/alerts-summary` (mocked for now).
+const totalAlertsToday = computed(() => summaryAlerts.value?.total_today ?? 0);
+const unresolvedAlertsToday = computed(() => summaryAlerts.value?.unresolved_today ?? 0);
+const resolvedAlertsToday = computed(() => summaryAlerts.value?.resolved_today ?? 0);
 
-const unresolvedAlertsToday = computed(() => {
-  return alerts.value.filter((alert: any) => normalizeKey(alert?.status) === 'notresolved').length;
-});
+// Local function (requested): endpoint `sites/{site_uid}/alerts-summary` (mock for now)
+const fetchSummaryAlerts = async (siteUid: string): Promise<SummaryAlerts> => {
+  // TODO: Replace with real endpoint once available.
+  // const { data } = await ApiService.get(`sites/${siteUid}/alerts-summary`, { params: { date: getCurrentDateTimeGMT8('YYYY-MM-DD') } });
+  // return data;
 
-const resolvedAlertsToday = computed(() => {
-  return alerts.value.filter((alert: any) => normalizeKey(alert?.status) === 'resolved').length;
-});
+  const raw: any = (summaryAlertsMock as any)?.default ?? summaryAlertsMock;
+
+  return {
+    total_today: Number(raw?.total_today ?? 0),
+    unresolved_today: Number(raw?.unresolved_today ?? 0),
+    resolved_today: Number(raw?.resolved_today ?? 0),
+    as_of:
+      raw?.as_of !== undefined && raw?.as_of !== null
+        ? convertToGMT8(String(raw.as_of))
+        : getCurrentDateTimeGMT8('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+  };
+};
+
+const loadSummaryAlerts = async () => {
+  if (!selectedSite.value) {
+    summaryAlerts.value = null;
+    return;
+  }
+
+  loadingSummaryAlerts.value = true;
+  try {
+    summaryAlerts.value = await fetchSummaryAlerts(selectedSite.value);
+  } catch (err) {
+    console.error('loadSummaryAlerts failed:', err);
+    summaryAlerts.value = null;
+  } finally {
+    loadingSummaryAlerts.value = false;
+  }
+};
 
 // Function to handle site change
 // Mapping icon dan warna untuk setiap aktivitas
@@ -636,9 +667,9 @@ const fetchAlerts = async () => {
       {
         params: {
           page: 1,
-          page_size: 100,
-          from_date: "2025-12-04",
-          to_date: "2025-12-04",
+          page_size: 5,
+          from_date: new Date().toISOString().split('T')[0],
+          to_date: new Date().toISOString().split('T')[0],
         }
       }
     );
@@ -846,6 +877,7 @@ onMounted(() => {
   updateCardsPerView();
   fetchSites();
   fetchAlerts();
+  loadSummaryAlerts();
   setupAutoRefresh(); // Setup auto-refresh when component mounts
   window.addEventListener('resize', updateCardsPerView);
 });
@@ -866,6 +898,7 @@ watch(selectedSite, async (uid, oldUid) => {
 
   await loadLiveActivities();
   fetchAlerts();
+  loadSummaryAlerts();
   
   // Restart auto-refresh when site changes
   setupAutoRefresh();
