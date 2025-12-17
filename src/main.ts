@@ -49,26 +49,9 @@ app.use(ElementPlus);
 // early (before ApiService.init) so we don't miss events fired during
 // startup or immediate requests.
 window.addEventListener("auth:refresh_failed", () => {
-  try {
-    const store = useAuthStore();
-    // logout will purge tokens and user state
-    store.logout();
-  } catch (err) {
-    // ignore if store call fails
-  }
-  // Try SPA navigation first, then fallback to a full-page redirect
-  router.push({ name: "sign-in" }).catch(() => {});
-
-  setTimeout(() => {
-    try {
-      if (router.currentRoute && router.currentRoute.value?.name !== "sign-in") {
-        const url = router.resolve({ name: "sign-in" }).href || "/";
-        window.location.href = url;
-      }
-    } catch (e) {
-      window.location.href = "/";
-    }
-  }, 200);
+  const auth = useAuthStore();
+  auth.logout(); // calls purgeAuth()
+  router.replace("/sign-in");
 });
 
 // Listen to storage events (other tabs) - if token removed in another tab, force logout/redirect here too
