@@ -2,23 +2,23 @@
   <!-- Overview Card -->
   <div class="card mb-5">
     <div class="card-body py-4">
-      <div class="row align-items-center">
-        <div class="col-md-4">
+      <div class="row align-items-center gy-3">
+        <div class="col-12 col-md-4">
           <h4 class="card-title mb-0">{{ t('appsEventsAlerts.alerts.title') }}</h4>
           <p class="text-muted mb-0">{{ currentSite ? t('appsEventsAlerts.alerts.subtitleSite', { site: currentSite.name }) : t('appsEventsAlerts.alerts.subtitleAll') }}</p>
         </div>
-        <div class="col-md-8">
-          <div class="d-flex justify-content-end align-items-center">
-            <div class="d-flex align-items-center me-3">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsEventsAlerts.alertsFilters.siteLabel') }}</label>
-              <select v-model="tempSelectedSiteFilter" class="form-select form-select-solid w-200px" :disabled="loadingSites" @change="onTempFilterSiteChange">
+        <div class="col-12 col-md-8">
+          <div class="d-flex flex-column flex-md-row justify-content-md-end align-items-start align-items-md-center gap-2 gap-md-0">
+            <div class="d-flex align-items-center me-md-3 w-100 w-md-auto mb-2 mb-md-0">
+              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{ t('appsEventsAlerts.alertsFilters.siteLabel') }}</label>
+              <select v-model="tempSelectedSiteFilter" class="form-select form-select-solid w-100 w-md-200px" :disabled="loadingSites" @change="onTempFilterSiteChange">
                 <option value="">{{ t('appsEventsAlerts.alertsFilters.siteAll') }}</option>
                 <option v-for="site in sites" :key="site.uid" :value="site.uid">{{ site.name }}</option>
               </select>
             </div>
-            <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsEventsAlerts.alertsFilters.cameraLabel') || 'Camera' }}</label>
-              <select v-model="tempSelectedCameraFilter" class="form-select form-select-solid w-200px" :disabled="loadingCameras || !tempSelectedSiteFilter" @change="onTempFilterCameraChange">
+            <div class="d-flex align-items-center w-100 w-md-auto">
+              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{ t('appsEventsAlerts.alertsFilters.cameraLabel') || 'Camera' }}</label>
+              <select v-model="tempSelectedCameraFilter" class="form-select form-select-solid w-100 w-md-200px" :disabled="loadingCameras || !tempSelectedSiteFilter" @change="onTempFilterCameraChange">
                 <option value="">{{ t('appsEventsAlerts.alertsFilters.cameraAll') || 'All Cameras' }}</option>
                 <option v-for="camera in cameras" :key="camera.uid" :value="camera.uid">{{ camera.name }}</option>
               </select>
@@ -33,39 +33,39 @@
   <div class="card">
     <div class="card-header border-0 pt-5">
       <div class="card-title"><h3 class="fw-bold m-0">{{ t('appsEventsAlerts.alerts.title') }}</h3></div>
-      <div class="card-toolbar d-flex justify-content-between align-items-center w-100">
-        <div class="d-flex align-items-center">
-          <div class="d-flex align-items-center me-3">
-            <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.alertsFilters.fromDateLabel') }}</label>
-            <DatePicker ref="dateFromPicker" v-model="tempDateFrom" size="sm" :clearable="true" style="width:180px;" />
-          </div>
-            <div class="d-flex align-items-center me-3">
+      <div class="card-toolbar d-flex flex-column flex-xl-row justify-content-between align-items-start align-items-xl-center w-100 gap-3">
+        <div class="d-flex flex-wrap align-items-center gap-2 w-100 w-xl-auto">
+          <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center me-0 me-sm-2 w-100 w-sm-auto gap-2">
+            <div class="d-flex align-items-center w-100 w-sm-auto">
+              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.alertsFilters.fromDateLabel') }}</label>
+              <DatePicker ref="dateFromPicker" v-model="tempDateFrom" size="sm" :clearable="true" style="width:100%; min-width: 140px;" class="w-100 w-sm-auto" />
+            </div>
+            <div class="d-flex align-items-center w-100 w-sm-auto">
               <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.alertsFilters.toDateLabel') }}</label>
-              <DatePicker ref="dateToPicker" v-model="tempDateTo" size="sm" :clearable="true" style="width:180px;" />
+              <DatePicker ref="dateToPicker" v-model="tempDateTo" size="sm" :clearable="true" style="width:100%; min-width: 140px;" class="w-100 w-sm-auto" />
             </div>
-            <div class="me-3">
-              <button @click="applyFilters" class="btn btn-sm btn-primary py-1 px-2" title="Apply All Filters">
-                <i class="ki-duotone ki-check fs-2"><span class="path1"></span><span class="path2"></span></i>
-                {{ t('common.apply') || 'Apply' }}
-              </button>
-            </div>
-            <div class="me-3">
-              <button @click="resetFilters" class="btn btn-sm btn-light py-1 px-2" title="Reset to Applied Filters">
-                <i class="ki-duotone ki-arrows-circle fs-2"><span class="path1"></span><span class="path2"></span></i>
-                {{ t('common.reset') || 'Reset' }}
-              </button>
-            </div>
-            <div class="me-3">
-              <button @click="resetToDefaults" class="btn btn-sm btn-secondary py-1 px-2" title="Reset to Default Values">
-                <i class="ki-duotone ki-time fs-2"><span class="path1"></span><span class="path2"></span></i>
-                Defaults
-              </button>
-            </div>
+          </div>
+          
+          <div class="d-flex flex-wrap gap-2 mt-2 mt-sm-0">
+            <button @click="applyFilters" class="btn btn-sm btn-primary py-1 px-2" title="Apply All Filters">
+              <i class="ki-duotone ki-check fs-2"><span class="path1"></span><span class="path2"></span></i>
+              {{ t('common.apply') || 'Apply' }}
+            </button>
+            <button @click="resetFilters" class="btn btn-sm btn-light py-1 px-2" title="Reset to Applied Filters">
+              <i class="ki-duotone ki-arrows-circle fs-2"><span class="path1"></span><span class="path2"></span></i>
+              {{ t('common.reset') || 'Reset' }}
+            </button>
+            <button @click="resetToDefaults" class="btn btn-sm btn-secondary py-1 px-2" title="Reset to Default Values">
+              <i class="ki-duotone ki-time fs-2"><span class="path1"></span><span class="path2"></span></i>
+              Defaults
+            </button>
+          </div>
         </div>
-        <div class="d-flex align-items-center">
-          <div class="d-flex align-items-center position-relative my-1 me-3">
+        
+        <div class="d-flex align-items-center w-100 w-xl-auto gap-2">
+          <div class="d-flex align-items-center position-relative my-1 flex-grow-1 flex-xl-grow-0">
             <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4"><span class="path1"></span><span class="path2"></span></i>
-            <input type="text" v-model="searchQuery" class="form-control form-control-sm form-control-solid w-200px ps-12" :placeholder="t('appsEventsAlerts.alertsFilters.searchPlaceholder') || 'Search'" />
+            <input type="text" v-model="searchQuery" class="form-control form-control-sm form-control-solid w-100 w-xl-200px ps-12" :placeholder="t('appsEventsAlerts.alertsFilters.searchPlaceholder') || 'Search'" />
           </div>
           <button @click="refreshAlerts" class="btn btn-sm btn-light-primary btn-icon" title="Refresh">
             <i class="ki-duotone ki-arrows-circle fs-2"><span class="path1"></span><span class="path2"></span></i>
@@ -87,7 +87,7 @@
           @view-detail="viewAlertDetail"
         />
       </div>
-      <div class="d-flex justify-content-between align-items-center mt-4">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3">
         <ItemPerPage :model-value="pagination.per_page" :label="t('appsEventsAlerts.alertsTable.pagination.itemsLabel') || 'Items per page:'" :options="[10,20,30,50]" @change="changeItemsPerPage" />
         <Pagination :page="pagination.page" :per-page="pagination.per_page" :total-items="pagination.total_items" :total-pages="Math.max(1, pagination.total_pages)" @page-change="goToPage" />
       </div>

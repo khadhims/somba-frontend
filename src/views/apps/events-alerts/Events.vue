@@ -2,21 +2,21 @@
   <!--begin::Events & Alerts Overview-->
   <div class="card mb-5">
     <div class="card-body py-4">
-      <div class="row align-items-center">
-        <div class="col-md-4">
+      <div class="row align-items-center gy-3">
+        <div class="col-12 col-md-4">
           <h4 class="card-title mb-0">{{ t('appsEventsAlerts.events.title') }}</h4>
           <p class="text-muted mb-0">
             {{ currentSite ? t('appsEventsAlerts.events.subtitleSite', { site: currentSite.name }) : t('appsEventsAlerts.events.subtitleAll') }}
           </p>
         </div>
-        <div class="col-md-8">
-          <div class="d-flex justify-content-end align-items-center">
+        <div class="col-12 col-md-8">
+          <div class="d-flex flex-column flex-md-row justify-content-md-end align-items-start align-items-md-center gap-2 gap-md-0">
             <!-- Site Filter -->
-            <div class="d-flex align-items-center me-3">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsEventsAlerts.eventsFilters.siteLabel') }}</label>
+            <div class="d-flex align-items-center me-md-3 w-100 w-md-auto mb-2 mb-md-0">
+              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{ t('appsEventsAlerts.eventsFilters.siteLabel') }}</label>
               <select
                 v-model="tempSelectedSiteFilter"
-                class="form-select form-select-solid w-200px"
+                class="form-select form-select-solid w-100 w-md-200px"
                 :disabled="loadingSites"
                 @change="onTempFilterSiteChange"
               >
@@ -32,11 +32,11 @@
             </div>
             
             <!-- Camera Filter -->
-            <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsEventsAlerts.eventsFilters.cameraLabel') || 'Camera' }}</label>
+            <div class="d-flex align-items-center w-100 w-md-auto">
+              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{ t('appsEventsAlerts.eventsFilters.cameraLabel') || 'Camera' }}</label>
               <select
                 v-model="tempSelectedCameraFilter"
-                class="form-select form-select-solid w-200px"
+                class="form-select form-select-solid w-100 w-md-200px"
                 :disabled="loadingCameras || !tempSelectedSiteFilter"
                 @change="onTempFilterCameraChange"
               >
@@ -68,32 +68,34 @@
       <!--end::Card title-->
 
       <!--begin::Card toolbar-->
-      <div class="card-toolbar d-flex justify-content-between align-items-center w-100">
+      <div class="card-toolbar d-flex flex-column flex-xl-row justify-content-between align-items-start align-items-xl-center w-100 gap-3">
         <!-- Date Range Filters - Start -->
-        <div class="d-flex align-items-center">
-          <div class="d-flex align-items-center me-3">
-            <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.eventsFilters.fromDateLabel') }}</label>
-            <DatePicker
-              v-model="tempDateFrom"
-              size="sm"
-              :clearable="true"
-              
-              style="width: 180px;"
-            />
-          </div>
-          <div class="d-flex align-items-center me-3">
-            <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.eventsFilters.toDateLabel') }}</label>
-            <DatePicker
-              v-model="tempDateTo"
-              size="sm"
-              :clearable="true"
-              
-              style="width: 180px;"
-            />
+        <div class="d-flex flex-wrap align-items-center gap-2 w-100 w-xl-auto">
+          <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center me-0 me-sm-2 w-100 w-sm-auto gap-2">
+            <div class="d-flex align-items-center w-100 w-sm-auto">
+              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.eventsFilters.fromDateLabel') }}</label>
+              <DatePicker
+                v-model="tempDateFrom"
+                size="sm"
+                :clearable="true"
+                style="width:100%; min-width: 140px;"
+                class="w-100 w-sm-auto"
+              />
+            </div>
+            <div class="d-flex align-items-center w-100 w-sm-auto">
+              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.eventsFilters.toDateLabel') }}</label>
+              <DatePicker
+                v-model="tempDateTo"
+                size="sm"
+                :clearable="true"
+                style="width:100%; min-width: 140px;"
+                class="w-100 w-sm-auto"
+              />
+            </div>
           </div>
           
-          <!-- Apply All Filters Button -->
-          <div class="me-3">
+          <!-- Apply/Reset Buttons -->
+          <div class="d-flex flex-wrap gap-2 mt-2 mt-sm-0">
             <button 
               @click="applyFilters" 
               class="btn btn-sm btn-primary py-1 px-2"
@@ -105,9 +107,6 @@
               </i>
               {{ t('common.apply') || 'Apply' }}
             </button>
-          </div>
-          <!-- Reset Filters Button -->
-          <div class="me-3">
             <button 
               @click="resetFilters" 
               class="btn btn-sm btn-light py-1 px-2"
@@ -119,9 +118,6 @@
               </i>
               Reset
             </button>
-          </div>
-          <!-- Reset to Defaults Button -->
-          <div class="me-3">
             <button 
               @click="resetToDefaults" 
               class="btn btn-sm btn-secondary py-1 px-2"
@@ -137,13 +133,13 @@
         </div>
         
         <!-- Other Filters - End -->
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center w-100 w-xl-auto gap-2">
           <!-- Severity Filter -->
-          <div class="me-3">
+          <div class="flex-grow-1 flex-xl-grow-0">
             <select
               v-model="selectedSeverityType"
               @change="filterEvents"
-              class="form-select form-select-sm form-select-solid w-150px"
+              class="form-select form-select-sm form-select-solid w-100 w-xl-150px"
             >
               <option value="">{{ t('appsEventsAlerts.eventsFilters.severityAll') }}</option>
               <option value="low">{{ t('appsEventsAlerts.eventsTable.severity.low') }}</option>
@@ -154,7 +150,7 @@
           </div>
 
           <!--begin::Search-->
-          <div class="d-flex align-items-center position-relative my-1 me-3">
+          <div class="d-flex align-items-center position-relative my-1 flex-grow-1 flex-xl-grow-0">
             <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -162,7 +158,7 @@
             <input
               type="text"
               v-model="searchQuery"
-              class="form-control form-control-sm form-control-solid w-200px ps-12"
+              class="form-control form-control-sm form-control-solid w-100 w-xl-200px ps-12"
               placeholder="Search"
             />
           </div>
@@ -194,7 +190,7 @@
       />
       
       <!--begin::Pagination-->
-      <div class="d-flex justify-content-between align-items-center mt-4">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3">
         <ItemPerPage
           :model-value="itemsPerPage"
           :label="t('appsEventsAlerts.eventsTable.pagination.itemsLabel') || 'Items per page:'"

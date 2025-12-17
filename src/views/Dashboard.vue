@@ -8,47 +8,70 @@
         <div class="d-flex flex-column flex-column-fluid">
           <!-- Content -->
           <div id="kt_app_content" class="app-content flex-column-fluid">
-            <div id="kt_app_content_container" class="app-container container-xxl">
-              
+            <div
+              id="kt_app_content_container"
+              class="app-container container-xxl"
+            >
               <!-- Main Dashboard Card - Gabungan 3 Section -->
               <div class="row g-3 g-xl-4 mb-3">
                 <div class="col-12">
                   <div class="card dashboard-main-card">
-                    
                     <!-- Section 1: Proses Pelaksanaan Harian -->
                     <div
-                      class="card-header border-0 pt-3 pb-3 d-flex flex-wrap flex-md-nowrap align-items-center justify-content-between gap-3 gap-lg-5 dashboard-section-header"
+                      class="card-header border-0 pt-3 pb-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 dashboard-section-header"
                     >
                       <div class="card-title flex-grow-1">
                         <div class="d-flex flex-column gap-2">
-                          <h3 class="fw-bold text-dark text-white-dark fs-5 mb-0">
-                            {{ t('dashboard.sections.dailyProcess.title') }}
+                          <h3
+                            class="fw-bold text-dark text-white-dark fs-5 mb-0"
+                          >
+                            {{ t("dashboard.sections.dailyProcess.title") }}
                           </h3>
-                          <div class="header-meta d-flex flex-wrap align-items-center">
+                          <div
+                            class="header-meta d-flex flex-wrap align-items-center gap-2"
+                          >
                             <span class="badge badge-light-primary fs-8">
                               Data per: {{ currentDate }}
                             </span>
-                            <span class="header-meta-item fs-8">
-                              <span class="icon-wrapper" @click="handleManualRefresh" style="cursor: pointer;" title="Klik untuk refresh manual">
-                                <div class="pi pi-sync"></div>
+                            <span
+                              class="header-meta-item fs-8 d-flex align-items-center gap-1"
+                            >
+                              <span
+                                class="icon-wrapper"
+                                @click="handleManualRefresh"
+                                style="cursor: pointer"
+                                title="Klik untuk refresh manual"
+                              >
+                                <i class="pi pi-sync"></i>
                               </span>
-                              <span class="meta-text">Otomatis update tiap {{ autoUpdateInterval }} menit</span>
+                              <span class="meta-text"
+                                >Otomatis update tiap
+                                {{ autoUpdateInterval }} menit</span
+                              >
                             </span>
                           </div>
                         </div>
                       </div>
-                      <div class="card-toolbar d-flex flex-wrap align-items-center gap-2">
-                        <label class="fw-semibold fs-7 text-muted mb-0">
+                      <div
+                        class="card-toolbar d-flex flex-wrap align-items-center gap-2 w-100 w-md-auto"
+                      >
+                        <label
+                          class="fw-semibold fs-7 text-muted mb-0 d-none d-md-block"
+                        >
                           {{ t("controlplane.site.camera.filters.siteLabel") }}
                         </label>
                         <!-- Dropdown Pemilihan Lokasi -->
                         <select
                           v-model="selectedSite"
                           class="form-select form-select-sm w-100 w-md-auto"
-                          style="min-width: 200px;"
+                          style="min-width: 200px"
                         >
                           <option value="">
-                            {{ t("controlplane.site.camera.form.fields.site.placeholder") }}
+                            {{
+                              t(
+                                "controlplane.site.camera.form.fields.site.placeholder"
+                              )
+                            }}
                           </option>
                           <option
                             v-for="site in sites"
@@ -57,33 +80,44 @@
                           >
                             {{ site.name }}
                           </option>
-                          <!-- <option value="siteA">Site A</option>
-                          <option value="siteB">Site B</option> -->
                         </select>
                       </div>
                     </div>
-                    <div class="card-body position-relative" style="padding: 1rem 1rem 1.5rem 1rem;">
+                    <div
+                      class="card-body position-relative"
+                      style="padding: 1rem 1rem 1.5rem 1rem"
+                    >
                       <!-- Loading state -->
                       <div v-if="loading" class="text-center py-8">
                         <div class="spinner-border text-primary" role="status">
                           <span class="visually-hidden">Loading...</span>
                         </div>
-                        <p class="mt-3 text-muted">{{ t('dashboard.general.loading') }}</p>
+                        <p class="mt-3 text-muted">
+                          {{ t("dashboard.general.loading") }}
+                        </p>
                       </div>
-                      
+
                       <!-- Error state -->
-                      <div v-else-if="error" class="alert alert-warning" role="alert">
+                      <div
+                        v-else-if="error"
+                        class="alert alert-warning"
+                        role="alert"
+                      >
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        {{ t('dashboard.general.errorLoading') }}: {{ error }}
-                        <button class="btn btn-sm btn-outline-primary ms-3" @click="loadLiveActivities">
-                          <i class="fas fa-refresh me-1"></i>{{ t('dashboard.general.retry') }}
+                        {{ t("dashboard.general.errorLoading") }}: {{ error }}
+                        <button
+                          class="btn btn-sm btn-outline-primary ms-3"
+                          @click="loadLiveActivities"
+                        >
+                          <i class="fas fa-refresh me-1"></i
+                          >{{ t("dashboard.general.retry") }}
                         </button>
                       </div>
-                      
+
                       <!-- Activities carousel -->
                       <div v-else class="activities-carousel-wrapper">
                         <!-- Carousel container -->
-                        <div 
+                        <div
                           ref="carouselContainer"
                           class="activities-carousel"
                           @mousedown="handleDragStart"
@@ -94,43 +128,70 @@
                           @touchmove="handleTouchMove"
                           @touchend="handleTouchEnd"
                         >
-                          <div 
+                          <div
                             class="activities-carousel-track"
-                            :style="{ transform: `translateX(-${currentScrollIndex * scrollStep}%)` }"
+                            :style="{
+                              transform: `translateX(-${
+                                currentScrollIndex * scrollStep
+                              }%)`,
+                            }"
                           >
                             <!-- Loop untuk menampilkan Card5 dengan data dari API -->
-                            <div 
+                            <div
                               v-for="activity in liveActivities"
                               :key="activity.activity_uid"
                               class="carousel-item-wrapper"
                             >
                               <Card5
-                                :activity-name="getTranslatedActivityName(activity.activity_name)"
-                                :last-activity-timestamp="activity.last_activity_timestamp"
+                                :activity-name="
+                                  getTranslatedActivityName(
+                                    activity.activity_name
+                                  )
+                                "
+                                :last-activity-timestamp="
+                                  activity.last_activity_timestamp
+                                "
                                 :currently-active="activity.currently_active"
-                                :icon="getActivityConfig(activity.activity_name).icon"
-                                :bg-color="getActivityConfig(activity.activity_name).bgColor"
+                                :icon="
+                                  getActivityConfig(activity.activity_name).icon
+                                "
+                                :bg-color="
+                                  getActivityConfig(activity.activity_name)
+                                    .bgColor
+                                "
                               />
                             </div>
                           </div>
                         </div>
-                        
+
                         <!-- Pagination dots -->
-                        <div v-if="liveActivities.length > cardsPerView" class="carousel-pagination">
+                        <div
+                          v-if="liveActivities.length > cardsPerView"
+                          class="carousel-pagination"
+                        >
                           <button
                             v-for="index in totalPages"
                             :key="index"
                             class="pagination-dot"
-                            :class="{ active: currentScrollIndex === index - 1 }"
+                            :class="{
+                              active: currentScrollIndex === index - 1,
+                            }"
                             @click="scrollToPage(index - 1)"
                           ></button>
                         </div>
-                        
+
                         <!-- Empty state -->
-                        <div v-if="liveActivities.length === 0" class="col-12 text-center py-8">
+                        <div
+                          v-if="liveActivities.length === 0"
+                          class="col-12 text-center py-8"
+                        >
                           <i class="fas fa-inbox fs-1 text-muted mb-3"></i>
-                          <h5 class="text-muted">{{ t('dashboard.general.noData') }}</h5>
-                          <p class="text-muted">{{ t('dashboard.general.noDataDescription') }}</p>
+                          <h5 class="text-muted">
+                            {{ t("dashboard.general.noData") }}
+                          </h5>
+                          <p class="text-muted">
+                            {{ t("dashboard.general.noDataDescription") }}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -141,8 +202,12 @@
                     <div class="card-header border-0 pt-3 pb-2">
                       <div class="card-title">
                         <h3 class="fw-bold m-0 d-flex align-items-center gap-2">
-                          <i class="pi pi-exclamation-triangle fs-2 text-danger"></i>
-                          {{ t('dashboard.alerts.title') || 'Pelanggaran Terbaru' }}
+                          <i
+                            class="pi pi-exclamation-triangle fs-2 text-danger"
+                          ></i>
+                          {{
+                            t("dashboard.alerts.title") || "Pelanggaran Terbaru"
+                          }}
                         </h3>
                       </div>
                     </div>
@@ -150,29 +215,70 @@
                       <div class="row g-4">
                         <!-- Left Column: Alerts Table -->
                         <div class="col-lg-8">
-                          <div class="table-responsive">
-                            <table class="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3">
+                          <!-- Desktop View: Table -->
+                          <div class="table-responsive d-none d-md-block">
+                            <table
+                              class="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3"
+                            >
                               <thead>
                                 <tr class="fw-bold text-muted">
-                                  <th class="min-w-150px">{{ t('dashboard.alerts.table.violation') || 'Nama Pelanggaran' }}</th>
-                                  <th class="min-w-100px">{{ t('dashboard.alerts.table.duration') || 'Durasi' }}</th>
-                                  <th class="min-w-80px">{{ t('dashboard.alerts.table.detection') || 'Deteksi' }}</th>
-                                  <th class="min-w-140px">{{ t('dashboard.alerts.table.time') || 'Waktu' }}</th>
-                                  <th class="min-w-100px">{{ t('dashboard.alerts.table.status') || 'Status' }}</th>
+                                  <th class="min-w-150px">
+                                    {{
+                                      t("dashboard.alerts.table.violation") ||
+                                      "Nama Pelanggaran"
+                                    }}
+                                  </th>
+                                  <th class="min-w-100px">
+                                    {{
+                                      t("dashboard.alerts.table.duration") ||
+                                      "Durasi"
+                                    }}
+                                  </th>
+                                  <th class="min-w-80px">
+                                    {{
+                                      t("dashboard.alerts.table.detection") ||
+                                      "Deteksi"
+                                    }}
+                                  </th>
+                                  <th class="min-w-140px">
+                                    {{
+                                      t("dashboard.alerts.table.time") ||
+                                      "Waktu"
+                                    }}
+                                  </th>
+                                  <th class="min-w-100px">
+                                    {{
+                                      t("dashboard.alerts.table.status") ||
+                                      "Status"
+                                    }}
+                                  </th>
                                 </tr>
                               </thead>
                               <tbody>
                                 <tr v-if="loadingAlerts">
                                   <td colspan="5" class="text-center py-8">
-                                    <div class="spinner-border text-primary" role="status">
-                                      <span class="visually-hidden">Loading...</span>
+                                    <div
+                                      class="spinner-border text-primary"
+                                      role="status"
+                                    >
+                                      <span class="visually-hidden"
+                                        >Loading...</span
+                                      >
                                     </div>
                                   </td>
                                 </tr>
                                 <tr v-else-if="!alerts.length">
-                                  <td colspan="5" class="text-center py-8 text-muted">
+                                  <td
+                                    colspan="5"
+                                    class="text-center py-8 text-muted"
+                                  >
                                     <i class="pi pi-info-circle fs-2x mb-2"></i>
-                                    <div>{{ t('dashboard.alerts.table.empty') || 'Tidak ada data pelanggaran' }}</div>
+                                    <div>
+                                      {{
+                                        t("dashboard.alerts.table.empty") ||
+                                        "Tidak ada data pelanggaran"
+                                      }}
+                                    </div>
                                   </td>
                                 </tr>
                                 <tr
@@ -185,24 +291,37 @@
                                   <td>
                                     <div class="d-flex align-items-center">
                                       <div>
-                                        <div class="fw-bold text-dark">{{ alert.alert_type }}</div>
-                                        <div class="text-muted fs-7">{{ alert.camera_name }}</div>
+                                        <div class="fw-bold text-dark">
+                                          {{ alert.alert_type }}
+                                        </div>
+                                        <div class="text-muted fs-7">
+                                          {{ alert.camera_name }}
+                                        </div>
                                       </div>
                                     </div>
                                   </td>
                                   <td>
                                     <span class="text-dark fw-semibold">
-                                      {{ formatDuration(alert.duration_minutes) }}
+                                      {{
+                                        formatDuration(alert.duration_minutes)
+                                      }}
                                     </span>
                                   </td>
                                   <td>
-                                    <span class="badge badge-light-primary">{{ alert.detection_count }}x</span>
+                                    <span class="badge badge-light-primary"
+                                      >{{ alert.detection_count }}x</span
+                                    >
                                   </td>
                                   <td>
-                                    <span class="text-dark">{{ formatDateTime(alert.event_start) }}</span>
+                                    <span class="text-dark">{{
+                                      formatDateTime(alert.event_start)
+                                    }}</span>
                                   </td>
                                   <td>
-                                    <span class="badge" :class="statusBadge(alert.status)">
+                                    <span
+                                      class="badge"
+                                      :class="statusBadge(alert.status)"
+                                    >
                                       {{ statusLabel(alert.status) }}
                                     </span>
                                   </td>
@@ -210,24 +329,146 @@
                               </tbody>
                             </table>
                           </div>
+
+                          <!-- Mobile View: Cards -->
+                          <div class="d-md-none">
+                            <div v-if="loadingAlerts" class="text-center py-8">
+                              <div
+                                class="spinner-border text-primary"
+                                role="status"
+                              >
+                                <span class="visually-hidden">Loading...</span>
+                              </div>
+                            </div>
+                            <div
+                              v-else-if="!alerts.length"
+                              class="text-center py-8 text-muted"
+                            >
+                              <i class="pi pi-info-circle fs-2x mb-2"></i>
+                              <div>
+                                {{
+                                  t("dashboard.alerts.table.empty") ||
+                                  "Tidak ada data pelanggaran"
+                                }}
+                              </div>
+                            </div>
+                            <div v-else class="d-flex flex-column gap-3">
+                              <div
+                                v-for="alert in recentAlerts"
+                                :key="`mobile-${alert.event_id}`"
+                                class="card bg-light border-0 cursor-pointer shadow-sm"
+                                @click="openAlertDetail(alert)"
+                              >
+                                <div class="card-body p-3">
+                                  <div
+                                    class="d-flex justify-content-between align-items-start mb-2"
+                                  >
+                                    <div
+                                      class="d-flex align-items-center gap-2"
+                                    >
+                                      <div class="symbol symbol-35px">
+                                        <div
+                                          class="symbol-label bg-white text-primary"
+                                        >
+                                          <i
+                                            class="pi pi-exclamation-triangle fs-4"
+                                          ></i>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <div class="fw-bold text-dark fs-6">
+                                          {{ alert.alert_type }}
+                                        </div>
+                                        <div class="text-muted fs-8">
+                                          {{ alert.camera_name }}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <span
+                                      class="badge"
+                                      :class="statusBadge(alert.status)"
+                                    >
+                                      {{ statusLabel(alert.status) }}
+                                    </span>
+                                  </div>
+
+                                  <div
+                                    class="separator separator-dashed my-2"
+                                  ></div>
+
+                                  <div class="row g-2 fs-7">
+                                    <div class="col-6">
+                                      <div class="text-muted">
+                                        {{
+                                          t(
+                                            "dashboard.alerts.table.duration"
+                                          ) || "Durasi"
+                                        }}
+                                      </div>
+                                      <div class="fw-bold text-dark">
+                                        {{
+                                          formatDuration(alert.duration_minutes)
+                                        }}
+                                      </div>
+                                    </div>
+                                    <div class="col-6">
+                                      <div class="text-muted">
+                                        {{
+                                          t(
+                                            "dashboard.alerts.table.detection"
+                                          ) || "Deteksi"
+                                        }}
+                                      </div>
+                                      <div class="fw-bold text-dark">
+                                        {{ alert.detection_count }}x
+                                      </div>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                      <div class="text-muted">
+                                        {{
+                                          t("dashboard.alerts.table.time") ||
+                                          "Waktu"
+                                        }}
+                                      </div>
+                                      <div class="fw-bold text-dark">
+                                        {{ formatDateTime(alert.event_start) }}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                         <!-- Right Column: Summary Cards -->
                         <div class="col-lg-4">
                           <div class="d-flex flex-column gap-2">
                             <div class="card bg-light-primary border-0">
                               <div class="card-body p-3">
-                                <div class="d-flex align-items-center gap-3">
-                                  <div class="symbol symbol-50px flex-shrink-0">
+                                <div class="d-flex align-items-center">
+                                  <div class="symbol symbol-50px flex-shrink-0 me-4">
                                     <div class="symbol-label bg-primary">
-                                      <i class="pi pi-exclamation-circle fs-2 text-white"></i>
+                                      <i
+                                        class="pi pi-exclamation-circle fs-2 text-white"
+                                      ></i>
                                     </div>
                                   </div>
-                                  <div class="flex-grow-1">
-                                    <div class="text-gray-600 fw-semibold fs-7 mb-1">
-                                      {{ t('dashboard.alerts.summary.totalToday.title') || 'Total Hari Ini' }}
+                                  <div class="flex-grow-1 text-end">
+                                    <div
+                                      class="text-gray-600 fw-semibold fs-7 mb-1"
+                                    >
+                                      {{
+                                        t(
+                                          "dashboard.alerts.summary.totalToday.title"
+                                        ) || "Total Hari Ini"
+                                      }}
                                     </div>
-                                    <div class="d-flex align-items-baseline gap-2">
-                                      <div class="fs-2 fw-bolder text-primary">{{ totalAlertsToday }}</div>
+                                    <div
+                                      class="d-flex align-items-baseline gap-2 justify-content-end"
+                                    >
+                                      <div class="fs-2 fw-bolder text-primary">
+                                        {{ totalAlertsToday }}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -235,35 +476,57 @@
                             </div>
                             <div class="card bg-light-danger border-0">
                               <div class="card-body p-3">
-                                <div class="d-flex align-items-center gap-3">
-                                  <div class="symbol symbol-50px flex-shrink-0">
+                                <div class="d-flex align-items-center">
+                                  <div class="symbol symbol-50px flex-shrink-0 me-4">
                                     <div class="symbol-label bg-danger">
-                                      <i class="pi pi-flag-fill fs-2 text-white"></i>
+                                      <i
+                                        class="pi pi-flag-fill fs-2 text-white"
+                                      ></i>
                                     </div>
                                   </div>
-                                  <div class="flex-grow-1">
-                                    <div class="text-gray-600 fw-semibold fs-7 mb-1">
-                                      {{ t('dashboard.alerts.summary.unresolvedToday.title') || 'Belum Selesai' }}
+                                  <div class="flex-grow-1 text-end">
+                                    <div
+                                      class="text-gray-600 fw-semibold fs-7 mb-1"
+                                    >
+                                      {{
+                                        t(
+                                          "dashboard.alerts.summary.unresolvedToday.title"
+                                        ) || "Belum Selesai"
+                                      }}
                                     </div>
-                                    <div class="fs-2 fw-bolder text-danger">{{ unresolvedAlertsToday }}</div>
+                                    <div class="fs-2 fw-bolder text-danger">
+                                      {{ unresolvedAlertsToday }}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
                             <div class="card bg-light-success border-0">
                               <div class="card-body p-3">
-                                <div class="d-flex align-items-center gap-3">
-                                  <div class="symbol symbol-50px flex-shrink-0">
+                                <div class="d-flex align-items-center">
+                                  <div class="symbol symbol-50px flex-shrink-0 me-4">
                                     <div class="symbol-label bg-success">
-                                      <i class="pi pi-check-circle fs-2 text-white"></i>
+                                      <i
+                                        class="pi pi-check-circle fs-2 text-white"
+                                      ></i>
                                     </div>
                                   </div>
-                                  <div class="flex-grow-1">
-                                    <div class="text-gray-600 fw-semibold fs-7 mb-1">
-                                      {{ t('dashboard.alerts.summary.resolvedToday.title') || 'Selesai' }}
+                                  <div class="flex-grow-1 text-end">
+                                    <div
+                                      class="text-gray-600 fw-semibold fs-7 mb-1"
+                                    >
+                                      {{
+                                        t(
+                                          "dashboard.alerts.summary.resolvedToday.title"
+                                        ) || "Selesai"
+                                      }}
                                     </div>
-                                    <div class="d-flex align-items-baseline gap-2">
-                                      <div class="fs-2 fw-bolder text-success">{{ resolvedAlertsToday }}</div>
+                                    <div
+                                      class="d-flex align-items-baseline gap-2 justify-content-end"
+                                    >
+                                      <div class="fs-2 fw-bolder text-success">
+                                        {{ resolvedAlertsToday }}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -278,28 +541,43 @@
                     <!-- Section 3: Real Time Report -->
                     <div class="card-header border-0 pt-3 pb-2">
                       <div class="card-title">
-                        <div class="d-flex align-items-center position-relative my-0">
-                          <i class="ki-duotone ki-chart-line fs-4 position-absolute ms-3 text-primary text-white-dark">
+                        <div
+                          class="d-flex align-items-center position-relative my-0"
+                        >
+                          <i
+                            class="ki-duotone ki-chart-line fs-4 position-absolute ms-3 text-primary text-white-dark"
+                          >
                             <span class="path1"></span>
                             <span class="path2"></span>
                           </i>
-                          <h3 class="fw-bold ms-10 text-dark text-white-dark fs-5 mb-0">{{ t('dashboard.sections.realTimeReport.title') }}</h3>
+                          <h3
+                            class="fw-bold ms-10 text-dark text-white-dark fs-5 mb-0"
+                          >
+                            {{ t("dashboard.sections.realTimeReport.title") }}
+                          </h3>
                         </div>
                       </div>
                       <div class="card-toolbar">
-                        <span class="text-muted fs-8">{{ t('dashboard.sections.realTimeReport.subtitle') }}</span>
+                        <span class="text-muted fs-8">{{
+                          t("dashboard.sections.realTimeReport.subtitle")
+                        }}</span>
                       </div>
                     </div>
                     <div class="card-body py-3">
                       <!-- Real Time Report Component -->
                       <RealTimeReport
-                        :title="t('dashboard.sections.realTimeReport.componentTitle')"
-                        :subtitle="t('dashboard.sections.realTimeReport.componentSubtitle')"
+                        :title="
+                          t('dashboard.sections.realTimeReport.componentTitle')
+                        "
+                        :subtitle="
+                          t(
+                            'dashboard.sections.realTimeReport.componentSubtitle'
+                          )
+                        "
                         :showFilters="true"
                         :site-uid="selectedSite"
                       />
                     </div>
-
                   </div>
                 </div>
               </div>
@@ -321,17 +599,22 @@
 </template>
 
 <script setup lang="ts">
-import Card5 from '@/components/cards/Card5.vue';
-import RealTimeReport from '@/components/dashboard/RealTimeReport.vue';
-import AlertDetailModal from '@/components/apps/events-alerts/AlertDetailModal.vue';
-import { ref, onMounted, computed, onBeforeUnmount, watch } from 'vue';
-import { useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
-import ApiService from '@/core/services/ApiService';
-import liveActivityMock from '@/assets/mockupData/dashboard/live_activity.json';
-import summaryAlertsMock from '@/assets/mockupData/dashboard/summary_alerts.json';
-import { todayDate } from '@/core/data/events';
-import { convertToGMT8, formatDateTimeGMT8, getCurrentDateTimeGMT8, toMomentGMT8 } from '@/core/helpers/timezone';
+import Card5 from "@/components/cards/Card5.vue";
+import RealTimeReport from "@/components/dashboard/RealTimeReport.vue";
+import AlertDetailModal from "@/components/apps/events-alerts/AlertDetailModal.vue";
+import { ref, onMounted, computed, onBeforeUnmount, watch } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import ApiService from "@/core/services/ApiService";
+import liveActivityMock from "@/assets/mockupData/dashboard/live_activity.json";
+import summaryAlertsMock from "@/assets/mockupData/dashboard/summary_alerts.json";
+import { todayDate } from "@/core/data/events";
+import {
+  convertToGMT8,
+  formatDateTimeGMT8,
+  getCurrentDateTimeGMT8,
+  toMomentGMT8,
+} from "@/core/helpers/timezone";
 
 interface Site {
   uid: string;
@@ -367,15 +650,16 @@ const startX = ref(0);
 const currentX = ref(0);
 const dragThreshold = 50; // Minimum drag distance to trigger scroll
 
-// Reactive data 
+// Reactive data
 const sistemMonitoring = ref([]);
 const navigationApps = ref([]);
 
-const STORAGE_KEY = 'lastSelectedSite';
+const STORAGE_KEY = "lastSelectedSite";
 const sites = ref<Site[]>([]);
 const selectedSite = ref<string>(
-  (typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null) ||
-    ''
+  (typeof window !== "undefined"
+    ? window.localStorage.getItem(STORAGE_KEY)
+    : null) || ""
 );
 
 type MockActivity = {
@@ -404,10 +688,28 @@ const router = useRouter();
 // Current date and auto update info
 const currentDate = computed(() => {
   const now = new Date();
-  const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-  const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-  
-  return `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} ${now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
+  const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const months = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ];
+
+  return `${days[now.getDay()]}, ${now.getDate()} ${
+    months[now.getMonth()]
+  } ${now.getFullYear()} ${now.toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })}`;
 });
 
 const autoUpdateInterval = ref(2);
@@ -415,8 +717,12 @@ const autoUpdateInterval = ref(2);
 // Computed properties for alert statistics
 // NOTE: Counts come from `sites/{site_uid}/alerts-summary` (mocked for now).
 const totalAlertsToday = computed(() => summaryAlerts.value?.total_today ?? 0);
-const unresolvedAlertsToday = computed(() => summaryAlerts.value?.unresolved_today ?? 0);
-const resolvedAlertsToday = computed(() => summaryAlerts.value?.resolved_today ?? 0);
+const unresolvedAlertsToday = computed(
+  () => summaryAlerts.value?.unresolved_today ?? 0
+);
+const resolvedAlertsToday = computed(
+  () => summaryAlerts.value?.resolved_today ?? 0
+);
 
 // Local function (requested): endpoint `sites/{site_uid}/alerts-summary` (mock for now)
 const fetchSummaryAlerts = async (siteUid: string): Promise<SummaryAlerts> => {
@@ -433,7 +739,7 @@ const fetchSummaryAlerts = async (siteUid: string): Promise<SummaryAlerts> => {
     as_of:
       raw?.as_of !== undefined && raw?.as_of !== null
         ? convertToGMT8(String(raw.as_of))
-        : getCurrentDateTimeGMT8('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+        : getCurrentDateTimeGMT8("YYYY-MM-DDTHH:mm:ss.SSSZ"),
   };
 };
 
@@ -447,7 +753,7 @@ const loadSummaryAlerts = async () => {
   try {
     summaryAlerts.value = await fetchSummaryAlerts(selectedSite.value);
   } catch (err) {
-    console.error('loadSummaryAlerts failed:', err);
+    console.error("loadSummaryAlerts failed:", err);
     summaryAlerts.value = null;
   } finally {
     loadingSummaryAlerts.value = false;
@@ -457,26 +763,42 @@ const loadSummaryAlerts = async () => {
 // Function to handle site change
 // Mapping icon dan warna untuk setiap aktivitas
 const activityConfig = {
-  'preparation': { icon: 'fas fa-list-alt', bgColor: '#2196f3' },
-  'cooking': { icon: 'fas fa-fire', bgColor: '#ff5722' },
-  'portioning': { icon: 'fas fa-utensils', bgColor: '#ff9800' },
-  'delivery': { icon: 'fas fa-truck', bgColor: '#4caf50' },
-  'collectTray': { icon: 'fas fa-hand-paper', bgColor: '#9c27b0' },
-  'washTray': { icon: 'fas fa-soap', bgColor: '#00bcd4' },
-  'completed': { icon: 'fas fa-check-circle', bgColor: '#8bc34a' },
+  preparation: { icon: "fas fa-list-alt", bgColor: "#2196f3" },
+  cooking: { icon: "fas fa-fire", bgColor: "#ff5722" },
+  portioning: { icon: "fas fa-utensils", bgColor: "#ff9800" },
+  delivery: { icon: "fas fa-truck", bgColor: "#4caf50" },
+  collectTray: { icon: "fas fa-hand-paper", bgColor: "#9c27b0" },
+  washTray: { icon: "fas fa-soap", bgColor: "#00bcd4" },
+  completed: { icon: "fas fa-check-circle", bgColor: "#8bc34a" },
   // Legacy Indonesian names (for backward compatibility)
-  'Persiapan': { key: 'preparation', icon: 'fas fa-list-alt', bgColor: '#2196f3' },
-  'Masak': { key: 'cooking', icon: 'fas fa-fire', bgColor: '#ff5722' },
-  'Pemorsian': { key: 'portioning', icon: 'fas fa-utensils', bgColor: '#ff9800' },
-  'Pengiriman': { key: 'delivery', icon: 'fas fa-truck', bgColor: '#4caf50' },
-  'Ambil Nampan': { key: 'collectTray', icon: 'fas fa-hand-paper', bgColor: '#9c27b0' },
-  'Cuci Nampan': { key: 'washTray', icon: 'fas fa-soap', bgColor: '#00bcd4' },
-  'Selesai': { key: 'completed', icon: 'fas fa-check-circle', bgColor: '#8bc34a' },
+  Persiapan: {
+    key: "preparation",
+    icon: "fas fa-list-alt",
+    bgColor: "#2196f3",
+  },
+  Masak: { key: "cooking", icon: "fas fa-fire", bgColor: "#ff5722" },
+  Pemorsian: { key: "portioning", icon: "fas fa-utensils", bgColor: "#ff9800" },
+  Pengiriman: { key: "delivery", icon: "fas fa-truck", bgColor: "#4caf50" },
+  "Ambil Nampan": {
+    key: "collectTray",
+    icon: "fas fa-hand-paper",
+    bgColor: "#9c27b0",
+  },
+  "Cuci Nampan": { key: "washTray", icon: "fas fa-soap", bgColor: "#00bcd4" },
+  Selesai: {
+    key: "completed",
+    icon: "fas fa-check-circle",
+    bgColor: "#8bc34a",
+  },
   // Default fallback
-  'default': { icon: 'fas fa-tasks', bgColor: '#607d8b' }
+  default: { icon: "fas fa-tasks", bgColor: "#607d8b" },
 };
 
 // Computed properties for carousel
+const isCarouselEnabled = computed(() => {
+  return liveActivities.value.length > cardsPerView.value;
+});
+
 const scrollStep = computed(() => {
   return 100 / cardsPerView.value;
 });
@@ -489,11 +811,58 @@ const totalPages = computed(() => {
   return Math.ceil(liveActivities.value.length / cardsPerView.value);
 });
 
+const trackStyle = computed(() => {
+  if (!isCarouselEnabled.value) {
+    return {
+      display: "flex",
+      gap: "20px",
+      flexWrap: "nowrap",
+      width: "100%",
+      transform: "none",
+    };
+  }
+
+  // Carousel active
+  const gap = 20; // px
+  const translateP = currentScrollIndex.value * (100 / cardsPerView.value);
+
+  return {
+    transform: `translateX(-${translateP}%)`,
+    display: "flex",
+    gap: `${gap}px`,
+    transition: "transform 0.3s ease-in-out",
+  };
+});
+
+const itemStyle = computed(() => {
+  const gap = 20; // px
+  // Calculate width: (100% - (total_gaps)) / cardsPerView
+  // Total gaps = cardsPerView - 1
+  // Use calc() for precise width
+
+  // Checking mobile view requires a responsive listener or CSS media query usage.
+  // However, since we want inline style for the carousel math:
+
+  // Note: For mobile, we usually let CSS handle it or have 1 card per view.
+  // But here we are reusing the same loop.
+  // Let's rely on CSS for width on mobile, and only apply calc on desktop if we can.
+  // Or better, use a simpler flex-basis approach that works with gap.
+
+  return {
+    flex: `0 0 calc((100% - ${(cardsPerView.value - 1) * gap}px) / ${
+      cardsPerView.value
+    })`,
+    maxWidth: `calc((100% - ${(cardsPerView.value - 1) * gap}px) / ${
+      cardsPerView.value
+    })`,
+  };
+});
+
 // Carousel navigation functions
 const scrollCarousel = (direction) => {
-  if (direction === 'next' && currentScrollIndex.value < maxScrollIndex.value) {
+  if (direction === "next" && currentScrollIndex.value < maxScrollIndex.value) {
     currentScrollIndex.value++;
-  } else if (direction === 'prev' && currentScrollIndex.value > 0) {
+  } else if (direction === "prev" && currentScrollIndex.value > 0) {
     currentScrollIndex.value--;
   }
 };
@@ -516,17 +885,17 @@ const handleDragMove = (e) => {
 
 const handleDragEnd = () => {
   if (!isDragging.value) return;
-  
+
   const diff = startX.value - currentX.value;
-  
+
   if (Math.abs(diff) > dragThreshold) {
     if (diff > 0) {
-      scrollCarousel('next');
+      scrollCarousel("next");
     } else {
-      scrollCarousel('prev');
+      scrollCarousel("prev");
     }
   }
-  
+
   isDragging.value = false;
 };
 
@@ -541,12 +910,12 @@ const handleTouchMove = (e) => {
 
 const handleTouchEnd = () => {
   const diff = startX.value - currentX.value;
-  
+
   if (Math.abs(diff) > dragThreshold) {
     if (diff > 0) {
-      scrollCarousel('next');
+      scrollCarousel("next");
     } else {
-      scrollCarousel('prev');
+      scrollCarousel("prev");
     }
   }
 };
@@ -566,9 +935,11 @@ const handleAlertUpdate = (payload: { status: string; comment: string }) => {
   if (selectedAlert.value) {
     selectedAlert.value.status = payload.status;
     selectedAlert.value.comment = payload.comment;
-    
+
     // Update in alerts array
-    const index = alerts.value.findIndex(a => a.event_id === selectedAlert.value.event_id);
+    const index = alerts.value.findIndex(
+      (a) => a.event_id === selectedAlert.value.event_id
+    );
     if (index !== -1) {
       alerts.value[index].status = payload.status;
       alerts.value[index].comment = payload.comment;
@@ -579,7 +950,7 @@ const handleAlertUpdate = (payload: { status: string; comment: string }) => {
 // Manual refresh handler
 const handleManualRefresh = async () => {
   if (isManualRefreshing.value) return; // Prevent multiple simultaneous refreshes
-  
+
   isManualRefreshing.value = true;
   try {
     await loadLiveActivities();
@@ -594,7 +965,7 @@ const setupAutoRefresh = () => {
   if (autoRefreshInterval.value) {
     clearInterval(autoRefreshInterval.value);
   }
-  
+
   // Set new interval (5 minutes = 300000 milliseconds)
   autoRefreshInterval.value = setInterval(() => {
     if (!isManualRefreshing.value && selectedSite.value) {
@@ -635,13 +1006,14 @@ const loadLiveActivities = async () => {
 
     liveActivities.value = list.map((item: any, index: number) => ({
       activity_uid: String(item?.activity_uid ?? item?.uid ?? index),
-      activity_name: String(item?.activity_name ?? item?.name ?? 'Aktivitas'),
+      activity_name: String(item?.activity_name ?? item?.name ?? "Aktivitas"),
       last_activity_timestamp: convertToGMT8(item?.last_activity_timestamp),
       currently_active: Boolean(item?.currently_active ?? item?.is_active),
     }));
   } catch (err) {
-    console.error('loadLiveActivities failed:', err);
-    error.value = err instanceof Error ? err.message : 'Gagal memuat aktivitas.';
+    console.error("loadLiveActivities failed:", err);
+    error.value =
+      err instanceof Error ? err.message : "Gagal memuat aktivitas.";
     const fallback = mockLiveActivities.default || [];
     liveActivities.value = fallback.map((item) => ({
       activity_uid: item.activity_uid,
@@ -668,9 +1040,9 @@ const fetchAlerts = async () => {
         params: {
           page: 1,
           page_size: 5,
-          from_date: new Date().toISOString().split('T')[0],
-          to_date: new Date().toISOString().split('T')[0],
-        }
+          from_date: new Date().toISOString().split("T")[0],
+          to_date: new Date().toISOString().split("T")[0],
+        },
       }
     );
 
@@ -684,17 +1056,17 @@ const fetchAlerts = async () => {
 
     const mapped = list.map((item: any) => ({
       event_id: item?.event_id || item?.id,
-      alert_type: item?.detected_objects[0].display_name || 'Unknown',
+      alert_type: item?.detected_objects[0].display_name || "Unknown",
       duration_minutes: item?.duration_minutes || 0,
       detection_count: item?.detected_objects[0].detection_count || 0,
       event_start: convertToGMT8(item?.event_start),
       event_end: convertToGMT8(item?.event_end),
-      status: item?.status || 'not_resolved',
-      camera_name: item?.camera_name || '-',
-      image_url: item?.image_url || '',
+      status: item?.status || "not_resolved",
+      camera_name: item?.camera_name || "-",
+      image_url: item?.image_url || "",
       image_urls: item?.image_urls || [],
       detected_objects: item?.detected_objects || [],
-      comment: item?.comment || ''
+      comment: item?.comment || "",
     }));
 
     // Sort newest-first so the table can safely take the first 5
@@ -704,7 +1076,7 @@ const fetchAlerts = async () => {
       return bTime - aTime;
     });
   } catch (err) {
-    console.error('fetchAlerts failed:', err);
+    console.error("fetchAlerts failed:", err);
     alerts.value = [];
   } finally {
     loadingAlerts.value = false;
@@ -713,7 +1085,7 @@ const fetchAlerts = async () => {
 
 const fetchSites = async () => {
   try {
-    const { data } = await ApiService.get('sites');
+    const { data } = await ApiService.get("sites");
 
     const list = Array.isArray(data)
       ? data
@@ -733,27 +1105,24 @@ const fetchSites = async () => {
         return {
           uid: String(uid),
           name: String(
-            item?.name ??
-              item?.display_name ??
-              item?.site_name ??
-              `Site ${uid}`
+            item?.name ?? item?.display_name ?? item?.site_name ?? `Site ${uid}`
           ),
         } as Site;
       })
       .filter(Boolean) as Site[];
 
     if (!sites.value.length) {
-      selectedSite.value = '';
+      selectedSite.value = "";
       liveActivities.value = [];
       loading.value = false;
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         window.localStorage.removeItem(STORAGE_KEY);
       }
       return;
     }
 
     const stored =
-      typeof window !== 'undefined'
+      typeof window !== "undefined"
         ? window.localStorage.getItem(STORAGE_KEY)
         : null;
 
@@ -764,22 +1133,22 @@ const fetchSites = async () => {
 
     if (selectedSite.value !== nextSite) {
       selectedSite.value = nextSite;
-      if (typeof window !== 'undefined' && nextSite) {
+      if (typeof window !== "undefined" && nextSite) {
         window.localStorage.setItem(STORAGE_KEY, nextSite);
       }
     } else {
-      if (typeof window !== 'undefined' && nextSite) {
+      if (typeof window !== "undefined" && nextSite) {
         window.localStorage.setItem(STORAGE_KEY, nextSite);
       }
       await loadLiveActivities();
     }
   } catch (err) {
-    console.error('fetchSites failed:', err);
-    error.value = err instanceof Error ? err.message : 'Gagal memuat site.';
+    console.error("fetchSites failed:", err);
+    error.value = err instanceof Error ? err.message : "Gagal memuat site.";
     sites.value = [];
     liveActivities.value = [];
     loading.value = false;
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       window.localStorage.removeItem(STORAGE_KEY);
     }
   }
@@ -806,65 +1175,70 @@ const getTranslatedActivityName = (activityName) => {
 };
 
 // Helper functions for alerts
-const normalizeKey = (v?: string) => (v || '').toLowerCase().replace(/[\s_-]/g, '');
+const normalizeKey = (v?: string) =>
+  (v || "").toLowerCase().replace(/[\s_-]/g, "");
 
 const formatDateTime = (value?: string) => {
-  if (!value) return '-';
+  if (!value) return "-";
   // Use GMT+8 formatter with Indonesian locale format
-  const formatted = formatDateTimeGMT8(value, 'DD/MM/YYYY HH:mm');
+  const formatted = formatDateTimeGMT8(value, "DD/MM/YYYY HH:mm");
   return formatted || value;
 };
 
 const formatNumber = (value: number, maximumFractionDigits = 1) =>
   new Intl.NumberFormat(undefined, {
     maximumFractionDigits,
-    minimumFractionDigits: 0
+    minimumFractionDigits: 0,
   }).format(value);
 
 const formatDuration = (minutes?: number | null) => {
   if (minutes === undefined || minutes === null || Number.isNaN(minutes))
-    return t('appsEventsAlerts.format.notAvailable') || '-';
+    return t("appsEventsAlerts.format.notAvailable") || "-";
   if ((minutes || 0) < 1)
-    return t('appsEventsAlerts.format.secondsLong', {
-      value: formatNumber(Math.max(0, (minutes || 0) * 60), 0)
-    }) || `${formatNumber(Math.max(0, (minutes || 0) * 60), 0)} detik`;
-  return t('appsEventsAlerts.format.minutesLong', {
-    value: formatNumber(Math.max(0, minutes || 0), 1)
-  }) || `${formatNumber(Math.max(0, minutes || 0), 1)} menit`;
+    return (
+      t("appsEventsAlerts.format.secondsLong", {
+        value: formatNumber(Math.max(0, (minutes || 0) * 60), 0),
+      }) || `${formatNumber(Math.max(0, (minutes || 0) * 60), 0)} detik`
+    );
+  return (
+    t("appsEventsAlerts.format.minutesLong", {
+      value: formatNumber(Math.max(0, minutes || 0), 1),
+    }) || `${formatNumber(Math.max(0, minutes || 0), 1)} menit`
+  );
 };
 
 const statusBadge = (status: string) => {
   const k = normalizeKey(status);
-  if (k === 'notresolved') return 'badge-light-danger';
-  if (k === 'resolved') return 'badge-light-success';
-  if (k === 'falsealarm') return 'badge-light-info';
-  return 'badge-light-secondary';
+  if (k === "notresolved") return "badge-light-danger";
+  if (k === "resolved") return "badge-light-success";
+  if (k === "falsealarm") return "badge-light-info";
+  return "badge-light-secondary";
 };
 
 const statusLabel = (status: string) => {
   const k = normalizeKey(status);
-  if (k === 'notresolved')
-    return t('appsEventsAlerts.alertsTable.status.notResolved') || 'Belum Selesai';
-  if (k === 'resolved')
-    return t('appsEventsAlerts.alertsTable.status.resolved') || 'Selesai';
-  if (k === 'falsealarm')
-    return t('appsEventsAlerts.alertsTable.status.falseAlarm') || 'Alarm Palsu';
-  return status || '-';
+  if (k === "notresolved")
+    return (
+      t("appsEventsAlerts.alertsTable.status.notResolved") || "Belum Selesai"
+    );
+  if (k === "resolved")
+    return t("appsEventsAlerts.alertsTable.status.resolved") || "Selesai";
+  if (k === "falsealarm")
+    return t("appsEventsAlerts.alertsTable.status.falseAlarm") || "Alarm Palsu";
+  return status || "-";
 };
 
 // Update cards per view based on window size
 const updateCardsPerView = () => {
   const width = window.innerWidth;
-  if (width < 577) {
-    cardsPerView.value = 1; // Small screens
-  } else if (width < 993) {
-    cardsPerView.value = 3; // Medium screens
-  } else if (width < 1200) {
-    cardsPerView.value = 4; // Medium-large screens
+  if (width < 576) {
+    cardsPerView.value = 1; // Mobile
+  } else if (width < 992) {
+    cardsPerView.value = 2; // Tablet
   } else if (width < 1400) {
-    cardsPerView.value = 5; // Large screens
+    cardsPerView.value = 3; // Laptop
   } else {
-    cardsPerView.value = 7; // Extra large screens
+    cardsPerView.value = 4; // Desktop
   }
   // Reset scroll index if it exceeds new max
   if (currentScrollIndex.value > maxScrollIndex.value) {
@@ -875,16 +1249,17 @@ const updateCardsPerView = () => {
 // Mount lifecycle
 onMounted(() => {
   updateCardsPerView();
+  window.addEventListener("resize", updateCardsPerView);
   fetchSites();
   fetchAlerts();
   loadSummaryAlerts();
   setupAutoRefresh(); // Setup auto-refresh when component mounts
-  window.addEventListener('resize', updateCardsPerView);
+  window.addEventListener("resize", updateCardsPerView);
 });
 
 onBeforeUnmount(() => {
   clearAutoRefresh(); // Clear auto-refresh interval
-  window.removeEventListener('resize', updateCardsPerView);
+  window.removeEventListener("resize", updateCardsPerView);
 });
 
 watch(selectedSite, async (uid, oldUid) => {
@@ -892,16 +1267,21 @@ watch(selectedSite, async (uid, oldUid) => {
     return;
   }
 
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     window.localStorage.setItem(STORAGE_KEY, uid);
   }
 
   await loadLiveActivities();
   fetchAlerts();
   loadSummaryAlerts();
-  
+
   // Restart auto-refresh when site changes
   setupAutoRefresh();
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", updateCardsPerView);
+  clearAutoRefresh();
 });
 </script>
 
@@ -918,13 +1298,18 @@ watch(selectedSite, async (uid, oldUid) => {
 }
 
 /* Optimize SVG and icon rendering */
-svg, img {
+svg,
+img {
   shape-rendering: geometricPrecision;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
 }
 
-i, .ki-duotone, .fas, .far, .fab {
+i,
+.ki-duotone,
+.fas,
+.far,
+.fab {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -965,7 +1350,7 @@ i, .ki-duotone, .fas, .far, .fab {
     transform: translateZ(0);
     box-shadow: none;
   }
-  
+
   .card:hover .symbol {
     transform: scale(1) translateZ(0);
   }
@@ -1020,13 +1405,20 @@ i, .ki-duotone, .fas, .far, .fab {
   color: #cbd5f5;
 }
 
-[data-bs-theme="dark"] .dashboard-section-header .header-meta-item .icon-wrapper,
+[data-bs-theme="dark"]
+  .dashboard-section-header
+  .header-meta-item
+  .icon-wrapper,
 .dark .dashboard-section-header .header-meta-item .icon-wrapper,
 .app-dark .dashboard-section-header .header-meta-item .icon-wrapper {
   background: rgba(59, 130, 246, 0.2);
 }
 
-[data-bs-theme="dark"] .dashboard-section-header .header-meta-item .icon-wrapper i,
+[data-bs-theme="dark"]
+  .dashboard-section-header
+  .header-meta-item
+  .icon-wrapper
+  i,
 .dark .dashboard-section-header .header-meta-item .icon-wrapper i,
 .app-dark .dashboard-section-header .header-meta-item .icon-wrapper i {
   color: #60a5fa;
@@ -1215,7 +1607,7 @@ i, .ki-duotone, .fas, .far, .fab {
   .carousel-item-wrapper {
     flex: 0 0 calc(25% - 15px);
   }
-  
+
   .activities-carousel-wrapper {
     padding: 0 0.5rem;
   }
@@ -1226,7 +1618,7 @@ i, .ki-duotone, .fas, .far, .fab {
   .carousel-item-wrapper {
     flex: 0 0 calc(33.333% - 13.333px);
   }
-  
+
   .activities-carousel-wrapper {
     padding: 0 0.5rem;
   }
@@ -1237,12 +1629,12 @@ i, .ki-duotone, .fas, .far, .fab {
   .carousel-item-wrapper {
     flex: 0 0 100%;
   }
-  
+
   .activities-carousel-wrapper {
     padding: 0 0.5rem;
     margin: 0;
   }
-  
+
   .activities-carousel-track {
     gap: 10px;
   }
@@ -1269,19 +1661,19 @@ i, .ki-duotone, .fas, .far, .fab {
     width: 100%;
     justify-content: flex-start;
   }
-  
+
   .card-body {
     padding: 1rem;
   }
-  
+
   .row {
     margin: 0;
   }
-  
+
   .col-6 {
     padding: 0.25rem;
   }
-  
+
   /* Stack columns vertically on mobile */
   .row > [class*="col-"] {
     padding-left: 0.5rem;
@@ -1327,48 +1719,48 @@ i, .ki-duotone, .fas, .far, .fab {
     flex: 0 0 auto;
     width: 100%;
   }
-  
+
   .app-page {
     padding: 0.5rem;
   }
-  
+
   .container-fluid {
     padding: 0.5rem;
   }
-  
+
   /* Improve button spacing on mobile */
   .btn-group {
     flex-direction: column;
     gap: 0.25rem;
   }
-  
+
   /* Better form controls */
   .form-select-sm {
     font-size: 0.875rem;
     padding: 0.5rem;
   }
-  
+
   /* Optimize text sizes */
   .fs-1 {
     font-size: 1.75rem !important;
   }
-  
+
   .fs-2 {
     font-size: 1.5rem !important;
   }
-  
+
   /* Better touch targets */
   .btn {
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   .pagination-dot {
     width: 12px;
     height: 12px;
     margin: 0 2px;
   }
-  
+
   .pagination-dot.active {
     width: 24px;
   }
@@ -1379,15 +1771,15 @@ i, .ki-duotone, .fas, .far, .fab {
   .carousel-item-wrapper {
     flex: 0 0 calc(50% - 10px);
   }
-  
+
   .activities-carousel-track {
     gap: 15px;
   }
-  
+
   .dashboard-section-header {
     padding: 1.25rem;
   }
-  
+
   .card {
     margin-bottom: 1rem;
   }
@@ -1538,19 +1930,19 @@ i, .ki-duotone, .fas, .far, .fab {
   .table-responsive {
     font-size: 0.875rem;
   }
-  
+
   .min-w-150px {
     min-width: 120px !important;
   }
-  
+
   .min-w-100px {
     min-width: 80px !important;
   }
-  
+
   .min-w-80px {
     min-width: 60px !important;
   }
-  
+
   .min-w-140px {
     min-width: 100px !important;
   }
@@ -1561,24 +1953,37 @@ i, .ki-duotone, .fas, .far, .fab {
     width: 35px !important;
     height: 35px !important;
   }
-  
+
   .alert-row .fs-7 {
     font-size: 0.75rem !important;
   }
-  
+
   .card.bg-light-primary .card-body,
   .card.bg-light-danger .card-body,
   .card.bg-light-success .card-body {
     padding: 1rem !important;
   }
-  
+
   .symbol-50px {
     width: 40px !important;
     height: 40px !important;
   }
-  
+
   .fs-2x {
     font-size: 1.5rem !important;
+  }
+}
+
+/* Force Center daily process on mobile */
+@media (max-width: 768px) {
+  .activities-carousel-track.justify-content-center .carousel-item-wrapper {
+    margin: 0 auto;
+    flex: 0 0 85% !important; /* Ensure consistent width */
+  }
+  
+  /* If justified center is active (single item), ensure track takes full width and item is centered */
+  .activities-carousel-track.justify-content-center {
+    width: 100% !important;
   }
 }
 </style>
