@@ -76,6 +76,7 @@ const legacyToDateKey = 'globalToDate';
 const apiData = ref([]);
 const isLoading = ref(false);
 const apiError = ref(null);
+const fetchJobId = ref(0); // Counter to track and cancel stale fetch jobs
 
 // Chart and playback state
 let chartInstance = null;
@@ -384,9 +385,26 @@ const nextMonth = () => {
 // ========================
 
 // Fetch alerts for selected site between fromDate and toDate (with mockup fallback)
+const fetchAlertsDebounceTimer = ref(null);
+
 const fetchAlerts = async () => {
+    // Debounce the actual fetch execution
+    if (fetchAlertsDebounceTimer.value) {
+        clearTimeout(fetchAlertsDebounceTimer.value);
+    }
+
+    fetchAlertsDebounceTimer.value = setTimeout(() => {
+        void executeFetchAlerts();
+    }, 300);
+};
+
+const executeFetchAlerts = async () => {
     isLoading.value = true;
     apiError.value = null;
+    
+    // Increment job ID to invalidate previous running fetches
+    const currentJobId = ++fetchJobId.value;
+    
     try {
         const site = props.siteUid || window.localStorage.getItem('lastSelectedSite');
         if (!site) {
@@ -425,7 +443,7 @@ const fetchAlerts = async () => {
             hasMetaNext: false
         };
         const MAX_PAGES = 50;
-        const shouldPaginate = false; // Temporary: only fetch page 1
+        const shouldPaginate = true; // Temporary: only fetch page 1
 
         const fetchPage = async (pageNumber) => {
             const params = { ...baseParams };
@@ -477,6 +495,12 @@ const fetchAlerts = async () => {
 
         let iteration = 1;
         while (shouldPaginate && iteration < MAX_PAGES && (pagingState.nextLink || pagingState.hasMetaNext)) {
+            // Check if a new fetch job has started
+            if (fetchJobId.value !== currentJobId) {
+                console.log(`[RealTimeReport] Aborting stale fetch job ${currentJobId} (current: ${fetchJobId.value})`);
+                return; // Stop this job completely
+            }
+            
             iteration += 1;
             const previousCount = aggregatedData.length;
 
@@ -2719,10 +2743,6 @@ onMounted(async () => {
     
     // Try to fetch alerts immediately if site is available
     const initialSite = props.siteUid || window.localStorage.getItem('lastSelectedSite');
-    if (initialSite && fromDate.value && toDate.value && !hasInitiallyLoaded.value) {
-        hasInitiallyLoaded.value = true;
-        await fetchAlerts();
-    }
     
     startAlertsAutoRefresh();
 });

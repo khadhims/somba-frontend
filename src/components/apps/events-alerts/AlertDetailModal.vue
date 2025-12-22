@@ -102,7 +102,7 @@
                     <div class="row g-3">
                       <div v-for="(obj, i) in alert.detected_objects" :key="i" class="col-md-6">
                         <div class="obj-card rounded border p-3 h-100 d-flex flex-column justify-content-between">
-                          <div class="fw-semibold text-dark mb-1 text-uppercase small">{{ obj.object_type || '-' }}</div>
+                          <div class="fw-semibold text-dark mb-1 text-uppercase small">{{ obj.display_name ?? '-' }}</div>
                           <div class="d-flex flex-column gap-1 small">
                             <div class="text-muted">{{ t('appsEventsAlerts.alertDetail.detectionCount') || 'Jumlah Deteksi' }}: <span class="fw-semibold">{{ obj.detection_count || 0 }}</span></div>
                             <div class="text-muted">{{ t('appsEventsAlerts.alertDetail.duration') || 'Durasi (detik)' }}: <span class="fw-semibold">{{ formatSecondsShort(obj.duration_seconds) }}</span></div>

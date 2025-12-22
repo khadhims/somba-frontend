@@ -112,6 +112,7 @@ const { t } = useI18n();
 
 type detectedObjects = {
   object_type: string;
+  display_name: string;
   duration_seconds: number;
   duration_minutes: number;
   detection_count?: number;
@@ -147,6 +148,7 @@ interface AlertDetail {
   total_detections: number;
   detected_objects: {
     object_type: string;
+    display_name: string;
     duration_seconds: number;
     detection_count: number;
   }[];
@@ -427,7 +429,7 @@ const fetchAlerts = async () => {
         alerts.value = payload.data.map((item: any) => {
           // Get violation name from first detected object
           const violationName = item.detected_objects && item.detected_objects.length > 0 
-            ? item.detected_objects[0].object_type 
+            ? item.detected_objects[0].display_name 
             : 'Unknown Violation';
           
           return {
@@ -745,6 +747,7 @@ const viewAlertDetail = (alert: Alert) => {
     total_detections: alert.total_detections,
     detected_objects: (alert.detected_objects || []).map(o => ({
       object_type: o.object_type,
+      display_name: o.display_name,
       duration_seconds: o.duration_seconds,
       detection_count: (o as any).detection_count ?? 0,
     })),
