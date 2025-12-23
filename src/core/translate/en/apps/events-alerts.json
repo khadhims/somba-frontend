@@ -183,6 +183,7 @@
 			"active": "Active",
 			"acknowledged": "Acknowledged",
 			"resolved": "Resolved",
+			"unresolved": "Unresolved",
 			"escalated": "Escalated",
 			"dismissed": "Dismissed",
 			"unknown": "Unknown"
@@ -373,7 +374,11 @@
 		}
 	},
 	"format": {
-		"notAvailable": "N/A"
+		"notAvailable": "N/A",
+		"minutesShort": "{value} min",
+		"secondsShort": "{value} sec",
+		"minutesLong": "{value} minutes",
+		"secondsLong": "{value} seconds"
 	},
 	"settings": {
 		"header": {

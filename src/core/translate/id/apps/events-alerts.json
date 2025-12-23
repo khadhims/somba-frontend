@@ -162,8 +162,8 @@
 		"status": {
 			"active": "Aktif",
 			"acknowledged": "Diakui",
-			"resolved": "Selesai",
-			"notResolved": "Belum Selesai",
+			"resolved": "Selesai Ditangani",
+			"unresolved": "Belum Ditangani",
 			"falseAlarm": "Alarm Palsu",
 			"escalated": "Dieskalasi",
 			"dismissed": "Diabaikan",

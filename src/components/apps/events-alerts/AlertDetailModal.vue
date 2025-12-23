@@ -76,7 +76,7 @@
                       <label class="form-label fw-semibold small mb-2">{{ t('appsEventsAlerts.alertDetail.status') || 'Status' }}</label>
                       <select v-model="localEditForm.status" class="form-select">
                         <option value="">{{ t('appsEventsAlerts.alertsFilters.selectStatus') || 'Pilih Status' }}</option>
-                        <option value="not_resolved">{{ t('appsEventsAlerts.alertsTable.status.notResolved') || 'Belum Selesai' }}</option>
+                        <option value="not_resolved">{{ t('appsEventsAlerts.alertsTable.status.unresolved') || 'Belum Selesai' }}</option>
                         <option value="resolved">{{ t('appsEventsAlerts.alertsTable.status.resolved') || 'Selesai' }}</option>
                         <option value="false_alarm">{{ t('appsEventsAlerts.alertsTable.status.falseAlarm') || 'Alarm Palsu' }}</option>
                       </select>
@@ -344,7 +344,7 @@ const statusBadge = (status:string) => {
 };
 const statusLabel = (status:string) => {
   const k = normalizeKey(status);
-  if (k==='notresolved') return t('appsEventsAlerts.alertsTable.status.notResolved') || 'Belum Selesai';
+  if (k==='notresolved') return t('appsEventsAlerts.alertsTable.status.unresolved') || 'Belum Selesai';
   if (k==='resolved') return t('appsEventsAlerts.alertsTable.status.resolved') || 'Selesai';
   if (k==='falsealarm') return t('appsEventsAlerts.alertsTable.status.falseAlarm') || 'Alarm Palsu';
   return status || '-';

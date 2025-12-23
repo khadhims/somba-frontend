@@ -120,7 +120,7 @@ export default defineComponent({
       const now = new Date();
       const activityDate = new Date(this.lastActivityTimestamp);
       const diffTime = Math.abs(now.getTime() - activityDate.getTime());
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
       if (diffDays === 0) {
         const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
@@ -144,26 +144,13 @@ export default defineComponent({
 
 <style scoped>
 .card {
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
   border: 1px solid #e4e6ef;
   position: relative;
   z-index: 1;
 }
 
-.card:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  border-color: #3f4254;
-  z-index: 10;
-}
-
 .symbol {
   transition: all 0.2s ease-in-out;
-}
-
-.card:hover .symbol {
-  transform: scale(1.08);
 }
 
 /* Status dot indicator styles */

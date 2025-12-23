@@ -2787,6 +2787,10 @@ onUnmounted(() => {
         delete window.downloadImageFromUrl;
     }
 });
+
+defineExpose({
+    fetchAlerts
+});
 </script>
 
 <template>
@@ -2991,104 +2995,6 @@ onUnmounted(() => {
         </div>
     </div>
 
-    <!-- Full Screen Image Modal -->
-    <div
-        v-if="showImageModal"
-        class="modal fade show d-block"
-        style="z-index: 9999; background-color: rgba(0,0,0,0.95);"
-            @click="closeImageModal"
-        >
-            <div class="modal-dialog modal-fullscreen d-flex align-items-center justify-content-center" @click.stop>
-                <div class="position-relative">
-                    <!-- Modal Header -->
-                    <div class="position-absolute top-0 start-0 end-0" style="z-index: 10; padding: 1.5rem;">
-                        <div class="d-flex align-items-center justify-content-between bg-dark bg-opacity-75 rounded px-3 py-2">
-                            <h3 class="text-white fw-bold fs-4 text-truncate d-flex align-items-center mb-0" style="max-width: 70%;">
-                                <div class="symbol symbol-30px bg-white bg-opacity-20 me-3">
-                                    <div class="symbol-label">
-                                        <i class="ki-duotone ki-picture text-white fs-6">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                        </i>
-                                    </div>
-                                </div>
-                                {{ modalImageAlt }}
-                            </h3>
-                            <div class="d-flex align-items-center">
-                                <!-- Download Button -->
-                                <button
-                                    @click="downloadImage"
-                                    class="btn btn-success btn-sm me-2"
-                                    title="Download gambar"
-                                >
-                                    <i class="ki-duotone ki-cloud-download fs-6">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                </button>
-                                <!-- Close Button -->
-                                <button
-                                    @click="closeImageModal"
-                                    class="btn btn-danger btn-sm"
-                                    title="Tutup"
-                                >
-                                    <i class="ki-duotone ki-cross fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Image Container -->
-                    <div class="bg-white bg-opacity-5 rounded p-2" @click.stop>
-                        <img
-                            :src="modalImageSrc"
-                            :alt="modalImageAlt"
-                            class="img-fluid rounded shadow"
-                            style="max-width: 90vw; max-height: 85vh; object-fit: contain;"
-                            @click.stop
-                            @load="() => {}"
-                            @error="() => {}"
-                        />
-                    </div>
-
-                    <!-- Modal Footer -->
-                    <div class="position-absolute bottom-0 start-0 end-0" style="z-index: 10; padding: 1.5rem;">
-                        <div class="bg-dark bg-opacity-75 rounded px-3 py-2">
-                            <div class="d-flex align-items-center justify-content-center text-white fs-7">
-                                <div class="d-flex align-items-center me-4">
-                                    <i class="ki-duotone ki-information-5 text-primary fs-6 me-1">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                    </i>
-                                    <span>Gambar ukuran penuh</span>
-                                </div>
-                                <div class="d-flex align-items-center me-4">
-                                    <i class="ki-duotone ki-mouse text-success fs-6 me-1">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                    <span>Klik di luar untuk menutup</span>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <i class="ki-duotone ki-magnifier text-warning fs-6 me-1">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                    <span>Scroll untuk zoom</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Detail Modal removed - now using teleport version -->
-
     <!-- Move existing modals to body using teleport -->
     <teleport to="body">
         <!-- Detail Modal -->
@@ -3176,7 +3082,7 @@ onUnmounted(() => {
                                                     @click="openImageFromDetail(currentDetailImage, `Rekaman ${modalDetailData.name}`)"
                                                     style="max-width: 100%; height: auto;"
                                                     @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='block'"
-                                                >
+                                                />
                                                 
                                                 <!-- Error fallback -->
                                                 <div class="d-none border border-dashed border-gray-300 rounded p-4 text-center bg-light">
@@ -3350,12 +3256,14 @@ onUnmounted(() => {
                         :alt="modalImageAlt" 
                         class="img-fluid rounded shadow-lg" 
                         style="max-height: 95vh; max-width: 95vw; object-fit: contain;"
-                    >
+                    />
                 </div>
             </div>
         </div>
     </teleport>
-</template><style lang="scss" scoped>
+</template>
+
+<style lang="scss" scoped>
 // Variables
 $transition-fast: 0.2s ease;
 $transition-normal: 0.3s ease;
@@ -3707,4 +3615,16 @@ $info-color: #0dcaf0;
         right: 1rem !important;
     }
 }
+
+/* Global styles & transitions */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
 </style>
