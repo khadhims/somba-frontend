@@ -663,10 +663,6 @@ const downloadPdf = () => {
   justify-content: space-between;
   font-size: 10px;
   color: #666;
-  position: absolute;
-  bottom: 20mm;
-  left: 20mm;
-  right: 20mm;
 }
 /* Badge Styles mimicking Dashboard */
 .badge {
@@ -709,11 +705,13 @@ const downloadPdf = () => {
 /* Report Styles (Preview) */
 .report-content {
   background: white;
-  width: 210mm;
-  min-height: 297mm; /* A4 size approximation */
-  padding: 20mm;
+  width: 100%;
+  max-width: 800px;
+  min-height: auto;
+  padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  color: #333; /* Inherit font-family from app */
+  color: #333;
+  box-sizing: border-box;
 }
 .report-header {
   display: flex;
@@ -849,5 +847,76 @@ const downloadPdf = () => {
 
 .text-center {
   text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modal-container {
+    width: 95%;
+    max-width: none;
+    height: 95vh;
+  }
+  
+  .report-content {
+    padding: 15px;
+    max-width: 100%;
+  }
+  
+  .report-logo {
+    height: 35px;
+  }
+  
+  .report-title {
+    font-size: 14px;
+  }
+  
+  .meta-section {
+    flex-direction: column;
+    gap: 8px;
+    font-size: 10px;
+  }
+  
+  .summary-section {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .report-table {
+    font-size: 10px;
+  }
+  
+  .report-table th,
+  .report-table td {
+    padding: 6px 4px;
+  }
+  
+  .card-value {
+    font-size: 20px;
+  }
+  
+  .card-label {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-container {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+  }
+  
+  .report-content {
+    padding: 10px;
+  }
+  
+  .report-table {
+    font-size: 9px;
+  }
+  
+  .report-table th,
+  .report-table td {
+    padding: 4px 2px;
+  }
 }
 </style>
