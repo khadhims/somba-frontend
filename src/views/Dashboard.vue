@@ -728,15 +728,6 @@ const selectedSite = ref<string>(
     : null) || ""
 );
 
-type MockActivity = {
-  activity_uid: string;
-  activity_name: string;
-  last_activity_timestamp: string;
-  currently_active: boolean;
-};
-
-const mockLiveActivities = liveActivityMock as Record<string, MockActivity[]>;
-
 type SummaryAlerts = {
   total_today: number;
   unresolved_today: number;
@@ -1211,15 +1202,7 @@ const loadLiveActivities = async () => {
     }));
   } catch (err) {
     console.error("loadLiveActivities failed:", err);
-    error.value =
-      err instanceof Error ? err.message : "Gagal memuat aktivitas.";
-    const fallback = mockLiveActivities.default || [];
-    liveActivities.value = fallback.map((item) => ({
-      activity_uid: item.activity_uid,
-      activity_name: item.activity_name,
-      last_activity_timestamp: item.last_activity_timestamp,
-      currently_active: item.currently_active,
-    }));
+    error.value = err instanceof Error ? err.message : "Gagal memuat aktivitas.";
   } finally {
     loading.value = false;
   }
@@ -1239,8 +1222,8 @@ const fetchAlerts = async () => {
         params: {
           page: 1,
           page_size: 5,
-          from_date: "2025-12-04", // new Date().toISOString().split("T")[0],
-          to_date: "2025-12-04", // new Date().toISOString().split("T")[0],
+          from_date: new Date().toISOString().split("T")[0],
+          to_date: new Date().toISOString().split("T")[0],
         },
       }
     );
