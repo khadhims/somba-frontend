@@ -55,6 +55,28 @@
                       <div
                         class="card-toolbar d-flex flex-wrap align-items-center gap-2 w-100 w-md-auto"
                       >
+                        <!-- Tombol Simpan Laporan -->
+                        <button
+                          class="btn btn-sm btn-primary d-flex align-items-center gap-2"
+                          @click="handleShowReport"
+                          :disabled="loadingReport"
+                        >
+                          <span
+                            v-if="loadingReport"
+                            class="spinner-border spinner-border-sm"
+                          ></span>
+                          <i v-else class="fas fa-file-pdf"></i>
+                          <span class="d-none d-sm-inline">{{
+                            loadingReport
+                              ? "Mengambil Data..."
+                              : "Simpan Laporan"
+                          }}</span>
+                        </button>
+
+                        <div
+                          class="vr mx-2 d-none d-md-block h-20px my-auto bg-gray-300"
+                        ></div>
+
                         <label
                           class="fw-semibold fs-7 text-muted mb-0 d-none d-md-block"
                         >
@@ -114,34 +136,26 @@
                         </button>
                       </div>
 
-                      <!-- Activities carousel -->
+                      <!-- Activities carousel with Swiper -->
                       <div v-else class="activities-carousel-wrapper">
-                        <!-- Carousel container -->
-                        <div
-                          ref="carouselContainer"
-                          class="activities-carousel"
-                          @mousedown="handleDragStart"
-                          @mousemove="handleDragMove"
-                          @mouseup="handleDragEnd"
-                          @mouseleave="handleDragEnd"
-                          @touchstart="handleTouchStart"
-                          @touchmove="handleTouchMove"
-                          @touchend="handleTouchEnd"
+                        <Swiper
+                          :modules="[Pagination]"
+                          :slides-per-view="1"
+                          :space-between="10"
+                          :pagination="swiperPaginationConfig"
+                          :centered-slides="true"
+                          :breakpoints="{
+                            640: { slidesPerView: 5, spaceBetween: 12, centeredSlides: false },
+                            1024: { slidesPerView: 5, spaceBetween: 14, centeredSlides: false },
+                            1280: { slidesPerView: 6, spaceBetween: 4, centeredSlides: false },
+                          }"
+                          class="live-activity-swiper"
                         >
-                          <div
-                            class="activities-carousel-track"
-                            :style="{
-                              transform: `translateX(-${
-                                currentScrollIndex * scrollStep
-                              }%)`,
-                            }"
+                          <SwiperSlide
+                            v-for="activity in liveActivities"
+                            :key="activity.activity_uid"
                           >
-                            <!-- Loop untuk menampilkan Card5 dengan data dari API -->
-                            <div
-                              v-for="activity in liveActivities"
-                              :key="activity.activity_uid"
-                              class="carousel-item-wrapper"
-                            >
+                            <div class="swiper-slide-content">
                               <Card5
                                 :activity-name="
                                   getTranslatedActivityName(
@@ -161,38 +175,8 @@
                                 "
                               />
                             </div>
-                          </div>
-                        </div>
-
-                        <!-- Pagination dots -->
-                        <div
-                          v-if="liveActivities.length > cardsPerView"
-                          class="carousel-pagination"
-                        >
-                          <button
-                            v-for="index in totalPages"
-                            :key="index"
-                            class="pagination-dot"
-                            :class="{
-                              active: currentScrollIndex === index - 1,
-                            }"
-                            @click="scrollToPage(index - 1)"
-                          ></button>
-                        </div>
-
-                        <!-- Empty state -->
-                        <div
-                          v-if="liveActivities.length === 0"
-                          class="col-12 text-center py-8"
-                        >
-                          <i class="fas fa-inbox fs-1 text-muted mb-3"></i>
-                          <h5 class="text-muted">
-                            {{ t("dashboard.general.noData") }}
-                          </h5>
-                          <p class="text-muted">
-                            {{ t("dashboard.general.noDataDescription") }}
-                          </p>
-                        </div>
+                          </SwiperSlide>
+                        </Swiper>
                       </div>
                     </div>
                     <!-- Divider -->
@@ -206,7 +190,7 @@
                             class="pi pi-exclamation-triangle fs-2 text-danger"
                           ></i>
                           {{
-                            t("dashboard.alerts.title") || "Pelanggaran Terbaru"
+                            t("dashboard.alerts.summary.title") || "Pelanggaran Terbaru"
                           }}
                         </h3>
                       </div>
@@ -222,31 +206,31 @@
                             >
                               <thead>
                                 <tr class="fw-bold text-muted">
-                                  <th class="min-w-150px">
+                                  <th class="min-w-150px text-center">
                                     {{
                                       t("dashboard.alerts.table.violation") ||
                                       "Nama Pelanggaran"
                                     }}
                                   </th>
-                                  <th class="min-w-100px">
+                                  <th class="min-w-100px text-center">
                                     {{
                                       t("dashboard.alerts.table.duration") ||
                                       "Durasi"
                                     }}
                                   </th>
-                                  <th class="min-w-80px">
+                                  <th class="min-w-80px text-center">
                                     {{
                                       t("dashboard.alerts.table.detection") ||
                                       "Deteksi"
                                     }}
                                   </th>
-                                  <th class="min-w-140px">
+                                  <th class="min-w-140px text-center">
                                     {{
                                       t("dashboard.alerts.table.time") ||
                                       "Waktu"
                                     }}
                                   </th>
-                                  <th class="min-w-100px">
+                                  <th class="min-w-100px text-center">
                                     {{
                                       t("dashboard.alerts.table.status") ||
                                       "Status"
@@ -300,24 +284,24 @@
                                       </div>
                                     </div>
                                   </td>
-                                  <td>
+                                  <td class="text-center">
                                     <span class="text-dark fw-semibold">
                                       {{
                                         formatDuration(alert.duration_minutes)
                                       }}
                                     </span>
                                   </td>
-                                  <td>
+                                  <td class="text-center">
                                     <span class="badge badge-light-primary"
                                       >{{ alert.detection_count }}x</span
                                     >
                                   </td>
-                                  <td>
+                                  <td class="text-center">
                                     <span class="text-dark">{{
                                       formatDateTime(alert.event_start)
                                     }}</span>
                                   </td>
-                                  <td>
+                                  <td class="text-center">
                                     <span
                                       class="badge"
                                       :class="statusBadge(alert.status)"
@@ -446,7 +430,9 @@
                             <div class="card bg-light-primary border-0">
                               <div class="card-body p-3">
                                 <div class="d-flex align-items-center">
-                                  <div class="symbol symbol-50px flex-shrink-0 me-4">
+                                  <div
+                                    class="symbol symbol-50px flex-shrink-0 me-4"
+                                  >
                                     <div class="symbol-label bg-primary">
                                       <i
                                         class="pi pi-exclamation-circle fs-2 text-white"
@@ -477,7 +463,9 @@
                             <div class="card bg-light-danger border-0">
                               <div class="card-body p-3">
                                 <div class="d-flex align-items-center">
-                                  <div class="symbol symbol-50px flex-shrink-0 me-4">
+                                  <div
+                                    class="symbol symbol-50px flex-shrink-0 me-4"
+                                  >
                                     <div class="symbol-label bg-danger">
                                       <i
                                         class="pi pi-flag-fill fs-2 text-white"
@@ -504,7 +492,9 @@
                             <div class="card bg-light-success border-0">
                               <div class="card-body p-3">
                                 <div class="d-flex align-items-center">
-                                  <div class="symbol symbol-50px flex-shrink-0 me-4">
+                                  <div
+                                    class="symbol symbol-50px flex-shrink-0 me-4"
+                                  >
                                     <div class="symbol-label bg-success">
                                       <i
                                         class="pi pi-check-circle fs-2 text-white"
@@ -533,13 +523,64 @@
                               </div>
                             </div>
                           </div>
+
+                        <!-- Activity Summary Carousel -->
+                        <div class="mt-3">
+                          <h6 class="fw-bold text-dark mb-3">
+                            {{ t('dashboard.activities.summary.title') || 'Aktivitas' }}
+                          </h6>
+                          
+                          <!-- Loading State -->
+                          <div v-if="loadingSummaryActivities" class="text-center py-3">
+                            <div class="spinner-border text-primary spinner-border-sm" role="status">
+                              <span class="visually-hidden">Loading...</span>
+                            </div>
+                          </div>
+
+                          <!-- Empty State -->
+                          <div
+                            v-else-if="!summaryActivities.length"
+                            class="text-center py-3"
+                          >
+                            <i class="fas fa-inbox fs-4 text-muted mb-2"></i>
+                            <p class="text-muted fs-8 mb-0">
+                              {{ t('dashboard.activities.summary.empty') || 'Tidak ada data aktivitas' }}
+                            </p>
+                          </div>
+
+                          <!-- Activities Carousel with Swiper -->
+                          <div v-else class="activities-summary-carousel-wrapper">
+                            <Swiper
+                              :modules="[Pagination]"
+                              :slides-per-view="1"
+                              :space-between="10"
+                              :pagination="swiperPaginationConfig"
+                              :centered-slides="true"
+                              class="activity-swiper"
+                            >
+                              <SwiperSlide
+                                v-for="activity in summaryActivities"
+                                :key="activity.activity_uid"
+                              >
+                                <div class="swiper-slide-content">
+                                  <ActivitySummaryCard
+                                    :activity-name="getTranslatedActivityName(activity.activity_name)"
+                                    :earliest-active="activity.earliest_active"
+                                    :latest-active="activity.latest_active"
+                                    :icon="getActivityConfig(activity.activity_name).icon"
+                                    :bg-color="getActivityConfig(activity.activity_name).bgColor"
+                                  />
+                                </div>
+                              </SwiperSlide>
+                            </Swiper>
+                          </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <!-- Divider -->
                     <div class="separator separator-dashed my-0"></div>
                     <!-- Section 3: Real Time Report -->
-                    <div class="card-header border-0 pt-3 pb-2">
+                    <div class="card-header border-0 pt-5 pb-2" style="margin-top: -1px;">
                       <div class="card-title">
                         <div
                           class="d-flex align-items-center position-relative my-0"
@@ -566,6 +607,7 @@
                     <div class="card-body py-3">
                       <!-- Real Time Report Component -->
                       <RealTimeReport
+                        ref="realTimeReportRef"
                         :title="
                           t('dashboard.sections.realTimeReport.componentTitle')
                         "
@@ -579,6 +621,7 @@
                       />
                     </div>
                   </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -586,9 +629,6 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Alert Detail Modal -->
   <AlertDetailModal
     :show="showAlertModal"
     :alert="selectedAlert"
@@ -596,12 +636,34 @@
     @close="closeAlertModal"
     @update="handleAlertUpdate"
   />
+
+  <!-- Report Preview Modal -->
+  <DashboardReportModal
+    :show="showReportModal"
+    :siteName="sites.find((s) => s.uid === selectedSite)?.name || selectedSite"
+    :date="new Date().toLocaleDateString('id-ID', {
+      timeZone: 'Asia/Makassar',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })"
+    :lastUpdated="currentDate"
+    :summary="{
+      total: totalAlertsToday,
+      resolved: resolvedAlertsToday,
+      unresolved: unresolvedAlertsToday,
+    }"
+    :alerts="reportAlerts"
+    @close="showReportModal = false"
+  />
 </template>
 
 <script setup lang="ts">
 import Card5 from "@/components/cards/Card5.vue";
+import ActivitySummaryCard from "@/components/cards/ActivitySummaryCard.vue";
 import RealTimeReport from "@/components/dashboard/RealTimeReport.vue";
 import AlertDetailModal from "@/components/apps/events-alerts/AlertDetailModal.vue";
+import DashboardReportModal from "@/components/dashboard/DashboardReportModal.vue";
 import { ref, onMounted, computed, onBeforeUnmount, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -609,6 +671,13 @@ import ApiService from "@/core/services/ApiService";
 import liveActivityMock from "@/assets/mockupData/dashboard/live_activity.json";
 import summaryAlertsMock from "@/assets/mockupData/dashboard/summary_alerts.json";
 import { todayDate } from "@/core/data/events";
+// Import Swiper Vue.js components
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { Pagination, Navigation } from 'swiper/modules';
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 import {
   convertToGMT8,
   formatDateTimeGMT8,
@@ -636,6 +705,7 @@ const loadingAlerts = ref(false);
 const selectedAlert = ref(null);
 const showAlertModal = ref(false);
 const loadingAlertDetail = ref(false);
+const showReportModal = ref(false);
 
 // Auto-refresh functionality
 const autoRefreshInterval = ref(null);
@@ -649,10 +719,6 @@ const isDragging = ref(false);
 const startX = ref(0);
 const currentX = ref(0);
 const dragThreshold = 50; // Minimum drag distance to trigger scroll
-
-// Reactive data
-const sistemMonitoring = ref([]);
-const navigationApps = ref([]);
 
 const STORAGE_KEY = "lastSelectedSite";
 const sites = ref<Site[]>([]);
@@ -675,11 +741,37 @@ type SummaryAlerts = {
   total_today: number;
   unresolved_today: number;
   resolved_today: number;
-  as_of: string | null;
+  false_alarm: number;
 };
 
 const summaryAlerts = ref<SummaryAlerts | null>(null);
 const loadingSummaryAlerts = ref(false);
+
+// Reactive data untuk summary activities
+type SummaryActivity = {
+  activity_uid: string;
+  activity_name: string;
+  earliest_active: string | null;
+  latest_active: string | null;
+};
+
+const summaryActivities = ref<SummaryActivity[]>([]);
+const loadingSummaryActivities = ref(false);
+
+// Summary carousel state
+const summaryCarouselContainer = ref(null);
+const currentSummaryScrollIndex = ref(0);
+const summaryCardsPerView = ref(1); // Show only 1 card at a time
+const isSummaryDragging = ref(false);
+const summaryStartX = ref(0);
+const summaryCurrentX = ref(0);
+
+const realTimeReportRef = ref(null);
+
+// Swiper pagination configuration
+const swiperPaginationConfig: any = {
+  clickable: true,
+};
 
 // Router setup
 const router = useRouter();
@@ -712,7 +804,7 @@ const currentDate = computed(() => {
   })}`;
 });
 
-const autoUpdateInterval = ref(2);
+const autoUpdateInterval = ref(5);
 
 // Computed properties for alert statistics
 // NOTE: Counts come from `sites/{site_uid}/alerts-summary` (mocked for now).
@@ -726,21 +818,31 @@ const resolvedAlertsToday = computed(
 
 // Local function (requested): endpoint `sites/{site_uid}/alerts-summary` (mock for now)
 const fetchSummaryAlerts = async (siteUid: string): Promise<SummaryAlerts> => {
-  // TODO: Replace with real endpoint once available.
-  // const { data } = await ApiService.get(`sites/${siteUid}/alerts-summary`, { params: { date: getCurrentDateTimeGMT8('YYYY-MM-DD') } });
-  // return data;
+  if (!siteUid) {
+    summaryAlerts.value = null;
+    return;
+  }
 
-  const raw: any = (summaryAlertsMock as any)?.default ?? summaryAlertsMock;
+  const { data } = await ApiService.query(`sites/${siteUid}/alerts-summary`, 
+    { params: { 
+         site_uid: siteUid,
+         from_date: new Date().toISOString().split("T")[0],
+         to_date: new Date().toISOString().split("T")[0],
+      }
+    });
 
-  return {
-    total_today: Number(raw?.total_today ?? 0),
-    unresolved_today: Number(raw?.unresolved_today ?? 0),
-    resolved_today: Number(raw?.resolved_today ?? 0),
-    as_of:
-      raw?.as_of !== undefined && raw?.as_of !== null
-        ? convertToGMT8(String(raw.as_of))
-        : getCurrentDateTimeGMT8("YYYY-MM-DDTHH:mm:ss.SSSZ"),
-  };
+    const results = data.data;
+    console.log(results.total_alerts);
+    console.log(results.status_counts.resolved);
+    console.log(results.status_counts.not_resolved);
+    console.log(results.status_counts.false_alarm);
+
+    return {
+      total_today: Number(results.total_alerts ?? 0),
+      unresolved_today: Number(results.status_counts.not_resolved ?? 0),
+      resolved_today: Number(results.status_counts.resolved ?? 0),
+      false_alarm: Number(results.status_counts.false_alarm ?? 0),
+    }
 };
 
 const loadSummaryAlerts = async () => {
@@ -757,6 +859,51 @@ const loadSummaryAlerts = async () => {
     summaryAlerts.value = null;
   } finally {
     loadingSummaryAlerts.value = false;
+  }
+};
+
+// Fetch summary activities from API
+const fetchSummaryActivities = async (siteUid: string): Promise<SummaryActivity[]> => {
+  if (!siteUid) {
+    return [];
+  }
+
+  const { data } = await ApiService.query(`sites/${siteUid}/activities-summary`, {
+    params: {
+      site_uid: siteUid,
+      from_date: new Date().toISOString().split("T")[0],
+      to_date: new Date().toISOString().split("T")[0],
+    },
+  });
+
+  const activities = Array.isArray(data?.data?.activities)
+    ? data.data.activities
+    : Array.isArray(data?.activities)
+    ? data.activities
+    : [];
+
+  return activities.map((item: any) => ({
+    activity_uid: String(item?.activity_uid ?? item?.uid ?? ""),
+    activity_name: String(item?.activity_name ?? item?.name ?? "Aktivitas"),
+    earliest_active: item?.earliest_active ? convertToGMT8(item.earliest_active) : null,
+    latest_active: item?.latest_active ? convertToGMT8(item.latest_active) : null,
+  }));
+};
+
+const loadSummaryActivities = async () => {
+  if (!selectedSite.value) {
+    summaryActivities.value = [];
+    return;
+  }
+
+  loadingSummaryActivities.value = true;
+  try {
+    summaryActivities.value = await fetchSummaryActivities(selectedSite.value);
+  } catch (err) {
+    console.error("loadSummaryActivities failed:", err);
+    summaryActivities.value = [];
+  } finally {
+    loadingSummaryActivities.value = false;
   }
 };
 
@@ -809,53 +956,6 @@ const maxScrollIndex = computed(() => {
 
 const totalPages = computed(() => {
   return Math.ceil(liveActivities.value.length / cardsPerView.value);
-});
-
-const trackStyle = computed(() => {
-  if (!isCarouselEnabled.value) {
-    return {
-      display: "flex",
-      gap: "20px",
-      flexWrap: "nowrap",
-      width: "100%",
-      transform: "none",
-    };
-  }
-
-  // Carousel active
-  const gap = 20; // px
-  const translateP = currentScrollIndex.value * (100 / cardsPerView.value);
-
-  return {
-    transform: `translateX(-${translateP}%)`,
-    display: "flex",
-    gap: `${gap}px`,
-    transition: "transform 0.3s ease-in-out",
-  };
-});
-
-const itemStyle = computed(() => {
-  const gap = 20; // px
-  // Calculate width: (100% - (total_gaps)) / cardsPerView
-  // Total gaps = cardsPerView - 1
-  // Use calc() for precise width
-
-  // Checking mobile view requires a responsive listener or CSS media query usage.
-  // However, since we want inline style for the carousel math:
-
-  // Note: For mobile, we usually let CSS handle it or have 1 card per view.
-  // But here we are reusing the same loop.
-  // Let's rely on CSS for width on mobile, and only apply calc on desktop if we can.
-  // Or better, use a simpler flex-basis approach that works with gap.
-
-  return {
-    flex: `0 0 calc((100% - ${(cardsPerView.value - 1) * gap}px) / ${
-      cardsPerView.value
-    })`,
-    maxWidth: `calc((100% - ${(cardsPerView.value - 1) * gap}px) / ${
-      cardsPerView.value
-    })`,
-  };
 });
 
 // Carousel navigation functions
@@ -920,6 +1020,82 @@ const handleTouchEnd = () => {
   }
 };
 
+// Summary carousel computed properties
+const summaryScrollStep = computed(() => {
+  return 100 / summaryCardsPerView.value;
+});
+
+const maxSummaryScrollIndex = computed(() => {
+  return Math.max(0, summaryActivities.value.length - summaryCardsPerView.value);
+});
+
+const totalSummaryPages = computed(() => {
+  return Math.ceil(summaryActivities.value.length / summaryCardsPerView.value);
+});
+
+// Summary carousel navigation functions
+const scrollSummaryCarousel = (direction) => {
+  if (direction === "next" && currentSummaryScrollIndex.value < maxSummaryScrollIndex.value) {
+    currentSummaryScrollIndex.value++;
+  } else if (direction === "prev" && currentSummaryScrollIndex.value > 0) {
+    currentSummaryScrollIndex.value--;
+  }
+};
+
+const scrollSummaryToPage = (pageIndex) => {
+  currentSummaryScrollIndex.value = Math.min(pageIndex, maxSummaryScrollIndex.value);
+};
+
+// Summary carousel drag handlers
+const handleSummaryDragStart = (e) => {
+  isSummaryDragging.value = true;
+  summaryStartX.value = e.pageX;
+  summaryCurrentX.value = e.pageX;
+};
+
+const handleSummaryDragMove = (e) => {
+  if (!isSummaryDragging.value) return;
+  summaryCurrentX.value = e.pageX;
+};
+
+const handleSummaryDragEnd = () => {
+  if (!isSummaryDragging.value) return;
+
+  const diff = summaryStartX.value - summaryCurrentX.value;
+
+  if (Math.abs(diff) > dragThreshold) {
+    if (diff > 0) {
+      scrollSummaryCarousel("next");
+    } else {
+      scrollSummaryCarousel("prev");
+    }
+  }
+
+  isSummaryDragging.value = false;
+};
+
+// Summary carousel touch handlers
+const handleSummaryTouchStart = (e) => {
+  summaryStartX.value = e.touches[0].pageX;
+  summaryCurrentX.value = e.touches[0].pageX;
+};
+
+const handleSummaryTouchMove = (e) => {
+  summaryCurrentX.value = e.touches[0].pageX;
+};
+
+const handleSummaryTouchEnd = () => {
+  const diff = summaryStartX.value - summaryCurrentX.value;
+
+  if (Math.abs(diff) > dragThreshold) {
+    if (diff > 0) {
+      scrollSummaryCarousel("next");
+    } else {
+      scrollSummaryCarousel("prev");
+    }
+  }
+};
+
 // Alert modal handlers
 const openAlertDetail = async (alert: any) => {
   selectedAlert.value = alert;
@@ -947,13 +1123,36 @@ const handleAlertUpdate = (payload: { status: string; comment: string }) => {
   }
 };
 
+// Comprehensive refresh function
+const refreshAll = async () => {
+  if (!selectedSite.value) return;
+
+  // Run all fetches in parallel
+  const promises = [
+    loadLiveActivities(),
+    fetchAlerts(),
+    loadSummaryAlerts(),
+    loadSummaryActivities(),
+  ];
+
+  // Also trigger RealTimeReport refresh if available
+  if (
+    realTimeReportRef.value &&
+    typeof realTimeReportRef.value.fetchAlerts === "function"
+  ) {
+    promises.push(realTimeReportRef.value.fetchAlerts());
+  }
+
+  await Promise.allSettled(promises);
+};
+
 // Manual refresh handler
 const handleManualRefresh = async () => {
   if (isManualRefreshing.value) return; // Prevent multiple simultaneous refreshes
 
   isManualRefreshing.value = true;
   try {
-    await loadLiveActivities();
+    await refreshAll();
   } finally {
     isManualRefreshing.value = false;
   }
@@ -969,7 +1168,7 @@ const setupAutoRefresh = () => {
   // Set new interval (5 minutes = 300000 milliseconds)
   autoRefreshInterval.value = setInterval(() => {
     if (!isManualRefreshing.value && selectedSite.value) {
-      loadLiveActivities();
+      refreshAll();
     }
   }, 300000); // 5 minutes
 };
@@ -1040,8 +1239,8 @@ const fetchAlerts = async () => {
         params: {
           page: 1,
           page_size: 5,
-          from_date: new Date().toISOString().split("T")[0],
-          to_date: new Date().toISOString().split("T")[0],
+          from_date: "2025-12-04", // new Date().toISOString().split("T")[0],
+          to_date: "2025-12-04", // new Date().toISOString().split("T")[0],
         },
       }
     );
@@ -1080,6 +1279,64 @@ const fetchAlerts = async () => {
     alerts.value = [];
   } finally {
     loadingAlerts.value = false;
+  }
+};
+
+const loadingReport = ref(false);
+const reportAlerts = ref([]);
+
+const handleShowReport = async () => {
+  if (!selectedSite.value) return;
+
+  loadingReport.value = true;
+  try {
+    const { data } = await ApiService.query(
+      `sites/${selectedSite.value}/alerts`,
+      {
+        params: {
+          page: 1,
+          page_size: 10,
+          from_date: "2025-12-04",
+          to_date: "2025-12-04",
+        },
+      }
+    );
+
+    const list = Array.isArray(data)
+      ? data
+      : Array.isArray(data?.data)
+      ? data.data
+      : Array.isArray(data?.results)
+      ? data.results
+      : [];
+
+    const mapped = list.map((item: any) => ({
+      event_id: item?.event_id || item?.id,
+      alert_type: item?.detected_objects[0].display_name || "Unknown",
+      duration_minutes: item?.duration_minutes || 0,
+      detection_count: item?.detected_objects[0].detection_count || 0,
+      event_start: convertToGMT8(item?.event_start),
+      event_end: convertToGMT8(item?.event_end),
+      status: item?.status || "not_resolved",
+      camera_name: item?.camera_name || "-",
+      image_url: item?.image_url || "",
+      image_urls: item?.image_urls || [],
+      detected_objects: item?.detected_objects || [],
+      comment: item?.comment || "",
+    }));
+
+    // Sort newest-first
+    reportAlerts.value = mapped.sort((a: any, b: any) => {
+      const bTime = toMomentGMT8(b?.event_start)?.valueOf?.() ?? 0;
+      const aTime = toMomentGMT8(a?.event_start)?.valueOf?.() ?? 0;
+      return bTime - aTime;
+    });
+
+    showReportModal.value = true;
+  } catch (err) {
+    console.error("Failed to fetch report alerts:", err);
+  } finally {
+    loadingReport.value = false;
   }
 };
 
@@ -1219,7 +1476,7 @@ const statusLabel = (status: string) => {
   const k = normalizeKey(status);
   if (k === "notresolved")
     return (
-      t("appsEventsAlerts.alertsTable.status.notResolved") || "Belum Selesai"
+      t("appsEventsAlerts.alertsTable.status.unresolved") || "Belum Selesai"
     );
   if (k === "resolved")
     return t("appsEventsAlerts.alertsTable.status.resolved") || "Selesai";
@@ -1253,6 +1510,7 @@ onMounted(() => {
   fetchSites();
   fetchAlerts();
   loadSummaryAlerts();
+  loadSummaryActivities();
   setupAutoRefresh(); // Setup auto-refresh when component mounts
   window.addEventListener("resize", updateCardsPerView);
 });
@@ -1980,10 +2238,117 @@ i,
     margin: 0 auto;
     flex: 0 0 85% !important; /* Ensure consistent width */
   }
-  
-  /* If justified center is active (single item), ensure track takes full width and item is centered */
+
+  /* If justified center is active (single item), ensure track takes full width and*/
   .activities-carousel-track.justify-content-center {
     width: 100% !important;
+  }
+}
+
+.text-center {
+  text-align: center;
+}
+
+.items-center {
+  align-items: center;
+}
+
+/* Activity Summary Swiper Carousel Styling */
+.activities-summary-carousel-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.activity-swiper {
+  width: 100%;
+  padding-bottom: 35px !important;
+}
+
+.activity-swiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.activity-swiper .swiper-slide-content {
+  width: 100%;
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+
+.activity-swiper .swiper-pagination {
+  bottom: 0 !important;
+}
+
+.activity-swiper .swiper-pagination-bullet {
+  background: #3f4254;
+  opacity: 0.4;
+}
+
+.activity-swiper .swiper-pagination-bullet-active {
+  background: #009ef7;
+  opacity: 1;
+}
+
+.activity-summary-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e4e6ef;
+  width: 100%;
+}
+
+.activity-summary-card .card-body {
+  padding: 1rem !important;
+}
+
+/* Live Activity Swiper Carousel Styling */
+.activities-carousel-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.live-activity-swiper {
+  width: 100%;
+  padding-bottom: 35px !important;
+}
+
+.live-activity-swiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  height: auto;
+}
+
+.live-activity-swiper .swiper-slide-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.live-activity-swiper .swiper-pagination {
+  bottom: 0 !important;
+}
+
+.live-activity-swiper .swiper-pagination-bullet {
+  background: #3f4254;
+  opacity: 0.4;
+}
+
+.live-activity-swiper .swiper-pagination-bullet-active {
+  background: #009ef7;
+  opacity: 1;
+}
+
+/* Mobile centering fix */
+@media (max-width: 639px) {
+  .live-activity-swiper .swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .live-activity-swiper .swiper-slide-content {
+    max-width: 200px;
+    width: 100%;
   }
 }
 </style>

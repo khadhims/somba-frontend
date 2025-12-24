@@ -112,7 +112,7 @@ const statusBadge = (s:string) => {
 const statusLabel = (s:string) => {
   if (!s || s==='No Status') return s || 'No Status';
   const k = normalizeKey(s);
-  if (k==='notresolved') return t('appsEventsAlerts.alertsTable.status.notResolved') || 'Belum Selesai';
+  if (k==='notresolved') return t('appsEventsAlerts.alertsTable.status.unresolved') || 'Belum Selesai';
   if (k==='resolved') return t('appsEventsAlerts.alertsTable.status.resolved') || 'Selesai';
   if (k==='falsealarm') return t('appsEventsAlerts.alertsTable.status.falseAlarm') || 'Alarm Palsu';
   return s;

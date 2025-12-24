@@ -76,7 +76,7 @@
                       <label class="form-label fw-semibold small mb-2">{{ t('appsEventsAlerts.alertDetail.status') || 'Status' }}</label>
                       <select v-model="localEditForm.status" class="form-select">
                         <option value="">{{ t('appsEventsAlerts.alertsFilters.selectStatus') || 'Pilih Status' }}</option>
-                        <option value="not_resolved">{{ t('appsEventsAlerts.alertsTable.status.notResolved') || 'Belum Selesai' }}</option>
+                        <option value="not_resolved">{{ t('appsEventsAlerts.alertsTable.status.unresolved') || 'Belum Selesai' }}</option>
                         <option value="resolved">{{ t('appsEventsAlerts.alertsTable.status.resolved') || 'Selesai' }}</option>
                         <option value="false_alarm">{{ t('appsEventsAlerts.alertsTable.status.falseAlarm') || 'Alarm Palsu' }}</option>
                       </select>
@@ -102,7 +102,7 @@
                     <div class="row g-3">
                       <div v-for="(obj, i) in alert.detected_objects" :key="i" class="col-md-6">
                         <div class="obj-card rounded border p-3 h-100 d-flex flex-column justify-content-between">
-                          <div class="fw-semibold text-dark mb-1 text-uppercase small">{{ obj.object_type || '-' }}</div>
+                          <div class="fw-semibold text-dark mb-1 text-uppercase small">{{ obj.display_name ?? '-' }}</div>
                           <div class="d-flex flex-column gap-1 small">
                             <div class="text-muted">{{ t('appsEventsAlerts.alertDetail.detectionCount') || 'Jumlah Deteksi' }}: <span class="fw-semibold">{{ obj.detection_count || 0 }}</span></div>
                             <div class="text-muted">{{ t('appsEventsAlerts.alertDetail.duration') || 'Durasi (detik)' }}: <span class="fw-semibold">{{ formatSecondsShort(obj.duration_seconds) }}</span></div>
@@ -344,7 +344,7 @@ const statusBadge = (status:string) => {
 };
 const statusLabel = (status:string) => {
   const k = normalizeKey(status);
-  if (k==='notresolved') return t('appsEventsAlerts.alertsTable.status.notResolved') || 'Belum Selesai';
+  if (k==='notresolved') return t('appsEventsAlerts.alertsTable.status.unresolved') || 'Belum Selesai';
   if (k==='resolved') return t('appsEventsAlerts.alertsTable.status.resolved') || 'Selesai';
   if (k==='falsealarm') return t('appsEventsAlerts.alertsTable.status.falseAlarm') || 'Alarm Palsu';
   return status || '-';

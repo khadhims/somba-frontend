@@ -48,6 +48,13 @@
 			"minutes": "{minutes} menit yang lalu",
 			"hours": "{hours} jam yang lalu",
 			"days": "{days} hari yang lalu"
+		},
+		"summary": {
+			"title": "Aktivitas",
+			"earliestActive": "Pertama Aktif",
+			"latestActive": "Terakhir Aktif",
+			"noActivity": "Belum ada aktivitas",
+			"empty": "Tidak ada data aktivitas"
 		}
 	},
 	"monitoring": {
@@ -107,18 +114,17 @@
 		"monitoringCenter": "/apps/monitoring-center"
 	},
 	"alerts": {
-		"title": "Pelanggaran Terbaru",
-		"subtitle": "Pantau pelanggaran terkini secara real-time",
 		"table": {
 			"violation": "Nama Pelanggaran",
-			"duration": "Durasi",
-			"detection": "Deteksi",
-			"time": "Waktu",
-			"status": "Status",
+			"duration": "Durasi Deteksi",
+			"detection": "Jumlah Objek Terdeteksi",
+			"time": "Waktu Mulai Terdeteksi",
+			"status": "Status Pelanggaran",
 			"empty": "Tidak ada data pelanggaran",
 			"loading": "Memuat data pelanggaran..."
 		},
 		"summary": {
+			"title": "Ringkasan Pelanggaran dan Aktivitas Terbaru",
 			"totalToday": {
 				"title": "Total Pelanggaran",
 				"description": "Hari ini"
@@ -137,5 +143,13 @@
 			"resolved": "Selesai",
 			"falseAlarm": "Alarm Palsu"
 		}
+	},
+	"report": {
+		"title": "Laporan Harian Monitoring",
+		"site": "Lokasi",
+		"date": "Tanggal",
+		"lastData": "Data Terakhir",
+		"generatedBy": "Dibuat oleh Somba Monitoring System",
+		"page": "Halaman"
 	}
 }
