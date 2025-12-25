@@ -1,11 +1,12 @@
 <template>
-  <FullScreenLoader />
+  <FullScreenLoader v-if="!disableGlobalLoader" />
   <RouterView />
 </template>
 
 <script lang="ts">
-import { defineComponent, nextTick, onBeforeMount, onMounted } from "vue";
+import { defineComponent, nextTick, onBeforeMount, onMounted, computed } from "vue";
 import { RouterView } from "vue-router";
+import { useRoute } from "vue-router";
 import { useConfigStore } from "@/stores/config";
 import { useThemeStore } from "@/stores/theme";
 import { useBodyStore } from "@/stores/body";
@@ -25,6 +26,9 @@ export default defineComponent({
     const themeStore = useThemeStore();
     const bodyStore = useBodyStore();
     const loadingStore = useLoadingStore();
+    const route = useRoute();
+
+    const disableGlobalLoader = computed(() => !!route.meta?.disableGlobalLoader);
 
     onBeforeMount(() => {
       /**
@@ -48,10 +52,14 @@ export default defineComponent({
         if (splash) splash.style.display = "none";
 
         // Sync global loading events with loading store
-        window.addEventListener('loading:start', () => loadingStore.show());
-        window.addEventListener('loading:stop', () => loadingStore.hide());
+        if (!disableGlobalLoader.value) {
+          window.addEventListener('loading:start', () => loadingStore.show());
+          window.addEventListener('loading:stop', () => loadingStore.hide());
+        }
       });
     });
+
+    return { disableGlobalLoader };
   },
 });
 </script>

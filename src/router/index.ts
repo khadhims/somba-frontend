@@ -23,6 +23,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           pageTitle: "Dashboard",
           breadcrumbs: ["Dashboards"],
+          disableGlobalLoader: true,
         },
       },
       {
@@ -443,7 +444,10 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.middleware == "auth") {
     // show a short loading indicator while we verify
     try {
-      try { window.dispatchEvent(new CustomEvent('loading:start')); } catch (e) {}
+      const disableLoader = !!to.meta?.disableGlobalLoader;
+      if (!disableLoader) {
+        try { window.dispatchEvent(new CustomEvent('loading:start')); } catch (e) {}
+      }
 
       try {
         await authStore.verifyAuth();
@@ -462,7 +466,10 @@ router.beforeEach(async (to, from, next) => {
       // verification/refresh failed
       next({ name: "sign-in" });
     } finally {
-      try { window.dispatchEvent(new CustomEvent('loading:stop')); } catch (e) {}
+      const disableLoader = !!to.meta?.disableGlobalLoader;
+      if (!disableLoader) {
+        try { window.dispatchEvent(new CustomEvent('loading:stop')); } catch (e) {}
+      }
     }
   } else {
     // non-protected route: continue immediately but still kick off a background verify

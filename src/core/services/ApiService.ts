@@ -97,31 +97,38 @@ class ApiService {
     ApiService.vueInstance.axios.interceptors.request.use(
       (config: any) => {
         try {
-          ApiService.activeRequests = Math.max(0, ApiService.activeRequests) + 1;
-          // dispatch start only when first request begins
-          if (ApiService.activeRequests === 1) {
-            window.dispatchEvent(new CustomEvent('loading:start'));
-          }
+          const suppress = !!(config && (config as any)._suppressGlobalLoading);
+          if (!suppress) {
+            ApiService.activeRequests = Math.max(0, ApiService.activeRequests) + 1;
+            // dispatch start only when first request begins
+            if (ApiService.activeRequests === 1) {
+              window.dispatchEvent(new CustomEvent('loading:start'));
+            }
 
-          // reset watchdog each time a request starts
-          if (ApiService.watchdogTimer) clearTimeout(ApiService.watchdogTimer);
-          ApiService.watchdogTimer = setTimeout(() => {
-            ApiService.activeRequests = 0;
-            try { window.dispatchEvent(new CustomEvent('loading:stop')); } catch (e) {}
-          }, ApiService.WATCHDOG_MS);
+            // reset watchdog each time a request starts
+            if (ApiService.watchdogTimer) clearTimeout(ApiService.watchdogTimer);
+            ApiService.watchdogTimer = setTimeout(() => {
+              ApiService.activeRequests = 0;
+              try { window.dispatchEvent(new CustomEvent('loading:stop')); } catch (e) {}
+            }, ApiService.WATCHDOG_MS);
+          }
         } catch (e) {}
 
         return config;
       },
       (error: any) => {
         try {
-          ApiService.activeRequests = Math.max(0, ApiService.activeRequests - 1);
-          if (ApiService.activeRequests === 0) {
-            window.dispatchEvent(new CustomEvent('loading:stop'));
-          }
-          if (ApiService.watchdogTimer) {
-            clearTimeout(ApiService.watchdogTimer);
-            ApiService.watchdogTimer = null;
+          const cfg = (error && (error as any).config) || {};
+          const suppress = !!(cfg && (cfg as any)._suppressGlobalLoading);
+          if (!suppress) {
+            ApiService.activeRequests = Math.max(0, ApiService.activeRequests - 1);
+            if (ApiService.activeRequests === 0) {
+              window.dispatchEvent(new CustomEvent('loading:stop'));
+            }
+            if (ApiService.watchdogTimer) {
+              clearTimeout(ApiService.watchdogTimer);
+              ApiService.watchdogTimer = null;
+            }
           }
         } catch (e) {}
 
@@ -133,13 +140,17 @@ class ApiService {
     ApiService.vueInstance.axios.interceptors.response.use(
       (response: any) => {
         try {
-          ApiService.activeRequests = Math.max(0, ApiService.activeRequests - 1);
-          if (ApiService.activeRequests === 0) {
-            window.dispatchEvent(new CustomEvent('loading:stop'));
-          }
-          if (ApiService.watchdogTimer) {
-            clearTimeout(ApiService.watchdogTimer);
-            ApiService.watchdogTimer = null;
+          const cfg = (response && (response as any).config) || {};
+          const suppress = !!(cfg && (cfg as any)._suppressGlobalLoading);
+          if (!suppress) {
+            ApiService.activeRequests = Math.max(0, ApiService.activeRequests - 1);
+            if (ApiService.activeRequests === 0) {
+              window.dispatchEvent(new CustomEvent('loading:stop'));
+            }
+            if (ApiService.watchdogTimer) {
+              clearTimeout(ApiService.watchdogTimer);
+              ApiService.watchdogTimer = null;
+            }
           }
         } catch (e) {}
 
@@ -147,13 +158,17 @@ class ApiService {
       },
       async (error: any) => {
         try {
-          ApiService.activeRequests = Math.max(0, ApiService.activeRequests - 1);
-          if (ApiService.activeRequests === 0) {
-            window.dispatchEvent(new CustomEvent('loading:stop'));
-          }
-          if (ApiService.watchdogTimer) {
-            clearTimeout(ApiService.watchdogTimer);
-            ApiService.watchdogTimer = null;
+          const cfg = (error && (error as any).config) || {};
+          const suppress = !!(cfg && (cfg as any)._suppressGlobalLoading);
+          if (!suppress) {
+            ApiService.activeRequests = Math.max(0, ApiService.activeRequests - 1);
+            if (ApiService.activeRequests === 0) {
+              window.dispatchEvent(new CustomEvent('loading:stop'));
+            }
+            if (ApiService.watchdogTimer) {
+              clearTimeout(ApiService.watchdogTimer);
+              ApiService.watchdogTimer = null;
+            }
           }
         } catch (e) {}
 
@@ -314,10 +329,11 @@ class ApiService {
    */
   public static get(
     resource: string,
-    slug = "" as string
+    slug = "" as string,
+    config?: any
   ): Promise<AxiosResponse> {
     const url = slug ? `${resource}/${slug}` : resource;
-    return ApiService.vueInstance.axios.get(url);
+    return ApiService.vueInstance.axios.get(url, config);
   }
 
   /**

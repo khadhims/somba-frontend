@@ -109,14 +109,11 @@
                       class="card-body position-relative"
                       style="padding: 1rem 1rem 1.5rem 1rem"
                     >
-                      <!-- Loading state -->
-                      <div v-if="loading" class="text-center py-8">
-                        <div class="spinner-border text-primary" role="status">
-                          <span class="visually-hidden">Loading...</span>
+                      <!-- Loading state: skeleton cards -->
+                      <div v-if="loading" class="row g-3">
+                        <div class="col-6 col-md-4 col-xl-3" v-for="n in 6" :key="`lac-${n}`">
+                          <SkeletonCard :lines="2" />
                         </div>
-                        <p class="mt-3 text-muted">
-                          {{ t("dashboard.general.loading") }}
-                        </p>
                       </div>
 
                       <!-- Error state -->
@@ -239,18 +236,9 @@
                                 </tr>
                               </thead>
                               <tbody>
-                                <tr v-if="loadingAlerts">
-                                  <td colspan="5" class="text-center py-8">
-                                    <div
-                                      class="spinner-border text-primary"
-                                      role="status"
-                                    >
-                                      <span class="visually-hidden"
-                                        >Loading...</span
-                                      >
-                                    </div>
-                                  </td>
-                                </tr>
+                                <template v-if="loadingAlerts">
+                                  <SkeletonTableRow v-for="n in 5" :key="`tblsk-${n}`" :columns="5" />
+                                </template>
                                 <tr v-else-if="!alerts.length">
                                   <td
                                     colspan="5"
@@ -316,13 +304,8 @@
 
                           <!-- Mobile View: Cards -->
                           <div class="d-md-none">
-                            <div v-if="loadingAlerts" class="text-center py-8">
-                              <div
-                                class="spinner-border text-primary"
-                                role="status"
-                              >
-                                <span class="visually-hidden">Loading...</span>
-                              </div>
+                            <div v-if="loadingAlerts" class="d-flex flex-column gap-3">
+                              <SkeletonCard v-for="n in 3" :key="`mobsk-${n}`" :lines="2" :compact="true" />
                             </div>
                             <div
                               v-else-if="!alerts.length"
@@ -452,8 +435,11 @@
                                     <div
                                       class="d-flex align-items-baseline gap-2 justify-content-end"
                                     >
-                                      <div class="fs-2 fw-bolder text-primary">
-                                        {{ totalAlertsToday }}
+                                      <div class="fs-2 fw-bolder text-primary" v-if="!loadingSummaryAlerts">
+                                          {{ totalAlertsToday }}
+                                      </div>
+                                      <div v-else class="d-flex justify-content-end">
+                                        <SkeletonBlock :width="60" :height="22" />
                                       </div>
                                     </div>
                                   </div>
@@ -482,8 +468,11 @@
                                         ) || "Belum Selesai"
                                       }}
                                     </div>
-                                    <div class="fs-2 fw-bolder text-danger">
+                                    <div class="fs-2 fw-bolder text-danger" v-if="!loadingSummaryAlerts">
                                       {{ unresolvedAlertsToday }}
+                                    </div>
+                                    <div v-else class="d-flex justify-content-end">
+                                      <SkeletonBlock :width="60" :height="22" />
                                     </div>
                                   </div>
                                 </div>
@@ -514,8 +503,11 @@
                                     <div
                                       class="d-flex align-items-baseline gap-2 justify-content-end"
                                     >
-                                      <div class="fs-2 fw-bolder text-success">
+                                      <div class="fs-2 fw-bolder text-success" v-if="!loadingSummaryAlerts">
                                         {{ resolvedAlertsToday }}
+                                      </div>
+                                      <div v-else class="d-flex justify-content-end">
+                                        <SkeletonBlock :width="60" :height="22" />
                                       </div>
                                     </div>
                                   </div>
@@ -530,11 +522,9 @@
                             {{ t('dashboard.activities.summary.title') || 'Aktivitas' }}
                           </h6>
                           
-                          <!-- Loading State -->
-                          <div v-if="loadingSummaryActivities" class="text-center py-3">
-                            <div class="spinner-border text-primary spinner-border-sm" role="status">
-                              <span class="visually-hidden">Loading...</span>
-                            </div>
+                          <!-- Loading State: skeletons -->
+                          <div v-if="loadingSummaryActivities" class="d-flex flex-column gap-2">
+                            <SkeletonCard :lines="2" :compact="true" v-for="n in 3" :key="`sumsk-${n}`" />
                           </div>
 
                           <!-- Empty State -->
@@ -664,6 +654,9 @@ import ActivitySummaryCard from "@/components/cards/ActivitySummaryCard.vue";
 import RealTimeReport from "@/components/dashboard/RealTimeReport.vue";
 import AlertDetailModal from "@/components/apps/events-alerts/AlertDetailModal.vue";
 import DashboardReportModal from "@/components/dashboard/DashboardReportModal.vue";
+import SkeletonCard from "@/components/skeleton/SkeletonCard.vue";
+import SkeletonBlock from "@/components/skeleton/SkeletonBlock.vue";
+import SkeletonTableRow from "@/components/skeleton/SkeletonTableRow.vue";
 import { ref, onMounted, computed, onBeforeUnmount, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -819,8 +812,10 @@ const fetchSummaryAlerts = async (siteUid: string): Promise<SummaryAlerts> => {
          site_uid: siteUid,
          from_date: new Date().toISOString().split("T")[0],
          to_date: new Date().toISOString().split("T")[0],
-      }
-    });
+      },
+      _suppressGlobalLoading: true,
+    }
+  );
 
     const results = data.data;
     console.log(results.total_alerts);
@@ -865,6 +860,7 @@ const fetchSummaryActivities = async (siteUid: string): Promise<SummaryActivity[
       from_date: new Date().toISOString().split("T")[0],
       to_date: new Date().toISOString().split("T")[0],
     },
+    _suppressGlobalLoading: true,
   });
 
   const activities = Array.isArray(data?.data?.activities)
@@ -1183,7 +1179,9 @@ const loadLiveActivities = async () => {
     }
 
     const { data } = await ApiService.get(
-      `sites/${selectedSite.value}/live-activities`
+      `sites/${selectedSite.value}/live-activities`,
+      "",
+      { _suppressGlobalLoading: true }
     );
 
     const list = Array.isArray(data)
@@ -1225,6 +1223,7 @@ const fetchAlerts = async () => {
           from_date: new Date().toISOString().split("T")[0],
           to_date: new Date().toISOString().split("T")[0],
         },
+        _suppressGlobalLoading: true,
       }
     );
 
@@ -1282,6 +1281,7 @@ const handleShowReport = async () => {
           from_date: "2025-12-04",
           to_date: "2025-12-04",
         },
+        _suppressGlobalLoading: true,
       }
     );
 
@@ -1325,7 +1325,7 @@ const handleShowReport = async () => {
 
 const fetchSites = async () => {
   try {
-    const { data } = await ApiService.get("sites");
+    const { data } = await ApiService.get("sites", "", { _suppressGlobalLoading: true });
 
     const list = Array.isArray(data)
       ? data
