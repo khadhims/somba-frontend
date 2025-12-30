@@ -8,8 +8,8 @@
           <p class="text-muted mb-0">{{ currentSite ? t('appsEventsAlerts.alerts.subtitleSite', { site: currentSite.name }) : t('appsEventsAlerts.alerts.subtitleAll') }}</p>
         </div>
         <div class="col-12 col-md-8">
-          <div class="d-flex flex-column flex-md-row justify-content-md-end align-items-start align-items-md-center gap-2 gap-md-0">
-            <div class="d-flex align-items-center me-md-3 w-100 w-md-auto mb-2 mb-md-0">
+          <div class="d-flex flex-column flex-md-row justify-content-md-end align-items-start align-items-md-center gap-3">
+            <div class="d-flex align-items-center w-100 w-md-auto mb-2 mb-md-0">
               <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{ t('appsEventsAlerts.alertsFilters.siteLabel') }}</label>
               <select v-model="tempSelectedSiteFilter" class="form-select form-select-solid w-100 w-md-200px" :disabled="loadingSites" @change="onTempFilterSiteChange">
                 <option value="">{{ t('appsEventsAlerts.alertsFilters.siteAll') }}</option>
@@ -23,6 +23,10 @@
                 <option v-for="camera in cameras" :key="camera.uid" :value="camera.uid">{{ camera.name }}</option>
               </select>
             </div>
+            <button @click="applyFilters" class="btn btn-md btn-primary py-3 px-2" title="Apply All Filters">
+              <i class="ki-duotone ki-check fs-2"><span class="path1"></span><span class="path2"></span></i>
+              {{ t('common.apply') || 'Apply' }}
+            </button>
           </div>
         </div>
       </div>
@@ -47,17 +51,9 @@
           </div>
           
           <div class="d-flex flex-wrap gap-2 mt-2 mt-sm-0">
-            <button @click="applyFilters" class="btn btn-sm btn-primary py-1 px-2" title="Apply All Filters">
-              <i class="ki-duotone ki-check fs-2"><span class="path1"></span><span class="path2"></span></i>
-              {{ t('common.apply') || 'Apply' }}
-            </button>
             <button @click="resetFilters" class="btn btn-sm btn-light py-1 px-2" title="Reset to Applied Filters">
               <i class="ki-duotone ki-arrows-circle fs-2"><span class="path1"></span><span class="path2"></span></i>
               {{ t('common.reset') || 'Reset' }}
-            </button>
-            <button @click="resetToDefaults" class="btn btn-sm btn-secondary py-1 px-2" title="Reset to Default Values">
-              <i class="ki-duotone ki-time fs-2"><span class="path1"></span><span class="path2"></span></i>
-              Defaults
             </button>
           </div>
         </div>
@@ -74,9 +70,9 @@
       </div>
     </div>
     <div class="card-body py-3">
-      <div class="table-responsive" style="max-height:600px; overflow-y:auto;">
+      <div class="table-responsive">
         <AlertsTable
-          :alerts="alerts"
+          :alerts="filteredAndSortedAlerts"
           :header="tableHeader"
           :pagination="pagination"
           :loading="loading"
@@ -291,7 +287,7 @@ const tableHeader = computed(() => [
   {
     columnName: t('appsEventsAlerts.alertsTable.columns.alert'),
     columnLabel: 'alert_name',
-    sortEnabled: true,
+    sortEnabled: false,
     searchable: true,
   },
   {
@@ -551,8 +547,26 @@ const applyFilters = async () => {
 const resetFilters = () => {
   tempSelectedSiteFilter.value = selectedSiteFilter.value;
   tempSelectedCameraFilter.value = selectedCameraFilter.value;
-  tempDateFrom.value = dateFrom.value;
-  tempDateTo.value = dateTo.value;
+
+  // Reset dates to Today
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const todayStr = `${year}-${month}-${day}`;
+
+  dateFrom.value = todayStr;
+  dateTo.value = todayStr;
+  tempDateFrom.value = todayStr;
+  tempDateTo.value = todayStr;
+
+  // Update localStorage immediately
+  localStorage.setItem(FROM_DATE_STORAGE_KEY, todayStr);
+  localStorage.setItem(TO_DATE_STORAGE_KEY, todayStr);
+  
+  // Refresh data
+  pagination.value.page = 1;
+  debouncedFetchAlerts();
 };
 
 // Reset filters to default values (clear site/camera, reset dates to yesterday-today)
@@ -711,6 +725,63 @@ const formatDuration = (minutes?: number | null) => {
     value: formatNumber(Math.max(0, minutes), 2),
   });
 };
+
+const filteredAndSortedAlerts = computed(() => {
+  let filtered = alerts.value;
+
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter((alert) => {
+      const camera = (alert.camera_name || '').toLowerCase();
+      const status = (alert.status || '').toLowerCase();
+      const violation = (alert.violation_name || '').toLowerCase();
+
+      return (
+        camera.includes(query) ||
+        status.includes(query) ||
+        violation.includes(query)
+      );
+    });
+  }
+
+  if (sortLabel.value) {
+    filtered = [...filtered].sort((a, b) => {
+      let sortKey = sortLabel.value;
+      // Map sort keys to data keys
+      if (sortKey === 'duration') sortKey = 'duration_minutes';
+      if (sortKey === 'timestamp') sortKey = 'event_start';
+      if (sortKey === 'alert_name') sortKey = 'violation_name';
+      if (sortKey === 'detections') sortKey = 'total_detections';
+      
+      let aValue: any = a[sortKey as keyof Alert];
+      let bValue: any = b[sortKey as keyof Alert];
+
+      if (sortKey === 'event_start') {
+        aValue = aValue ? new Date(aValue as string).getTime() : 0;
+        bValue = bValue ? new Date(bValue as string).getTime() : 0;
+      }
+
+      // User defines Descending as Smallest to Largest (Ascending behavior)
+      // So we flip standard logic: 
+      // asc -> Large to Small (Standard Descending)
+      // desc -> Small to Large (Standard Ascending)
+
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        const comparison = aValue.localeCompare(bValue);
+        return sortOrder.value === 'asc' ? -comparison : comparison;
+      }
+
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        const comparison = aValue - bValue;
+        return sortOrder.value === 'asc' ? -comparison : comparison;
+      }
+
+      return 0;
+    });
+  }
+
+  return filtered;
+});
 
 
 // Methods

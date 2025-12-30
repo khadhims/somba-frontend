@@ -10,9 +10,9 @@
           </p>
         </div>
         <div class="col-12 col-md-8">
-          <div class="d-flex flex-column flex-md-row justify-content-md-end align-items-start align-items-md-center gap-2 gap-md-0">
+          <div class="d-flex flex-column flex-md-row justify-content-md-end align-items-start align-items-md-center gap-3">
             <!-- Site Filter -->
-            <div class="d-flex align-items-center me-md-3 w-100 w-md-auto mb-2 mb-md-0">
+            <div class="d-flex align-items-center w-100 w-md-auto mb-2 mb-md-0">
               <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{ t('appsEventsAlerts.eventsFilters.siteLabel') }}</label>
               <select
                 v-model="tempSelectedSiteFilter"
@@ -51,6 +51,17 @@
                 </option>
               </select>
             </div>
+            <button 
+              @click="applyFilters" 
+              class="btn btn-md btn-primary py-3 px-2"
+              title="Apply All Filters"
+            >
+              <i class="ki-duotone ki-check fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              {{ t('common.apply') || 'Apply' }}
+            </button>
           </div>
         </div>
       </div>
@@ -97,17 +108,6 @@
           <!-- Apply/Reset Buttons -->
           <div class="d-flex flex-wrap gap-2 mt-2 mt-sm-0">
             <button 
-              @click="applyFilters" 
-              class="btn btn-sm btn-primary py-1 px-2"
-              title="Apply All Filters"
-            >
-              <i class="ki-duotone ki-check fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              {{ t('common.apply') || 'Apply' }}
-            </button>
-            <button 
               @click="resetFilters" 
               class="btn btn-sm btn-light py-1 px-2"
               title="Reset to Applied Filters"
@@ -118,37 +118,11 @@
               </i>
               Reset
             </button>
-            <button 
-              @click="resetToDefaults" 
-              class="btn btn-sm btn-secondary py-1 px-2"
-              title="Reset to Default Values"
-            >
-              <i class="ki-duotone ki-time fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              Defaults
-            </button>
           </div>
         </div>
         
         <!-- Other Filters - End -->
         <div class="d-flex align-items-center w-100 w-xl-auto gap-2">
-          <!-- Severity Filter -->
-          <div class="flex-grow-1 flex-xl-grow-0">
-            <select
-              v-model="selectedSeverityType"
-              @change="filterEvents"
-              class="form-select form-select-sm form-select-solid w-100 w-xl-150px"
-            >
-              <option value="">{{ t('appsEventsAlerts.eventsFilters.severityAll') }}</option>
-              <option value="low">{{ t('appsEventsAlerts.eventsTable.severity.low') }}</option>
-              <option value="medium">{{ t('appsEventsAlerts.eventsTable.severity.medium') }}</option>
-              <option value="high">{{ t('appsEventsAlerts.eventsTable.severity.high') }}</option>
-              <option value="critical">{{ t('appsEventsAlerts.eventsTable.severity.critical') }}</option>
-            </select>
-          </div>
-
           <!--begin::Search-->
           <div class="d-flex align-items-center position-relative my-1 flex-grow-1 flex-xl-grow-0">
             <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
@@ -412,13 +386,13 @@ const tableHeader = computed(() => [
   {
     columnName: t('appsEventsAlerts.eventsTable.columns.event'),
     columnLabel: 'event_name',
-    sortEnabled: true,
+    sortEnabled: false,
     searchable: true,
   },
   {
     columnName: t('appsEventsAlerts.eventsTable.columns.camera'),
     columnLabel: 'camera_name',
-    sortEnabled: true,
+    sortEnabled: false,
     searchable: true,
   },
   {
@@ -777,8 +751,25 @@ const applyFilters = async () => {
 const resetFilters = () => {
   tempSelectedSiteFilter.value = selectedSiteFilter.value || '';
   tempSelectedCameraFilter.value = selectedCameraFilter.value || '';
-  tempDateFrom.value = dateFrom.value;
-  tempDateTo.value = dateTo.value;
+
+  // Reset dates to Today
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const todayStr = `${year}-${month}-${day}`;
+
+  dateFrom.value = todayStr;
+  dateTo.value = todayStr;
+  tempDateFrom.value = todayStr;
+  tempDateTo.value = todayStr;
+
+  // Update localStorage immediately (though watcher might handle it too)
+  localStorage.setItem(FROM_DATE_STORAGE_KEY, todayStr);
+  localStorage.setItem(TO_DATE_STORAGE_KEY, todayStr);
+
+  // Refresh data
+  fetchEvents();
 };
 
 // Reset filters to default values (clear site/camera, reset dates to 1 week range)
@@ -969,22 +960,31 @@ const filteredAndSortedEvents = computed(() => {
 
   if (sortLabel.value) {
     filtered = [...filtered].sort((a, b) => {
-      let aValue: any = a[sortLabel.value as keyof Event];
-      let bValue: any = b[sortLabel.value as keyof Event];
+      let sortKey = sortLabel.value;
+      if (sortKey === 'duration') sortKey = 'duration_minutes';
+      if (sortKey === 'timestamp') sortKey = 'event_start';
+      
+      let aValue: any = a[sortKey as keyof Event];
+      let bValue: any = b[sortKey as keyof Event];
 
-      if (sortLabel.value === 'startTime' || sortLabel.value === 'endTime' || sortLabel.value === 'timestamp') {
+      if (sortKey === 'startTime' || sortKey === 'endTime' || sortKey === 'event_start') {
         aValue = aValue ? new Date(aValue as string).getTime() : 0;
         bValue = bValue ? new Date(bValue as string).getTime() : 0;
       }
 
+      // User defines Descending as Smallest to Largest (Ascending behavior)
+      // So we flip standard logic: 
+      // asc -> Large to Small (Standard Descending)
+      // desc -> Small to Large (Standard Ascending)
+
       if (typeof aValue === 'string' && typeof bValue === 'string') {
         const comparison = aValue.localeCompare(bValue);
-        return sortOrder.value === 'asc' ? comparison : -comparison;
+        return sortOrder.value === 'asc' ? -comparison : comparison;
       }
 
       if (typeof aValue === 'number' && typeof bValue === 'number') {
         const comparison = aValue - bValue;
-        return sortOrder.value === 'asc' ? comparison : -comparison;
+        return sortOrder.value === 'asc' ? -comparison : comparison;
       }
 
       return 0;

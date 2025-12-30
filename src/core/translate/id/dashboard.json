@@ -150,6 +150,8 @@
 		"date": "Tanggal",
 		"lastData": "Data Terakhir",
 		"generatedBy": "Dibuat oleh Somba Monitoring System",
-		"page": "Halaman"
+		"page": "Halaman",
+		"save": "Download Laporan",
+		"loading": "Memuat Data Laporan..."
 	}
 }

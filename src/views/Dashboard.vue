@@ -68,8 +68,8 @@
                           <i v-else class="fas fa-file-pdf"></i>
                           <span class="d-none d-sm-inline">{{
                             loadingReport
-                              ? "Mengambil Data..."
-                              : "Simpan Laporan"
+                              ? t("dashboard.report.loading")
+                              : t("dashboard.report.save")
                           }}</span>
                         </button>
 
