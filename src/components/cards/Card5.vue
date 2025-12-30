@@ -95,7 +95,7 @@ export default defineComponent({
       }
       
       // Fallback ke format aktivitas biasa
-      if (!this.lastActivityTimestamp) return 'Aktivitas terakhir: Tidak ada data';
+      if (!this.lastActivityTimestamp) return 'Aktivitas terakhir: ';
       
       const timestamp = new Date(this.lastActivityTimestamp);
       const formattedTime = timestamp.toLocaleTimeString('id-ID', {

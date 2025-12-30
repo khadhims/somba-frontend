@@ -20,9 +20,8 @@
             </th>
             <template v-for="(column, i) in header" :key="i">
               <th
-                class="table-header-cell"
+                class="table-header-cell text-start"
                 :class="{
-                  'text-center': true,
                   'sortable': column.sortEnabled,
                   'active-sort': currentSort.label === column.columnLabel
                 }"
@@ -34,17 +33,23 @@
               >
                 <div class="header-content">
                   <span class="header-text">{{ column.columnName }}</span>
-                  <i
-                    v-if="currentSort.label === column.columnLabel && column.sortEnabled"
-                    class="sort-icon"
-                    :class="{
-                      'ki-duotone ki-arrow-up': currentSort.order === 'asc',
-                      'ki-duotone ki-arrow-down': currentSort.order === 'desc'
-                    }"
-                  >
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                  </i>
+                  <div v-if="column.sortEnabled" class="sort-icon-wrapper">
+                    <ArrowUp 
+                      v-if="currentSort.label === column.columnLabel && currentSort.order === 'asc'" 
+                      :size="16" 
+                      class="sort-icon active"
+                    />
+                    <ArrowDown 
+                      v-else-if="currentSort.label === column.columnLabel && currentSort.order === 'desc'" 
+                      :size="16" 
+                      class="sort-icon active"
+                    />
+                    <ArrowUpDown 
+                      v-else 
+                      :size="16" 
+                      class="sort-icon inactive"
+                    />
+                  </div>
                 </div>
               </th>
             </template>
@@ -102,6 +107,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref, watch, onMounted } from "vue";
 import type { Sort } from "@/components/kt-datatable/table-partials/models";
+import { ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-vue-next';
 
 interface TableHeader {
   columnName: string;
@@ -113,6 +119,11 @@ interface TableHeader {
 
 export default defineComponent({
   name: "kt-datatable",
+  components: {
+    ArrowUp,
+    ArrowDown,
+    ArrowUpDown
+  },
   props: {
     header: { type: Array as () => TableHeader[], required: true },
     data: { type: Array as () => any[], required: true },
@@ -247,6 +258,18 @@ export default defineComponent({
       headerChecked.value = selectedItems.value.length === totalSelectableItems && totalSelectableItems > 0;
     };
 
+    watch(
+      () => [props.sortLabel, props.sortOrder],
+      ([newLabel, newOrder]) => {
+        if (newLabel) {
+          currentSort.value = {
+            label: newLabel as string,
+            order: newOrder as "asc" | "desc",
+          };
+        }
+      }
+    );
+
     onMounted(() => {
       // Initialize sort
       if (props.sortLabel) {
@@ -298,7 +321,6 @@ export default defineComponent({
   transition: all 0.2s ease;
   position: relative;
   white-space: nowrap;
-  text-align: center !important;
 }
 
 /* Ensure consistent padding for all table cells */
@@ -324,23 +346,36 @@ export default defineComponent({
 .header-content {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.5rem;
-  text-align: center;
 }
 
 .header-text {
   font-weight: inherit;
 }
 
-.sort-icon {
-  font-size: 0.875rem;
-  opacity: 0.8;
-  transition: opacity 0.2s ease;
+.sort-icon-wrapper {
+  display: flex;
+  align-items: center;
 }
 
-.table-header-cell:hover .sort-icon {
+.sort-icon {
+  opacity: 0.5;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sort-icon.active {
   opacity: 1;
+  color: var(--bs-primary);
+}
+
+.sort-icon.inactive:hover {
+  opacity: 0.8;
+}
+
+/* On hover of the header cell, highlight the inactive sort icon */
+.table-header-cell:hover .sort-icon.inactive {
+  opacity: 0.8;
 }
 
 .checkbox-column {
