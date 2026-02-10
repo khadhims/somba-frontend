@@ -111,7 +111,11 @@
                     >
                       <!-- Loading state: skeleton cards -->
                       <div v-if="loading" class="row g-3">
-                        <div class="col-6 col-md-4 col-xl-3" v-for="n in 6" :key="`lac-${n}`">
+                        <div
+                          class="col-6 col-md-4 col-xl-3"
+                          v-for="n in 6"
+                          :key="`lac-${n}`"
+                        >
                           <SkeletonCard :lines="2" />
                         </div>
                       </div>
@@ -142,9 +146,21 @@
                           :pagination="swiperPaginationConfig"
                           :centered-slides="true"
                           :breakpoints="{
-                            640: { slidesPerView: 5, spaceBetween: 12, centeredSlides: false },
-                            1024: { slidesPerView: 5, spaceBetween: 14, centeredSlides: false },
-                            1280: { slidesPerView: 6, spaceBetween: 4, centeredSlides: false },
+                            640: {
+                              slidesPerView: 5,
+                              spaceBetween: 12,
+                              centeredSlides: false,
+                            },
+                            1024: {
+                              slidesPerView: 5,
+                              spaceBetween: 14,
+                              centeredSlides: false,
+                            },
+                            1280: {
+                              slidesPerView: 6,
+                              spaceBetween: 4,
+                              centeredSlides: false,
+                            },
                           }"
                           class="live-activity-swiper"
                         >
@@ -187,7 +203,8 @@
                             class="pi pi-exclamation-triangle fs-2 text-danger"
                           ></i>
                           {{
-                            t("dashboard.alerts.summary.title") || "Pelanggaran Terbaru"
+                            t("dashboard.alerts.summary.title") ||
+                            "Pelanggaran Terbaru"
                           }}
                         </h3>
                       </div>
@@ -237,7 +254,11 @@
                               </thead>
                               <tbody>
                                 <template v-if="loadingAlerts">
-                                  <SkeletonTableRow v-for="n in 5" :key="`tblsk-${n}`" :columns="5" />
+                                  <SkeletonTableRow
+                                    v-for="n in 5"
+                                    :key="`tblsk-${n}`"
+                                    :columns="5"
+                                  />
                                 </template>
                                 <tr v-else-if="!alerts.length">
                                   <td
@@ -304,8 +325,16 @@
 
                           <!-- Mobile View: Cards -->
                           <div class="d-md-none">
-                            <div v-if="loadingAlerts" class="d-flex flex-column gap-3">
-                              <SkeletonCard v-for="n in 3" :key="`mobsk-${n}`" :lines="2" :compact="true" />
+                            <div
+                              v-if="loadingAlerts"
+                              class="d-flex flex-column gap-3"
+                            >
+                              <SkeletonCard
+                                v-for="n in 3"
+                                :key="`mobsk-${n}`"
+                                :lines="2"
+                                :compact="true"
+                              />
                             </div>
                             <div
                               v-else-if="!alerts.length"
@@ -435,11 +464,20 @@
                                     <div
                                       class="d-flex align-items-baseline gap-2 justify-content-end"
                                     >
-                                      <div class="fs-2 fw-bolder text-primary" v-if="!loadingSummaryAlerts">
-                                          {{ totalAlertsToday }}
+                                      <div
+                                        class="fs-2 fw-bolder text-primary"
+                                        v-if="!loadingSummaryAlerts"
+                                      >
+                                        {{ totalAlertsToday }}
                                       </div>
-                                      <div v-else class="d-flex justify-content-end">
-                                        <SkeletonBlock :width="60" :height="22" />
+                                      <div
+                                        v-else
+                                        class="d-flex justify-content-end"
+                                      >
+                                        <SkeletonBlock
+                                          :width="60"
+                                          :height="22"
+                                        />
                                       </div>
                                     </div>
                                   </div>
@@ -468,10 +506,16 @@
                                         ) || "Belum Selesai"
                                       }}
                                     </div>
-                                    <div class="fs-2 fw-bolder text-danger" v-if="!loadingSummaryAlerts">
+                                    <div
+                                      class="fs-2 fw-bolder text-danger"
+                                      v-if="!loadingSummaryAlerts"
+                                    >
                                       {{ unresolvedAlertsToday }}
                                     </div>
-                                    <div v-else class="d-flex justify-content-end">
+                                    <div
+                                      v-else
+                                      class="d-flex justify-content-end"
+                                    >
                                       <SkeletonBlock :width="60" :height="22" />
                                     </div>
                                   </div>
@@ -503,11 +547,20 @@
                                     <div
                                       class="d-flex align-items-baseline gap-2 justify-content-end"
                                     >
-                                      <div class="fs-2 fw-bolder text-success" v-if="!loadingSummaryAlerts">
+                                      <div
+                                        class="fs-2 fw-bolder text-success"
+                                        v-if="!loadingSummaryAlerts"
+                                      >
                                         {{ resolvedAlertsToday }}
                                       </div>
-                                      <div v-else class="d-flex justify-content-end">
-                                        <SkeletonBlock :width="60" :height="22" />
+                                      <div
+                                        v-else
+                                        class="d-flex justify-content-end"
+                                      >
+                                        <SkeletonBlock
+                                          :width="60"
+                                          :height="22"
+                                        />
                                       </div>
                                     </div>
                                   </div>
@@ -516,61 +569,95 @@
                             </div>
                           </div>
 
-                        <!-- Activity Summary Carousel -->
-                        <div class="mt-3">
-                          <h6 class="fw-bold text-dark mb-3">
-                            {{ t('dashboard.activities.summary.title') || 'Aktivitas' }}
-                          </h6>
-                          
-                          <!-- Loading State: skeletons -->
-                          <div v-if="loadingSummaryActivities" class="d-flex flex-column gap-2">
-                            <SkeletonCard :lines="2" :compact="true" v-for="n in 3" :key="`sumsk-${n}`" />
-                          </div>
+                          <!-- Activity Summary Carousel -->
+                          <div class="mt-3">
+                            <h6 class="fw-bold text-dark mb-3">
+                              {{
+                                t("dashboard.activities.summary.title") ||
+                                "Aktivitas"
+                              }}
+                            </h6>
 
-                          <!-- Empty State -->
-                          <div
-                            v-else-if="!summaryActivities.length"
-                            class="text-center py-3"
-                          >
-                            <i class="fas fa-inbox fs-4 text-muted mb-2"></i>
-                            <p class="text-muted fs-8 mb-0">
-                              {{ t('dashboard.activities.summary.empty') || 'Tidak ada data aktivitas' }}
-                            </p>
-                          </div>
-
-                          <!-- Activities Carousel with Swiper -->
-                          <div v-else class="activities-summary-carousel-wrapper">
-                            <Swiper
-                              :modules="[Pagination]"
-                              :slides-per-view="1"
-                              :space-between="10"
-                              :pagination="swiperPaginationConfig"
-                              :centered-slides="true"
-                              class="activity-swiper"
+                            <!-- Loading State: skeletons -->
+                            <div
+                              v-if="loadingSummaryActivities"
+                              class="d-flex flex-column gap-2"
                             >
-                              <SwiperSlide
-                                v-for="activity in summaryActivities"
-                                :key="activity.activity_uid"
+                              <SkeletonCard
+                                :lines="2"
+                                :compact="true"
+                                v-for="n in 3"
+                                :key="`sumsk-${n}`"
+                              />
+                            </div>
+
+                            <!-- Empty State -->
+                            <div
+                              v-else-if="!summaryActivities.length"
+                              class="text-center py-3"
+                            >
+                              <i class="fas fa-inbox fs-4 text-muted mb-2"></i>
+                              <p class="text-muted fs-8 mb-0">
+                                {{
+                                  t("dashboard.activities.summary.empty") ||
+                                  "Tidak ada data aktivitas"
+                                }}
+                              </p>
+                            </div>
+
+                            <!-- Activities Carousel with Swiper -->
+                            <div
+                              v-else
+                              class="activities-summary-carousel-wrapper"
+                            >
+                              <Swiper
+                                :modules="[Pagination]"
+                                :slides-per-view="1"
+                                :space-between="10"
+                                :pagination="swiperPaginationConfig"
+                                :centered-slides="true"
+                                class="activity-swiper"
                               >
-                                <div class="swiper-slide-content">
-                                  <ActivitySummaryCard
-                                    :activity-name="getTranslatedActivityName(activity.activity_name)"
-                                    :earliest-active="activity.earliest_active"
-                                    :latest-active="activity.latest_active"
-                                    :icon="getActivityConfig(activity.activity_name).icon"
-                                    :bg-color="getActivityConfig(activity.activity_name).bgColor"
-                                  />
-                                </div>
-                              </SwiperSlide>
-                            </Swiper>
-                          </div>
+                                <SwiperSlide
+                                  v-for="activity in summaryActivities"
+                                  :key="activity.activity_uid"
+                                >
+                                  <div class="swiper-slide-content">
+                                    <ActivitySummaryCard
+                                      :activity-name="
+                                        getTranslatedActivityName(
+                                          activity.activity_name
+                                        )
+                                      "
+                                      :earliest-active="
+                                        activity.earliest_active
+                                      "
+                                      :latest-active="activity.latest_active"
+                                      :icon="
+                                        getActivityConfig(
+                                          activity.activity_name
+                                        ).icon
+                                      "
+                                      :bg-color="
+                                        getActivityConfig(
+                                          activity.activity_name
+                                        ).bgColor
+                                      "
+                                    />
+                                  </div>
+                                </SwiperSlide>
+                              </Swiper>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                     <div class="separator separator-dashed my-0"></div>
                     <!-- Section 3: Real Time Report -->
-                    <div class="card-header border-0 pt-5 pb-2" style="margin-top: -1px;">
+                    <div
+                      class="card-header border-0 pt-5 pb-2"
+                      style="margin-top: -1px"
+                    >
                       <div class="card-title">
                         <div
                           class="d-flex align-items-center position-relative my-0"
@@ -611,7 +698,6 @@
                       />
                     </div>
                   </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -619,6 +705,7 @@
         </div>
       </div>
     </div>
+  </div>
   <AlertDetailModal
     :show="showAlertModal"
     :alert="selectedAlert"
@@ -631,12 +718,14 @@
   <DashboardReportModal
     :show="showReportModal"
     :siteName="sites.find((s) => s.uid === selectedSite)?.name || selectedSite"
-    :date="new Date().toLocaleDateString('id-ID', {
-      timeZone: 'Asia/Makassar',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    })"
+    :date="
+      new Date().toLocaleDateString('id-ID', {
+        timeZone: 'Asia/Makassar',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    "
     :lastUpdated="currentDate"
     :summary="{
       total: totalAlertsToday,
@@ -665,12 +754,12 @@ import liveActivityMock from "@/assets/mockupData/dashboard/live_activity.json";
 import summaryAlertsMock from "@/assets/mockupData/dashboard/summary_alerts.json";
 import { todayDate } from "@/core/data/events";
 // Import Swiper Vue.js components
-import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Pagination, Navigation } from 'swiper/modules';
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Pagination, Navigation } from "swiper/modules";
 // Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 import {
   convertToGMT8,
   formatDateTimeGMT8,
@@ -807,28 +896,27 @@ const fetchSummaryAlerts = async (siteUid: string): Promise<SummaryAlerts> => {
     return;
   }
 
-  const { data } = await ApiService.query(`sites/${siteUid}/alerts-summary`, 
-    { params: { 
-         site_uid: siteUid,
-         from_date: new Date().toISOString().split("T")[0],
-         to_date: new Date().toISOString().split("T")[0],
-      },
-      _suppressGlobalLoading: true,
-    }
-  );
+  const { data } = await ApiService.query(`sites/${siteUid}/alerts-summary`, {
+    params: {
+      site_uid: siteUid,
+      from_date: new Date().toISOString().split("T")[0],
+      to_date: new Date().toISOString().split("T")[0],
+    },
+    _suppressGlobalLoading: true,
+  });
 
-    const results = data.data;
-    console.log(results.total_alerts);
-    console.log(results.status_counts.resolved);
-    console.log(results.status_counts.not_resolved);
-    console.log(results.status_counts.false_alarm);
+  const results = data.data;
+  console.log(results.total_alerts);
+  console.log(results.status_counts.resolved);
+  console.log(results.status_counts.not_resolved);
+  console.log(results.status_counts.false_alarm);
 
-    return {
-      total_today: Number(results.total_alerts ?? 0),
-      unresolved_today: Number(results.status_counts.not_resolved ?? 0),
-      resolved_today: Number(results.status_counts.resolved ?? 0),
-      false_alarm: Number(results.status_counts.false_alarm ?? 0),
-    }
+  return {
+    total_today: Number(results.total_alerts ?? 0),
+    unresolved_today: Number(results.status_counts.not_resolved ?? 0),
+    resolved_today: Number(results.status_counts.resolved ?? 0),
+    false_alarm: Number(results.status_counts.false_alarm ?? 0),
+  };
 };
 
 const loadSummaryAlerts = async () => {
@@ -849,19 +937,24 @@ const loadSummaryAlerts = async () => {
 };
 
 // Fetch summary activities from API
-const fetchSummaryActivities = async (siteUid: string): Promise<SummaryActivity[]> => {
+const fetchSummaryActivities = async (
+  siteUid: string
+): Promise<SummaryActivity[]> => {
   if (!siteUid) {
     return [];
   }
 
-  const { data } = await ApiService.query(`sites/${siteUid}/activities-summary`, {
-    params: {
-      site_uid: siteUid,
-      from_date: new Date().toISOString().split("T")[0],
-      to_date: new Date().toISOString().split("T")[0],
-    },
-    _suppressGlobalLoading: true,
-  });
+  const { data } = await ApiService.query(
+    `sites/${siteUid}/activities-summary`,
+    {
+      params: {
+        site_uid: siteUid,
+        from_date: new Date().toISOString().split("T")[0],
+        to_date: new Date().toISOString().split("T")[0],
+      },
+      _suppressGlobalLoading: true,
+    }
+  );
 
   const activities = Array.isArray(data?.data?.activities)
     ? data.data.activities
@@ -872,8 +965,12 @@ const fetchSummaryActivities = async (siteUid: string): Promise<SummaryActivity[
   return activities.map((item: any) => ({
     activity_uid: String(item?.activity_uid ?? item?.uid ?? ""),
     activity_name: String(item?.activity_name ?? item?.name ?? "Aktivitas"),
-    earliest_active: item?.earliest_active ? convertToGMT8(item.earliest_active) : null,
-    latest_active: item?.latest_active ? convertToGMT8(item.latest_active) : null,
+    earliest_active: item?.earliest_active
+      ? convertToGMT8(item.earliest_active)
+      : null,
+    latest_active: item?.latest_active
+      ? convertToGMT8(item.latest_active)
+      : null,
   }));
 };
 
@@ -1013,7 +1110,10 @@ const summaryScrollStep = computed(() => {
 });
 
 const maxSummaryScrollIndex = computed(() => {
-  return Math.max(0, summaryActivities.value.length - summaryCardsPerView.value);
+  return Math.max(
+    0,
+    summaryActivities.value.length - summaryCardsPerView.value
+  );
 });
 
 const totalSummaryPages = computed(() => {
@@ -1022,7 +1122,10 @@ const totalSummaryPages = computed(() => {
 
 // Summary carousel navigation functions
 const scrollSummaryCarousel = (direction) => {
-  if (direction === "next" && currentSummaryScrollIndex.value < maxSummaryScrollIndex.value) {
+  if (
+    direction === "next" &&
+    currentSummaryScrollIndex.value < maxSummaryScrollIndex.value
+  ) {
     currentSummaryScrollIndex.value++;
   } else if (direction === "prev" && currentSummaryScrollIndex.value > 0) {
     currentSummaryScrollIndex.value--;
@@ -1030,7 +1133,10 @@ const scrollSummaryCarousel = (direction) => {
 };
 
 const scrollSummaryToPage = (pageIndex) => {
-  currentSummaryScrollIndex.value = Math.min(pageIndex, maxSummaryScrollIndex.value);
+  currentSummaryScrollIndex.value = Math.min(
+    pageIndex,
+    maxSummaryScrollIndex.value
+  );
 };
 
 // Summary carousel drag handlers
@@ -1200,7 +1306,8 @@ const loadLiveActivities = async () => {
     }));
   } catch (err) {
     console.error("loadLiveActivities failed:", err);
-    error.value = err instanceof Error ? err.message : "Gagal memuat aktivitas.";
+    error.value =
+      err instanceof Error ? err.message : "Gagal memuat aktivitas.";
   } finally {
     loading.value = false;
   }
@@ -1278,8 +1385,8 @@ const handleShowReport = async () => {
         params: {
           page: 1,
           page_size: 10,
-          from_date: "2025-12-04",
-          to_date: "2025-12-04",
+          from_date: new Date().toISOString().split("T")[0],
+          to_date: new Date().toISOString().split("T")[0],
         },
         _suppressGlobalLoading: true,
       }
@@ -1325,7 +1432,9 @@ const handleShowReport = async () => {
 
 const fetchSites = async () => {
   try {
-    const { data } = await ApiService.get("sites", "", { _suppressGlobalLoading: true });
+    const { data } = await ApiService.get("sites", "", {
+      _suppressGlobalLoading: true,
+    });
 
     const list = Array.isArray(data)
       ? data
@@ -1496,6 +1605,14 @@ onMounted(() => {
   loadSummaryActivities();
   setupAutoRefresh(); // Setup auto-refresh when component mounts
   window.addEventListener("resize", updateCardsPerView);
+  localStorage.setItem(
+    "lastSelectedFromDate",
+    new Date().toISOString().split("T")[0]
+  );
+  localStorage.setItem(
+    "lastSelectedToDate",
+    new Date().toISOString().split("T")[0]
+  );
 });
 
 onBeforeUnmount(() => {
@@ -2328,7 +2445,7 @@ i,
     justify-content: center;
     align-items: center;
   }
-  
+
   .live-activity-swiper .swiper-slide-content {
     max-width: 200px;
     width: 100%;

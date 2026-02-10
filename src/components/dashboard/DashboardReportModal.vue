@@ -82,7 +82,7 @@
           <!-- Data Table -->
           <section class="table-section">
             <h4 v-if="pageIndex === 0" class="table-title">
-              {{ t("dashboard.alerts.title") }}
+              {{ t("dashboard.alerts.summary.title") }}
             </h4>
             <table class="report-table">
               <thead>
@@ -856,44 +856,44 @@ const downloadPdf = () => {
     max-width: none;
     height: 95vh;
   }
-  
+
   .report-content {
     padding: 15px;
     max-width: 100%;
   }
-  
+
   .report-logo {
     height: 35px;
   }
-  
+
   .report-title {
     font-size: 14px;
   }
-  
+
   .meta-section {
     flex-direction: column;
     gap: 8px;
     font-size: 10px;
   }
-  
+
   .summary-section {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .report-table {
     font-size: 10px;
   }
-  
+
   .report-table th,
   .report-table td {
     padding: 6px 4px;
   }
-  
+
   .card-value {
     font-size: 20px;
   }
-  
+
   .card-label {
     font-size: 10px;
   }
@@ -905,15 +905,15 @@ const downloadPdf = () => {
     height: 100vh;
     border-radius: 0;
   }
-  
+
   .report-content {
     padding: 10px;
   }
-  
+
   .report-table {
     font-size: 9px;
   }
-  
+
   .report-table th,
   .report-table td {
     padding: 4px 2px;
