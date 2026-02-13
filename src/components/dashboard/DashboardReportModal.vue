@@ -363,7 +363,7 @@ const downloadPdf = () => {
       { align: "center" }
     );
 
-    // 2. Resolved Card
+    // // 2. Resolved Card
     doc.setFillColor(236, 253, 245); // #ecfdf5 (Light Green)
     doc.rect(14 + cw + gap, startY, cw, ch, "FD");
 
@@ -388,7 +388,7 @@ const downloadPdf = () => {
       { align: "center" }
     );
 
-    // 3. Unresolved Card
+    // // 3. Unresolved Card
     doc.setFillColor(254, 242, 242); // #fef2f2 (Light Red)
     doc.rect(14 + cw * 2 + gap * 2, startY, cw, ch, "FD");
 
@@ -414,7 +414,7 @@ const downloadPdf = () => {
     // Table Content
     doc.setTextColor(0, 0, 0);
     autoTable(doc, {
-      startY: 90, // Moved down to clear Summary Cards
+      startY: 90, // Moved down to 60 because summary cards are hidden for temporary; original is 90 clear Summary Cards
       head: [
         [
           t("dashboard.alerts.table.violation"),

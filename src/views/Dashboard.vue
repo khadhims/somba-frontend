@@ -750,8 +750,6 @@ import { ref, onMounted, computed, onBeforeUnmount, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import ApiService from "@/core/services/ApiService";
-import liveActivityMock from "@/assets/mockupData/dashboard/live_activity.json";
-import summaryAlertsMock from "@/assets/mockupData/dashboard/summary_alerts.json";
 import { todayDate } from "@/core/data/events";
 // Import Swiper Vue.js components
 import { Swiper, SwiperSlide } from "swiper/vue";
@@ -1301,7 +1299,7 @@ const loadLiveActivities = async () => {
     liveActivities.value = list.map((item: any, index: number) => ({
       activity_uid: String(item?.activity_uid ?? item?.uid ?? index),
       activity_name: String(item?.activity_name ?? item?.name ?? "Aktivitas"),
-      last_activity_timestamp: convertToGMT8(item?.last_activity_timestamp),
+      last_activity_timestamp: toMomentGMT8(item?.last_activity_timestamp),
       currently_active: Boolean(item?.currently_active ?? item?.is_active),
     }));
   } catch (err) {
