@@ -29,7 +29,9 @@ import {
 
 export default defineComponent({
   name: "table-items-per-page-select",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     itemsPerPage: { type: Number, default: 10 },
     itemsPerPageDropdownEnabled: {

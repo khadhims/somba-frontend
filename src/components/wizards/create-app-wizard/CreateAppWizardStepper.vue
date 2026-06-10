@@ -150,6 +150,10 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "CreateAppWizardStepperComponent",
+});
+
 import { ref } from "vue";
 import CreateAppModalForm from "@/components/wizards/create-app-wizard/CreateAppWizardForm.vue";
 

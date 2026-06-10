@@ -13,7 +13,9 @@
         <!--begin::Modal header-->
         <div class="modal-header">
           <!--begin::Modal title-->
-          <h2 class="fw-bold">{{ t('controlplane.site.modals.edit.title') }}</h2>
+          <h2 class="fw-bold">
+            {{ t("controlplane.site.modals.edit.title") }}
+          </h2>
           <!--end::Modal title-->
 
           <!--begin::Close-->
@@ -39,13 +41,17 @@
               <!--begin::Input group-->
               <div class="fv-row mb-7">
                 <!--begin::Label-->
-                <label class="required fs-6 fw-semibold mb-2">{{ t('controlplane.site.modals.form.name.label') }}</label>
+                <label class="required fs-6 fw-semibold mb-2">{{
+                  t("controlplane.site.modals.form.name.label")
+                }}</label>
                 <!--end::Label-->
                 <!--begin::Input-->
                 <input
                   type="text"
                   class="form-control form-control-solid"
-                  :placeholder="t('controlplane.site.modals.form.name.placeholder')"
+                  :placeholder="
+                    t('controlplane.site.modals.form.name.placeholder')
+                  "
                   v-model="formData.name"
                   name="name"
                 />
@@ -61,13 +67,17 @@
               <!--begin::Input group-->
               <div class="fv-row mb-7">
                 <!--begin::Label-->
-                <label class="fs-6 fw-semibold mb-2">{{ t('controlplane.site.modals.form.description.label') }}</label>
+                <label class="fs-6 fw-semibold mb-2">{{
+                  t("controlplane.site.modals.form.description.label")
+                }}</label>
                 <!--end::Label-->
                 <!--begin::Input-->
                 <textarea
                   class="form-control form-control-solid"
                   rows="3"
-                  :placeholder="t('controlplane.site.modals.form.description.placeholder')"
+                  :placeholder="
+                    t('controlplane.site.modals.form.description.placeholder')
+                  "
                   v-model="formData.description"
                   name="description"
                 ></textarea>
@@ -87,15 +97,17 @@
               class="btn btn-light me-3"
               data-bs-dismiss="modal"
             >
-              {{ t('controlplane.site.modals.actions.cancel') }}
+              {{ t("controlplane.site.modals.actions.cancel") }}
             </button>
             <!--end::Button-->
 
             <!--begin::Button-->
             <button type="submit" class="btn btn-primary" :disabled="loading">
-              <span v-if="!loading" class="indicator-label">{{ t('controlplane.site.modals.edit.submit') }}</span>
+              <span v-if="!loading" class="indicator-label">{{
+                t("controlplane.site.modals.edit.submit")
+              }}</span>
               <span v-if="loading" class="indicator-progress">
-                {{ t('controlplane.site.modals.actions.loading') }}
+                {{ t("controlplane.site.modals.actions.loading") }}
                 <span
                   class="spinner-border spinner-border-sm align-middle ms-2"
                 ></span>
@@ -114,6 +126,10 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "EditSiteModalComponent",
+});
+
 import { ref, reactive } from "vue";
 import { Modal } from "bootstrap";
 import ApiService from "@/core/services/ApiService";
@@ -190,7 +206,8 @@ const submitForm = async () => {
     const resp = await ApiService.patch(`sites/${formData.uid}`, payload);
 
     // Backend may return wrapped response { status, code, message, data }
-    const returned = resp && resp.data && resp.data.data ? resp.data.data : resp.data;
+    const returned =
+      resp && resp.data && resp.data.data ? resp.data.data : resp.data;
 
     // Emit updated site to parent
     emit("site-updated", returned || { ...formData });
@@ -204,8 +221,14 @@ const submitForm = async () => {
     // If backend returns validation errors, map them to UI
     const serverErrors = error?.response?.data?.errors;
     if (serverErrors) {
-      if (serverErrors.name) errors.name = Array.isArray(serverErrors.name) ? serverErrors.name.join(" ") : serverErrors.name;
-      if (serverErrors.description) errors.description = Array.isArray(serverErrors.description) ? serverErrors.description.join(" ") : serverErrors.description;
+      if (serverErrors.name)
+        errors.name = Array.isArray(serverErrors.name)
+          ? serverErrors.name.join(" ")
+          : serverErrors.name;
+      if (serverErrors.description)
+        errors.description = Array.isArray(serverErrors.description)
+          ? serverErrors.description.join(" ")
+          : serverErrors.description;
     }
   } finally {
     loading.value = false;

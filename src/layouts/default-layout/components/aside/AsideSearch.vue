@@ -18,7 +18,9 @@ export default defineComponent({
   setup() {
     // No need for search initialization anymore
     // InlineForm handles the trigger to open GlobalSearch
-    return {};
+    return {
+      /* empty */
+    };
   },
 });
 </script>

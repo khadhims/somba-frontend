@@ -14,7 +14,9 @@ export class EventHandlerUtil {
     [name: string]: {
       [handlerId: string]: EventMeta;
     };
-  } = {};
+  } = {
+    /* empty */
+  };
 
   private static setEventMetasByName(
     name: string,
@@ -42,7 +44,9 @@ export class EventHandlerUtil {
       EventHandlerUtil.store[name][handlerId] = meta;
       return;
     }
-    EventHandlerUtil.store[name] = {};
+    EventHandlerUtil.store[name] = {
+      /* empty */
+    };
     EventHandlerUtil.store[name][handlerId] = meta;
   }
 

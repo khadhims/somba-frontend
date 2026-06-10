@@ -5,7 +5,9 @@ import {
   getUniqueIdWithPrefix,
 } from "../_utils/index";
 
-export interface IImageInputOptions {}
+export interface IImageInputOptions {
+  /* empty */
+}
 
 export interface IImageInputQueries {
   componentName: string;
@@ -17,7 +19,9 @@ export interface IImageInputQueries {
   hiddenQuery: string;
 }
 
-const defaultImageInputOptions = {};
+const defaultImageInputOptions = {
+  /* empty */
+};
 
 const defaultImageInputQueires: IImageInputQueries = {
   componentName: "image-input",

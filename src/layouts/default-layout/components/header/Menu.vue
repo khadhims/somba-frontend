@@ -445,7 +445,9 @@ import { version } from "@/core/helpers/system";
 
 export default defineComponent({
   name: "KTMenu",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const { t, te } = useI18n();
     const route = useRoute();

@@ -105,7 +105,9 @@ export default defineComponent({
   },
   setup(props) {
     const chartRef = ref<typeof VueApexCharts | null>(null);
-    const chart = ref<ApexOptions>({});
+    const chart = ref<ApexOptions>({
+      /* empty */
+    });
     const store = useThemeStore();
 
     const series = ref([
@@ -180,7 +182,9 @@ const chartOptions = (
         opacity: 0.5,
       },
     },
-    plotOptions: {},
+    plotOptions: {
+      /* empty */
+    },
     legend: {
       show: false,
     },

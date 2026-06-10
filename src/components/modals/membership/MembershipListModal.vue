@@ -6,7 +6,7 @@
         <!-- Modal Header -->
         <div class="modal-header">
           <h5 class="modal-title">
-            {{ t('components.membership.list.title', { entity: entityLabel }) }}
+            {{ t("components.membership.list.title", { entity: entityLabel }) }}
           </h5>
           <div class="d-flex align-items-center">
             <!-- Add Member Button -->
@@ -16,9 +16,9 @@
               @click="showAddMemberModal"
             >
               <i class="ki-duotone ki-plus fs-2 me-1"></i>
-              {{ t('components.membership.list.buttons.add') }}
+              {{ t("components.membership.list.buttons.add") }}
             </button>
-            
+
             <!-- Close Button -->
             <button
               type="button"
@@ -35,7 +35,7 @@
           <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="d-flex align-items-center">
               <label class="form-label me-3 mb-0 fw-semibold">
-                {{ t('components.membership.list.filters.itemsLabel') }}
+                {{ t("components.membership.list.filters.itemsLabel") }}
               </label>
               <select
                 v-model="perPage"
@@ -58,7 +58,9 @@
                 type="text"
                 v-model="searchQuery"
                 class="form-control form-control-solid w-250px ps-12"
-                :placeholder="t('components.membership.list.filters.searchPlaceholder')"
+                :placeholder="
+                  t('components.membership.list.filters.searchPlaceholder')
+                "
               />
             </div>
           </div>
@@ -67,28 +69,47 @@
           <div class="table-responsive">
             <table class="table table-rounded table-striped border gy-7 gs-7">
               <thead>
-                <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                  <th>{{ t('components.membership.list.table.headers.member') }}</th>
-                  <th>{{ t('components.membership.list.table.headers.role') }}</th>
-                  <th>{{ t('components.membership.list.table.headers.joined') }}</th>
-                  <th class="text-end">{{ t('components.membership.list.table.headers.actions') }}</th>
+                <tr
+                  class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200"
+                >
+                  <th>
+                    {{ t("components.membership.list.table.headers.member") }}
+                  </th>
+                  <th>
+                    {{ t("components.membership.list.table.headers.role") }}
+                  </th>
+                  <th>
+                    {{ t("components.membership.list.table.headers.joined") }}
+                  </th>
+                  <th class="text-end">
+                    {{ t("components.membership.list.table.headers.actions") }}
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-if="loading">
                   <td colspan="4" class="text-center py-4">
-                    <div class="spinner-border spinner-border-sm text-primary" role="status">
-                      <span class="visually-hidden">{{ t('components.membership.list.table.loadingLabel') }}</span>
+                    <div
+                      class="spinner-border spinner-border-sm text-primary"
+                      role="status"
+                    >
+                      <span class="visually-hidden">{{
+                        t("components.membership.list.table.loadingLabel")
+                      }}</span>
                     </div>
-                    <span class="ms-2">{{ t('components.membership.list.table.loadingMessage') }}</span>
+                    <span class="ms-2">{{
+                      t("components.membership.list.table.loadingMessage")
+                    }}</span>
                   </td>
                 </tr>
                 <tr v-else-if="filteredMembers.length === 0">
                   <td colspan="4" class="text-center py-4 text-muted">
                     {{
                       searchQuery
-                        ? t('components.membership.list.table.emptySearch', { query: searchQuery })
-                        : t('components.membership.list.table.empty')
+                        ? t("components.membership.list.table.emptySearch", {
+                            query: searchQuery,
+                          })
+                        : t("components.membership.list.table.empty")
                     }}
                   </td>
                 </tr>
@@ -97,16 +118,25 @@
                   <td>
                     <div class="d-flex align-items-center">
                       <div class="symbol symbol-35px me-4">
-                        <span class="symbol-label bg-light-primary text-primary fw-bold">
-                          {{ member.email?.charAt(0).toUpperCase() || 'U' }}
+                        <span
+                          class="symbol-label bg-light-primary text-primary fw-bold"
+                        >
+                          {{ member.email?.charAt(0).toUpperCase() || "U" }}
                         </span>
                       </div>
                       <div>
                         <span class="text-dark fw-bold d-block fs-6">
-                          {{ member.email || t('components.membership.list.table.unknownUser') }}
+                          {{
+                            member.email ||
+                            t("components.membership.list.table.unknownUser")
+                          }}
                         </span>
                         <span class="text-muted fw-semibold d-block fs-7">
-                          {{ t('components.membership.list.table.rolePrefix', { role: getRoleLabel(member.role) }) }}
+                          {{
+                            t("components.membership.list.table.rolePrefix", {
+                              role: getRoleLabel(member.role),
+                            })
+                          }}
                         </span>
                       </div>
                     </div>
@@ -114,8 +144,10 @@
 
                   <!-- Role -->
                   <td>
-                    <span 
-                      :class="`badge badge-light-${getRoleBadgeColor(member.role)} fs-7 fw-bold`"
+                    <span
+                      :class="`badge badge-light-${getRoleBadgeColor(
+                        member.role
+                      )} fs-7 fw-bold`"
                     >
                       {{ getRoleLabel(member.role) }}
                     </span>
@@ -167,8 +199,12 @@
             <nav aria-label="Members pagination">
               <ul class="pagination">
                 <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                  <button class="page-link" @click="goToPage(currentPage - 1)" :disabled="currentPage === 1">
-                    {{ t('components.membership.list.pagination.previous') }}
+                  <button
+                    class="page-link"
+                    @click="goToPage(currentPage - 1)"
+                    :disabled="currentPage === 1"
+                  >
+                    {{ t("components.membership.list.pagination.previous") }}
                   </button>
                 </li>
                 <li
@@ -181,9 +217,16 @@
                     {{ page }}
                   </button>
                 </li>
-                <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                  <button class="page-link" @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages">
-                    {{ t('components.membership.list.pagination.next') }}
+                <li
+                  class="page-item"
+                  :class="{ disabled: currentPage === totalPages }"
+                >
+                  <button
+                    class="page-link"
+                    @click="goToPage(currentPage + 1)"
+                    :disabled="currentPage === totalPages"
+                  >
+                    {{ t("components.membership.list.pagination.next") }}
                   </button>
                 </li>
               </ul>
@@ -194,7 +237,7 @@
         <!-- Modal Footer -->
         <div class="modal-footer">
           <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-            {{ t('components.membership.list.buttons.close') }}
+            {{ t("components.membership.list.buttons.close") }}
           </button>
         </div>
       </div>
@@ -211,6 +254,10 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "MembershipListModalComponent",
+});
+
 import { ref, computed, watch } from "vue";
 import { Modal } from "bootstrap";
 import { useI18n } from "vue-i18n";
@@ -219,7 +266,7 @@ import AddEditMemberModal from "@/components/modals/membership/AddEditMemberModa
 
 // Props
 interface Props {
-  entityType: 'account' | 'team' | 'organization';
+  entityType: "account" | "team" | "organization";
   entityUid: string;
   modalId: string;
 }
@@ -258,7 +305,7 @@ const { t, locale } = useI18n();
 
 const members = ref<Member[]>([]);
 const loading = ref(false);
-const searchQuery = ref('');
+const searchQuery = ref("");
 const currentPage = ref(1);
 const perPage = ref(10);
 
@@ -266,14 +313,19 @@ const perPage = ref(10);
 const addEditMemberModalRef = ref();
 let modalInstance: Modal | null = null;
 
-const entityLabel = computed(() => t(`components.membership.common.entity.${props.entityType}`));
-const entityLabelLower = computed(() => t(`components.membership.common.entityLower.${props.entityType}`));
-const dateFormatter = computed(() =>
-  new Intl.DateTimeFormat(locale.value, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  })
+const entityLabel = computed(() =>
+  t(`components.membership.common.entity.${props.entityType}`)
+);
+const entityLabelLower = computed(() =>
+  t(`components.membership.common.entityLower.${props.entityType}`)
+);
+const dateFormatter = computed(
+  () =>
+    new Intl.DateTimeFormat(locale.value, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
 );
 
 const getRoleLabel = (role?: string) => {
@@ -293,12 +345,13 @@ const filteredMembers = computed(() => {
   }
 
   const query = searchQuery.value.toLowerCase();
-  return members.value.filter(member => {
-    const email = member.email || '';
-    const role = member.role || '';
-    
-    return email.toLowerCase().includes(query) ||
-           role.toLowerCase().includes(query);
+  return members.value.filter((member) => {
+    const email = member.email || "";
+    const role = member.role || "";
+
+    return (
+      email.toLowerCase().includes(query) || role.toLowerCase().includes(query)
+    );
   });
 });
 
@@ -316,19 +369,19 @@ const visiblePages = computed(() => {
   const current = currentPage.value;
   const total = totalPages.value;
   const pages: number[] = [];
-  
+
   const maxVisible = 5;
   let start = Math.max(1, current - Math.floor(maxVisible / 2));
   let end = Math.min(total, start + maxVisible - 1);
-  
+
   if (end - start + 1 < maxVisible) {
     start = Math.max(1, end - maxVisible + 1);
   }
-  
+
   for (let i = start; i <= end; i++) {
     pages.push(i);
   }
-  
+
   return pages;
 });
 
@@ -336,50 +389,59 @@ const visiblePages = computed(() => {
 const fetchMembers = async () => {
   loading.value = true;
   try {
-    console.log(`Fetching ${props.entityType} members for entityUid:`, props.entityUid);
-    
+    console.log(
+      `Fetching ${props.entityType} members for entityUid:`,
+      props.entityUid
+    );
+
     // Validate entityUid
-    if (!props.entityUid || props.entityUid.trim() === '') {
-      console.error('EntityUid is empty or undefined');
+    if (!props.entityUid || props.entityUid.trim() === "") {
+      console.error("EntityUid is empty or undefined");
       members.value = [];
       loading.value = false;
       return;
     }
-    
-    let endpoint = '';
-    if (props.entityType === 'account') {
+
+    let endpoint = "";
+    if (props.entityType === "account") {
       endpoint = `accounts/${props.entityUid}/memberships`;
-    } else if (props.entityType === 'team') {
+    } else if (props.entityType === "team") {
       endpoint = `teams/${props.entityUid}/memberships`;
-    } else if (props.entityType === 'organization') {
+    } else if (props.entityType === "organization") {
       endpoint = `organizations/${props.entityUid}/memberships`;
     }
-    
-    console.log('Final endpoint:', endpoint);
-    console.log('Full URL will be:', import.meta.env.VITE_APP_API_URL + endpoint);
-    const response = await ApiService.query(endpoint, {});
-    
-    console.log('Full API Response:', response);
-    console.log('Response data:', response?.data);
-    
+
+    console.log("Final endpoint:", endpoint);
+    console.log(
+      "Full URL will be:",
+      import.meta.env.VITE_APP_API_URL + endpoint
+    );
+    const response = await ApiService.query(endpoint, {
+      /* empty */
+    });
+
+    console.log("Full API Response:", response);
+    console.log("Response data:", response?.data);
+
     if (response && response.data) {
-      // Handle API response structure: { results: [], pagination: {} }
-      const data = response.data.results && Array.isArray(response.data.results) 
-        ? response.data.results 
-        : response.data.data && Array.isArray(response.data.data) 
-          ? response.data.data 
-          : Array.isArray(response.data) 
-            ? response.data 
-            : [];
-          
+      // Handle API response structure: { results: [], pagination: { /* empty */ } }
+      const data =
+        response.data.results && Array.isArray(response.data.results)
+          ? response.data.results
+          : response.data.data && Array.isArray(response.data.data)
+          ? response.data.data
+          : Array.isArray(response.data)
+          ? response.data
+          : [];
+
       members.value = data;
-      console.log('Members loaded:', members.value);
-      console.log('First member structure:', members.value[0]);
+      console.log("Members loaded:", members.value);
+      console.log("First member structure:", members.value[0]);
     } else {
       members.value = [];
     }
   } catch (error) {
-    console.error('Error fetching members:', error);
+    console.error("Error fetching members:", error);
     members.value = [];
   } finally {
     loading.value = false;
@@ -400,7 +462,8 @@ const deleteMember = async (member: Member) => {
     return;
   }
 
-  const memberName = member.email || t("components.membership.list.table.unknownUser");
+  const memberName =
+    member.email || t("components.membership.list.table.unknownUser");
   const confirmMessage = t("components.membership.list.alerts.confirmRemove", {
     member: memberName,
     entity: entityLabelLower.value,
@@ -412,7 +475,7 @@ const deleteMember = async (member: Member) => {
 
   loading.value = true;
   try {
-    let endpoint = '';
+    let endpoint = "";
     if (props.entityType === "account") {
       endpoint = `accounts/${props.entityUid}/memberships/${member.uid}`;
     } else if (props.entityType === "team") {
@@ -420,19 +483,19 @@ const deleteMember = async (member: Member) => {
     } else if (props.entityType === "organization") {
       endpoint = `organizations/${props.entityUid}/memberships/${member.uid}`;
     }
-    
+
     await ApiService.delete(endpoint);
-    
+
     // Remove member from local list
-    members.value = members.value.filter(m => m.uid !== member.uid);
-    
+    members.value = members.value.filter((m) => m.uid !== member.uid);
+
     // Adjust current page if needed
     if (paginatedMembers.value.length === 0 && currentPage.value > 1) {
       currentPage.value = currentPage.value - 1;
     }
   } catch (error) {
-    console.error('Error removing member:', error);
-    alert(t('components.membership.list.alerts.removeFailed'));
+    console.error("Error removing member:", error);
+    alert(t("components.membership.list.alerts.removeFailed"));
   } finally {
     loading.value = false;
   }
@@ -468,35 +531,35 @@ const getRoleBadgeColor = (role: string): string => {
 
 const formatDate = (dateString: string): string => {
   if (!dateString) {
-    return t('components.membership.list.table.unknownDate');
+    return t("components.membership.list.table.unknownDate");
   }
 
   try {
     const date = new Date(dateString);
     if (Number.isNaN(date.getTime())) {
-      return t('components.membership.list.table.invalidDate');
+      return t("components.membership.list.table.invalidDate");
     }
     return dateFormatter.value.format(date);
   } catch (error) {
-    return t('components.membership.list.table.invalidDate');
+    return t("components.membership.list.table.invalidDate");
   }
 };
 
 // Public methods for parent components
 const showModal = () => {
-  console.log('showModal called, entityUid:', props.entityUid);
-  
+  console.log("showModal called, entityUid:", props.entityUid);
+
   if (!modalInstance) {
     modalInstance = new Modal(document.getElementById(props.modalId)!);
   }
-  
+
   // Reset state
-  searchQuery.value = '';
+  searchQuery.value = "";
   currentPage.value = 1;
-  
+
   // Show modal first
   modalInstance.show();
-  
+
   // Fetch members after a small delay to ensure modal is fully shown and props are ready
   setTimeout(() => {
     fetchMembers();
@@ -515,18 +578,21 @@ watch(searchQuery, () => {
 });
 
 // Watch for entityUid changes to refetch data
-watch(() => props.entityUid, (newUid, oldUid) => {
-  console.log('EntityUid watcher triggered - from:', oldUid, 'to:', newUid);
-  if (newUid && newUid.trim() !== '' && newUid !== oldUid) {
-    console.log('EntityUid changed, refetching members...');
-    fetchMembers();
+watch(
+  () => props.entityUid,
+  (newUid, oldUid) => {
+    console.log("EntityUid watcher triggered - from:", oldUid, "to:", newUid);
+    if (newUid && newUid.trim() !== "" && newUid !== oldUid) {
+      console.log("EntityUid changed, refetching members...");
+      fetchMembers();
+    }
   }
-});
+);
 
 // Expose methods to parent
 defineExpose({
   showModal,
-  hideModal
+  hideModal,
 });
 </script>
 

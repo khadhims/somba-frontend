@@ -140,7 +140,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "kt-widget-4",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     widgetClasses: String,
   },

@@ -619,7 +619,9 @@ export default defineComponent({
   props: {
     cardClasses: String,
   },
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getAssetPath,

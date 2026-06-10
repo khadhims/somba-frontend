@@ -12,7 +12,9 @@ import { useBodyStore } from "@/stores/body";
 
 export default defineComponent({
   name: "system-layout",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const store = useBodyStore();
 

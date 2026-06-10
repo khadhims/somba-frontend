@@ -179,6 +179,10 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "DashboardReportModalComponent",
+});
+
 import { ref, type PropType, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import jsPDF from "jspdf";
@@ -532,7 +536,7 @@ const downloadPdf = () => {
           });
         }
       },
-      didDrawPage: (data) => {
+      didDrawPage: () => {
         // Header logic moved to main execution to avoid duplication, or simplified here.
         // If we want header on EVERY page, keep it here.
         // But title "Laporan Harian" usually only on first page? User said title overlapping.

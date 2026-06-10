@@ -219,22 +219,6 @@ const routes: Array<RouteRecordRaw> = [
             },
           },
           {
-            path: "room",
-            name: "site-room",
-            component: () => import("@/views/controlplane/site/Room.vue"),
-            meta: {
-              pageTitle: "Room",
-            },
-          },
-          {
-            path: "nvr",
-            name: "site-nvr",
-            component: () => import("@/views/controlplane/site/Nvr.vue"),
-            meta: {
-              pageTitle: "NVR",
-            },
-          },
-          {
             path: "camera",
             name: "site-camera",
             component: () => import("@/views/controlplane/site/Camera.vue"),

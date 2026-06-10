@@ -97,7 +97,9 @@ class ToggleComponent {
     }
 
     if (this.options.saveState) {
-      CookieComponent.set(this.attribute, "on", {});
+      CookieComponent.set(this.attribute, "on", {
+        /* empty */
+      });
     }
 
     EventHandlerUtil.trigger(this.element, "kt.toggle.enabled");

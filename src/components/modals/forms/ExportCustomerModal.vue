@@ -160,7 +160,9 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 
 export default defineComponent({
   name: "export-customers-modal",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const formRef = ref<null | HTMLFormElement>(null);
     const loading = ref<boolean>(false);

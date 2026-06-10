@@ -153,7 +153,9 @@ import ClipboardJS from "clipboard";
 
 export default defineComponent({
   name: "share-and-earn-modal",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const copyButtonRef = ref<null | HTMLElement>(null);
     const inputRef = ref<null | HTMLElement>(null);

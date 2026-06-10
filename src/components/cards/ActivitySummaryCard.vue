@@ -4,15 +4,12 @@
       <div class="card-body p-4">
         <!-- Icon and Title -->
         <div class="d-flex align-items-center mb-3">
-          <div 
+          <div
             class="symbol symbol-45px me-3"
             :style="{ backgroundColor: bgColor || '#2196f3' }"
           >
             <span class="symbol-label">
-              <i 
-                :class="icon || 'fas fa-tasks'" 
-                class="fs-2 activity-icon"
-              ></i>
+              <i :class="icon || 'fas fa-tasks'" class="fs-2 activity-icon"></i>
             </span>
           </div>
           <div class="flex-grow-1">
@@ -25,7 +22,10 @@
           <!-- Earliest Active -->
           <div class="time-row mb-2">
             <div class="d-flex align-items-center justify-content-between">
-              <span class="text-muted fs-8">{{ t('dashboard.activities.summary.earliestActive') || 'Pertama Aktif' }}</span>
+              <span class="text-muted fs-8">{{
+                t("dashboard.activities.summary.earliestActive") ||
+                "Pertama Aktif"
+              }}</span>
               <span class="fw-semibold text-dark fs-8">
                 {{ earliestActiveFormatted }}
               </span>
@@ -35,7 +35,10 @@
           <!-- Latest Active -->
           <div class="time-row">
             <div class="d-flex align-items-center justify-content-between">
-              <span class="text-muted fs-8">{{ t('dashboard.activities.summary.latestActive') || 'Terakhir Aktif' }}</span>
+              <span class="text-muted fs-8">{{
+                t("dashboard.activities.summary.latestActive") ||
+                "Terakhir Aktif"
+              }}</span>
               <span class="fw-semibold text-dark fs-8">
                 {{ latestActiveFormatted }}
               </span>
@@ -48,9 +51,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { formatDateTimeGMT8 } from '@/core/helpers/timezone';
+defineOptions({
+  name: "ActivitySummaryCardComponent",
+});
+
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+import { formatDateTimeGMT8 } from "@/core/helpers/timezone";
 
 const { t } = useI18n();
 
@@ -66,16 +73,20 @@ const props = defineProps<Props>();
 
 const earliestActiveFormatted = computed(() => {
   if (!props.earliestActive) {
-    return t('dashboard.activities.summary.noActivity') || 'Belum ada aktivitas';
+    return (
+      t("dashboard.activities.summary.noActivity") || "Belum ada aktivitas"
+    );
   }
-  return formatDateTimeGMT8(props.earliestActive, 'HH:mm:ss');
+  return formatDateTimeGMT8(props.earliestActive, "HH:mm:ss");
 });
 
 const latestActiveFormatted = computed(() => {
   if (!props.latestActive) {
-    return t('dashboard.activities.summary.noActivity') || 'Belum ada aktivitas';
+    return (
+      t("dashboard.activities.summary.noActivity") || "Belum ada aktivitas"
+    );
   }
-  return formatDateTimeGMT8(props.latestActive, 'HH:mm:ss');
+  return formatDateTimeGMT8(props.latestActive, "HH:mm:ss");
 });
 </script>
 

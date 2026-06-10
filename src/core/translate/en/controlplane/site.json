@@ -109,7 +109,7 @@
 				},
 				"room": {
 					"label": "Room",
-					"placeholder": "Select Room"
+					"placeholder": "Enter room name"
 				},
 				"nvr": {
 					"label": "NVR",
@@ -119,9 +119,10 @@
 					"label": "Camera Name",
 					"placeholder": "Enter camera name"
 				},
-				"ipAddress": {
-					"label": "IP Address",
-					"placeholder": "192.168.1.200"
+				"cameraUrl": {
+					"label": "Camera URL",
+					"placeholder": "http://192.168.1.10:8554/camera1/index.m3u8",
+					"invalid": "Enter a valid HLS URL (http:// or https://)"
 				},
 				"brand": {
 					"label": "Brand",
@@ -159,10 +160,6 @@
 						"12mp": "12MP"
 					}
 				},
-				"channel": {
-					"label": "Channel Number",
-					"placeholder": "1"
-				},
 				"location": {
 					"label": "Location",
 					"placeholder": "Specific location description"
@@ -188,11 +185,10 @@
 			"name": "Camera Name",
 			"location": "Location",
 			"specs": "Specifications",
-			"nvr": "NVR",
+			"cameraUrl": "Camera URL",
 			"status": "Status",
 			"actions": "Actions",
-			"empty": "No cameras found",
-			"channelPrefix": "Ch."
+			"empty": "No cameras found"
 		},
 		"actions": {
 			"view": "View Live Stream",
@@ -439,7 +435,7 @@
 			"empty": "No rooms found"
 		},
 		"actions": {
-			"manageNvrs": "Manage NVRs",
+			"manageCameras": "Manage Cameras",
 			"edit": "Edit Room",
 			"delete": "Delete Room"
 		},

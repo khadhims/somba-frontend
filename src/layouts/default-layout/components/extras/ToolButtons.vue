@@ -33,6 +33,8 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "kt-toolbar-buttons",
-  components: {},
+  components: {
+    /* empty */
+  },
 });
 </script>

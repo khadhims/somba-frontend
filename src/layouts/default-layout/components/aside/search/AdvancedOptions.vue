@@ -206,6 +206,8 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "advanced-options",
-  components: {},
+  components: {
+    /* empty */
+  },
 });
 </script>

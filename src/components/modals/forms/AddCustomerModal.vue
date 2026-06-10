@@ -333,7 +333,9 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 
 export default defineComponent({
   name: "add-customer-modal",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const formRef = ref<null | HTMLFormElement>(null);
     const addCustomerModalRef = ref<null | HTMLElement>(null);

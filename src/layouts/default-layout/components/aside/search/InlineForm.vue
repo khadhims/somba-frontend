@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from "vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "inline-form",
@@ -42,7 +42,7 @@ export default defineComponent({
     // Get the global search opener from the root
     const openGlobalSearch = () => {
       // Dispatch custom event to open global search
-      window.dispatchEvent(new CustomEvent('open-global-search'));
+      window.dispatchEvent(new CustomEvent("open-global-search"));
     };
 
     return {
@@ -59,7 +59,7 @@ export default defineComponent({
 
 .search-trigger-wrapper:hover .search-input {
   background-color: #f5f8fa;
-  border-color: #3699FF;
+  border-color: #3699ff;
 }
 
 .cursor-pointer {

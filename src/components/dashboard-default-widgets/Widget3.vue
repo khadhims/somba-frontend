@@ -119,7 +119,9 @@ import { getCSSVariableValue } from "@/assets/ts/_utils";
 
 export default defineComponent({
   name: "default-dashboard-widget-2",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     className: { type: String, required: false },
     chartSize: { type: Number, required: true },

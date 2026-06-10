@@ -188,7 +188,9 @@ class ScrollComponent {
 
   private scrollHandler = () => {
     const cookieId = this.id + "st";
-    CookieComponent.set(cookieId, this.element.scrollTop, {});
+    CookieComponent.set(cookieId, this.element.scrollTop, {
+      /* empty */
+    });
   };
 
   private destroyScrollHandler = () => {
@@ -266,7 +268,9 @@ class ScrollComponent {
     });
   }
 
-  public static destroyAll(attr: string = '[data-kt-scroll="true"]') {}
+  public static destroyAll(attr: string = '[data-kt-scroll="true"]') {
+    /* empty */
+  }
 
   public static bootstrap(attr: string = '[data-kt-scroll="true"]') {
     ScrollComponent.createInstances(attr);

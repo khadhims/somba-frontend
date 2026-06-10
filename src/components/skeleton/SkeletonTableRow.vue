@@ -9,7 +9,11 @@
 </template>
 
 <script setup lang="ts">
-import SkeletonBlock from './SkeletonBlock.vue';
+defineOptions({
+  name: "SkeletonTableRowComponent",
+});
+
+import SkeletonBlock from "./SkeletonBlock.vue";
 
 const props = defineProps({
   columns: { type: Number, default: 5 },

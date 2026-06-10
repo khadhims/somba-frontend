@@ -119,7 +119,9 @@ router.beforeEach((to, from, next) => {
   const configStore = useConfigStore();
 
   // current page view title
-  const translatedTitle = to.meta.pageTitle ? i18n.global.t(to.meta.pageTitle as string) : to.meta.pageTitle;
+  const translatedTitle = to.meta.pageTitle
+    ? i18n.global.t(to.meta.pageTitle as string)
+    : to.meta.pageTitle;
   document.title = `${translatedTitle} - ${import.meta.env.VITE_APP_NAME}`;
 
   // reset config to initial state

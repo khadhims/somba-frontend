@@ -84,7 +84,9 @@ const mergeDeep = (
         typeof target[key] !== "object" ||
         Array.isArray(target[key])
       ) {
-        target[key] = {};
+        target[key] = {
+          /* empty */
+        };
       }
       mergeDeep(target[key], sourceValue);
     } else {
@@ -184,24 +186,20 @@ const messages = {
     overview: "Overview",
     siteManagement: "Site Management",
     siteConfiguration: "Site Configuration",
-    roomManagement: "Room Management",
-    nvrSystems: "NVR Systems",
     cameraManagement: "Camera Management",
     // Page titles
-    "Dashboard": "Dashboard",
+    Dashboard: "Dashboard",
     "Layout Builder": "Layout Builder",
-    "Overview": "Overview",
-    "Projects": "Projects",
-    "Campaigns": "Campaigns",
-    "Documents": "Documents",
-    "Connections": "Connections",
-    "Activity": "Activity",
-    "Horizontal": "Horizontal",
-    "Vertical": "Vertical",
-    "Room": "Room",
-    "NVR": "NVR",
-    "Camera": "Camera",
-    "Settings": "Settings",
+    Overview: "Overview",
+    Projects: "Projects",
+    Campaigns: "Campaigns",
+    Documents: "Documents",
+    Connections: "Connections",
+    Activity: "Activity",
+    Horizontal: "Horizontal",
+    Vertical: "Vertical",
+    Camera: "Camera",
+    Settings: "Settings",
     "Live View": "Live View",
     "Events Management": "Events Management",
     "Alerts Management": "Alerts Management",
@@ -217,19 +215,19 @@ const messages = {
     "Error 404": "Error 404",
     "Error 500": "Error 500",
     // Breadcrumbs
-    "Home": "Home",
-    "Apps": "Apps",
-    "Site": "Site",
-    "Account": "Account",
-    "Organization": "Organization",
-    "Team": "Team",
-    "Pages": "Pages",
-    "Profile": "Profile",
-    "Wizard": "Wizard",
-    "Layout": "Layout",
-    "Dashboards": "Dashboards",
+    Home: "Home",
+    Apps: "Apps",
+    Site: "Site",
+    Account: "Account",
+    Organization: "Organization",
+    Team: "Team",
+    Pages: "Pages",
+    Profile: "Profile",
+    Wizard: "Wizard",
+    Layout: "Layout",
+    Dashboards: "Dashboards",
     "Events & Alerts": "Events & Alerts",
-    "Report": "Report",
+    Report: "Report",
     "Recording & Playback": "Recording & Playback",
     "Monitoring Center": "Monitoring Center",
     selectOrganization: "Select Organization",
@@ -268,7 +266,8 @@ const messages = {
     loading: "Loading...",
     errorLoadingData: "Error Loading Data",
     noOrganizationSelected: "No Organization Selected",
-    selectOrgToViewAccounts: "Please select an organization from the dropdown above to view payment accounts.",
+    selectOrgToViewAccounts:
+      "Please select an organization from the dropdown above to view payment accounts.",
     paymentAccountManagement: "Payment Account Management",
     managePaymentAccountsForOrg: "Manage payment accounts for {name}",
     noOrganizations: "No organizations available",
@@ -401,24 +400,20 @@ const messages = {
     overview: "Site",
     siteManagement: "Manajemen Site",
     siteConfiguration: "Konfigurasi Situs",
-    roomManagement: "Manajemen Ruangan",
-    nvrSystems: "Sistem NVR",
     cameraManagement: "Kamera",
     // Page titles
-    "Dashboard": "Dasbor",
+    Dashboard: "Dasbor",
     "Layout Builder": "Pembuat Tata Letak",
-    "Overview": "Ikhtisar",
-    "Projects": "Proyek",
-    "Campaigns": "Kampanye",
-    "Documents": "Dokumen",
-    "Connections": "Koneksi",
-    "Activity": "Aktivitas",
-    "Horizontal": "Horizontal",
-    "Vertical": "Vertikal",
-    "Room": "Ruangan",
-    "NVR": "NVR",
-    "camera": "Kamera",
-    "Settings": "Pengaturan",
+    Overview: "Ikhtisar",
+    Projects: "Proyek",
+    Campaigns: "Kampanye",
+    Documents: "Dokumen",
+    Connections: "Koneksi",
+    Activity: "Aktivitas",
+    Horizontal: "Horizontal",
+    Vertical: "Vertikal",
+    camera: "Kamera",
+    Settings: "Pengaturan",
     "Live View": "Tampilan Langsung",
     "Events Management": "Ikhtisar Aktifitas",
     "Alerts Management": "Ikhtisar Pelanggaran",
@@ -436,19 +431,19 @@ const messages = {
     "Error 404": "Error 404",
     "Error 500": "Error 500",
     // Breadcrumbs
-    "Home": "Beranda",
-    "Apps": "Aplikasi",
-    "Site": "Situs",
-    "Account": "Akun",
-    "Organization": "Organisasi",
-    "Team": "Tim",
-    "Pages": "Halaman",
-    "Profile": "Profil",
-    "Wizard": "Panduan",
-    "Layout": "Tata Letak",
-    "Dashboards": "Dasbor",
+    Home: "Beranda",
+    Apps: "Aplikasi",
+    Site: "Situs",
+    Account: "Akun",
+    Organization: "Organisasi",
+    Team: "Tim",
+    Pages: "Halaman",
+    Profile: "Profil",
+    Wizard: "Panduan",
+    Layout: "Tata Letak",
+    Dashboards: "Dasbor",
     "Events & Alerts": "Aktifitas & Pelanggaran",
-    "Report": "Laporan",
+    Report: "Laporan",
     "Recording & Playback": "Rekaman & Putar Ulang",
     "Monitoring Center": "Pusat Monitoring",
     // Page titles
@@ -489,7 +484,8 @@ const messages = {
     loading: "Memuat...",
     errorLoadingData: "Gagal Memuat Data",
     noOrganizationSelected: "Belum Ada Organisasi Dipilih",
-    selectOrgToViewAccounts: "Silakan pilih organisasi dari dropdown di atas untuk melihat akun pembayaran.",
+    selectOrgToViewAccounts:
+      "Silakan pilih organisasi dari dropdown di atas untuk melihat akun pembayaran.",
     paymentAccountManagement: "Manajemen Akun Pembayaran",
     managePaymentAccountsForOrg: "Kelola akun pembayaran untuk {name}",
     noOrganizations: "Tidak ada organisasi tersedia",
@@ -540,8 +536,12 @@ mergeDeep(messages.en, { controlplane: { team: enControlplaneTeam } });
 mergeDeep(messages.id, { controlplane: { team: idControlplaneTeam } });
 mergeDeep(messages.en, { controlplane: { account: enControlplaneAccount } });
 mergeDeep(messages.id, { controlplane: { account: idControlplaneAccount } });
-mergeDeep(messages.en, { controlplane: { organization: enControlplaneOrganization } });
-mergeDeep(messages.id, { controlplane: { organization: idControlplaneOrganization } });
+mergeDeep(messages.en, {
+  controlplane: { organization: enControlplaneOrganization },
+});
+mergeDeep(messages.id, {
+  controlplane: { organization: idControlplaneOrganization },
+});
 mergeDeep(messages.en, { appsLiveView: enAppsLiveView });
 mergeDeep(messages.id, { appsLiveView: idAppsLiveView });
 mergeDeep(messages.en, { appsEventsAlerts: enAppsEventsAlerts });

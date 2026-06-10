@@ -419,7 +419,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "kt-payment-method",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getAssetPath,

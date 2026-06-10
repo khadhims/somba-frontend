@@ -45,7 +45,9 @@ class FeedbackComponent {
     });
   };
 
-  private _go = () => {};
+  private _go = () => {
+    /* empty */
+  };
 
   private showPopup = () => {
     this.element = document.createElement("DIV");

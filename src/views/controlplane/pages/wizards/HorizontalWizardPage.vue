@@ -11,5 +11,9 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "HorizontalWizardPageComponent",
+});
+
 import CreateAccountHorizontalWizardStepper from "@/components/wizards/create-account-wizard/CreateAccountHorizontalWizardStepper.vue";
 </script>

@@ -27,5 +27,9 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "CreateAppStep5Component",
+});
+
 import { getIllustrationsPath } from "@/core/helpers/assets";
 </script>

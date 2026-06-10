@@ -121,7 +121,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "kt-products",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getAssetPath,

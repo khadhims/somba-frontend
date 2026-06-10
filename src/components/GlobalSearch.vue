@@ -1,15 +1,8 @@
 <template>
   <Teleport to="body">
     <Transition name="search-modal">
-      <div 
-        v-if="isOpen" 
-        class="global-search-overlay"
-        @click="closeSearch"
-      >
-        <div 
-          class="global-search-container"
-          @click.stop
-        >
+      <div v-if="isOpen" class="global-search-overlay" @click="closeSearch">
+        <div class="global-search-container" @click.stop>
           <!-- Search Input -->
           <div class="search-header">
             <i class="bi bi-search text-gray-500 fs-4 me-3"></i>
@@ -38,7 +31,7 @@
                 v-for="(camera, index) in filteredCameras"
                 :key="`camera-${camera.uid}`"
                 class="result-item"
-                :class="{ 'active': selectedIndex === getCameraIndex(index) }"
+                :class="{ active: selectedIndex === getCameraIndex(index) }"
                 @click="navigateToCamera(camera)"
                 @mouseenter="selectedIndex = getCameraIndex(index)"
               >
@@ -47,7 +40,9 @@
                 </div>
                 <div class="result-content">
                   <div class="result-title">{{ camera.name }}</div>
-                  <div class="result-subtitle">{{ camera.site_name }} - {{ camera.room }}</div>
+                  <div class="result-subtitle">
+                    {{ camera.site_name }} - {{ camera.room }}
+                  </div>
                 </div>
                 <i class="bi bi-arrow-return-left text-gray-400"></i>
               </div>
@@ -62,7 +57,7 @@
                 v-for="(site, index) in filteredSites"
                 :key="`site-${site.uid}`"
                 class="result-item"
-                :class="{ 'active': selectedIndex === getSiteIndex(index) }"
+                :class="{ active: selectedIndex === getSiteIndex(index) }"
                 @click="navigateToSite(site)"
                 @mouseenter="selectedIndex = getSiteIndex(index)"
               >
@@ -86,7 +81,7 @@
                 v-for="(action, index) in filteredActions"
                 :key="`action-${action.id}`"
                 class="result-item"
-                :class="{ 'active': selectedIndex === getActionIndex(index) }"
+                :class="{ active: selectedIndex === getActionIndex(index) }"
                 @click="executeAction(action)"
                 @mouseenter="selectedIndex = getActionIndex(index)"
               >
@@ -105,7 +100,9 @@
             <div v-if="totalResults === 0" class="no-results">
               <i class="bi bi-search fs-1 text-gray-400 mb-3"></i>
               <div class="text-gray-600 fw-bold">No results found</div>
-              <div class="text-gray-500 fs-7">Try searching for something else</div>
+              <div class="text-gray-500 fs-7">
+                Try searching for something else
+              </div>
             </div>
           </div>
 
@@ -119,7 +116,7 @@
                 v-for="(link, index) in quickLinks"
                 :key="`link-${link.id}`"
                 class="result-item"
-                :class="{ 'active': selectedIndex === index }"
+                :class="{ active: selectedIndex === index }"
                 @click="navigateTo(link.path)"
                 @mouseenter="selectedIndex = index"
               >
@@ -140,12 +137,8 @@
             <div class="search-footer-item">
               <kbd>↑</kbd><kbd>↓</kbd> Navigate
             </div>
-            <div class="search-footer-item">
-              <kbd>↵</kbd> Select
-            </div>
-            <div class="search-footer-item">
-              <kbd>ESC</kbd> Close
-            </div>
+            <div class="search-footer-item"><kbd>↵</kbd> Select</div>
+            <div class="search-footer-item"><kbd>ESC</kbd> Close</div>
           </div>
         </div>
       </div>
@@ -157,17 +150,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
-import { useRouter } from 'vue-router';
-import ApiService from '@/core/services/ApiService';
-import CameraPlaybackModal from '@/components/CameraPlaybackModal.vue';
+defineOptions({
+  name: "GlobalSearchComponent",
+});
+
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
+import { useRouter } from "vue-router";
+import ApiService from "@/core/services/ApiService";
+import CameraPlaybackModal from "@/components/CameraPlaybackModal.vue";
 
 const router = useRouter();
 const isOpen = ref(false);
-const searchQuery = ref('');
+const searchQuery = ref("");
 const searchInput = ref<HTMLInputElement | null>(null);
 const selectedIndex = ref(0);
-const playbackModal = ref<InstanceType<typeof CameraPlaybackModal> | null>(null);
+const playbackModal = ref<InstanceType<typeof CameraPlaybackModal> | null>(
+  null
+);
 
 // Mock data - replace with actual API calls
 const cameras = ref<any[]>([]);
@@ -175,65 +174,65 @@ const sites = ref<any[]>([]);
 
 const quickLinks = [
   {
-    id: 'live-view',
-    title: 'Live Camera Feed',
-    description: 'View all cameras in real-time',
-    icon: 'bi bi-camera-video',
-    iconColor: 'text-primary',
-    iconBg: 'bg-light-primary',
-    path: '/apps/live-view'
+    id: "live-view",
+    title: "Live Camera Feed",
+    description: "View all cameras in real-time",
+    icon: "bi bi-camera-video",
+    iconColor: "text-primary",
+    iconBg: "bg-light-primary",
+    path: "/apps/live-view",
   },
   {
-    id: 'events',
-    title: 'Events & Alerts',
-    description: 'View recent events and alerts',
-    icon: 'bi bi-bell',
-    iconColor: 'text-warning',
-    iconBg: 'bg-light-warning',
-    path: '/apps/events-alerts/events'
+    id: "events",
+    title: "Events & Alerts",
+    description: "View recent events and alerts",
+    icon: "bi bi-bell",
+    iconColor: "text-warning",
+    iconBg: "bg-light-warning",
+    path: "/apps/events-alerts/events",
   },
   {
-    id: 'cameras',
-    title: 'Camera Management',
-    description: 'Manage all cameras',
-    icon: 'bi bi-gear',
-    iconColor: 'text-info',
-    iconBg: 'bg-light-info',
-    path: '/controlplane/site/camera'
+    id: "cameras",
+    title: "Camera Management",
+    description: "Manage all cameras",
+    icon: "bi bi-gear",
+    iconColor: "text-info",
+    iconBg: "bg-light-info",
+    path: "/controlplane/site/camera",
   },
   {
-    id: 'sites',
-    title: 'Site Management',
-    description: 'Manage sites and locations',
-    icon: 'bi bi-geo-alt',
-    iconColor: 'text-success',
-    iconBg: 'bg-light-success',
-    path: '/controlplane/site/site'
-  }
+    id: "sites",
+    title: "Site Management",
+    description: "Manage sites and locations",
+    icon: "bi bi-geo-alt",
+    iconColor: "text-success",
+    iconBg: "bg-light-success",
+    path: "/controlplane/site/site",
+  },
 ];
 
 const actions = [
   {
-    id: 'add-camera',
-    title: 'Add New Camera',
-    description: 'Register a new camera',
-    icon: 'bi bi-plus-circle',
-    iconColor: 'text-primary',
-    iconBg: 'bg-light-primary',
+    id: "add-camera",
+    title: "Add New Camera",
+    description: "Register a new camera",
+    icon: "bi bi-plus-circle",
+    iconColor: "text-primary",
+    iconBg: "bg-light-primary",
     action: () => {
       // Navigate to camera management page with query param to open modal
-      router.push({ name: 'site-camera', query: { addCamera: '1' } });
+      router.push({ name: "site-camera", query: { addCamera: "1" } });
     },
   },
   {
-    id: 'view-alerts',
-    title: 'View Active Alerts',
-    description: 'See all active alerts',
-    icon: 'bi bi-exclamation-triangle',
-    iconColor: 'text-danger',
-    iconBg: 'bg-light-danger',
-    action: () => router.push('/apps/events-alerts/alerts')
-  }
+    id: "view-alerts",
+    title: "View Active Alerts",
+    description: "See all active alerts",
+    icon: "bi bi-exclamation-triangle",
+    iconColor: "text-danger",
+    iconBg: "bg-light-danger",
+    action: () => router.push("/apps/events-alerts/alerts"),
+  },
 ];
 
 // Filtered results
@@ -241,11 +240,12 @@ const filteredCameras = computed(() => {
   if (!searchQuery.value.trim()) return [];
   const query = searchQuery.value.toLowerCase();
   return cameras.value
-    .filter(cam => 
-      cam.name?.toLowerCase().includes(query) || 
-      cam.room?.toLowerCase().includes(query) ||
-      cam.model?.toLowerCase().includes(query) ||
-      cam.site_name?.toLowerCase().includes(query)
+    .filter(
+      (cam) =>
+        cam.name?.toLowerCase().includes(query) ||
+        cam.room?.toLowerCase().includes(query) ||
+        cam.model?.toLowerCase().includes(query) ||
+        cam.site_name?.toLowerCase().includes(query)
     )
     .slice(0, 5);
 });
@@ -254,35 +254,37 @@ const filteredSites = computed(() => {
   if (!searchQuery.value.trim()) return [];
   const query = searchQuery.value.toLowerCase();
   return sites.value
-    .filter(site => site.name?.toLowerCase().includes(query))
+    .filter((site) => site.name?.toLowerCase().includes(query))
     .slice(0, 5);
 });
 
 const filteredActions = computed(() => {
   if (!searchQuery.value.trim()) return [];
   const query = searchQuery.value.toLowerCase();
-  return actions.filter(action => 
-    action.title.toLowerCase().includes(query) ||
-    action.description.toLowerCase().includes(query)
+  return actions.filter(
+    (action) =>
+      action.title.toLowerCase().includes(query) ||
+      action.description.toLowerCase().includes(query)
   );
 });
 
-const totalResults = computed(() => 
-  filteredCameras.value.length + 
-  filteredSites.value.length + 
-  filteredActions.value.length
+const totalResults = computed(
+  () =>
+    filteredCameras.value.length +
+    filteredSites.value.length +
+    filteredActions.value.length
 );
 
 // Index helpers
 const getCameraIndex = (index: number) => index;
 const getSiteIndex = (index: number) => filteredCameras.value.length + index;
-const getActionIndex = (index: number) => 
+const getActionIndex = (index: number) =>
   filteredCameras.value.length + filteredSites.value.length + index;
 
 // Keyboard navigation
 const navigateDown = () => {
-  const maxIndex = searchQuery.value.trim() 
-    ? totalResults.value - 1 
+  const maxIndex = searchQuery.value.trim()
+    ? totalResults.value - 1
     : quickLinks.length - 1;
   selectedIndex.value = Math.min(selectedIndex.value + 1, maxIndex);
 };
@@ -323,31 +325,36 @@ const navigateToCamera = async (camera: any) => {
       recording: true,
       site_uid: camera.site_uid,
       public_endpoint_url: camera.public_endpoint_url,
-      model: camera.model
+      model: camera.model,
     };
-    
+
     // If public_endpoint_url is missing, try to fetch it
     if (!cameraData.public_endpoint_url && camera.site_uid) {
       try {
-        const resp = await ApiService.query(`sites/${camera.site_uid}/cameras`, {});
+        const resp = await ApiService.query(
+          `sites/${camera.site_uid}/cameras`,
+          {
+            /* empty */
+          }
+        );
         const cameras = resp?.data?.data || resp?.data || [];
         const fullCamera = cameras.find((c: any) => c.uid === camera.uid);
         if (fullCamera?.public_endpoint_url) {
           cameraData.public_endpoint_url = fullCamera.public_endpoint_url;
         }
       } catch (err) {
-        console.error('[GlobalSearch] Error fetching camera details:', err);
+        console.error("[GlobalSearch] Error fetching camera details:", err);
       }
     }
-    
+
     closeSearch();
-    
+
     // Open playback modal
     if (playbackModal.value) {
       playbackModal.value.openModal(cameraData);
     }
   } catch (error) {
-    console.error('[GlobalSearch] Error opening camera:', error);
+    console.error("[GlobalSearch] Error opening camera:", error);
     closeSearch();
   }
 };
@@ -370,12 +377,12 @@ const executeAction = (action: any) => {
 // Open/Close
 const openSearch = async () => {
   isOpen.value = true;
-  
+
   // Lazy load data when opening search
   if (!dataCache) {
     await fetchData();
   }
-  
+
   await nextTick();
   searchInput.value?.focus();
   selectedIndex.value = 0;
@@ -383,7 +390,7 @@ const openSearch = async () => {
 
 const closeSearch = () => {
   isOpen.value = false;
-  searchQuery.value = '';
+  searchQuery.value = "";
   selectedIndex.value = 0;
 };
 
@@ -392,7 +399,7 @@ const handleKeydown = (e: KeyboardEvent) => {
   // Normalize key detection for Ctrl+K across browsers
   const isCtrlOrMeta = e.ctrlKey || e.metaKey;
   const key = e.key?.toLowerCase();
-  if (isCtrlOrMeta && (key === 'k' || e.code === 'KeyK')) {
+  if (isCtrlOrMeta && (key === "k" || e.code === "KeyK")) {
     e.preventDefault();
     // Avoid reopening if already open
     if (!isOpen.value) {
@@ -408,75 +415,90 @@ const handleOpenEvent = () => {
 
 // Fetch data
 let isFetching = false;
-let dataCache: { cameras: any[], sites: any[], timestamp: number } | null = null;
+let dataCache: { cameras: any[]; sites: any[]; timestamp: number } | null =
+  null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 const fetchData = async () => {
   // Prevent duplicate fetches
   if (isFetching) {
-    console.log('[GlobalSearch] Already fetching, skipping...');
+    console.log("[GlobalSearch] Already fetching, skipping...");
     return;
   }
 
   // Check cache
-  if (dataCache && (Date.now() - dataCache.timestamp) < CACHE_DURATION) {
-    console.log('[GlobalSearch] Using cached data');
+  if (dataCache && Date.now() - dataCache.timestamp < CACHE_DURATION) {
+    console.log("[GlobalSearch] Using cached data");
     cameras.value = dataCache.cameras;
     sites.value = dataCache.sites;
     return;
   }
 
   isFetching = true;
-  
+
   try {
-    const selectedTeamId = localStorage.getItem('lastSelectedTeam');
+    const selectedTeamId = localStorage.getItem("lastSelectedTeam");
     if (!selectedTeamId) {
       isFetching = false;
       return;
     }
 
-    console.log('[GlobalSearch] Fetching fresh data...');
+    console.log("[GlobalSearch] Fetching fresh data...");
 
     // Fetch sites
-    const sitesResp = await ApiService.query(`teams/${selectedTeamId}/sites`, {});
+    const sitesResp = await ApiService.query(`teams/${selectedTeamId}/sites`, {
+      /* empty */
+    });
     if (sitesResp?.data?.data) {
       sites.value = sitesResp.data.data;
     }
 
     // Fetch cameras from all sites for comprehensive global search
     const allCameras: any[] = [];
-    
+
     for (const site of sites.value) {
       try {
-        const camerasResp = await ApiService.query(`sites/${site.uid}/cameras`, {});
+        const camerasResp = await ApiService.query(
+          `sites/${site.uid}/cameras`,
+          {
+            /* empty */
+          }
+        );
         const cameraData = camerasResp?.data?.data || camerasResp?.data || [];
-        const normalizedCameras = (Array.isArray(cameraData) ? cameraData : [cameraData]).map((cam: any) => ({
+        const normalizedCameras = (
+          Array.isArray(cameraData) ? cameraData : [cameraData]
+        ).map((cam: any) => ({
           uid: cam.uid,
           name: cam.name || cam.camera_name,
           room: cam.room_name || cam.room || cam.location,
           model: cam.model || cam.camera_model,
           site_uid: site.uid,
           site_name: site.name,
-          public_endpoint_url: cam.public_endpoint_url || ''
+          public_endpoint_url: cam.public_endpoint_url || "",
         }));
         allCameras.push(...normalizedCameras);
       } catch (err) {
-        console.error(`[GlobalSearch] Error fetching cameras for site ${site.uid}:`, err);
+        console.error(
+          `[GlobalSearch] Error fetching cameras for site ${site.uid}:`,
+          err
+        );
       }
     }
-    
+
     cameras.value = allCameras;
 
     // Update cache
     dataCache = {
       cameras: allCameras,
       sites: sites.value,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
-    console.log(`[GlobalSearch] Fetched ${allCameras.length} cameras from ${sites.value.length} sites`);
+    console.log(
+      `[GlobalSearch] Fetched ${allCameras.length} cameras from ${sites.value.length} sites`
+    );
   } catch (error) {
-    console.error('[GlobalSearch] Error fetching search data:', error);
+    console.error("[GlobalSearch] Error fetching search data:", error);
   } finally {
     isFetching = false;
   }
@@ -485,14 +507,16 @@ const fetchData = async () => {
 // Lifecycle
 onMounted(() => {
   // Use capture to beat browser default (Chrome Ctrl+K quick search)
-  window.addEventListener('keydown', handleKeydown, { capture: true });
-  window.addEventListener('open-global-search', handleOpenEvent);
+  window.addEventListener("keydown", handleKeydown, { capture: true });
+  window.addEventListener("open-global-search", handleOpenEvent);
   // Don't fetch data on mount - lazy load when search is opened
 });
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeydown, { capture: true } as any);
-  window.removeEventListener('open-global-search', handleOpenEvent);
+  window.removeEventListener("keydown", handleKeydown, {
+    capture: true,
+  } as any);
+  window.removeEventListener("open-global-search", handleOpenEvent);
 });
 
 // Watch for search query changes
@@ -503,7 +527,7 @@ watch(searchQuery, () => {
 // Expose for parent components
 defineExpose({
   openSearch,
-  closeSearch
+  closeSearch,
 });
 </script>
 

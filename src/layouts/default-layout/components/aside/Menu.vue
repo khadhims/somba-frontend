@@ -170,7 +170,9 @@ import MainMenuConfig from "@/layouts/default-layout/config/MainMenuConfig";
 
 export default defineComponent({
   name: "kt-menu",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const { t, te } = useI18n();
     const route = useRoute();

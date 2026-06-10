@@ -124,7 +124,9 @@ function getElementParents(element: Element, selector: string) {
     Element.prototype.matches = function (s) {
       const matches = (document || this.ownerDocument).querySelectorAll(s);
       let i = matches.length;
-      while (--i >= 0 && matches.item(i) !== this) {}
+      while (--i >= 0 && matches.item(i) !== this) {
+        /* empty */
+      }
       return i > -1;
     };
   }

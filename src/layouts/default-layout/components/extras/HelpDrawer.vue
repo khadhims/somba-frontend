@@ -237,7 +237,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "kt-help-drawer",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getAssetPath,

@@ -55,7 +55,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "default-dashboard-widget-1",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     className: { type: String, required: false },
     bgColor: { type: String, required: false, default: "#080655" },

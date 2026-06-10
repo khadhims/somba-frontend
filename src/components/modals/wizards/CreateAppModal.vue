@@ -42,6 +42,10 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "CreateAppModalComponent",
+});
+
 import CreateAppWizardStepper from "@/components/wizards/create-app-wizard/CreateAppWizardStepper.vue";
 import { hideModal } from "@/core/helpers/modal";
 import { ref } from "vue";

@@ -68,7 +68,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "default-dashboard-widget-3",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     stats: { type: String, required: true },
     description: { type: String, required: true },

@@ -107,10 +107,6 @@
 					"label": "Lokasi",
 					"placeholder": "Pilih Lokasi"
 				},
-				"room": {
-					"label": "Ruangan",
-					"placeholder": "Pilih Ruangan"
-				},
 				"nvr": {
 					"label": "NVR",
 					"placeholder": "Pilih NVR"
@@ -119,9 +115,14 @@
 					"label": "Nama Kamera",
 					"placeholder": "Masukkan nama kamera"
 				},
-				"ipAddress": {
-					"label": "Alamat IP",
-					"placeholder": "192.168.1.200"
+				"room": {
+					"label": "Ruangan",
+					"placeholder": "Masukkan nama ruangan"
+				},
+				"cameraUrl": {
+					"label": "URL Kamera",
+					"placeholder": "http://192.168.1.10:8554/camera1/index.m3u8",
+					"invalid": "Masukkan URL HLS yang valid (http:// atau https://)"
 				},
 				"brand": {
 					"label": "Merek",
@@ -159,10 +160,6 @@
 						"12mp": "12MP"
 					}
 				},
-				"channel": {
-					"label": "Nomor Kanal",
-					"placeholder": "1"
-				},
 				"location": {
 					"label": "Lokasi",
 					"placeholder": "Deskripsi lokasi spesifik"
@@ -188,11 +185,10 @@
 			"name": "Nama Kamera",
 			"location": "Lokasi",
 			"specs": "Spesifikasi",
-			"nvr": "NVR",
+			"cameraUrl": "URL Kamera",
 			"status": "Status",
 			"actions": "Aksi",
-			"empty": "Tidak ada kamera",
-			"channelPrefix": "Kanal"
+			"empty": "Tidak ada kamera"
 		},
 		"actions": {
 			"view": "Lihat Live Stream",
@@ -439,7 +435,7 @@
 			"empty": "Tidak ada ruangan"
 		},
 		"actions": {
-			"manageNvrs": "Kelola NVR",
+			"manageCameras": "Kelola Kamera",
 			"edit": "Ubah Ruangan",
 			"delete": "Hapus Ruangan"
 		},

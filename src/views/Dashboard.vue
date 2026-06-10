@@ -738,6 +738,10 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "DashboardComponent",
+});
+
 import Card5 from "@/components/cards/Card5.vue";
 import ActivitySummaryCard from "@/components/cards/ActivitySummaryCard.vue";
 import RealTimeReport from "@/components/dashboard/RealTimeReport.vue";
@@ -747,13 +751,13 @@ import SkeletonCard from "@/components/skeleton/SkeletonCard.vue";
 import SkeletonBlock from "@/components/skeleton/SkeletonBlock.vue";
 import SkeletonTableRow from "@/components/skeleton/SkeletonTableRow.vue";
 import { ref, onMounted, computed, onBeforeUnmount, watch } from "vue";
-import { useRouter } from "vue-router";
+// import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import ApiService from "@/core/services/ApiService";
-import { todayDate } from "@/core/data/events";
+// import { todayDate } from "@/core/data/events";
 // Import Swiper Vue.js components
 import { Swiper, SwiperSlide } from "swiper/vue";
-import { Pagination, Navigation } from "swiper/modules";
+import { Pagination } from "swiper/modules";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
@@ -792,13 +796,13 @@ const autoRefreshInterval = ref(null);
 const isManualRefreshing = ref(false);
 
 // Carousel state
-const carouselContainer = ref(null);
+// const carouselContainer = ref(null);
 const currentScrollIndex = ref(0);
 const cardsPerView = ref(4); // Default cards visible at once
-const isDragging = ref(false);
-const startX = ref(0);
-const currentX = ref(0);
-const dragThreshold = 50; // Minimum drag distance to trigger scroll
+// const isDragging = ref(false);
+// const startX = ref(0);
+// const currentX = ref(0);
+// const dragThreshold = 50; // Minimum drag distance to trigger scroll
 
 const STORAGE_KEY = "lastSelectedSite";
 const sites = ref<Site[]>([]);
@@ -830,12 +834,12 @@ const summaryActivities = ref<SummaryActivity[]>([]);
 const loadingSummaryActivities = ref(false);
 
 // Summary carousel state
-const summaryCarouselContainer = ref(null);
+// const summaryCarouselContainer = ref(null);
 const currentSummaryScrollIndex = ref(0);
 const summaryCardsPerView = ref(1); // Show only 1 card at a time
-const isSummaryDragging = ref(false);
-const summaryStartX = ref(0);
-const summaryCurrentX = ref(0);
+// const isSummaryDragging = ref(false);
+// const summaryStartX = ref(0);
+// const summaryCurrentX = ref(0);
 
 const realTimeReportRef = ref(null);
 
@@ -845,7 +849,7 @@ const swiperPaginationConfig: any = {
 };
 
 // Router setup
-const router = useRouter();
+// const router = useRouter();
 
 // Site selection and header info
 // Current date and auto update info
@@ -1024,88 +1028,88 @@ const activityConfig = {
 };
 
 // Computed properties for carousel
-const isCarouselEnabled = computed(() => {
-  return liveActivities.value.length > cardsPerView.value;
-});
+// const isCarouselEnabled = computed(() => {
+//   return liveActivities.value.length > cardsPerView.value;
+// });
 
-const scrollStep = computed(() => {
-  return 100 / cardsPerView.value;
-});
+// const scrollStep = computed(() => {
+//   return 100 / cardsPerView.value;
+// });
 
 const maxScrollIndex = computed(() => {
   return Math.max(0, liveActivities.value.length - cardsPerView.value);
 });
 
-const totalPages = computed(() => {
-  return Math.ceil(liveActivities.value.length / cardsPerView.value);
-});
+// const totalPages = computed(() => {
+//   return Math.ceil(liveActivities.value.length / cardsPerView.value);
+// });
 
 // Carousel navigation functions
-const scrollCarousel = (direction) => {
-  if (direction === "next" && currentScrollIndex.value < maxScrollIndex.value) {
-    currentScrollIndex.value++;
-  } else if (direction === "prev" && currentScrollIndex.value > 0) {
-    currentScrollIndex.value--;
-  }
-};
+// const scrollCarousel = (direction) => {
+//   if (direction === "next" && currentScrollIndex.value < maxScrollIndex.value) {
+//     currentScrollIndex.value++;
+//   } else if (direction === "prev" && currentScrollIndex.value > 0) {
+//     currentScrollIndex.value--;
+//   }
+// };
 
-const scrollToPage = (pageIndex) => {
-  currentScrollIndex.value = Math.min(pageIndex, maxScrollIndex.value);
-};
+// const scrollToPage = (pageIndex) => {
+//   currentScrollIndex.value = Math.min(pageIndex, maxScrollIndex.value);
+// };
 
 // Touch and drag handlers
-const handleDragStart = (e) => {
-  isDragging.value = true;
-  startX.value = e.pageX;
-  currentX.value = e.pageX;
-};
+// const handleDragStart = (e) => {
+//   isDragging.value = true;
+//   startX.value = e.pageX;
+//   currentX.value = e.pageX;
+// };
 
-const handleDragMove = (e) => {
-  if (!isDragging.value) return;
-  currentX.value = e.pageX;
-};
+// const handleDragMove = (e) => {
+//   if (!isDragging.value) return;
+//   currentX.value = e.pageX;
+// };
 
-const handleDragEnd = () => {
-  if (!isDragging.value) return;
+// const handleDragEnd = () => {
+//   if (!isDragging.value) return;
+//
+//   const diff = startX.value - currentX.value;
+//
+//   if (Math.abs(diff) > dragThreshold) {
+//     if (diff > 0) {
+//       scrollCarousel("next");
+//     } else {
+//       scrollCarousel("prev");
+//     }
+//   }
+//
+//   isDragging.value = false;
+// };
 
-  const diff = startX.value - currentX.value;
+// const handleTouchStart = (e) => {
+//   startX.value = e.touches[0].pageX;
+//   currentX.value = e.touches[0].pageX;
+// };
 
-  if (Math.abs(diff) > dragThreshold) {
-    if (diff > 0) {
-      scrollCarousel("next");
-    } else {
-      scrollCarousel("prev");
-    }
-  }
+// const handleTouchMove = (e) => {
+//   currentX.value = e.touches[0].pageX;
+// };
 
-  isDragging.value = false;
-};
-
-const handleTouchStart = (e) => {
-  startX.value = e.touches[0].pageX;
-  currentX.value = e.touches[0].pageX;
-};
-
-const handleTouchMove = (e) => {
-  currentX.value = e.touches[0].pageX;
-};
-
-const handleTouchEnd = () => {
-  const diff = startX.value - currentX.value;
-
-  if (Math.abs(diff) > dragThreshold) {
-    if (diff > 0) {
-      scrollCarousel("next");
-    } else {
-      scrollCarousel("prev");
-    }
-  }
-};
+// const handleTouchEnd = () => {
+//   const diff = startX.value - currentX.value;
+//
+//   if (Math.abs(diff) > dragThreshold) {
+//     if (diff > 0) {
+//       scrollCarousel("next");
+//     } else {
+//       scrollCarousel("prev");
+//     }
+//   }
+// };
 
 // Summary carousel computed properties
-const summaryScrollStep = computed(() => {
-  return 100 / summaryCardsPerView.value;
-});
+// const summaryScrollStep = computed(() => {
+//   return 100 / summaryCardsPerView.value;
+// });
 
 const maxSummaryScrollIndex = computed(() => {
   return Math.max(
@@ -1114,78 +1118,78 @@ const maxSummaryScrollIndex = computed(() => {
   );
 });
 
-const totalSummaryPages = computed(() => {
-  return Math.ceil(summaryActivities.value.length / summaryCardsPerView.value);
-});
+// const totalSummaryPages = computed(() => {
+//   return Math.ceil(summaryActivities.value.length / summaryCardsPerView.value);
+// });
 
 // Summary carousel navigation functions
-const scrollSummaryCarousel = (direction) => {
-  if (
-    direction === "next" &&
-    currentSummaryScrollIndex.value < maxSummaryScrollIndex.value
-  ) {
-    currentSummaryScrollIndex.value++;
-  } else if (direction === "prev" && currentSummaryScrollIndex.value > 0) {
-    currentSummaryScrollIndex.value--;
-  }
-};
+// const scrollSummaryCarousel = (direction) => {
+//   if (
+//     direction === "next" &&
+//     currentSummaryScrollIndex.value < maxSummaryScrollIndex.value
+//   ) {
+//     currentSummaryScrollIndex.value++;
+//   } else if (direction === "prev" && currentSummaryScrollIndex.value > 0) {
+//     currentSummaryScrollIndex.value--;
+//   }
+// };
 
-const scrollSummaryToPage = (pageIndex) => {
-  currentSummaryScrollIndex.value = Math.min(
-    pageIndex,
-    maxSummaryScrollIndex.value
-  );
-};
+// const scrollSummaryToPage = (pageIndex) => {
+//   currentSummaryScrollIndex.value = Math.min(
+//     pageIndex,
+//     maxSummaryScrollIndex.value
+//   );
+// };
 
 // Summary carousel drag handlers
-const handleSummaryDragStart = (e) => {
-  isSummaryDragging.value = true;
-  summaryStartX.value = e.pageX;
-  summaryCurrentX.value = e.pageX;
-};
+// const handleSummaryDragStart = (e) => {
+//   isSummaryDragging.value = true;
+//   summaryStartX.value = e.pageX;
+//   summaryCurrentX.value = e.pageX;
+// };
 
-const handleSummaryDragMove = (e) => {
-  if (!isSummaryDragging.value) return;
-  summaryCurrentX.value = e.pageX;
-};
+// const handleSummaryDragMove = (e) => {
+//   if (!isSummaryDragging.value) return;
+//   summaryCurrentX.value = e.pageX;
+// };
 
-const handleSummaryDragEnd = () => {
-  if (!isSummaryDragging.value) return;
-
-  const diff = summaryStartX.value - summaryCurrentX.value;
-
-  if (Math.abs(diff) > dragThreshold) {
-    if (diff > 0) {
-      scrollSummaryCarousel("next");
-    } else {
-      scrollSummaryCarousel("prev");
-    }
-  }
-
-  isSummaryDragging.value = false;
-};
+// const handleSummaryDragEnd = () => {
+//   if (!isSummaryDragging.value) return;
+//
+//   const diff = summaryStartX.value - summaryCurrentX.value;
+//
+//   if (Math.abs(diff) > dragThreshold) {
+//     if (diff > 0) {
+//       scrollSummaryCarousel("next");
+//     } else {
+//       scrollSummaryCarousel("prev");
+//     }
+//   }
+//
+//   isSummaryDragging.value = false;
+// };
 
 // Summary carousel touch handlers
-const handleSummaryTouchStart = (e) => {
-  summaryStartX.value = e.touches[0].pageX;
-  summaryCurrentX.value = e.touches[0].pageX;
-};
+// const handleSummaryTouchStart = (e) => {
+//   summaryStartX.value = e.touches[0].pageX;
+//   summaryCurrentX.value = e.touches[0].pageX;
+// };
 
-const handleSummaryTouchMove = (e) => {
-  summaryCurrentX.value = e.touches[0].pageX;
-};
+// const handleSummaryTouchMove = (e) => {
+//   summaryCurrentX.value = e.touches[0].pageX;
+// };
 
-const handleSummaryTouchEnd = () => {
-  const diff = summaryStartX.value - summaryCurrentX.value;
-
-  if (Math.abs(diff) > dragThreshold) {
-    if (diff > 0) {
-      scrollSummaryCarousel("next");
-    } else {
-      scrollSummaryCarousel("prev");
-    }
-  }
-};
+// const handleSummaryTouchEnd = () => {
+//   const diff = summaryStartX.value - summaryCurrentX.value;
+//
+//   if (Math.abs(diff) > dragThreshold) {
+//     if (diff > 0) {
+//       scrollSummaryCarousel("next");
+//     } else {
+//       scrollSummaryCarousel("prev");
+//     }
+//   }
+// };
 
 // Alert modal handlers
 const openAlertDetail = async (alert: any) => {

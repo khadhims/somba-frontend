@@ -2,7 +2,9 @@
   <thead class="table-header-modern">
     <tr>
       <th v-if="checkboxEnabled" class="checkbox-column">
-        <div class="form-check form-check-sm form-check-custom form-check-solid">
+        <div
+          class="form-check form-check-sm form-check-custom form-check-solid"
+        >
           <input
             class="form-check-input"
             type="checkbox"
@@ -17,8 +19,8 @@
           :class="{
             'text-center': i === header.length - 1,
             'text-start': i !== header.length - 1,
-            'sortable': column.sortEnabled,
-            'active-sort': columnLabelAndOrder.label === column.columnLabel
+            sortable: column.sortEnabled,
+            'active-sort': columnLabelAndOrder.label === column.columnLabel,
           }"
           @click="onSort(column.columnLabel, column.sortEnabled)"
           :style="{
@@ -29,11 +31,15 @@
           <div class="header-content">
             <span class="header-text">{{ column.columnName }}</span>
             <i
-              v-if="columnLabelAndOrder.label === column.columnLabel && column.sortEnabled"
+              v-if="
+                columnLabelAndOrder.label === column.columnLabel &&
+                column.sortEnabled
+              "
               class="sort-icon"
               :class="{
                 'ki-duotone ki-arrow-up': columnLabelAndOrder.order === 'asc',
-                'ki-duotone ki-arrow-down': columnLabelAndOrder.order === 'desc'
+                'ki-duotone ki-arrow-down':
+                  columnLabelAndOrder.order === 'desc',
               }"
             >
               <span class="path1"></span>
@@ -64,7 +70,9 @@ export default defineComponent({
     header: { type: Array as () => Array<any>, required: true },
   },
   emits: ["on-select", "on-sort"],
-  components: {},
+  components: {
+    /* empty */
+  },
   setup(props, { emit }) {
     const checked = ref<boolean>(false);
     const columnLabelAndOrder = ref<Sort>({
@@ -106,9 +114,7 @@ export default defineComponent({
     };
 
     const sortArrow = computed(() => {
-      return columnLabelAndOrder.value.order === "asc"
-        ? "↑"
-        : "↓";
+      return columnLabelAndOrder.value.order === "asc" ? "↑" : "↓";
     });
 
     return {
@@ -230,7 +236,7 @@ export default defineComponent({
     padding: 0.75rem 1rem;
     font-size: 0.8rem;
   }
-  
+
   .checkbox-column {
     width: 40px;
     padding: 0.75rem 0.5rem;

@@ -25,6 +25,8 @@ interface IStep4 {
   saveCard: string;
 }
 
-interface ICreateAccount extends IStep1, IStep2, IStep3, IStep4 {}
+interface ICreateAccount extends IStep1, IStep2, IStep3, IStep4 {
+  /* empty */
+}
 
 export type { IStep1, IStep2, IStep3, IStep4, ICreateAccount };

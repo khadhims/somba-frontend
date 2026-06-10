@@ -8,7 +8,6 @@
 
     <!-- Main Card -->
     <div class="login-card" ref="cardRef">
-      
       <!-- Floating Logo -->
       <div class="brand-logo">
         <img src="/logo-somba-2.png" alt="Somba Logo" />
@@ -35,9 +34,9 @@
           <!-- Holographic Cone -->
           <div class="hologram-cone"></div>
         </div>
-        
+
         <div class="image-text">
-          <h2 class="welcome-text">WELCOME<br>BACK</h2>
+          <h2 class="welcome-text">WELCOME<br />BACK</h2>
           <p class="sub-text">Enter the gateway to SOMBA.</p>
         </div>
       </div>
@@ -80,7 +79,9 @@
           <div class="input-group-custom mb-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
               <label class="custom-label">Password</label>
-              <router-link to="/password-reset" class="forgot-link">Forgot?</router-link>
+              <router-link to="/password-reset" class="forgot-link"
+                >Forgot?</router-link
+              >
             </div>
             <div class="input-wrapper">
               <i class="bi bi-lock input-icon"></i>
@@ -111,7 +112,9 @@
             <span class="indicator-label">SIGN IN</span>
             <span class="indicator-progress">
               AUTHENTICATING...
-              <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+              <span
+                class="spinner-border spinner-border-sm align-middle ms-2"
+              ></span>
             </span>
           </button>
 
@@ -119,15 +122,23 @@
           <div class="social-login text-center">
             <div class="divider"><span>OR CONNECT WITH</span></div>
             <div class="social-icons">
-              <a href="#" class="social-icon google"><i class="bi bi-google"></i></a>
-              <a href="#" class="social-icon apple"><i class="bi bi-apple"></i></a>
-              <a href="#" class="social-icon facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="social-icon google"
+                ><i class="bi bi-google"></i
+              ></a>
+              <a href="#" class="social-icon apple"
+                ><i class="bi bi-apple"></i
+              ></a>
+              <a href="#" class="social-icon facebook"
+                ><i class="bi bi-facebook"></i
+              ></a>
             </div>
           </div>
 
           <div class="text-center mt-8">
             <span class="text-muted">New to Somba? </span>
-            <router-link to="/sign-up" class="link-accent">Create Account</router-link>
+            <router-link to="/sign-up" class="link-accent"
+              >Create Account</router-link
+            >
           </div>
         </VForm>
       </div>
@@ -166,37 +177,37 @@ export default defineComponent({
     // Clean up any leftover transition classes from signup page
     onMounted(() => {
       try {
-        document.body.classList.remove('transitioning-to-dashboard');
+        document.body.classList.remove("transitioning-to-dashboard");
       } catch (e) {
-        console.warn('Failed to remove transition class:', e);
+        console.warn("Failed to remove transition class:", e);
       }
     });
 
     // Parallax & Camera Tracking Effect
     const handleMouseMove = (e: MouseEvent) => {
       if (!cardRef.value) return;
-      
+
       const { innerWidth, innerHeight } = window;
       const x = (e.clientX - innerWidth / 2) / 40;
       const y = (e.clientY - innerHeight / 2) / 40;
 
       // Rotate card slightly
       cardRef.value.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
-      
+
       // Camera Head Tracking
       if (cameraHeadRef.value) {
         const rect = cameraHeadRef.value.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
-        
+
         // Calculate angle to mouse
         const deltaX = e.clientX - centerX;
         const deltaY = e.clientY - centerY;
-        
+
         // Limit rotation angles (max 50 degrees)
         const rotateY = Math.max(-50, Math.min(50, deltaX / 10));
         const rotateX = Math.max(-50, Math.min(50, -deltaY / 10)); // Invert Y for CSS rotateX
-        
+
         cameraHeadRef.value.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
       }
     };
@@ -219,8 +230,12 @@ export default defineComponent({
 
         if (error.length === 0) {
           // Fade/blur the background for a smoother transition
-          try { document.body.classList.add('transitioning-to-dashboard'); } catch {}
-          if (containerRef.value) containerRef.value.classList.add('fade-bg');
+          try {
+            document.body.classList.add("transitioning-to-dashboard");
+          } catch {
+            /* empty */
+          }
+          if (containerRef.value) containerRef.value.classList.add("fade-bg");
 
           // Play a dramatic "crumple/fold away" animation on the login card
           // then navigate to the dashboard. This replaces the success popup.
@@ -253,7 +268,9 @@ export default defineComponent({
               confirmButton: "btn fw-semibold btn-light-danger",
             },
           }).then(() => {
-            store.errors = {};
+            store.errors = {
+              /* empty */
+            };
           });
         }
 
@@ -268,7 +285,7 @@ export default defineComponent({
       submitButton,
       handleMouseMove,
       cardRef,
-      cameraHeadRef
+      cameraHeadRef,
     };
   },
 });
@@ -294,7 +311,11 @@ export default defineComponent({
   left: 50%;
   width: 100vw;
   height: 100vh;
-  background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.15), transparent 60%);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(37, 99, 235, 0.15),
+    transparent 60%
+  );
   transform: translate(-50%, -50%);
   z-index: 0;
   pointer-events: none;
@@ -307,14 +328,36 @@ export default defineComponent({
   animation: floatUp linear infinite;
 }
 /* Generate random particles */
-.particle:nth-child(1) { width: 4px; height: 4px; left: 10%; animation-duration: 15s; opacity: 0.3; }
-.particle:nth-child(2) { width: 6px; height: 6px; left: 20%; animation-duration: 25s; opacity: 0.2; }
-.particle:nth-child(3) { width: 3px; height: 3px; left: 80%; animation-duration: 20s; opacity: 0.4; }
+.particle:nth-child(1) {
+  width: 4px;
+  height: 4px;
+  left: 10%;
+  animation-duration: 15s;
+  opacity: 0.3;
+}
+.particle:nth-child(2) {
+  width: 6px;
+  height: 6px;
+  left: 20%;
+  animation-duration: 25s;
+  opacity: 0.2;
+}
+.particle:nth-child(3) {
+  width: 3px;
+  height: 3px;
+  left: 80%;
+  animation-duration: 20s;
+  opacity: 0.4;
+}
 /* ... more particles could be added via SCSS loop but keeping it simple */
 
 @keyframes floatUp {
-  0% { transform: translateY(100vh); }
-  100% { transform: translateY(-100vh); }
+  0% {
+    transform: translateY(100vh);
+  }
+  100% {
+    transform: translateY(-100vh);
+  }
 }
 
 /* Card Layout */
@@ -335,8 +378,14 @@ export default defineComponent({
 }
 
 @keyframes cardEntrance {
-  from { opacity: 0; transform: translateY(50px) scale(0.9); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Crumple / Fold-away animation for successful login */
@@ -375,24 +424,30 @@ export default defineComponent({
   z-index: 60;
   animation: logoFloat 4s ease-in-out infinite;
   /* make a soft rounded backdrop so the logo contrasts on any background */
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.03),
+    rgba(255, 255, 255, 0.01)
+  );
   padding: 10px;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.06);
-  box-shadow: 0 8px 30px rgba(14,165,233,0.06), 0 2px 6px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 8px 30px rgba(14, 165, 233, 0.06), 0 2px 6px rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(6px);
 }
 
 .brand-logo img {
   height: 56px;
   display: block;
-  filter: drop-shadow(0 10px 30px rgba(14,165,233,0.22)) saturate(1.15) contrast(1.15);
-  -webkit-filter: drop-shadow(0 10px 30px rgba(14,165,233,0.22)) saturate(1.15) contrast(1.15);
+  filter: drop-shadow(0 10px 30px rgba(14, 165, 233, 0.22)) saturate(1.15)
+    contrast(1.15);
+  -webkit-filter: drop-shadow(0 10px 30px rgba(14, 165, 233, 0.22))
+    saturate(1.15) contrast(1.15);
 }
 
 .brand-logo::after {
   /* subtle halo to further improve visibility */
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -400,14 +455,23 @@ export default defineComponent({
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(14,165,233,0.08), transparent 40%);
+  background: radial-gradient(
+    circle,
+    rgba(14, 165, 233, 0.08),
+    transparent 40%
+  );
   z-index: 10;
   pointer-events: none;
 }
 
 @keyframes logoFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 /* Left Side - Image Section */
@@ -442,9 +506,7 @@ export default defineComponent({
   height: 140px;
   background: #0f172a;
   border-radius: 50%;
-  box-shadow: 
-    inset 0 0 30px rgba(0,0,0,0.9),
-    0 0 0 2px #334155,
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9), 0 0 0 2px #334155,
     0 0 0 10px #1e293b;
   position: absolute;
   top: 50%;
@@ -458,9 +520,8 @@ export default defineComponent({
   background: radial-gradient(circle at 30% 30%, #475569, #0f172a);
   border-radius: 50%;
   position: relative;
-  box-shadow: 
-    -15px 15px 40px rgba(0,0,0,0.6),
-    inset 2px 2px 5px rgba(255,255,255,0.15);
+  box-shadow: -15px 15px 40px rgba(0, 0, 0, 0.6),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.15);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -478,13 +539,18 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   transform: translateZ(25px);
-  box-shadow: 0 0 20px rgba(0,0,0,0.9);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
 }
 
 .camera-lens-glass {
   width: 60px;
   height: 60px;
-  background: radial-gradient(circle at 50% 50%, #0ea5e9, #1e3a8a 60%, #000 100%);
+  background: radial-gradient(
+    circle at 50% 50%,
+    #0ea5e9,
+    #1e3a8a 60%,
+    #000 100%
+  );
   border-radius: 50%;
   position: relative;
   box-shadow: 0 0 25px #0ea5e9;
@@ -497,7 +563,7 @@ export default defineComponent({
   left: 12px;
   width: 18px;
   height: 18px;
-  background: rgba(255,255,255,0.5);
+  background: rgba(255, 255, 255, 0.5);
   border-radius: 50%;
   filter: blur(3px);
 }
@@ -509,7 +575,7 @@ export default defineComponent({
   transform: translate(-50%, -50%);
   width: 20px;
   height: 20px;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
 }
 
@@ -534,13 +600,27 @@ export default defineComponent({
   border-radius: 50%;
   box-shadow: 0 0 2px #ef4444;
 }
-.ir-sensors span:nth-child(1) { bottom: 25px; left: 50%; }
-.ir-sensors span:nth-child(2) { bottom: 35px; left: 35%; }
-.ir-sensors span:nth-child(3) { bottom: 35px; right: 35%; }
+.ir-sensors span:nth-child(1) {
+  bottom: 25px;
+  left: 50%;
+}
+.ir-sensors span:nth-child(2) {
+  bottom: 35px;
+  left: 35%;
+}
+.ir-sensors span:nth-child(3) {
+  bottom: 35px;
+  right: 35%;
+}
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
 }
 
 /* Holographic Cone */
@@ -550,10 +630,12 @@ export default defineComponent({
   left: 50%;
   width: 400px;
   height: 400px;
-  background: conic-gradient(from 180deg at 50% 50%, 
-    rgba(14, 165, 233, 0) 0deg, 
-    rgba(14, 165, 233, 0.05) 20deg, 
-    rgba(14, 165, 233, 0) 40deg);
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    rgba(14, 165, 233, 0) 0deg,
+    rgba(14, 165, 233, 0.05) 20deg,
+    rgba(14, 165, 233, 0) 40deg
+  );
   transform-origin: center;
   transform: translate(-50%, -50%) rotate(180deg);
   pointer-events: none;
@@ -563,8 +645,12 @@ export default defineComponent({
 }
 
 @keyframes scanRotate {
-  0% { transform: translate(-50%, -50%) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(360deg); }
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 .image-text {
@@ -573,7 +659,7 @@ export default defineComponent({
   left: 50px;
   color: white;
   z-index: 6;
-  text-shadow: 0 4px 8px rgba(0,0,0,0.8);
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
 }
 
 .welcome-text {
@@ -601,7 +687,10 @@ export default defineComponent({
 }
 
 @keyframes textSlideIn {
-  to { opacity: 1; transform: translateX(0); }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* Right Side - Form Section */
@@ -613,7 +702,11 @@ export default defineComponent({
   justify-content: center;
   position: relative;
   z-index: 1;
-  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    transparent 100%
+  );
   border-radius: 0 20px 20px 0;
 }
 
@@ -710,13 +803,18 @@ export default defineComponent({
 }
 
 .btn-neon::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   transition: 0.5s;
 }
 
@@ -736,7 +834,7 @@ export default defineComponent({
 
 .divider::before,
 .divider::after {
-  content: '';
+  content: "";
   flex: 1;
   border-bottom: 1px solid #334155;
 }
@@ -772,9 +870,18 @@ export default defineComponent({
   transform: translateY(-3px);
 }
 
-.social-icon.google:hover { color: #ea4335; border-color: #ea4335; }
-.social-icon.apple:hover { color: #fff; border-color: #fff; }
-.social-icon.facebook:hover { color: #1877f2; border-color: #1877f2; }
+.social-icon.google:hover {
+  color: #ea4335;
+  border-color: #ea4335;
+}
+.social-icon.apple:hover {
+  color: #fff;
+  border-color: #fff;
+}
+.social-icon.facebook:hover {
+  color: #1877f2;
+  border-color: #1877f2;
+}
 
 .text-muted {
   color: #64748b;
@@ -936,7 +1043,9 @@ export default defineComponent({
     width: 96%;
   }
 
-  .particles { display: none; }
+  .particles {
+    display: none;
+  }
 }
 </style>
 
@@ -959,5 +1068,3 @@ export default defineComponent({
   transition: opacity 1s ease;
 }
 </style>
-
-

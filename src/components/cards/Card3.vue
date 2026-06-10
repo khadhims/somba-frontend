@@ -84,7 +84,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "card-3",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     cardClasses: String,
 

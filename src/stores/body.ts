@@ -2,7 +2,9 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 
 export const useBodyStore = defineStore("body", () => {
-  const classes = ref<any>({});
+  const classes = ref<any>({
+    /* empty */
+  });
 
   function getClasses(key: string) {
     return classes.value[key];

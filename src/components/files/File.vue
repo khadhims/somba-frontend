@@ -46,6 +46,8 @@ export default defineComponent({
 
     fileType: String,
   },
-  components: {},
+  components: {
+    /* empty */
+  },
 });
 </script>

@@ -63,10 +63,14 @@ export default defineComponent({
   props: {
     widgetClasses: String,
   },
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const chartRef = ref<typeof VueApexCharts | null>(null);
-    const chart = ref<ApexOptions>({});
+    const chart = ref<ApexOptions>({
+      /* empty */
+    });
     const store = useThemeStore();
 
     const series = [
@@ -126,7 +130,9 @@ const chartOptions = (): ApexOptions => {
         show: false,
       },
     },
-    plotOptions: {},
+    plotOptions: {
+      /* empty */
+    },
     legend: {
       show: false,
     },

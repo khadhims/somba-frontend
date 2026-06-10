@@ -139,7 +139,9 @@ interface Filter {
 
 export default defineComponent({
   name: "dropdown-1",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const data = ref<Filter>({
       status: "1",

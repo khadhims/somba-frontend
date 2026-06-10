@@ -65,10 +65,14 @@ export default defineComponent({
     widgetClasses: String,
     height: Number,
   },
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const chartRef = ref<typeof VueApexCharts | null>(null);
-    const chart = ref<ApexOptions>({});
+    const chart = ref<ApexOptions>({
+      /* empty */
+    });
     const store = useThemeStore();
 
     const series = [

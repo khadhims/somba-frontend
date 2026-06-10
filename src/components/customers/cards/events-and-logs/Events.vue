@@ -61,7 +61,9 @@ export default defineComponent({
   props: {
     cardClasses: String,
   },
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const events = ref([
       {

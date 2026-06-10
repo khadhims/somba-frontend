@@ -328,7 +328,9 @@ interface NewAddressData {
 
 export default defineComponent({
   name: "new-target-modal",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const formRef = ref<null | HTMLFormElement>(null);
     const newTargetModalRef = ref<null | HTMLElement>(null);

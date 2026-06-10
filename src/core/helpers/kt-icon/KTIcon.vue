@@ -15,6 +15,10 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "KTIconComponent",
+});
+
 import { computed } from "vue";
 import icons from "@/core/helpers/kt-icon/icons.json";
 import { useConfigStore } from "@/stores/config";

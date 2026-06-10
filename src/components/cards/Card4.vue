@@ -81,7 +81,9 @@ import { DrawerComponent } from "@/assets/ts/components/_DrawerComponent";
 
 export default defineComponent({
   name: "card-4",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     cardClasses: String,
 

@@ -68,7 +68,9 @@ import { computed, defineComponent } from "vue";
 
 export default defineComponent({
   name: "table-pagination",
-  components: {},
+  components: {
+    /* empty */
+  },
 
   props: {
     maxVisibleButtons: {

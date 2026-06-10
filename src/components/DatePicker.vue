@@ -38,127 +38,134 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted } from 'vue'
+defineOptions({
+  name: "DatePickerComponent",
+});
+
+import { ref, computed, watch, nextTick, onMounted } from "vue";
 
 interface Props {
-  modelValue?: string | null
-  label?: string
-  placeholder?: string
-  id?: string
-  disabled?: boolean
-  readonly?: boolean
-  clearable?: boolean
-  minDate?: string
-  maxDate?: string
-  errorMessage?: string
-  helpText?: string
-  size?: 'sm' | 'md' | 'lg'
-  variant?: 'solid' | 'outline'
-  storageKey?: string
+  modelValue?: string | null;
+  label?: string;
+  placeholder?: string;
+  id?: string;
+  disabled?: boolean;
+  readonly?: boolean;
+  clearable?: boolean;
+  minDate?: string;
+  maxDate?: string;
+  errorMessage?: string;
+  helpText?: string;
+  size?: "sm" | "md" | "lg";
+  variant?: "solid" | "outline";
+  storageKey?: string;
 }
 
 // Note: default date types removed — initialization uses `modelValue` or `storageKey` only.
 
 interface Emits {
-  (e: 'update:modelValue', value: string | null): void
-  (e: 'change', value: string | null): void
-  (e: 'focus', event: FocusEvent): void
-  (e: 'blur', event: FocusEvent): void
+  (e: "update:modelValue", value: string | null): void;
+  (e: "change", value: string | null): void;
+  (e: "focus", event: FocusEvent): void;
+  (e: "blur", event: FocusEvent): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: null,
-  placeholder: 'Pilih tanggal',
-  size: 'md',
-  variant: 'solid',
+  placeholder: "Pilih tanggal",
+  size: "md",
+  variant: "solid",
   clearable: true,
-  storageKey: undefined
-})
+  storageKey: undefined,
+});
 
-const emit = defineEmits<Emits>()
+const emit = defineEmits<Emits>();
 
-const localValue = ref(props.modelValue)
-const dateInput = ref<HTMLInputElement>()
+const localValue = ref(props.modelValue);
+const dateInput = ref<HTMLInputElement>();
 
 // Initialize value from props, localStorage, or defaultType
 onMounted(async () => {
-  let initialValue = props.modelValue
+  let initialValue = props.modelValue;
 
   // If no modelValue provided, try to get from localStorage (storageKey)
   if (!initialValue && props.storageKey) {
-    const storedValue = localStorage.getItem(props.storageKey)
+    const storedValue = localStorage.getItem(props.storageKey);
     if (storedValue) {
-      initialValue = storedValue
+      initialValue = storedValue;
     }
   }
 
   // Update local value and emit if we found a value
   if (initialValue) {
-    localValue.value = initialValue
-    await nextTick()
-    emit('update:modelValue', initialValue)
+    localValue.value = initialValue;
+    await nextTick();
+    emit("update:modelValue", initialValue);
   }
-})
+});
 
 // Computed classes
 const inputClasses = computed(() => {
-  const classes = ['form-control']
-  
-  if (props.size === 'sm') classes.push('form-control-sm')
-  if (props.size === 'lg') classes.push('form-control-lg')
-  
-  if (props.variant === 'outline') classes.push('form-control-outline')
-  
-  if (props.errorMessage) classes.push('is-invalid')
-  
-  return classes.join(' ')
-})
+  const classes = ["form-control"];
+
+  if (props.size === "sm") classes.push("form-control-sm");
+  if (props.size === "lg") classes.push("form-control-lg");
+
+  if (props.variant === "outline") classes.push("form-control-outline");
+
+  if (props.errorMessage) classes.push("is-invalid");
+
+  return classes.join(" ");
+});
 
 // Watchers
-watch(() => props.modelValue, (newValue) => {
-  localValue.value = newValue
-  if (props.storageKey && newValue) {
-    localStorage.setItem(props.storageKey, newValue)
-  } else if (props.storageKey && newValue === null) {
-    localStorage.removeItem(props.storageKey)
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    localValue.value = newValue;
+    if (props.storageKey && newValue) {
+      localStorage.setItem(props.storageKey, newValue);
+    } else if (props.storageKey && newValue === null) {
+      localStorage.removeItem(props.storageKey);
+    }
   }
-})
+);
 
 // Methods
 const handleInput = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const value = target.value || null
-  localValue.value = value
-  emit('update:modelValue', value)
-}
+  const target = event.target as HTMLInputElement;
+  const value = target.value || null;
+  localValue.value = value;
+  emit("update:modelValue", value);
+};
 
 const handleChange = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const value = target.value || null
-  emit('change', value)
-}
+  const target = event.target as HTMLInputElement;
+  const value = target.value || null;
+  emit("change", value);
+};
 
 const handleFocus = (event: FocusEvent) => {
-  emit('focus', event)
-}
+  emit("focus", event);
+};
 
 const handleBlur = (event: FocusEvent) => {
-  emit('blur', event)
-}
+  emit("blur", event);
+};
 
 const clearDate = () => {
-  localValue.value = null
-  emit('update:modelValue', null)
-  emit('change', null)
-  dateInput.value?.focus()
-}
+  localValue.value = null;
+  emit("update:modelValue", null);
+  emit("change", null);
+  dateInput.value?.focus();
+};
 
 // Expose methods for parent component
 defineExpose({
   focus: () => dateInput.value?.focus(),
   blur: () => dateInput.value?.blur(),
-  clear: clearDate
-})
+  clear: clearDate,
+});
 </script>
 
 <style scoped>

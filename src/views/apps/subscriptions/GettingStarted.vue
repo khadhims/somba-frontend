@@ -47,7 +47,9 @@ import { getIllustrationsPath } from "@/core/helpers/assets";
 
 export default defineComponent({
   name: "kt-getting-started",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getIllustrationsPath,

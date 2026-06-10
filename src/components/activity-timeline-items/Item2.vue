@@ -56,7 +56,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "item-2",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getAssetPath,

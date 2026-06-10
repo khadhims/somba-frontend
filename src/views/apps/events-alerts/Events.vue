@@ -4,55 +4,75 @@
     <div class="card-body py-4">
       <div class="row align-items-center gy-3">
         <div class="col-12 col-md-4">
-          <h4 class="card-title mb-0">{{ t('appsEventsAlerts.events.title') }}</h4>
+          <h4 class="card-title mb-0">
+            {{ t("appsEventsAlerts.events.title") }}
+          </h4>
           <p class="text-muted mb-0">
-            {{ currentSite ? t('appsEventsAlerts.events.subtitleSite', { site: currentSite.name }) : t('appsEventsAlerts.events.subtitleAll') }}
+            {{
+              currentSite
+                ? t("appsEventsAlerts.events.subtitleSite", {
+                    site: currentSite.name,
+                  })
+                : t("appsEventsAlerts.events.subtitleAll")
+            }}
           </p>
         </div>
         <div class="col-12 col-md-8">
-          <div class="d-flex flex-column flex-md-row justify-content-md-end align-items-start align-items-md-center gap-3">
+          <div
+            class="d-flex flex-column flex-md-row justify-content-md-end align-items-start align-items-md-center gap-3"
+          >
             <!-- Site Filter -->
             <div class="d-flex align-items-center w-100 w-md-auto mb-2 mb-md-0">
-              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{ t('appsEventsAlerts.eventsFilters.siteLabel') }}</label>
+              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{
+                t("appsEventsAlerts.eventsFilters.siteLabel")
+              }}</label>
               <select
                 v-model="tempSelectedSiteFilter"
                 class="form-select form-select-solid w-100 w-md-200px"
                 :disabled="loadingSites"
                 @change="onTempFilterSiteChange"
               >
-                <option value="">{{ t('appsEventsAlerts.eventsFilters.siteAll') }}</option>
-                <option
-                  v-for="site in sites"
-                  :key="site.uid"
-                  :value="site.uid"
-                >
+                <option value="">
+                  {{ t("appsEventsAlerts.eventsFilters.siteAll") }}
+                </option>
+                <option v-for="site in sites" :key="site.uid" :value="site.uid">
                   {{ site.name }}
                 </option>
               </select>
             </div>
-            
+
             <!-- Camera Filter -->
             <div class="d-flex align-items-center w-100 w-md-auto">
-              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{ t('appsEventsAlerts.eventsFilters.cameraLabel') || 'Camera' }}</label>
+              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{
+                t("appsEventsAlerts.eventsFilters.cameraLabel") || "Camera"
+              }}</label>
               <select
                 v-model="tempSelectedCameraFilter"
                 class="form-select form-select-solid w-100 w-md-200px"
                 :disabled="loadingCameras || !tempSelectedSiteFilter"
                 @change="onTempFilterCameraChange"
               >
-                <option value="">{{ t('appsEventsAlerts.eventsFilters.cameraAll') || 'All Cameras' }}</option>
+                <option value="">
+                  {{
+                    t("appsEventsAlerts.eventsFilters.cameraAll") ||
+                    "All Cameras"
+                  }}
+                </option>
                 <option
                   v-for="camera in cameras"
                   :key="camera.uuid"
                   :value="camera.uuid"
-                  :title="`ID: ${camera.uuid} | Model: ${camera.model || 'N/A'} | Recorder: ${camera.video_recorder_name || 'N/A'}`"
+                  :title="`ID: ${camera.uuid} | Model: ${
+                    camera.model || 'N/A'
+                  }`"
                 >
-                  {{ camera.name }} {{ camera.model ? `(${camera.model})` : '' }}
+                  {{ camera.name }}
+                  {{ camera.model ? `(${camera.model})` : "" }}
                 </option>
               </select>
             </div>
-            <button 
-              @click="applyFilters" 
+            <button
+              @click="applyFilters"
               class="btn btn-md btn-primary py-3 px-2"
               title="Apply All Filters"
             >
@@ -60,7 +80,7 @@
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-              {{ t('common.apply') || 'Apply' }}
+              {{ t("common.apply") || "Apply" }}
             </button>
           </div>
         </div>
@@ -74,41 +94,49 @@
     <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
       <div class="card-title">
-        <h3 class="fw-bold m-0">{{ t('appsEventsAlerts.events.title') }}</h3>
+        <h3 class="fw-bold m-0">{{ t("appsEventsAlerts.events.title") }}</h3>
       </div>
       <!--end::Card title-->
 
       <!--begin::Card toolbar-->
-      <div class="card-toolbar d-flex flex-column flex-xl-row justify-content-between align-items-start align-items-xl-center w-100 gap-3">
+      <div
+        class="card-toolbar d-flex flex-column flex-xl-row justify-content-between align-items-start align-items-xl-center w-100 gap-3"
+      >
         <!-- Date Range Filters - Start -->
         <div class="d-flex flex-wrap align-items-center gap-2 w-100 w-xl-auto">
-          <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center me-0 me-sm-2 w-100 w-sm-auto gap-2">
+          <div
+            class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center me-0 me-sm-2 w-100 w-sm-auto gap-2"
+          >
             <div class="d-flex align-items-center w-100 w-sm-auto">
-              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.eventsFilters.fromDateLabel') }}</label>
+              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{
+                t("appsEventsAlerts.eventsFilters.fromDateLabel")
+              }}</label>
               <DatePicker
                 v-model="tempDateFrom"
                 size="sm"
                 :clearable="true"
-                style="width:100%; min-width: 140px;"
+                style="width: 100%; min-width: 140px"
                 class="w-100 w-sm-auto"
               />
             </div>
             <div class="d-flex align-items-center w-100 w-sm-auto">
-              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.eventsFilters.toDateLabel') }}</label>
+              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{
+                t("appsEventsAlerts.eventsFilters.toDateLabel")
+              }}</label>
               <DatePicker
                 v-model="tempDateTo"
                 size="sm"
                 :clearable="true"
-                style="width:100%; min-width: 140px;"
+                style="width: 100%; min-width: 140px"
                 class="w-100 w-sm-auto"
               />
             </div>
           </div>
-          
+
           <!-- Apply/Reset Buttons -->
           <div class="d-flex flex-wrap gap-2 mt-2 mt-sm-0">
-            <button 
-              @click="resetFilters" 
+            <button
+              @click="resetFilters"
               class="btn btn-sm btn-light py-1 px-2"
               title="Reset to Applied Filters"
             >
@@ -120,11 +148,13 @@
             </button>
           </div>
         </div>
-        
+
         <!-- Other Filters - End -->
         <div class="d-flex align-items-center w-100 w-xl-auto gap-2">
           <!--begin::Search-->
-          <div class="d-flex align-items-center position-relative my-1 flex-grow-1 flex-xl-grow-0">
+          <div
+            class="d-flex align-items-center position-relative my-1 flex-grow-1 flex-xl-grow-0"
+          >
             <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -138,7 +168,11 @@
           </div>
           <!--end::Search-->
 
-          <button @click="refreshEvents" class="btn btn-sm btn-light-primary btn-icon" title="Refresh">
+          <button
+            @click="refreshEvents"
+            class="btn btn-sm btn-light-primary btn-icon"
+            title="Refresh"
+          >
             <i class="ki-duotone ki-arrows-circle fs-2">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -155,19 +189,29 @@
       <EventsTable
         :events="filteredAndSortedEvents"
         :header="tableHeader"
-        :pagination="{ page: currentPage, per_page: itemsPerPage, total_items: totalItems, total_pages: totalPages }"
+        :pagination="{
+          page: currentPage,
+          per_page: itemsPerPage,
+          total_items: totalItems,
+          total_pages: totalPages,
+        }"
         :loading="loading"
         :sort-label="sortLabel"
         :sort-order="sortOrder"
         @sort="handleSort"
         @view-detail="viewEventDetails"
       />
-      
+
       <!--begin::Pagination-->
-      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3">
+      <div
+        class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3"
+      >
         <ItemPerPage
           :model-value="itemsPerPage"
-          :label="t('appsEventsAlerts.eventsTable.pagination.itemsLabel') || 'Items per page:'"
+          :label="
+            t('appsEventsAlerts.eventsTable.pagination.itemsLabel') ||
+            'Items per page:'
+          "
           :options="[10, 20, 30, 50]"
           @change="changeItemsPerPage"
         />
@@ -195,25 +239,29 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "EventsComponent",
+});
+
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { Modal } from "bootstrap";
-import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
-import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
-import Pagination from '@/components/common/Pagination.vue';
-import ItemPerPage from '@/components/ItemPerPage.vue';
-import DatePicker from '@/components/DatePicker.vue';
+// import { Modal } from "bootstrap";
+// import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
+// import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import Pagination from "@/components/common/Pagination.vue";
+import ItemPerPage from "@/components/ItemPerPage.vue";
+import DatePicker from "@/components/DatePicker.vue";
 import ApiService from "@/core/services/ApiService";
-import EventsTable from '@/components/apps/events-alerts/EventsTable.vue';
-import EventDetailModal from '@/components/apps/events-alerts/EventDetailModal.vue';
-import { convertToGMT8 } from '@/core/helpers/timezone';
+import EventsTable from "@/components/apps/events-alerts/EventsTable.vue";
+import EventDetailModal from "@/components/apps/events-alerts/EventDetailModal.vue";
+import { convertToGMT8 } from "@/core/helpers/timezone";
 
 const { t } = useI18n();
 
 // Interface definitions
 interface Event {
   // type: 'motion' | 'intrusion' | 'system' | 'camera_offline';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
   site_uid: string;
   camera_uuid?: string;
   camera_name?: string;
@@ -224,7 +272,7 @@ interface Event {
   duration_minutes?: number;
   total_minutes?: number;
   avg_seconds_with_detection?: number;
-  status: 'active' | 'acknowledged' | 'resolved';
+  status: "active" | "acknowledged" | "resolved";
   image_url?: string;
   image_urls?: string[];
   activities?: any[];
@@ -241,13 +289,11 @@ interface Camera {
   name: string;
   site_uuid: string;
   status?: string;
-  
+
   // Original API fields
   uid?: string;
   site_uid?: string;
   site_name?: string;
-  video_recorder_uid?: string;
-  video_recorder_name?: string;
   camera_config?: {
     zones?: any[];
     uid?: string;
@@ -258,7 +304,6 @@ interface Camera {
     zone_test?: string;
     iou_threshold?: number;
   };
-  video_recorder?: number;
   model?: string;
   public_endpoint_url?: string;
   created_by?: {
@@ -271,17 +316,18 @@ interface Camera {
 const events = ref<Event[]>([]);
 const sites = ref<Site[]>([]);
 const cameras = ref<Camera[]>([]);
-const camerasCache = ref<Record<string, Record<string, string>>>({});
+// const camerasCache = ref<Record<string, Record<string, string>>>({
+//   /* empty */
+// });
 const loading = ref(false);
 const loadingSites = ref(false);
 const loadingCameras = ref(false);
 const searchQuery = ref("");
-const selectedSiteId = ref("");
+// const selectedSiteId = ref("");
 // Header filter state (site + camera)
 const selectedSiteFilter = ref<string>("");
 const selectedCameraFilter = ref<string>("");
-const selectedNvrFilter = ref<string>("");
-const selectedEventType = ref("");
+// const selectedEventType = ref("");
 const selectedSeverityType = ref("");
 // Date range filters
 const dateFrom = ref<string | null>(null);
@@ -307,10 +353,10 @@ const loadingDetail = ref(false);
 
 // Pagination handlers
 let fetchTimeout: number | null = null;
-const FROM_DATE_STORAGE_KEY = 'lastSelectedFromDate';
-const TO_DATE_STORAGE_KEY = 'lastSelectedToDate';
-const LEGACY_FROM_DATE_STORAGE_KEY = 'globalFromDate';
-const LEGACY_TO_DATE_STORAGE_KEY = 'globalToDate';
+const FROM_DATE_STORAGE_KEY = "lastSelectedFromDate";
+const TO_DATE_STORAGE_KEY = "lastSelectedToDate";
+const LEGACY_FROM_DATE_STORAGE_KEY = "globalFromDate";
+const LEGACY_TO_DATE_STORAGE_KEY = "globalToDate";
 
 // Initialize default dates (1 week ago to today)
 const initializeDefaultDates = () => {
@@ -320,8 +366,8 @@ const initializeDefaultDates = () => {
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
@@ -370,13 +416,12 @@ const goToPage = (page: number) => {
 };
 
 const changeItemsPerPage = (newPerPage: number) => {
-  
   // Force update the reactive value
   itemsPerPage.value = newPerPage;
-  
+
   // Reset to first page
   currentPage.value = 1;
-  
+
   // Fetch immediately without debounce for items per page change
   fetchEvents();
 };
@@ -384,38 +429,38 @@ const changeItemsPerPage = (newPerPage: number) => {
 // Table header configuration
 const tableHeader = computed(() => [
   {
-    columnName: t('appsEventsAlerts.eventsTable.columns.event'),
-    columnLabel: 'event_name',
+    columnName: t("appsEventsAlerts.eventsTable.columns.event"),
+    columnLabel: "event_name",
     sortEnabled: false,
     searchable: true,
   },
   {
-    columnName: t('appsEventsAlerts.eventsTable.columns.camera'),
-    columnLabel: 'camera_name',
+    columnName: t("appsEventsAlerts.eventsTable.columns.camera"),
+    columnLabel: "camera_name",
     sortEnabled: false,
     searchable: true,
   },
   {
-    columnName: t('appsEventsAlerts.eventsTable.columns.timestamp'),
-    columnLabel: 'timestamp',
+    columnName: t("appsEventsAlerts.eventsTable.columns.timestamp"),
+    columnLabel: "timestamp",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('appsEventsAlerts.eventsTable.columns.duration'),
-    columnLabel: 'duration',
+    columnName: t("appsEventsAlerts.eventsTable.columns.duration"),
+    columnLabel: "duration",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('appsEventsAlerts.eventsTable.columns.status'),
-    columnLabel: 'status',
+    columnName: t("appsEventsAlerts.eventsTable.columns.status"),
+    columnLabel: "status",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('appsEventsAlerts.eventsTable.columns.actions'),
-    columnLabel: 'actions',
+    columnName: t("appsEventsAlerts.eventsTable.columns.actions"),
+    columnLabel: "actions",
     sortEnabled: false,
     searchable: false,
   },
@@ -430,9 +475,13 @@ const fetchEvents = async () => {
   loading.value = true;
   try {
     // Determine site uid to request - prefer selectedSiteFilter, fallback to first loaded site
-    let siteUid = selectedSiteFilter.value || (sites.value.length ? sites.value[0].uid : "");
+    let siteUid =
+      selectedSiteFilter.value ||
+      (sites.value.length ? sites.value[0].uid : "");
     if (!siteUid) {
-      console.warn("No site selected and no sites available - skipping list-activity call");
+      console.warn(
+        "No site selected and no sites available - skipping list-activity call"
+      );
       events.value = [];
       totalItems.value = 0;
       totalPages.value = 0;
@@ -443,14 +492,18 @@ const fetchEvents = async () => {
     // ${siteUid}
     const params: any = {
       page: currentPage.value,
-      page_size: itemsPerPage.value
+      page_size: itemsPerPage.value,
     };
-        
+
     // Add camera filter if set
-    if (selectedCameraFilter.value && selectedCameraFilter.value !== '' && selectedCameraFilter.value !== 'undefined') {
+    if (
+      selectedCameraFilter.value &&
+      selectedCameraFilter.value !== "" &&
+      selectedCameraFilter.value !== "undefined"
+    ) {
       params.camera_uuid = selectedCameraFilter.value;
     }
-    
+
     // Add date range filters if set
     if (dateFrom.value) {
       params.from_date = dateFrom.value;
@@ -458,49 +511,53 @@ const fetchEvents = async () => {
     if (dateTo.value) {
       params.to_date = dateTo.value;
     }
-    
+
     const resp = await ApiService.query(`sites/${siteUid}/activities`, {
-      params
+      params,
     });
     const payload = resp && resp.data ? resp.data : resp;
 
     // Handle API response structure: { status, code, message, data: [...], pagination: {...} }
     let results = [];
-    if (payload?.status === "success" && Array.isArray(payload?.data)) {
+    if (Array.isArray(payload?.data)) {
       results = payload.data;
     } else if (Array.isArray(payload?.results)) {
       // Fallback untuk struktur lama
       results = payload.results;
     } else {
-      console.warn('Unexpected API response format:', payload);
+      console.warn("Unexpected API response format:", payload);
       results = [];
     }
 
     // Map response data items to internal event structure
     events.value = results.map((item: any, idx: number) => {
       return {
-        severity: 'medium', // default severity based on detection activity
+        severity: "medium", // default severity based on detection activity
         site_uid: siteUid,
-        camera_uuid: item.camera_uuid || '',
-        camera_name: item.camera_name || '',
-        event_id: item.event_id || '',
-        event_name: item.event_name || '',
+        camera_uuid: item.camera_uuid || "",
+        camera_name: item.camera_name || "",
+        event_id: item.event_id || "",
+        event_name: item.event_name || "",
         event_start: convertToGMT8(item.event_start),
         event_end: convertToGMT8(item.event_end),
         duration_minutes: item.duration_minutes,
         total_minutes: item.total_minutes,
         avg_seconds_with_detection: item.avg_seconds_with_detection,
         // type: 'motion', // default type - adjust if API provides type later
-        status: item.status || 'active',
-        image_url: item.image_url || '',
+        status: item.status || "active",
+        image_url: item.image_url || "",
         image_urls: item.image_urls || [],
         activities: item.activities || [],
-      }
+      };
     });
 
     // Use pagination from API response
-    const pagination = payload?.pagination || {};
-    
+    const pagination =
+      payload?.pagination ||
+      {
+        /* empty */
+      };
+
     // Use pagination values from API response
     if (typeof pagination.total_items === "number") {
       totalItems.value = pagination.total_items;
@@ -508,17 +565,24 @@ const fetchEvents = async () => {
     if (typeof pagination.total_pages === "number") {
       totalPages.value = pagination.total_pages;
     }
-    
+
     // DON'T update itemsPerPage from API response - keep user's selection
     // The API should respect our per_page parameter, but if it doesn't,
     // we still want to maintain the user's choice in the UI
-    if (typeof pagination.per_page === "number" && pagination.per_page !== itemsPerPage.value) {
-      console.warn(`API returned different per_page: ${pagination.per_page}, but keeping user selection: ${itemsPerPage.value}`);
+    if (
+      typeof pagination.per_page === "number" &&
+      pagination.per_page !== itemsPerPage.value
+    ) {
+      console.warn(
+        `API returned different per_page: ${pagination.per_page}, but keeping user selection: ${itemsPerPage.value}`
+      );
     }
-    
+
     // Apply client-side filters if header filters are set
     if (selectedSiteFilter.value) {
-      events.value = events.value.filter(e => !e.site_uid || e.site_uid === selectedSiteFilter.value);
+      events.value = events.value.filter(
+        (e) => !e.site_uid || e.site_uid === selectedSiteFilter.value
+      );
     }
   } catch (error) {
     console.error("Error fetching events:", error);
@@ -547,27 +611,27 @@ watch([dateFrom, dateTo], ([from, to]) => {
     localStorage.removeItem(LEGACY_FROM_DATE_STORAGE_KEY);
     localStorage.removeItem(LEGACY_TO_DATE_STORAGE_KEY);
   } catch (error) {
-    console.warn('Unable to persist date filters to localStorage', error);
+    console.warn("Unable to persist date filters to localStorage", error);
   }
 });
 
 // Fetch sites from API (following Camera.vue pattern)
 const fetchSites = async () => {
   loadingSites.value = true;
-  try {    
+  try {
     const resp = await ApiService.get(`sites`);
     // Parse response (wrapped or direct) - exactly like Camera.vue
     if (resp && resp.data) {
-      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+      if (resp.data?.data && Array.isArray(resp.data.data)) {
         sites.value = resp.data.data;
       } else if (Array.isArray(resp.data)) {
         sites.value = resp.data;
       } else {
-        console.warn('Unexpected sites response format:', resp.data);
+        console.warn("Unexpected sites response format:", resp.data);
         sites.value = [];
       }
     } else {
-      console.warn('No data received from sites API');
+      console.warn("No data received from sites API");
       sites.value = [];
     }
   } catch (error) {
@@ -578,111 +642,117 @@ const fetchSites = async () => {
   }
 };
 
-  // Fetch cameras for dropdown filter
-  const fetchCamerasForFilter = async (siteUid: string) => {
-    if (!siteUid) {
-      cameras.value = [];
-      return;
-    }
-    loadingCameras.value = true;
-    try {    
-      const resp = await ApiService.get(`sites/${siteUid}/cameras`);
-      
-      // Parse response - handle direct array or wrapped response
-      let rawCameras: any[] = [];
-      if (resp && resp.data) {
-        if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
-          rawCameras = resp.data.data;
-        } else if (Array.isArray(resp.data)) {
-          rawCameras = resp.data;
-        } else {
-          console.warn('Unexpected cameras response format:', resp.data);
-          rawCameras = [];
-        }
-      } else if (Array.isArray(resp)) {
-        rawCameras = resp;
+// Fetch cameras for dropdown filter
+const fetchCamerasForFilter = async (siteUid: string) => {
+  if (!siteUid) {
+    cameras.value = [];
+    return;
+  }
+  loadingCameras.value = true;
+  try {
+    const resp = await ApiService.get(`sites/${siteUid}/cameras`);
+
+    // Parse response - handle direct array or wrapped response
+    let rawCameras: any[] = [];
+    if (resp && resp.data) {
+      if (resp.data?.data && Array.isArray(resp.data.data)) {
+        rawCameras = resp.data.data;
+      } else if (Array.isArray(resp.data)) {
+        rawCameras = resp.data;
       } else {
-        console.warn('No data received from cameras API');
+        console.warn("Unexpected cameras response format:", resp.data);
         rawCameras = [];
       }
-      
-      // Map all camera data to expected structure, preserving all original fields
-      cameras.value = rawCameras.map((camera: any) => ({
-        // Map uid to uuid for compatibility with existing code
-        uuid: camera.uid || camera.uuid || camera.id,
-        name: camera.name || camera.camera_name || `Camera ${camera.uid || camera.id}`,
-        site_uuid: camera.site_uid || camera.site_uuid || siteUid,
-        status: 'active', // Default status
-        
-        // Preserve all original API fields
-        uid: camera.uid,
-        site_uid: camera.site_uid,
-        site_name: camera.site_name,
-        video_recorder_uid: camera.video_recorder_uid,
-        video_recorder_name: camera.video_recorder_name,
-        camera_config: camera.camera_config,
-        video_recorder: camera.video_recorder,
-        model: camera.model,
-        public_endpoint_url: camera.public_endpoint_url,
-        created_by: camera.created_by
-      }));
-      
-      
-    } catch (error) {
-      console.error('Error loading cameras for site', siteUid, ':', error);
-      cameras.value = [];
-    } finally {
-      loadingCameras.value = false;
+    } else if (Array.isArray(resp)) {
+      rawCameras = resp;
+    } else {
+      console.warn("No data received from cameras API");
+      rawCameras = [];
     }
-  };
 
-  // Fetch cameras for a site and cache uuid->name map per site
-  const fetchCameras = async (siteUid: string) => {
-    if (!siteUid) return;
-    // if cache exists for this site, skip
-    if (camerasCache.value[siteUid] && Object.keys(camerasCache.value[siteUid]).length) return;
+    // Map all camera data to expected structure, preserving all original fields
+    cameras.value = rawCameras.map((camera: any) => ({
+      // Map uid to uuid for compatibility with existing code
+      uuid: camera.uid || camera.uuid || camera.id,
+      name:
+        camera.name ||
+        camera.camera_name ||
+        `Camera ${camera.uid || camera.id}`,
+      site_uuid: camera.site_uid || camera.site_uuid || siteUid,
+      status: "active", // Default status
 
-    try {
-      const resp = await ApiService.get(`sites/${siteUid}/cameras`);
-      const payload = resp && resp.data ? resp.data : resp;
+      // Preserve all original API fields
+      uid: camera.uid,
+      site_uid: camera.site_uid,
+      site_name: camera.site_name,
+      camera_config: camera.camera_config,
+      model: camera.model,
+      public_endpoint_url: camera.public_endpoint_url,
+      created_by: camera.created_by,
+    }));
+  } catch (error) {
+    console.error("Error loading cameras for site", siteUid, ":", error);
+    cameras.value = [];
+  } finally {
+    loadingCameras.value = false;
+  }
+};
 
-      let cams: any[] = [];
-      if (payload?.status === 'success' && Array.isArray(payload?.data)) {
-        cams = payload.data;
-      } else if (Array.isArray(payload)) {
-        cams = payload;
-      } else if (Array.isArray(payload?.results)) {
-        cams = payload.results;
-      }
-
-      const map: Record<string, string> = {};
-      cams.forEach((c: any) => {
-        // Handle both uid (new API) and uuid (legacy) fields
-        const id = c.uid || c.uuid || c.camera_uuid || c.id;
-        if (id) {
-          map[id] = c.name || c.camera_name || c.label || id;
-        }
-      });
-
-      camerasCache.value[siteUid] = map;
-    } catch (err) {
-      console.warn('Failed to load cameras for site', siteUid, err);
-      // set empty map to avoid retry storm
-      camerasCache.value[siteUid] = {};
-    }
-  };
+// Fetch cameras for a site and cache uuid->name map per site
+// const fetchCameras = async (siteUid: string) => {
+//   if (!siteUid) return;
+// if cache exists for this site, skip
+//   if (
+//     camerasCache.value[siteUid] &&
+//     Object.keys(camerasCache.value[siteUid]).length
+//   )
+//     return;
+//
+//   try {
+//     const resp = await ApiService.get(`sites/${siteUid}/cameras`);
+//     const payload = resp && resp.data ? resp.data : resp;
+//
+//     let cams: any[] = [];
+//     if (Array.isArray(payload?.data)) {
+//       cams = payload.data;
+//     } else if (Array.isArray(payload)) {
+//       cams = payload;
+//     } else if (Array.isArray(payload?.results)) {
+//       cams = payload.results;
+//     }
+//
+//     const map: Record<string, string> = {
+//       /* empty */
+//     };
+//     cams.forEach((c: any) => {
+// Handle both uid (new API) and uuid (legacy) fields
+//       const id = c.uid || c.uuid || c.camera_uuid || c.id;
+//       if (id) {
+//         map[id] = c.name || c.camera_name || c.label || id;
+//       }
+//     });
+//
+//     camerasCache.value[siteUid] = map;
+//   } catch (err) {
+//     console.warn("Failed to load cameras for site", siteUid, err);
+// set empty map to avoid retry storm
+//     camerasCache.value[siteUid] = {
+//       /* empty */
+//     };
+//   }
+// };
 
 // Switch site
-const switchSite = () => {
-  const site = sites.value.find(s => s.uid === selectedSiteId.value);
-  currentSite.value = site || null;
-  fetchEvents();
-};
+// const switchSite = () => {
+//   const site = sites.value.find((s) => s.uid === selectedSiteId.value);
+//   currentSite.value = site || null;
+//   fetchEvents();
+// };
 
 // Filter events
-const filterEvents = () => {
-  // Filtering is handled in computed property
-};
+// const filterEvents = () => {
+// Filtering is handled in computed property
+// };
 
 // Refresh events
 const refreshEvents = () => {
@@ -691,10 +761,9 @@ const refreshEvents = () => {
 
 // Temp filter handlers (no immediate API calls)
 const onTempFilterSiteChange = async () => {
-  // Reset camera and NVR filter when site changes
+  // Reset camera filter when site changes
   tempSelectedCameraFilter.value = "";
-  selectedNvrFilter.value = "";
-  
+
   // Fetch cameras for the selected site immediately for dropdown
   if (tempSelectedSiteFilter.value) {
     await fetchCamerasForFilter(tempSelectedSiteFilter.value);
@@ -705,41 +774,53 @@ const onTempFilterSiteChange = async () => {
 
 const onTempFilterCameraChange = () => {
   // Just update temp state, no API call
-  
+
   // Save temp camera selection for persistence (backup method)
-  if (tempSelectedCameraFilter.value && tempSelectedCameraFilter.value !== '' && tempSelectedCameraFilter.value !== 'undefined') {
-    localStorage.setItem('lastTempSelectedCamera', tempSelectedCameraFilter.value);
+  if (
+    tempSelectedCameraFilter.value &&
+    tempSelectedCameraFilter.value !== "" &&
+    tempSelectedCameraFilter.value !== "undefined"
+  ) {
+    localStorage.setItem(
+      "lastTempSelectedCamera",
+      tempSelectedCameraFilter.value
+    );
   }
 };
 
-const onFilterNvrChange = () => {
-  // For now, NVR changes still immediate (can be converted to temp later if needed)
-  currentPage.value = 1;
-  debouncedFetchEvents();
-};
+// const onFilterNvrChange = () => {
+// For now, NVR changes still immediate (can be converted to temp later if needed)
+//   currentPage.value = 1;
+//   debouncedFetchEvents();
+// };
 
 // Apply all filters at once
 const applyFilters = async () => {
-  
   // Update actual filter values from temp values
-  selectedSiteFilter.value = tempSelectedSiteFilter.value || '';
-  selectedCameraFilter.value = tempSelectedCameraFilter.value || '';
+  selectedSiteFilter.value = tempSelectedSiteFilter.value || "";
+  selectedCameraFilter.value = tempSelectedCameraFilter.value || "";
   dateFrom.value = tempDateFrom.value;
   dateTo.value = tempDateTo.value;
-  
+
   // Update current site
-  currentSite.value = sites.value.find(s => s.uid === selectedSiteFilter.value) || null;
-  
+  currentSite.value =
+    sites.value.find((s) => s.uid === selectedSiteFilter.value) || null;
+
   // Save to localStorage
-  localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || '');
-  const cameraToSave = selectedCameraFilter.value && selectedCameraFilter.value !== 'undefined' && selectedCameraFilter.value !== 'null' ? selectedCameraFilter.value : '';
-  localStorage.setItem('lastSelectedCamera', cameraToSave);
+  localStorage.setItem("lastSelectedSite", selectedSiteFilter.value || "");
+  const cameraToSave =
+    selectedCameraFilter.value &&
+    selectedCameraFilter.value !== "undefined" &&
+    selectedCameraFilter.value !== "null"
+      ? selectedCameraFilter.value
+      : "";
+  localStorage.setItem("lastSelectedCamera", cameraToSave);
   localStorage.setItem(FROM_DATE_STORAGE_KEY, dateFrom.value);
   localStorage.setItem(TO_DATE_STORAGE_KEY, dateTo.value);
-  
+
   // Reset pagination and fetch events
   currentPage.value = 1;
-  
+
   if (selectedSiteFilter.value) {
     await debouncedFetchEvents();
   } else {
@@ -749,14 +830,14 @@ const applyFilters = async () => {
 
 // Reset filters to stored values
 const resetFilters = () => {
-  tempSelectedSiteFilter.value = selectedSiteFilter.value || '';
-  tempSelectedCameraFilter.value = selectedCameraFilter.value || '';
+  tempSelectedSiteFilter.value = selectedSiteFilter.value || "";
+  tempSelectedCameraFilter.value = selectedCameraFilter.value || "";
 
   // Reset dates to Today
   const today = new Date();
   const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
   const todayStr = `${year}-${month}-${day}`;
 
   dateFrom.value = todayStr;
@@ -773,53 +854,53 @@ const resetFilters = () => {
 };
 
 // Reset filters to default values (clear site/camera, reset dates to 1 week range)
-const resetToDefaults = () => {
-  // Reset site and camera filters
-  tempSelectedSiteFilter.value = '';
-  tempSelectedCameraFilter.value = '';
-  
-  // Reset dates to default range (yesterday to today)
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-  
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-  
-  const defaultFromDate = formatDate(yesterday);
-  const defaultToDate = formatDate(today);
-  
-  tempDateFrom.value = defaultFromDate;
-  tempDateTo.value = defaultToDate;
-  
-  // Update localStorage with new defaults
-  localStorage.setItem(FROM_DATE_STORAGE_KEY, defaultFromDate);
-  localStorage.setItem(TO_DATE_STORAGE_KEY, defaultToDate);
-};
-
+// const resetToDefaults = () => {
+// Reset site and camera filters
+//   tempSelectedSiteFilter.value = "";
+//   tempSelectedCameraFilter.value = "";
+//
+// Reset dates to default range (yesterday to today)
+//   const today = new Date();
+//   const yesterday = new Date(today);
+//   yesterday.setDate(today.getDate() - 1);
+//
+//   const formatDate = (date: Date) => {
+//     const year = date.getFullYear();
+//     const month = String(date.getMonth() + 1).padStart(2, "0");
+//     const day = String(date.getDate()).padStart(2, "0");
+//     return `${year}-${month}-${day}`;
+//   };
+//
+//   const defaultFromDate = formatDate(yesterday);
+//   const defaultToDate = formatDate(today);
+//
+//   tempDateFrom.value = defaultFromDate;
+//   tempDateTo.value = defaultToDate;
+//
+// Update localStorage with new defaults
+//   localStorage.setItem(FROM_DATE_STORAGE_KEY, defaultFromDate);
+//   localStorage.setItem(TO_DATE_STORAGE_KEY, defaultToDate);
+// };
 
 // Helpers for badge styling and translated labels
-const normalizeKey = (value?: string) => (value ?? '').toLowerCase().replace(/[\s_-]/g, '');
+// const normalizeKey = (value?: string) =>
+//   (value ?? "").toLowerCase().replace(/[\s_-]/g, "");
 
-const statusKeyMap: Record<string, string> = {
-  active: 'active',
-  acknowledged: 'acknowledged',
-  resolved: 'resolved',
-  unresolved: 'unresolved',
-  notresolved: 'notResolved',
-  falsedetection: 'falseDetection',
-};
+// const statusKeyMap: Record<string, string> = {
+//   active: "active",
+//   acknowledged: "acknowledged",
+//   resolved: "resolved",
+//   unresolved: "unresolved",
+//   notresolved: "notResolved",
+//   falsedetection: "falseDetection",
+// };
 
-const severityKeyMap: Record<string, string> = {
-  low: 'low',
-  medium: 'medium',
-  high: 'high',
-  critical: 'critical',
-};
+// const severityKeyMap: Record<string, string> = {
+//   low: "low",
+//   medium: "medium",
+//   high: "high",
+//   critical: "critical",
+// };
 
 // const typeKeyMap: Record<string, string> = {
 //   motion: 'motion',
@@ -828,54 +909,56 @@ const severityKeyMap: Record<string, string> = {
 //   cameraoffline: 'cameraOffline',
 // };
 
-const getEventTypeBadgeClass = (type: string) => {
-  switch (normalizeKey(type)) {
-    case 'motion':
-      return 'badge-light-primary';
-    case 'intrusion':
-      return 'badge-light-danger';
-    case 'system':
-      return 'badge-light-info';
-    case 'cameraoffline':
-      return 'badge-light-warning';
-    default:
-      return 'badge-light-secondary';
-  }
-};
+// const getEventTypeBadgeClass = (type: string) => {
+//   switch (normalizeKey(type)) {
+//     case "motion":
+//       return "badge-light-primary";
+//     case "intrusion":
+//       return "badge-light-danger";
+//     case "system":
+//       return "badge-light-info";
+//     case "cameraoffline":
+//       return "badge-light-warning";
+//     default:
+//       return "badge-light-secondary";
+//   }
+// };
 
-const getSeverityBadgeClass = (severity: string) => {
-  switch (normalizeKey(severity)) {
-    case 'critical':
-      return 'badge-danger';
-    case 'high':
-      return 'badge-warning';
-    case 'medium':
-      return 'badge-primary';
-    case 'low':
-      return 'badge-success';
-    default:
-      return 'badge-secondary';
-  }
-};
+// const getSeverityBadgeClass = (severity: string) => {
+//   switch (normalizeKey(severity)) {
+//     case "critical":
+//       return "badge-danger";
+//     case "high":
+//       return "badge-warning";
+//     case "medium":
+//       return "badge-primary";
+//     case "low":
+//       return "badge-success";
+//     default:
+//       return "badge-secondary";
+//   }
+// };
 
-const getStatusBadgeClass = (status: string) => {
-  const normalized = normalizeKey(status);
-  if (normalized === 'active' || normalized === 'unresolved') return 'badge-light-danger';
-  if (normalized === 'acknowledged') return 'badge-light-warning';
-  if (normalized === 'resolved' || normalized === 'notresolved') return 'badge-light-success';
-  if (normalized === 'falsedetection') return 'badge-light-info';
-  return 'badge-light-secondary';
-};
+// const getStatusBadgeClass = (status: string) => {
+//   const normalized = normalizeKey(status);
+//   if (normalized === "active" || normalized === "unresolved")
+//     return "badge-light-danger";
+//   if (normalized === "acknowledged") return "badge-light-warning";
+//   if (normalized === "resolved" || normalized === "notresolved")
+//     return "badge-light-success";
+//   if (normalized === "falsedetection") return "badge-light-info";
+//   return "badge-light-secondary";
+// };
 
-const getStatusLabel = (status: string) => {
-  const key = statusKeyMap[normalizeKey(status)];
-  return key ? t(`appsEventsAlerts.eventsTable.status.${key}`) : status;
-};
+// const getStatusLabel = (status: string) => {
+//   const key = statusKeyMap[normalizeKey(status)];
+//   return key ? t(`appsEventsAlerts.eventsTable.status.${key}`) : status;
+// };
 
-const getSeverityLabel = (severity: string) => {
-  const key = severityKeyMap[normalizeKey(severity)];
-  return key ? t(`appsEventsAlerts.eventsTable.severity.${key}`) : severity;
-};
+// const getSeverityLabel = (severity: string) => {
+//   const key = severityKeyMap[normalizeKey(severity)];
+//   return key ? t(`appsEventsAlerts.eventsTable.severity.${key}`) : severity;
+// };
 
 // const getEventTypeLabel = (type: string) => {
 //   const key = typeKeyMap[normalizeKey(type)];
@@ -888,44 +971,44 @@ const formatNumber = (value: number, maximumFractionDigits = 1) =>
     minimumFractionDigits: 0,
   }).format(value);
 
-const formatMinutesShort = (minutes?: number | null) => {
-  if (minutes === undefined || minutes === null || Number.isNaN(minutes)) {
-    return t('appsEventsAlerts.format.notAvailable');
-  }
-  return t('appsEventsAlerts.format.minutesShort', {
-    value: formatNumber(Math.max(0, minutes), 1),
-  });
-};
+// const formatMinutesShort = (minutes?: number | null) => {
+//   if (minutes === undefined || minutes === null || Number.isNaN(minutes)) {
+//     return t("appsEventsAlerts.format.notAvailable");
+//   }
+//   return t("appsEventsAlerts.format.minutesShort", {
+//     value: formatNumber(Math.max(0, minutes), 1),
+//   });
+// };
 
-const formatSecondsShort = (seconds?: number | null) => {
-  if (seconds === undefined || seconds === null || Number.isNaN(seconds)) {
-    return t('appsEventsAlerts.format.notAvailable');
-  }
-  return t('appsEventsAlerts.format.secondsShort', {
-    value: formatNumber(Math.max(0, seconds), 1),
-  });
-};
+// const formatSecondsShort = (seconds?: number | null) => {
+//   if (seconds === undefined || seconds === null || Number.isNaN(seconds)) {
+//     return t("appsEventsAlerts.format.notAvailable");
+//   }
+//   return t("appsEventsAlerts.format.secondsShort", {
+//     value: formatNumber(Math.max(0, seconds), 1),
+//   });
+// };
 
-const formatSecondsLong = (seconds?: number | null) => {
-  if (seconds === undefined || seconds === null || Number.isNaN(seconds)) {
-    return t('appsEventsAlerts.format.notAvailable');
-  }
-  return t('appsEventsAlerts.format.secondsLong', {
-    value: formatNumber(Math.max(0, seconds), 2),
-  });
-};
+// const formatSecondsLong = (seconds?: number | null) => {
+//   if (seconds === undefined || seconds === null || Number.isNaN(seconds)) {
+//     return t("appsEventsAlerts.format.notAvailable");
+//   }
+//   return t("appsEventsAlerts.format.secondsLong", {
+//     value: formatNumber(Math.max(0, seconds), 2),
+//   });
+// };
 
-const formatDuration = (minutes?: number | null) => {
-  if (minutes === undefined || minutes === null || Number.isNaN(minutes)) {
-    return t('appsEventsAlerts.format.notAvailable');
-  }
-  if (minutes < 1) {
-    return formatSecondsLong(minutes * 60);
-  }
-  return t('appsEventsAlerts.format.minutesLong', {
-    value: formatNumber(Math.max(0, minutes), 2),
-  });
-};
+// const formatDuration = (minutes?: number | null) => {
+//   if (minutes === undefined || minutes === null || Number.isNaN(minutes)) {
+//     return t("appsEventsAlerts.format.notAvailable");
+//   }
+//   if (minutes < 1) {
+//     return formatSecondsLong(minutes * 60);
+//   }
+//   return t("appsEventsAlerts.format.minutesLong", {
+//     value: formatNumber(Math.max(0, minutes), 2),
+//   });
+// };
 
 // Computed properties
 const filteredAndSortedEvents = computed(() => {
@@ -934,10 +1017,10 @@ const filteredAndSortedEvents = computed(() => {
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter((event) => {
-      const camera = (event.camera_name || '').toLowerCase();
+      const camera = (event.camera_name || "").toLowerCase();
       // const type = (event.type || '').toLowerCase();
-      const status = (event.status || '').toLowerCase();
-      const severity = (event.severity || '').toLowerCase();
+      const status = (event.status || "").toLowerCase();
+      const severity = (event.severity || "").toLowerCase();
       // const translatedType = getEventTypeLabel(event.type).toLowerCase();
 
       return (
@@ -955,36 +1038,42 @@ const filteredAndSortedEvents = computed(() => {
   // }
 
   if (selectedSeverityType.value) {
-    filtered = filtered.filter((event) => event.severity === selectedSeverityType.value);
+    filtered = filtered.filter(
+      (event) => event.severity === selectedSeverityType.value
+    );
   }
 
   if (sortLabel.value) {
     filtered = [...filtered].sort((a, b) => {
       let sortKey = sortLabel.value;
-      if (sortKey === 'duration') sortKey = 'duration_minutes';
-      if (sortKey === 'timestamp') sortKey = 'event_start';
-      
+      if (sortKey === "duration") sortKey = "duration_minutes";
+      if (sortKey === "timestamp") sortKey = "event_start";
+
       let aValue: any = a[sortKey as keyof Event];
       let bValue: any = b[sortKey as keyof Event];
 
-      if (sortKey === 'startTime' || sortKey === 'endTime' || sortKey === 'event_start') {
+      if (
+        sortKey === "startTime" ||
+        sortKey === "endTime" ||
+        sortKey === "event_start"
+      ) {
         aValue = aValue ? new Date(aValue as string).getTime() : 0;
         bValue = bValue ? new Date(bValue as string).getTime() : 0;
       }
 
       // User defines Descending as Smallest to Largest (Ascending behavior)
-      // So we flip standard logic: 
+      // So we flip standard logic:
       // asc -> Large to Small (Standard Descending)
       // desc -> Small to Large (Standard Ascending)
 
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
+      if (typeof aValue === "string" && typeof bValue === "string") {
         const comparison = aValue.localeCompare(bValue);
-        return sortOrder.value === 'asc' ? -comparison : comparison;
+        return sortOrder.value === "asc" ? -comparison : comparison;
       }
 
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
+      if (typeof aValue === "number" && typeof bValue === "number") {
         const comparison = aValue - bValue;
-        return sortOrder.value === 'asc' ? -comparison : comparison;
+        return sortOrder.value === "asc" ? -comparison : comparison;
       }
 
       return 0;
@@ -1002,8 +1091,8 @@ const filteredAndSortedEvents = computed(() => {
 // const motionEvents = computed(() => events.value.filter(e => e.type === 'motion').length);
 // const resolvedToday = computed(() => {
 //   const today = new Date().toDateString();
-//   return events.value.filter(e => 
-//     e.status === 'resolved' && 
+//   return events.value.filter(e =>
+//     e.status === 'resolved' &&
 //     new Date(e.timestamp).toDateString() === today
 //   ).length;
 // });
@@ -1021,18 +1110,16 @@ const filteredAndSortedEvents = computed(() => {
 // const responseTimePercentage = computed(() => 75); // Mock data
 
 // Pagination computed properties
-const visiblePages = computed(() => {
-  const pages = [];
-  const start = Math.max(1, currentPage.value - 2);
-  const end = Math.min(totalPages.value, currentPage.value + 2);
-  
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-  return pages;
-});
-
-
+// const visiblePages = computed(() => {
+//   const pages = [];
+//   const start = Math.max(1, currentPage.value - 2);
+//   const end = Math.min(totalPages.value, currentPage.value + 2);
+//
+//   for (let i = start; i <= end; i++) {
+//     pages.push(i);
+//   }
+//   return pages;
+// });
 
 // Methods
 const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
@@ -1045,42 +1132,39 @@ const viewEventDetails = (event: Event) => {
   showDetailModal.value = true;
 };
 
-
-
 const closeModal = () => {
   showDetailModal.value = false;
   selectedEvent.value = null;
 };
 
+// const formatDateTime = (dateTimeString?: string | null) => {
+//   if (!dateTimeString) return t("appsEventsAlerts.format.notAvailable");
+//   const date = new Date(dateTimeString);
+//   if (Number.isNaN(date.getTime())) {
+//     return dateTimeString;
+//   }
+//   return new Intl.DateTimeFormat(undefined, {
+//     year: "numeric",
+//     month: "long",
+//     day: "numeric",
+//     hour: "2-digit",
+//     minute: "2-digit",
+//     second: "2-digit",
+//     hour12: false,
+//   }).format(date);
+// };
 
-
-const formatDateTime = (dateTimeString?: string | null) => {
-  if (!dateTimeString) return t('appsEventsAlerts.format.notAvailable');
-  const date = new Date(dateTimeString);
-  if (Number.isNaN(date.getTime())) {
-    return dateTimeString;
-  }
-  return new Intl.DateTimeFormat(undefined, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  }).format(date);
-};
-
-const handleImageError = (event: any) => {
-  event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMzUgNzVIMTY1VjEyNUgxMzVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMjAgMTA1TDE0MCA5MEwxNjAgMTEwTDE4MCA5MEwyMDAgMTEwVjEzNUgxMDBWMTEwTDEyMCAxMDVaIiBmaWxsPSIjQ0NDQ0NDIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE0cHgiPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+Cjwvc3ZnPgo=';
-  event.target.alt = t('appsEventsAlerts.eventsModals.details.imageFallback');
-};
+// const handleImageError = (event: any) => {
+//   event.target.src =
+//     "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMzUgNzVIMTY1VjEyNUgxMzVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMjAgMTA1TDE0MCA5MEwxNjAgMTEwTDE4MCA5MEwyMDAgMTEwVjEzNUgxMDBWMTEwTDEyMCAxMDVaIiBmaWxsPSIjQ0NDQ0NDIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE0cHgiPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+Cjwvc3ZnPgo=";
+//   event.target.alt = t("appsEventsAlerts.eventsModals.details.imageFallback");
+// };
 
 // const acknowledgeEvent = async (event: Event) => {
 //   try {
 //     // TODO: API call to acknowledge event
 //     // await ApiService.post(`events/${event.uid}/acknowledge`);
-    
+
 //     // Update local state
 //     const index = events.value.findIndex(e => e.uid === event.event_id);
 //     if (index !== -1) {
@@ -1095,7 +1179,7 @@ const handleImageError = (event: any) => {
 //   try {
 //     // TODO: API call to resolve event
 //     // await ApiService.post(`events/${event.uid}/resolve`);
-    
+
 //     // Update local state
 //     const index = events.value.findIndex(e => e.uid === event.event_id);
 //     if (index !== -1) {
@@ -1116,9 +1200,9 @@ onMounted(async () => {
     await fetchSites();
 
     // Determine initial site: prefer stored value, otherwise first site in list
-    const storedSite = localStorage.getItem('lastSelectedSite');
-    let initialSiteUid = '';
-    if (storedSite && sites.value.some(s => s.uid === storedSite)) {
+    const storedSite = localStorage.getItem("lastSelectedSite");
+    let initialSiteUid = "";
+    if (storedSite && sites.value.some((s) => s.uid === storedSite)) {
       initialSiteUid = storedSite;
     } else if (sites.value.length > 0) {
       initialSiteUid = sites.value[0].uid;
@@ -1128,15 +1212,15 @@ onMounted(async () => {
       // Set selected site and temp selection
       selectedSiteFilter.value = initialSiteUid;
       tempSelectedSiteFilter.value = initialSiteUid;
-      localStorage.setItem('lastSelectedSite', initialSiteUid);
+      localStorage.setItem("lastSelectedSite", initialSiteUid);
 
       // Load cameras for the selected site
       await fetchCamerasForFilter(initialSiteUid);
 
       // Determine initial camera: prefer stored value, otherwise first camera in list
-      const storedCamera = localStorage.getItem('lastSelectedCamera');
-      let initialCameraUid = '';
-      if (storedCamera && cameras.value.some(c => c.uid === storedCamera)) {
+      const storedCamera = localStorage.getItem("lastSelectedCamera");
+      let initialCameraUid = "";
+      if (storedCamera && cameras.value.some((c) => c.uid === storedCamera)) {
         initialCameraUid = storedCamera;
       } else if (cameras.value.length > 0) {
         initialCameraUid = cameras.value[0].uid;
@@ -1144,7 +1228,8 @@ onMounted(async () => {
 
       selectedCameraFilter.value = initialCameraUid;
       tempSelectedCameraFilter.value = initialCameraUid;
-      if (initialCameraUid) localStorage.setItem('lastSelectedCamera', initialCameraUid);
+      if (initialCameraUid)
+        localStorage.setItem("lastSelectedCamera", initialCameraUid);
 
       // Only fetch events after sites and cameras are loaded and default dates are set
       // Wait a bit for DatePicker components to initialize with default values
@@ -1153,22 +1238,22 @@ onMounted(async () => {
       }, 200);
     } else {
       // No sites available — clear stored selections
-      localStorage.removeItem('lastSelectedSite');
-      localStorage.removeItem('lastSelectedCamera');
-      selectedSiteFilter.value = '';
-      selectedCameraFilter.value = '';
-      tempSelectedSiteFilter.value = '';
-      tempSelectedCameraFilter.value = '';
+      localStorage.removeItem("lastSelectedSite");
+      localStorage.removeItem("lastSelectedCamera");
+      selectedSiteFilter.value = "";
+      selectedCameraFilter.value = "";
+      tempSelectedSiteFilter.value = "";
+      tempSelectedCameraFilter.value = "";
     }
 
     // Add event listener for manual modal backdrop click
-    document.addEventListener('click', (e) => {
-      if ((e.target as HTMLElement)?.id === 'eventDetailsModalBackdrop') {
+    document.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement)?.id === "eventDetailsModalBackdrop") {
         closeModal();
       }
     });
   } catch (error) {
-    console.error('Error initializing events page:', error);
+    console.error("Error initializing events page:", error);
   }
 });
 

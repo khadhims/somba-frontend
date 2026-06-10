@@ -57,7 +57,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "text-formatting",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getAssetPath,

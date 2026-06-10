@@ -32,7 +32,9 @@ export default defineComponent({
     description: String,
     avatar: String,
   },
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getAssetPath,

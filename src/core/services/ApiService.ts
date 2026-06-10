@@ -18,7 +18,7 @@ class ApiService {
   private static refreshSubscribers: Array<{
     resolve: (token: string) => void;
     reject: (err: any) => void;
-  }> = [];  // track consecutive refresh failures to avoid hammering the refresh endpoint
+  }> = []; // track consecutive refresh failures to avoid hammering the refresh endpoint
   private static refreshFailCount = 0;
   private static lastRefreshFailAt: number | null = null;
   private static MAX_REFRESH_RETRIES = 2;
@@ -28,7 +28,7 @@ class ApiService {
   // active request counting to avoid loader getting stuck
   private static activeRequests = 0;
   private static watchdogTimer: any = null;
-  private static WATCHDOG_MS = 30000; // 30s fallback
+  private static WATCHDOG_MS = 5000; // 5s fallback
 
   /**
    * @description initialize vue axios
@@ -38,6 +38,7 @@ class ApiService {
     ApiService.vueInstance.use(VueAxios, axios);
     ApiService.vueInstance.axios.defaults.baseURL =
       import.meta.env.VITE_APP_API_URL;
+    ApiService.vueInstance.axios.defaults.timeout = 5000; // 5s timeout
 
     // attach interceptors
     ApiService.setupInterceptors();
@@ -72,7 +73,8 @@ class ApiService {
     if (ApiService.refreshFailCount >= ApiService.MAX_REFRESH_RETRIES) {
       if (
         ApiService.lastRefreshFailAt &&
-        Date.now() - ApiService.lastRefreshFailAt > ApiService.REFRESH_FAIL_COOLDOWN_MS
+        Date.now() - ApiService.lastRefreshFailAt >
+          ApiService.REFRESH_FAIL_COOLDOWN_MS
       ) {
         // cooldown expired — reset counters and allow retry
         ApiService.refreshFailCount = 0;
@@ -99,38 +101,55 @@ class ApiService {
         try {
           const suppress = !!(config && (config as any)._suppressGlobalLoading);
           if (!suppress) {
-            ApiService.activeRequests = Math.max(0, ApiService.activeRequests) + 1;
+            ApiService.activeRequests =
+              Math.max(0, ApiService.activeRequests) + 1;
             // dispatch start only when first request begins
             if (ApiService.activeRequests === 1) {
-              window.dispatchEvent(new CustomEvent('loading:start'));
+              window.dispatchEvent(new CustomEvent("loading:start"));
             }
 
             // reset watchdog each time a request starts
-            if (ApiService.watchdogTimer) clearTimeout(ApiService.watchdogTimer);
+            if (ApiService.watchdogTimer)
+              clearTimeout(ApiService.watchdogTimer);
             ApiService.watchdogTimer = setTimeout(() => {
               ApiService.activeRequests = 0;
-              try { window.dispatchEvent(new CustomEvent('loading:stop')); } catch (e) {}
+              try {
+                window.dispatchEvent(new CustomEvent("loading:stop"));
+              } catch (e) {
+                /* empty */
+              }
             }, ApiService.WATCHDOG_MS);
           }
-        } catch (e) {}
+        } catch (e) {
+          /* empty */
+        }
 
         return config;
       },
       (error: any) => {
         try {
-          const cfg = (error && (error as any).config) || {};
+          const cfg =
+            (error && (error as any).config) ||
+            {
+              /* empty */
+            };
           const suppress = !!(cfg && (cfg as any)._suppressGlobalLoading);
           if (!suppress) {
-            ApiService.activeRequests = Math.max(0, ApiService.activeRequests - 1);
+            ApiService.activeRequests = Math.max(
+              0,
+              ApiService.activeRequests - 1
+            );
             if (ApiService.activeRequests === 0) {
-              window.dispatchEvent(new CustomEvent('loading:stop'));
+              window.dispatchEvent(new CustomEvent("loading:stop"));
             }
             if (ApiService.watchdogTimer) {
               clearTimeout(ApiService.watchdogTimer);
               ApiService.watchdogTimer = null;
             }
           }
-        } catch (e) {}
+        } catch (e) {
+          /* empty */
+        }
 
         return Promise.reject(error);
       }
@@ -140,39 +159,57 @@ class ApiService {
     ApiService.vueInstance.axios.interceptors.response.use(
       (response: any) => {
         try {
-          const cfg = (response && (response as any).config) || {};
+          const cfg =
+            (response && (response as any).config) ||
+            {
+              /* empty */
+            };
           const suppress = !!(cfg && (cfg as any)._suppressGlobalLoading);
           if (!suppress) {
-            ApiService.activeRequests = Math.max(0, ApiService.activeRequests - 1);
+            ApiService.activeRequests = Math.max(
+              0,
+              ApiService.activeRequests - 1
+            );
             if (ApiService.activeRequests === 0) {
-              window.dispatchEvent(new CustomEvent('loading:stop'));
+              window.dispatchEvent(new CustomEvent("loading:stop"));
             }
             if (ApiService.watchdogTimer) {
               clearTimeout(ApiService.watchdogTimer);
               ApiService.watchdogTimer = null;
             }
           }
-        } catch (e) {}
+        } catch (e) {
+          /* empty */
+        }
 
         return response;
       },
       async (error: any) => {
         try {
-          const cfg = (error && (error as any).config) || {};
+          const cfg =
+            (error && (error as any).config) ||
+            {
+              /* empty */
+            };
           const suppress = !!(cfg && (cfg as any)._suppressGlobalLoading);
           if (!suppress) {
-            ApiService.activeRequests = Math.max(0, ApiService.activeRequests - 1);
+            ApiService.activeRequests = Math.max(
+              0,
+              ApiService.activeRequests - 1
+            );
             if (ApiService.activeRequests === 0) {
-              window.dispatchEvent(new CustomEvent('loading:stop'));
+              window.dispatchEvent(new CustomEvent("loading:stop"));
             }
             if (ApiService.watchdogTimer) {
               clearTimeout(ApiService.watchdogTimer);
               ApiService.watchdogTimer = null;
             }
           }
-        } catch (e) {}
+        } catch (e) {
+          /* empty */
+        }
 
-        const { config, response } = error;
+        const response = error?.response;
         const originalRequest = error?.config;
 
         // NEW: if this request is marked to skip refresh handling, just reject
@@ -184,17 +221,19 @@ class ApiService {
         const isRefreshCall =
           requestUrl.includes(ApiService.refreshEndpoint) ||
           requestUrl.endsWith(`/${ApiService.refreshEndpoint}`);
-        
+
         if (response && response.status === 401 && isRefreshCall) {
           // cleanup + notify
           JwtService.destroyToken();
           JwtService.destroyRefreshToken();
           try {
             window.dispatchEvent(new CustomEvent("auth:refresh_failed"));
-          } catch {}
+          } catch {
+            /* empty */
+          }
           return Promise.reject(error);
-        } 
-        
+        }
+
         if (response && response.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
 
@@ -203,7 +242,11 @@ class ApiService {
             return new Promise((resolve, reject) => {
               ApiService.subscribeTokenRefresh(
                 (token: string) => {
-                  originalRequest.headers = originalRequest.headers || {};
+                  originalRequest.headers =
+                    originalRequest.headers ||
+                    {
+                      /* empty */
+                    };
                   originalRequest.headers["Authorization"] = `Bearer ${token}`;
                   resolve(ApiService.vueInstance.axios(originalRequest));
                 },
@@ -236,7 +279,11 @@ class ApiService {
               ApiService.onRefreshed(newToken);
 
               // retry original request with new token
-              originalRequest.headers = originalRequest.headers || {};
+              originalRequest.headers =
+                originalRequest.headers ||
+                {
+                  /* empty */
+                };
               originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
               return ApiService.vueInstance.axios(originalRequest);
             }
@@ -260,31 +307,51 @@ class ApiService {
             ApiService.lastRefreshFailAt = Date.now();
             // notify app that refresh failed so it can logout/redirect
             try {
-              console.debug('[ApiService] refresh token request failed, dispatching auth:refresh_failed (failCount=' + ApiService.refreshFailCount + ')');
+              console.debug(
+                "[ApiService] refresh token request failed, dispatching auth:refresh_failed (failCount=" +
+                  ApiService.refreshFailCount +
+                  ")"
+              );
               // clear axios auth header to avoid further requests with stale token
               try {
-                if (ApiService.vueInstance && (ApiService.vueInstance as any).axios) {
-                  (ApiService.vueInstance as any).axios.defaults.headers.common['Authorization'] = '';
+                if (
+                  ApiService.vueInstance &&
+                  (ApiService.vueInstance as any).axios
+                ) {
+                  (ApiService.vueInstance as any).axios.defaults.headers.common[
+                    "Authorization"
+                  ] = "";
                 }
-              } catch (hh) {}
+              } catch (hh) {
+                /* empty */
+              }
 
               window.dispatchEvent(new CustomEvent("auth:refresh_failed"));
 
               // If we've exceeded the retry limit, perform a hard redirect fallback immediately
-              if (ApiService.refreshFailCount >= ApiService.MAX_REFRESH_RETRIES) {
+              if (
+                ApiService.refreshFailCount >= ApiService.MAX_REFRESH_RETRIES
+              ) {
                 try {
-                  if (typeof window !== 'undefined') {
-                    window.location.href = '/sign-in';
+                  if (typeof window !== "undefined") {
+                    window.location.href = "/sign-in";
                   }
-                } catch (redirErr) { console.debug('[ApiService] hard redirect failed', redirErr); }
+                } catch (redirErr) {
+                  console.debug("[ApiService] hard redirect failed", redirErr);
+                }
               } else {
                 // otherwise keep a short fallback redirect to ensure app moves to sign-in
                 setTimeout(() => {
                   try {
-                    if (typeof window !== 'undefined') {
-                      window.location.href = '/sign-in';
+                    if (typeof window !== "undefined") {
+                      window.location.href = "/sign-in";
                     }
-                  } catch (redirErr) { console.debug('[ApiService] hard redirect failed', redirErr); }
+                  } catch (redirErr) {
+                    console.debug(
+                      "[ApiService] hard redirect failed",
+                      redirErr
+                    );
+                  }
                 }, 250);
               }
             } catch (evErr) {

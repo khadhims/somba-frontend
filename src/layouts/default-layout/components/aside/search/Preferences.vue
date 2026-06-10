@@ -86,6 +86,8 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "search-preferences",
-  components: {},
+  components: {
+    /* empty */
+  },
 });
 </script>

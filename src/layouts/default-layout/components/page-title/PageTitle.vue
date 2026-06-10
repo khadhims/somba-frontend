@@ -25,9 +25,9 @@
       >
         <!--begin::Item-->
         <li class="breadcrumb-item text-muted">
-          <router-link to="/" class="text-muted text-hover-primary"
-            >{{ homeLabel }}</router-link
-          >
+          <router-link to="/" class="text-muted text-hover-primary">{{
+            homeLabel
+          }}</router-link>
         </li>
         <!--end::Item-->
         <template v-for="(item, i) in breadcrumbs" :key="i">
@@ -60,7 +60,9 @@ import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "layout-page-title",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const route = useRoute();
     const { t, te, locale } = useI18n();
@@ -86,14 +88,7 @@ export default defineComponent({
       const kebab = words.join("-").toLowerCase();
 
       return Array.from(
-        new Set([
-          trimmed,
-          lower,
-          camelCase,
-          joined,
-          snake,
-          kebab,
-        ])
+        new Set([trimmed, lower, camelCase, joined, snake, kebab])
       ).filter(Boolean);
     };
 

@@ -13,7 +13,7 @@
         <!--begin::Modal header-->
         <div class="modal-header">
           <!--begin::Modal title-->
-          <h2 class="fw-bold">{{ t('controlplane.site.modals.add.title') }}</h2>
+          <h2 class="fw-bold">{{ t("controlplane.site.modals.add.title") }}</h2>
           <!--end::Modal title-->
 
           <!--begin::Close-->
@@ -39,13 +39,17 @@
               <!--begin::Input group-->
               <div class="fv-row mb-7">
                 <!--begin::Label-->
-                <label class="required fs-6 fw-semibold mb-2">{{ t('controlplane.site.modals.form.name.label') }}</label>
+                <label class="required fs-6 fw-semibold mb-2">{{
+                  t("controlplane.site.modals.form.name.label")
+                }}</label>
                 <!--end::Label-->
                 <!--begin::Input-->
                 <input
                   type="text"
                   class="form-control form-control-solid"
-                  :placeholder="t('controlplane.site.modals.form.name.placeholder')"
+                  :placeholder="
+                    t('controlplane.site.modals.form.name.placeholder')
+                  "
                   v-model="formData.name"
                   name="name"
                 />
@@ -61,13 +65,17 @@
               <!--begin::Input group-->
               <div class="fv-row mb-7">
                 <!--begin::Label-->
-                <label class="fs-6 fw-semibold mb-2">{{ t('controlplane.site.modals.form.description.label') }}</label>
+                <label class="fs-6 fw-semibold mb-2">{{
+                  t("controlplane.site.modals.form.description.label")
+                }}</label>
                 <!--end::Label-->
                 <!--begin::Input-->
                 <textarea
                   class="form-control form-control-solid"
                   rows="3"
-                  :placeholder="t('controlplane.site.modals.form.description.placeholder')"
+                  :placeholder="
+                    t('controlplane.site.modals.form.description.placeholder')
+                  "
                   v-model="formData.description"
                   name="description"
                 ></textarea>
@@ -87,15 +95,17 @@
               class="btn btn-light me-3"
               data-bs-dismiss="modal"
             >
-              {{ t('controlplane.site.modals.actions.cancel') }}
+              {{ t("controlplane.site.modals.actions.cancel") }}
             </button>
             <!--end::Button-->
 
             <!--begin::Button-->
             <button type="submit" class="btn btn-primary" :disabled="loading">
-              <span v-if="!loading" class="indicator-label">{{ t('controlplane.site.modals.add.submit') }}</span>
+              <span v-if="!loading" class="indicator-label">{{
+                t("controlplane.site.modals.add.submit")
+              }}</span>
               <span v-if="loading" class="indicator-progress">
-                {{ t('controlplane.site.modals.actions.loading') }}
+                {{ t("controlplane.site.modals.actions.loading") }}
                 <span
                   class="spinner-border spinner-border-sm align-middle ms-2"
                 ></span>
@@ -114,6 +124,9 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "AddSiteModalComponent",
+});
 
 import { ref, reactive } from "vue";
 import { Modal } from "bootstrap";
@@ -182,7 +195,11 @@ const submitForm = async () => {
 
   try {
     // Ensure we have a team UID: prefer form value, then prop, then route query
-    const teamUid = formData.team_uid || props.teamUid || (route.query.teamId as string) || '';
+    const teamUid =
+      formData.team_uid ||
+      props.teamUid ||
+      (route.query.teamId as string) ||
+      "";
     if (!teamUid) {
       // user-friendly message and graceful return (don't throw)
       loading.value = false;
@@ -194,31 +211,34 @@ const submitForm = async () => {
     const payload = {
       name: formData.name,
       // description: formData.description,
-    }
+    };
 
     // Use explicit API path as requested
-    const resp = await ApiService.post(`/teams/${teamUid}/sites`, payload)
+    const resp = await ApiService.post(`/teams/${teamUid}/sites`, payload);
 
     // Backend may return created resource under resp.data.data or resp.data
-    const created = resp?.data?.data ?? resp?.data ?? null
+    const created = resp?.data?.data ?? resp?.data ?? null;
     // Emit created site (fallback to local object if backend didn't return it)
-    const newSite = created ?? { name: formData.name, team_uid: teamUid }
-    emit('site-added', newSite)
+    const newSite = created ?? { name: formData.name, team_uid: teamUid };
+    emit("site-added", newSite);
 
     // Reset form and close modal
-    resetForm()
-    const modal = Modal.getInstance(addSiteModalRef.value!)
-    modal?.hide()
+    resetForm();
+    const modal = Modal.getInstance(addSiteModalRef.value!);
+    modal?.hide();
   } catch (error: any) {
     console.error("Error adding site:", error);
     // map validation errors if provided by backend
-    const respErrors = error?.response?.data?.errors || error?.response?.data || null
-    if (respErrors && typeof respErrors === 'object') {
+    const respErrors =
+      error?.response?.data?.errors || error?.response?.data || null;
+    if (respErrors && typeof respErrors === "object") {
       // If backend returns field-specific errors, set them
       if (respErrors.name) {
-        errors.name = Array.isArray(respErrors.name) ? respErrors.name.join(', ') : String(respErrors.name)
+        errors.name = Array.isArray(respErrors.name)
+          ? respErrors.name.join(", ")
+          : String(respErrors.name);
       } else if (respErrors.message) {
-        errors.name = String(respErrors.message)
+        errors.name = String(respErrors.message);
       }
     }
   } finally {
@@ -241,20 +261,22 @@ const resetForm = () => {
 const showModal = (teamId?: string) => {
   resetForm();
   // Prefer explicit teamId argument, then prop, then route query
-  const tid = teamId ?? props.teamUid ?? (route.query.teamId as string) ?? '';
+  const tid = teamId ?? props.teamUid ?? (route.query.teamId as string) ?? "";
   if (tid) {
     formData.team_uid = tid;
   }
   // initialize modal with backdrop static and keyboard disabled so click outside / ESC won't close
   const el = addSiteModalRef.value!;
   if (!el) {
-    console.warn('[AddSiteModal] addSiteModalRef is not set!');
+    console.warn("[AddSiteModal] addSiteModalRef is not set!");
   }
 
-  const modalInstance = (Modal.getInstance(el) as Modal) || new Modal(el, {
-    backdrop: "static",
-    keyboard: false,
-  });
+  const modalInstance =
+    (Modal.getInstance(el) as Modal) ||
+    new Modal(el, {
+      backdrop: "static",
+      keyboard: false,
+    });
   modalInstance.show();
 };
 

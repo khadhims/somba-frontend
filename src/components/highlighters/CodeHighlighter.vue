@@ -50,6 +50,8 @@ export default defineComponent({
       getHeightInPixesls,
     };
   },
-  components: {},
+  components: {
+    /* empty */
+  },
 });
 </script>

@@ -17,8 +17,12 @@ export interface User {
 }
 
 export const useAuthStore = defineStore("auth", () => {
-  const errors = ref<any>({});
-  const user = ref<User>({} as User);
+  const errors = ref<any>({
+    /* empty */
+  });
+  const user = ref<User>({
+    /* empty */
+  } as User);
   const refreshToken = ref<string | null>(null);
   const isAuthenticated = ref(!!JwtService.getToken());
 
@@ -28,7 +32,9 @@ export const useAuthStore = defineStore("auth", () => {
 
     // backend may return { access_token, refresh_token, user? }
     user.value = authUser.user ?? (authUser as User);
-    errors.value = {};
+    errors.value = {
+      /* empty */
+    };
 
     const token = authUser.access_token ?? authUser.api_token ?? null;
     if (token) {
@@ -46,7 +52,9 @@ export const useAuthStore = defineStore("auth", () => {
   function setError(error: any) {
     // Normalize different error shapes from API
     if (!error) {
-      errors.value = {};
+      errors.value = {
+        /* empty */
+      };
       return;
     }
 
@@ -63,13 +71,21 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     // If API returns validation errors object or other structure
-    errors.value = error || {};
+    errors.value =
+      error ||
+      {
+        /* empty */
+      };
   }
 
   function purgeAuth() {
     isAuthenticated.value = false;
-    user.value = {} as User;
-    errors.value = {};
+    user.value = {
+      /* empty */
+    } as User;
+    errors.value = {
+      /* empty */
+    };
     refreshToken.value = null;
     JwtService.destroyToken();
     JwtService.destroyRefreshToken();
@@ -148,7 +164,9 @@ export const useAuthStore = defineStore("auth", () => {
   function forgotPassword(email: string) {
     return ApiService.post("forgot_password", email)
       .then(() => {
-        setError({});
+        setError({
+          /* empty */
+        });
       })
       .catch(({ response }) => {
         const payload = response?.data ?? { error: "Request failed" };

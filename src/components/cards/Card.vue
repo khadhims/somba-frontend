@@ -51,6 +51,8 @@ export default defineComponent({
     image: String,
     modalId: String,
   },
-  components: {},
+  components: {
+    /* empty */
+  },
 });
 </script>

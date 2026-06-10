@@ -3,18 +3,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+defineOptions({
+  name: "SkeletonBlockComponent",
+});
+
+import { computed } from "vue";
 
 const props = defineProps({
-  width: { type: [String, Number], default: '100%' },
+  width: { type: [String, Number], default: "100%" },
   height: { type: [String, Number], default: 16 },
   circle: { type: Boolean, default: false },
 });
 
 const styleObject = computed(() => ({
-  width: typeof props.width === 'number' ? `${props.width}px` : props.width,
-  height: typeof props.height === 'number' ? `${props.height}px` : props.height,
-  borderRadius: props.circle ? '9999px' : '8px',
+  width: typeof props.width === "number" ? `${props.width}px` : props.width,
+  height: typeof props.height === "number" ? `${props.height}px` : props.height,
+  borderRadius: props.circle ? "9999px" : "8px",
 }));
 </script>
 

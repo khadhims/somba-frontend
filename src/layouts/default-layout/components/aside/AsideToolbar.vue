@@ -16,9 +16,9 @@
         <!--begin::Info-->
         <div class="flex-grow-1 me-2">
           <!--begin::Username-->
-          <a href="#" class="text-white text-hover-primary fs-6 fw-semibold"
-            >{{ fullName }}</a
-          >
+          <a href="#" class="text-white text-hover-primary fs-6 fw-semibold">{{
+            fullName
+          }}</a>
           <!--end::Username-->
 
           <!--begin::Description-->
@@ -80,9 +80,9 @@ export default defineComponent({
     const fullName = computed(() => {
       const user = authStore.user;
       if (user?.first_name || user?.last_name) {
-        return `${user.first_name || ''} ${user.last_name || ''}`.trim();
+        return `${user.first_name || ""} ${user.last_name || ""}`.trim();
       }
-      return 'User';
+      return "User";
     });
 
     return {

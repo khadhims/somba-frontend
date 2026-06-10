@@ -44,7 +44,9 @@ export default defineComponent({
 
     files: String,
   },
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getAssetPath,

@@ -5,17 +5,21 @@
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col-md-4">
-          <h4 class="card-title mb-0">{{ t('siteManagement') }}</h4>
+          <h4 class="card-title mb-0">{{ t("siteManagement") }}</h4>
           <p class="text-muted mb-0">
-            <span v-if="currentTeam">{{ t('manageSitesForTeam', { name: currentTeam.name }) }}</span>
-            <span v-else>{{ t('manageSites') }} {{ t('forYourTeam') }}</span>
+            <span v-if="currentTeam">{{
+              t("manageSitesForTeam", { name: currentTeam.name })
+            }}</span>
+            <span v-else>{{ t("manageSites") }} {{ t("forYourTeam") }}</span>
           </p>
         </div>
         <div class="col-md-8">
           <div class="d-flex justify-content-end gap-3">
             <!-- Organization Dropdown -->
             <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('organization') }}:</label>
+              <label class="form-label me-3 mb-0 fw-semibold"
+                >{{ t("organization") }}:</label
+              >
               <select
                 v-model="selectedOrganizationId"
                 @change="switchOrganization"
@@ -23,7 +27,11 @@
                 :disabled="loadingOrganizations"
               >
                 <option value="" disabled>
-                  {{ loadingOrganizations ? t('loadingOrganizations') : t('selectOrganization') }}
+                  {{
+                    loadingOrganizations
+                      ? t("loadingOrganizations")
+                      : t("selectOrganization")
+                  }}
                 </option>
                 <option
                   v-for="org in organizations"
@@ -33,29 +41,44 @@
                   {{ org.name }}
                 </option>
               </select>
-              
+
               <!-- Loading spinner for organizations -->
               <div v-if="loadingOrganizations" class="ms-2">
-                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <div
+                  class="spinner-border spinner-border-sm text-primary"
+                  role="status"
+                >
                   <span class="visually-hidden">Loading...</span>
                 </div>
               </div>
             </div>
-            
+
             <!-- Account Dropdown -->
             <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('account') }}:</label>
+              <label class="form-label me-3 mb-0 fw-semibold"
+                >{{ t("account") }}:</label
+              >
               <select
                 v-model="selectedAccountId"
                 @change="switchAccount"
                 class="form-select form-select-solid w-200px"
-                :disabled="loadingAccounts || !selectedOrganizationId || accounts.length === 0"
+                :disabled="
+                  loadingAccounts ||
+                  !selectedOrganizationId ||
+                  accounts.length === 0
+                "
               >
                 <option value="" disabled>
-                  <span v-if="!selectedOrganizationId">{{ t('selectOrganizationFirst') }}</span>
-                  <span v-else-if="loadingAccounts">{{ t('loadingAccounts') }}</span>
-                  <span v-else-if="accounts.length === 0">{{ t('noAccounts') }}</span>
-                  <span v-else>{{ t('selectAccount') }}</span>
+                  <span v-if="!selectedOrganizationId">{{
+                    t("selectOrganizationFirst")
+                  }}</span>
+                  <span v-else-if="loadingAccounts">{{
+                    t("loadingAccounts")
+                  }}</span>
+                  <span v-else-if="accounts.length === 0">{{
+                    t("noAccounts")
+                  }}</span>
+                  <span v-else>{{ t("selectAccount") }}</span>
                 </option>
                 <option
                   v-for="account in accounts"
@@ -65,42 +88,50 @@
                   {{ account.name }}
                 </option>
               </select>
-              
+
               <!-- Loading spinner for accounts -->
               <div v-if="loadingAccounts" class="ms-2">
-                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <div
+                  class="spinner-border spinner-border-sm text-primary"
+                  role="status"
+                >
                   <span class="visually-hidden">Loading...</span>
                 </div>
               </div>
             </div>
-            
+
             <!-- Team Dropdown -->
             <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('team') }}:</label>
+              <label class="form-label me-3 mb-0 fw-semibold"
+                >{{ t("team") }}:</label
+              >
               <select
                 v-model="selectedTeamId"
                 @change="switchTeam"
                 class="form-select form-select-solid w-200px"
-                :disabled="loadingTeams || !selectedAccountId || teams.length === 0"
+                :disabled="
+                  loadingTeams || !selectedAccountId || teams.length === 0
+                "
               >
                 <option value="" disabled>
-                  <span v-if="!selectedAccountId">{{ t('selectAccountFirst') }}</span>
-                  <span v-else-if="loadingTeams">{{ t('loadingTeams') }}</span>
-                  <span v-else-if="teams.length === 0">{{ t('noTeams') }}</span>
-                  <span v-else>{{ t('selectTeam') }}</span>
+                  <span v-if="!selectedAccountId">{{
+                    t("selectAccountFirst")
+                  }}</span>
+                  <span v-else-if="loadingTeams">{{ t("loadingTeams") }}</span>
+                  <span v-else-if="teams.length === 0">{{ t("noTeams") }}</span>
+                  <span v-else>{{ t("selectTeam") }}</span>
                 </option>
-                <option
-                  v-for="team in teams"
-                  :key="team.uid"
-                  :value="team.uid"
-                >
+                <option v-for="team in teams" :key="team.uid" :value="team.uid">
                   {{ team.name }}
                 </option>
               </select>
-              
+
               <!-- Loading spinner for teams -->
               <div v-if="loadingTeams" class="ms-2">
-                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <div
+                  class="spinner-border spinner-border-sm text-primary"
+                  role="status"
+                >
                   <span class="visually-hidden">Loading...</span>
                 </div>
               </div>
@@ -113,19 +144,23 @@
   <!--end::Organization, Account & Team Switcher-->
 
   <!--begin::Error Alert-->
-  <div v-if="error" class="alert alert-danger d-flex align-items-center mb-5" role="alert">
+  <div
+    v-if="error"
+    class="alert alert-danger d-flex align-items-center mb-5"
+    role="alert"
+  >
     <i class="ki-duotone ki-cross-circle fs-2hx text-danger me-4">
       <span class="path1"></span>
       <span class="path2"></span>
     </i>
     <div class="d-flex flex-column">
-  <h5 class="mb-1">{{ t('errorLoadingData') }}</h5>
+      <h5 class="mb-1">{{ t("errorLoadingData") }}</h5>
       <span>{{ error }}</span>
     </div>
-    <button 
-      @click="error = null" 
-      type="button" 
-      class="btn-close ms-auto" 
+    <button
+      @click="error = null"
+      type="button"
+      class="btn-close ms-auto"
       aria-label="Close"
     ></button>
   </div>
@@ -143,8 +178,8 @@
           <div class="text-gray-900 fw-bold fs-2 mb-2 me-5">
             {{ totalSites }}
           </div>
-            <div class="fw-semibold text-gray-400">
-            {{ t('totalSites') }}
+          <div class="fw-semibold text-gray-400">
+            {{ t("totalSites") }}
           </div>
         </div>
       </div>
@@ -161,7 +196,7 @@
             {{ activeSites }}
           </div>
           <div class="fw-semibold text-gray-400">
-            {{ t('activeSites') }}
+            {{ t("activeSites") }}
           </div>
         </div>
       </div>
@@ -178,7 +213,7 @@
             {{ totalVisitors }}
           </div>
           <div class="fw-semibold text-gray-400">
-            {{ t('totalVisitors') }}
+            {{ t("totalVisitors") }}
           </div>
         </div>
       </div>
@@ -195,7 +230,7 @@
             {{ avgPerformance }}%
           </div>
           <div class="fw-semibold text-gray-400">
-            {{ t('avgPerformance') }}
+            {{ t("avgPerformance") }}
           </div>
         </div>
       </div>
@@ -209,7 +244,7 @@
     <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
       <div class="card-title">
-  <h3 class="fw-bold m-0">{{ t('sitesOverview') }}</h3>
+        <h3 class="fw-bold m-0">{{ t("sitesOverview") }}</h3>
       </div>
       <!--end::Card title-->
 
@@ -217,9 +252,11 @@
       <div class="card-toolbar">
         <!--begin::Items per page-->
         <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('items') }}</label>
-          <select 
-            class="form-select form-select-sm w-auto" 
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{
+            t("items")
+          }}</label>
+          <select
+            class="form-select form-select-sm w-auto"
             v-model="pagination.per_page"
             @change="changeItemsPerPage"
           >
@@ -252,7 +289,7 @@
           :disabled="!selectedTeamId"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
-          {{ t('addSite') }}
+          {{ t("addSite") }}
         </button>
       </div>
       <!--end::Card toolbar-->
@@ -281,17 +318,19 @@
               </span>
             </div>
             <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">{{ row.name }}</span>
+              <span class="text-dark fw-bold text-hover-primary fs-6">{{
+                row.name
+              }}</span>
             </div>
           </div>
         </template>
 
         <template v-slot:created_by="{ row }">
           <span class="text-dark fw-bold d-block fs-6">
-            {{ row.created_by?.username || 'Unknown' }}
+            {{ row.created_by?.username || "Unknown" }}
           </span>
           <span class="text-muted fw-semibold text-muted d-block fs-7">
-            {{ row.created_by?.email || '' }}
+            {{ row.created_by?.email || "" }}
           </span>
         </template>
 
@@ -326,52 +365,67 @@
           </div>
         </template>
       </KTDataTable>
-      
+
       <!--begin::Pagination-->
-      <div class="d-flex flex-stack flex-wrap pt-10" v-if="!loading && sites.length >= 0">
+      <div
+        class="d-flex flex-stack flex-wrap pt-10"
+        v-if="!loading && sites.length >= 0"
+      >
         <div class="d-flex align-items-center">
-            <div class="fs-6 fw-semibold text-gray-700 me-5">
-            {{ t('showingEntries', {
-              from: ((pagination.page - 1) * pagination.per_page) + 1,
-              to: Math.min(pagination.page * pagination.per_page, pagination.total_items),
-              total: pagination.total_items
-            }) }}
+          <div class="fs-6 fw-semibold text-gray-700 me-5">
+            {{
+              t("showingEntries", {
+                from: (pagination.page - 1) * pagination.per_page + 1,
+                to: Math.min(
+                  pagination.page * pagination.per_page,
+                  pagination.total_items
+                ),
+                total: pagination.total_items,
+              })
+            }}
           </div>
-          
+
           <div class="d-flex align-items-center">
-            <span class="text-gray-700 me-2">{{ t('itemsPerPage') }}</span>
-            <span class="badge badge-light fs-6">{{ pagination.per_page }}</span>
+            <span class="text-gray-700 me-2">{{ t("itemsPerPage") }}</span>
+            <span class="badge badge-light fs-6">{{
+              pagination.per_page
+            }}</span>
           </div>
         </div>
-        
+
         <ul class="pagination">
           <!-- Previous button -->
           <li class="page-item" :class="{ disabled: pagination.page <= 1 }">
-            <button 
-              class="page-link" 
+            <button
+              class="page-link"
               @click="goToPage(pagination.page - 1)"
               :disabled="pagination.page <= 1"
             >
               Previous
             </button>
           </li>
-          
+
           <!-- Page numbers -->
-          <li 
-            v-for="page in visiblePages" 
-            :key="page" 
-            class="page-item" 
+          <li
+            v-for="page in visiblePages"
+            :key="page"
+            class="page-item"
             :class="{ active: page === pagination.page }"
           >
             <button class="page-link" @click="goToPage(page)">
               {{ page }}
             </button>
           </li>
-          
+
           <!-- Next button -->
-          <li class="page-item" :class="{ disabled: pagination.page >= Math.max(1, pagination.total_pages) }">
-            <button 
-              class="page-link" 
+          <li
+            class="page-item"
+            :class="{
+              disabled: pagination.page >= Math.max(1, pagination.total_pages),
+            }"
+          >
+            <button
+              class="page-link"
               @click="goToPage(pagination.page + 1)"
               :disabled="pagination.page >= Math.max(1, pagination.total_pages)"
             >
@@ -392,21 +446,36 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Add Site</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
         <form @submit.prevent="createSite">
           <div class="modal-body">
             <div class="row">
               <div class="col-md-12 mb-3">
                 <label class="form-label">Site Name *</label>
-                <input type="text" class="form-control" v-model="newSite.name" required>
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="newSite.name"
+                  required
+                />
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+              Cancel
+            </button>
             <button type="submit" class="btn btn-primary" :disabled="creating">
-              <span v-if="creating" class="spinner-border spinner-border-sm me-2"></span>
+              <span
+                v-if="creating"
+                class="spinner-border spinner-border-sm me-2"
+              ></span>
               Create Site
             </button>
           </div>
@@ -421,21 +490,36 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Edit Site</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
         <form @submit.prevent="updateSite" v-if="siteToEdit">
           <div class="modal-body">
             <div class="row">
               <div class="col-md-12 mb-3">
                 <label class="form-label">Site Name *</label>
-                <input type="text" class="form-control" v-model="siteToEdit.name" required>
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="siteToEdit.name"
+                  required
+                />
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+              Cancel
+            </button>
             <button type="submit" class="btn btn-primary" :disabled="editing">
-              <span v-if="editing" class="spinner-border spinner-border-sm me-2"></span>
+              <span
+                v-if="editing"
+                class="spinner-border spinner-border-sm me-2"
+              ></span>
               Update Site
             </button>
           </div>
@@ -450,16 +534,35 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Delete Site</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
-          <p>Are you sure you want to delete site <strong>{{ siteToDelete?.name }}</strong>?</p>
+          <p>
+            Are you sure you want to delete site
+            <strong>{{ siteToDelete?.name }}</strong
+            >?
+          </p>
           <p class="text-muted">This action cannot be undone.</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-danger" @click="confirmDelete" :disabled="deleting">
-            <span v-if="deleting" class="spinner-border spinner-border-sm me-2"></span>
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            @click="confirmDelete"
+            :disabled="deleting"
+          >
+            <span
+              v-if="deleting"
+              class="spinner-border spinner-border-sm me-2"
+            ></span>
             Delete
           </button>
         </div>
@@ -469,76 +572,80 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useRoute } from 'vue-router'
-import { Modal } from 'bootstrap'
-import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
-import ApiService from '@/core/services/ApiService'
+defineOptions({
+  name: "OverviewComponent",
+});
+
+import { ref, computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRoute } from "vue-router";
+import { Modal } from "bootstrap";
+import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import ApiService from "@/core/services/ApiService";
 
 // Interface definitions
 interface Site {
-  uid: string
-  name: string
-  team_uid?: string
+  uid: string;
+  name: string;
+  team_uid?: string;
   created_by?: {
-    username: string
-    email: string
-  }
-  created_at: string
-  updated_at: string
+    username: string;
+    email: string;
+  };
+  created_at: string;
+  updated_at: string;
 }
 
 interface Team {
-  uid: string
-  name: string
-  account_uid?: string
+  uid: string;
+  name: string;
+  account_uid?: string;
   created_by?: {
-    username: string
-    email: string
-  }
-  created_at: string
-  updated_at: string
+    username: string;
+    email: string;
+  };
+  created_at: string;
+  updated_at: string;
 }
 
 interface Account {
-  uid: string
-  name: string
-  organization_uid?: string
+  uid: string;
+  name: string;
+  organization_uid?: string;
   created_by?: {
-    username: string
-    email: string
-  }
-  created_at: string
-  updated_at: string
+    username: string;
+    email: string;
+  };
+  created_at: string;
+  updated_at: string;
 }
 
 interface Organization {
-  uid: string
-  name: string
-  legalName?: string
-  email?: string
-  phone?: string
-  website?: string
-  address?: string
-  country?: string
-  status?: 'active' | 'inactive'
-  created_at: string
-  updated_at?: string
+  uid: string;
+  name: string;
+  legalName?: string;
+  email?: string;
+  phone?: string;
+  website?: string;
+  address?: string;
+  country?: string;
+  status?: "active" | "inactive";
+  created_at: string;
+  updated_at?: string;
   created_by?: {
-    username: string
-    email: string
-  }
-  description?: string
+    username: string;
+    email: string;
+  };
+  description?: string;
 }
 
 // Reactive data
-const sites = ref<Site[]>([])
-const loading = ref(false)
-const error = ref<string | null>(null)
-const searchQuery = ref('')
-const sortLabel = ref('')
-const sortOrder = ref<'asc' | 'desc'>('asc')
+const sites = ref<Site[]>([]);
+const loading = ref(false);
+const error = ref<string | null>(null);
+const searchQuery = ref("");
+const sortLabel = ref("");
+const sortOrder = ref<"asc" | "desc">("asc");
 
 // Pagination state
 const pagination = ref({
@@ -548,83 +655,105 @@ const pagination = ref({
   total_items: 0,
   next_page: null,
   prev_page: null,
-})
+});
 
 // Organization-related reactive data
-const organizations = ref<Organization[]>([])
-const loadingOrganizations = ref(false)
-const selectedOrganizationId = ref('')
-const currentOrganization = ref<Organization | null>(null)
+const organizations = ref<Organization[]>([]);
+const loadingOrganizations = ref(false);
+const selectedOrganizationId = ref("");
+const currentOrganization = ref<Organization | null>(null);
 
 // Account-related reactive data
-const accounts = ref<Account[]>([])
-const loadingAccounts = ref(false)
-const selectedAccountId = ref('')
-const currentAccount = ref<Account | null>(null)
+const accounts = ref<Account[]>([]);
+const loadingAccounts = ref(false);
+const selectedAccountId = ref("");
+const currentAccount = ref<Account | null>(null);
 
 // Team-related reactive data
-const teams = ref<Team[]>([])
-const loadingTeams = ref(false)
-const selectedTeamId = ref('')
-const currentTeam = ref<Team | null>(null)
+const teams = ref<Team[]>([]);
+const loadingTeams = ref(false);
+const selectedTeamId = ref("");
+const currentTeam = ref<Team | null>(null);
 
 // Modal states
-const creating = ref(false)
-const deleting = ref(false)
-const editing = ref(false)
+const creating = ref(false);
+const deleting = ref(false);
+const editing = ref(false);
 const newSite = ref<Partial<Site>>({
-  name: '',
-})
-const siteToEdit = ref<Site | null>(null)
-const siteToDelete = ref<Site | null>(null)
+  name: "",
+});
+const siteToEdit = ref<Site | null>(null);
+const siteToDelete = ref<Site | null>(null);
 
 // Table header configuration
 const tableHeader = ref([
-  { columnName: 'Site Name', columnLabel: 'name', sortEnabled: true, searchable: true },
-  { columnName: 'Created By', columnLabel: 'created_by', sortEnabled: false, searchable: false },
-  { columnName: 'Created', columnLabel: 'created_at', sortEnabled: true, searchable: false },
-  { columnName: 'Actions', columnLabel: 'actions', sortEnabled: false, searchable: false }
-])
+  {
+    columnName: "Site Name",
+    columnLabel: "name",
+    sortEnabled: true,
+    searchable: true,
+  },
+  {
+    columnName: "Created By",
+    columnLabel: "created_by",
+    sortEnabled: false,
+    searchable: false,
+  },
+  {
+    columnName: "Created",
+    columnLabel: "created_at",
+    sortEnabled: true,
+    searchable: false,
+  },
+  {
+    columnName: "Actions",
+    columnLabel: "actions",
+    sortEnabled: false,
+    searchable: false,
+  },
+]);
 
 // Get route instance to read query parameters
-const route = useRoute()
+const route = useRoute();
 
 // LocalStorage functions
 const saveLastSelectedOrganization = (orgId: string) => {
-  localStorage.setItem('lastSelectedOrganization', orgId)
-}
+  localStorage.setItem("lastSelectedOrganization", orgId);
+};
 
 const loadLastSelectedOrganization = (): string | null => {
-  return localStorage.getItem('lastSelectedOrganization')
-}
+  return localStorage.getItem("lastSelectedOrganization");
+};
 
 const saveLastSelectedAccount = (accountId: string) => {
-  localStorage.setItem('lastSelectedAccount', accountId)
-}
+  localStorage.setItem("lastSelectedAccount", accountId);
+};
 
 const loadLastSelectedAccount = (): string | null => {
-  return localStorage.getItem('lastSelectedAccount')
-}
+  return localStorage.getItem("lastSelectedAccount");
+};
 
 const saveLastSelectedTeam = (teamId: string) => {
-  localStorage.setItem('lastSelectedTeam', teamId)
-}
+  localStorage.setItem("lastSelectedTeam", teamId);
+};
 
 const loadLastSelectedTeam = (): string | null => {
-  return localStorage.getItem('lastSelectedTeam')
-}
+  return localStorage.getItem("lastSelectedTeam");
+};
 
 // Fetch organizations from API
 const fetchOrganizations = async () => {
-  loadingOrganizations.value = true
+  loadingOrganizations.value = true;
   try {
     console.log("🚀 Fetching organizations...");
-    const resp = await ApiService.query("organizations", {})
+    const resp = await ApiService.query("organizations", {
+      /* empty */
+    });
     console.log("📡 Organizations API Response:", resp);
-    
+
     if (resp && resp.data) {
       // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
-      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+      if (resp.data?.data && Array.isArray(resp.data.data)) {
         console.log("✅ Found organizations in data array:", resp.data.data);
         organizations.value = resp.data.data;
       } else if (Array.isArray(resp.data)) {
@@ -634,74 +763,94 @@ const fetchOrganizations = async () => {
         console.log("⚠️ Unexpected organizations data format:", resp.data);
         organizations.value = [];
       }
-      
+
       console.log("🎯 Final organizations:", organizations.value);
-      
+
       // Check URL parameters for initial selection
-      const orgIdFromUrl = route.query.orgId as string
-      const accountIdFromUrl = route.query.accountId as string
-      const teamIdFromUrl = route.query.teamId as string
-      
+      const orgIdFromUrl = route.query.orgId as string;
+      const accountIdFromUrl = route.query.accountId as string;
+      const teamIdFromUrl = route.query.teamId as string;
+
       if (orgIdFromUrl) {
-        const orgFromUrl = organizations.value.find(o => o.uid === orgIdFromUrl)
+        const orgFromUrl = organizations.value.find(
+          (o) => o.uid === orgIdFromUrl
+        );
         if (orgFromUrl) {
-          selectedOrganizationId.value = orgFromUrl.uid
-          currentOrganization.value = orgFromUrl
-          saveLastSelectedOrganization(orgFromUrl.uid)
-          await fetchAccounts()
-          
-          if (accountIdFromUrl && accounts.value.find(a => a.uid === accountIdFromUrl)) {
-            selectedAccountId.value = accountIdFromUrl
-            currentAccount.value = accounts.value.find(a => a.uid === accountIdFromUrl) || null
-            saveLastSelectedAccount(accountIdFromUrl)
-            await fetchTeams()
-            
-            if (teamIdFromUrl && teams.value.find(t => t.uid === teamIdFromUrl)) {
-              selectedTeamId.value = teamIdFromUrl
-              currentTeam.value = teams.value.find(t => t.uid === teamIdFromUrl) || null
-              saveLastSelectedTeam(teamIdFromUrl)
-              fetchSites(pagination.value.page)
+          selectedOrganizationId.value = orgFromUrl.uid;
+          currentOrganization.value = orgFromUrl;
+          saveLastSelectedOrganization(orgFromUrl.uid);
+          await fetchAccounts();
+
+          if (
+            accountIdFromUrl &&
+            accounts.value.find((a) => a.uid === accountIdFromUrl)
+          ) {
+            selectedAccountId.value = accountIdFromUrl;
+            currentAccount.value =
+              accounts.value.find((a) => a.uid === accountIdFromUrl) || null;
+            saveLastSelectedAccount(accountIdFromUrl);
+            await fetchTeams();
+
+            if (
+              teamIdFromUrl &&
+              teams.value.find((t) => t.uid === teamIdFromUrl)
+            ) {
+              selectedTeamId.value = teamIdFromUrl;
+              currentTeam.value =
+                teams.value.find((t) => t.uid === teamIdFromUrl) || null;
+              saveLastSelectedTeam(teamIdFromUrl);
+              fetchSites(pagination.value.page);
             }
           }
         }
       } else if (organizations.value.length > 0) {
         // Use last selected or first organization
-        const lastSelectedOrgId = loadLastSelectedOrganization()
+        const lastSelectedOrgId = loadLastSelectedOrganization();
         if (lastSelectedOrgId) {
-          const lastOrg = organizations.value.find(o => o.uid === lastSelectedOrgId)
+          const lastOrg = organizations.value.find(
+            (o) => o.uid === lastSelectedOrgId
+          );
           if (lastOrg) {
-            selectedOrganizationId.value = lastOrg.uid
-            currentOrganization.value = lastOrg
+            selectedOrganizationId.value = lastOrg.uid;
+            currentOrganization.value = lastOrg;
           }
         } else {
-          selectedOrganizationId.value = organizations.value[0].uid
-          currentOrganization.value = organizations.value[0]
-          saveLastSelectedOrganization(organizations.value[0].uid)
+          selectedOrganizationId.value = organizations.value[0].uid;
+          currentOrganization.value = organizations.value[0];
+          saveLastSelectedOrganization(organizations.value[0].uid);
         }
-        await fetchAccounts()
+        await fetchAccounts();
       }
     }
   } catch (e: any) {
-    console.error('Failed to load organizations:', e)
-    error.value = "Failed to load organizations. Please refresh the page."
+    console.error("Failed to load organizations:", e);
+    error.value = "Failed to load organizations. Please refresh the page.";
   } finally {
-    loadingOrganizations.value = false
+    loadingOrganizations.value = false;
   }
-}
+};
 
 // Fetch accounts from API
 const fetchAccounts = async () => {
-  if (!selectedOrganizationId.value) return
+  if (!selectedOrganizationId.value) return;
 
-  loadingAccounts.value = true
+  loadingAccounts.value = true;
   try {
-    console.log("🚀 Fetching accounts for organization:", selectedOrganizationId.value);
-    const resp = await ApiService.query(`organizations/${selectedOrganizationId.value}/accounts`, {})
+    console.log(
+      "🚀 Fetching accounts for organization:",
+      selectedOrganizationId.value
+    );
+    const resp = await ApiService.query(
+      `organizations/${selectedOrganizationId.value}/accounts`,
+      {
+        /* empty */
+      }
+    );
     console.log("📡 Accounts API Response:", resp);
-    
+
     if (resp && resp.data) {
       // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
-      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+      if (resp.data?.data && Array.isArray(resp.data.data)) {
         console.log("✅ Found accounts in data array:", resp.data.data);
         accounts.value = resp.data.data;
       } else if (Array.isArray(resp.data)) {
@@ -711,47 +860,54 @@ const fetchAccounts = async () => {
         console.log("⚠️ Unexpected accounts data format:", resp.data);
         accounts.value = [];
       }
-      
+
       console.log("🎯 Final accounts:", accounts.value);
-      
+
       // Auto-select account if available
       if (accounts.value.length > 0 && !selectedAccountId.value) {
-        const lastSelectedAccountId = loadLastSelectedAccount()
+        const lastSelectedAccountId = loadLastSelectedAccount();
         if (lastSelectedAccountId) {
-          const lastAccount = accounts.value.find(a => a.uid === lastSelectedAccountId)
+          const lastAccount = accounts.value.find(
+            (a) => a.uid === lastSelectedAccountId
+          );
           if (lastAccount) {
-            selectedAccountId.value = lastAccount.uid
-            currentAccount.value = lastAccount
+            selectedAccountId.value = lastAccount.uid;
+            currentAccount.value = lastAccount;
           }
         } else {
-          selectedAccountId.value = accounts.value[0].uid
-          currentAccount.value = accounts.value[0]
-          saveLastSelectedAccount(accounts.value[0].uid)
+          selectedAccountId.value = accounts.value[0].uid;
+          currentAccount.value = accounts.value[0];
+          saveLastSelectedAccount(accounts.value[0].uid);
         }
-        fetchTeams()
+        fetchTeams();
       }
     }
   } catch (e: any) {
-    console.error('Failed to load accounts:', e)
-    error.value = "Failed to load accounts for selected organization."
+    console.error("Failed to load accounts:", e);
+    error.value = "Failed to load accounts for selected organization.";
   } finally {
-    loadingAccounts.value = false
+    loadingAccounts.value = false;
   }
-}
+};
 
 // Fetch teams from API
 const fetchTeams = async () => {
-  if (!selectedAccountId.value) return
+  if (!selectedAccountId.value) return;
 
-  loadingTeams.value = true
+  loadingTeams.value = true;
   try {
     console.log("🚀 Fetching teams for account:", selectedAccountId.value);
-    const resp = await ApiService.query(`accounts/${selectedAccountId.value}/teams`, {})
+    const resp = await ApiService.query(
+      `accounts/${selectedAccountId.value}/teams`,
+      {
+        /* empty */
+      }
+    );
     console.log("📡 Teams API Response:", resp);
-    
+
     if (resp && resp.data) {
       // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
-      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+      if (resp.data?.data && Array.isArray(resp.data.data)) {
         console.log("✅ Found teams in data array:", resp.data.data);
         teams.value = resp.data.data;
       } else if (Array.isArray(resp.data)) {
@@ -761,53 +917,55 @@ const fetchTeams = async () => {
         console.log("⚠️ Unexpected teams data format:", resp.data);
         teams.value = [];
       }
-      
+
       console.log("🎯 Final teams:", teams.value);
-      
+
       // Auto-select team if available
       if (teams.value.length > 0 && !selectedTeamId.value) {
-        const lastSelectedTeamId = loadLastSelectedTeam()
+        const lastSelectedTeamId = loadLastSelectedTeam();
         if (lastSelectedTeamId) {
-          const lastTeam = teams.value.find(t => t.uid === lastSelectedTeamId)
+          const lastTeam = teams.value.find(
+            (t) => t.uid === lastSelectedTeamId
+          );
           if (lastTeam) {
-            selectedTeamId.value = lastTeam.uid
-            currentTeam.value = lastTeam
+            selectedTeamId.value = lastTeam.uid;
+            currentTeam.value = lastTeam;
           }
         } else {
-          selectedTeamId.value = teams.value[0].uid
-          currentTeam.value = teams.value[0]
-          saveLastSelectedTeam(teams.value[0].uid)
+          selectedTeamId.value = teams.value[0].uid;
+          currentTeam.value = teams.value[0];
+          saveLastSelectedTeam(teams.value[0].uid);
         }
-        fetchSites(pagination.value.page)
+        fetchSites(pagination.value.page);
       }
     }
   } catch (e: any) {
-    console.error('Failed to load teams:', e)
-    error.value = "Failed to load teams for selected account."
+    console.error("Failed to load teams:", e);
+    error.value = "Failed to load teams for selected account.";
   } finally {
-    loadingTeams.value = false
+    loadingTeams.value = false;
   }
-}
+};
 
 // Fetch sites from API
 const fetchSites = async (page: number = 1) => {
-  if (!selectedTeamId.value) return
+  if (!selectedTeamId.value) return;
 
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
   try {
     console.log("🚀 Fetching sites for team:", selectedTeamId.value);
     const resp = await ApiService.query(`teams/${selectedTeamId.value}/sites`, {
-      params: { page, per_page: pagination.value.per_page }
-    })
+      params: { page, per_page: pagination.value.per_page },
+    });
     console.log("📡 Sites API Response:", resp);
-    
+
     if (resp && resp.data) {
       // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
-      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+      if (resp.data?.data && Array.isArray(resp.data.data)) {
         console.log("✅ Found sites in data array:", resp.data.data);
         sites.value = resp.data.data;
-        
+
         // Update pagination info
         if (resp.data.pagination) {
           pagination.value = resp.data.pagination;
@@ -819,293 +977,304 @@ const fetchSites = async (page: number = 1) => {
         console.log("⚠️ Unexpected sites data format:", resp.data);
         sites.value = [];
       }
-      
+
       // Format created_at for each site
-      sites.value.forEach(site => {
-        if (site.created_at && typeof site.created_at === 'string') {
-          site.created_at = new Date(site.created_at).toLocaleDateString()
+      sites.value.forEach((site) => {
+        if (site.created_at && typeof site.created_at === "string") {
+          site.created_at = new Date(site.created_at).toLocaleDateString();
         }
-      })
-      
+      });
+
       console.log("🎯 Final sites:", sites.value);
       console.log("📄 Pagination:", pagination.value);
     } else {
       console.log("⚠️ No valid sites response data");
-      sites.value = []
+      sites.value = [];
     }
   } catch (e: any) {
-    console.error('❌ Error fetching sites:', e)
-    error.value = e?.response?.data?.message || e.message || "Failed to load sites"
+    console.error("❌ Error fetching sites:", e);
+    error.value =
+      e?.response?.data?.message || e.message || "Failed to load sites";
   } finally {
-    loading.value = false
+    loading.value = false;
     console.log("📋 Sites fetch complete. Total sites:", sites.value.length);
   }
-}
+};
 
 // Methods
-const handleSort = (sort: { label: string; order: 'asc' | 'desc' }) => {
-  sortLabel.value = sort.label
-  sortOrder.value = sort.order
-}
+const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
+  sortLabel.value = sort.label;
+  sortOrder.value = sort.order;
+};
 
 const switchOrganization = async () => {
-  const org = organizations.value.find(o => o.uid === selectedOrganizationId.value)
-  currentOrganization.value = org || null
+  const org = organizations.value.find(
+    (o) => o.uid === selectedOrganizationId.value
+  );
+  currentOrganization.value = org || null;
   // Save the selected organization to localStorage
   if (selectedOrganizationId.value) {
-    saveLastSelectedOrganization(selectedOrganizationId.value)
+    saveLastSelectedOrganization(selectedOrganizationId.value);
   }
   // Clear accounts, teams and sites when organization changes
-  accounts.value = []
-  teams.value = []
-  sites.value = []
-  selectedAccountId.value = ''
-  selectedTeamId.value = ''
-  currentAccount.value = null
-  currentTeam.value = null
+  accounts.value = [];
+  teams.value = [];
+  sites.value = [];
+  selectedAccountId.value = "";
+  selectedTeamId.value = "";
+  currentAccount.value = null;
+  currentTeam.value = null;
   // Fetch accounts for the new organization
-  await fetchAccounts()
-}
+  await fetchAccounts();
+};
 
 const switchAccount = async () => {
-  const account = accounts.value.find(a => a.uid === selectedAccountId.value)
-  currentAccount.value = account || null
+  const account = accounts.value.find((a) => a.uid === selectedAccountId.value);
+  currentAccount.value = account || null;
   // Save the selected account to localStorage
   if (selectedAccountId.value) {
-    saveLastSelectedAccount(selectedAccountId.value)
+    saveLastSelectedAccount(selectedAccountId.value);
   }
   // Clear teams and sites when account changes
-  teams.value = []
-  sites.value = []
-  selectedTeamId.value = ''
-  currentTeam.value = null
+  teams.value = [];
+  sites.value = [];
+  selectedTeamId.value = "";
+  currentTeam.value = null;
   // Fetch teams for the selected account
-  await fetchTeams()
-}
+  await fetchTeams();
+};
 
 const switchTeam = () => {
-  const team = teams.value.find(t => t.uid === selectedTeamId.value)
-  currentTeam.value = team || null
+  const team = teams.value.find((t) => t.uid === selectedTeamId.value);
+  currentTeam.value = team || null;
   // Save the selected team to localStorage
   if (selectedTeamId.value) {
-    saveLastSelectedTeam(selectedTeamId.value)
+    saveLastSelectedTeam(selectedTeamId.value);
   }
   // Fetch sites for the selected team
-  fetchSites(pagination.value.page)
-}
+  fetchSites(pagination.value.page);
+};
 
 // Pagination methods
 const goToPage = (page: number) => {
   if (page >= 1 && page <= pagination.value.total_pages) {
-    fetchSites(page)
+    fetchSites(page);
   }
-}
+};
 
 const changeItemsPerPage = () => {
   // Reset to first page when changing items per page
-  fetchSites(1)
-}
+  fetchSites(1);
+};
 
 const visiblePages = computed((): number[] => {
-  const current = pagination.value.page
-  const total = Math.max(1, pagination.value.total_pages)
-  const pages: number[] = []
-  
+  const current = pagination.value.page;
+  const total = Math.max(1, pagination.value.total_pages);
+  const pages: number[] = [];
+
   // Show max 5 page numbers
-  const maxVisible = 5
-  let start = Math.max(1, current - Math.floor(maxVisible / 2))
-  let end = Math.min(total, start + maxVisible - 1)
-  
+  const maxVisible = 5;
+  let start = Math.max(1, current - Math.floor(maxVisible / 2));
+  let end = Math.min(total, start + maxVisible - 1);
+
   // Adjust start if we're near the end
   if (end - start + 1 < maxVisible) {
-    start = Math.max(1, end - maxVisible + 1)
+    start = Math.max(1, end - maxVisible + 1);
   }
-  
+
   for (let i = start; i <= end; i++) {
-    pages.push(i)
+    pages.push(i);
   }
-  
-  return pages
-})
+
+  return pages;
+});
 
 // Empty table message based on current state
 const emptyTableMessage = computed(() => {
   if (!selectedOrganizationId.value) {
-    return "Please select an organization to view sites"
+    return "Please select an organization to view sites";
   }
   if (!selectedAccountId.value) {
-    return "Please select an account to view sites"
+    return "Please select an account to view sites";
   }
   if (!selectedTeamId.value) {
-    return "Please select a team to view sites"
+    return "Please select a team to view sites";
   }
   if (loading.value) {
-    return "Loading sites..."
+    return "Loading sites...";
   }
   if (searchQuery.value.trim()) {
-    return `No sites found matching "${searchQuery.value}"`
+    return `No sites found matching "${searchQuery.value}"`;
   }
-  return "No sites found for this team"
-})
+  return "No sites found for this team";
+});
 
 // CRUD Operations
 const showAddSiteModal = () => {
   // Reset form
   newSite.value = {
-    name: '',
-  }
+    name: "",
+  };
   // Show modal using Bootstrap
-  const modal = document.getElementById('addSiteModal')
+  const modal = document.getElementById("addSiteModal");
   if (modal) {
-    const bsModal = new Modal(modal)
-    bsModal.show()
+    const bsModal = new Modal(modal);
+    bsModal.show();
   }
-}
+};
 
 const createSite = async () => {
-  if (!newSite.value.name || !selectedTeamId.value) return
+  if (!newSite.value.name || !selectedTeamId.value) return;
 
   const siteData = {
     ...newSite.value,
-  }
+  };
 
-  creating.value = true
+  creating.value = true;
   try {
-    const resp = await ApiService.post(`teams/${selectedTeamId.value}/sites`, siteData)
+    const resp = await ApiService.post(
+      `teams/${selectedTeamId.value}/sites`,
+      siteData
+    );
     if (resp && resp.data) {
       // Refresh the sites list
-      await fetchSites(pagination.value.page)
-      
+      await fetchSites(pagination.value.page);
+
       // Hide modal
-      const modal = document.getElementById('addSiteModal')
+      const modal = document.getElementById("addSiteModal");
       if (modal) {
-        const bsModal = Modal.getInstance(modal)
-        bsModal?.hide()
+        const bsModal = Modal.getInstance(modal);
+        bsModal?.hide();
       }
     }
   } catch (e: any) {
-    error.value = e?.response?.data?.message || e.message || "Failed to create site"
+    error.value =
+      e?.response?.data?.message || e.message || "Failed to create site";
   } finally {
-    creating.value = false
+    creating.value = false;
   }
-}
+};
 
 const deleteSite = (site: Site) => {
-  siteToDelete.value = site
+  siteToDelete.value = site;
   // Show delete confirmation modal
-  const modal = document.getElementById('deleteSiteModal')
+  const modal = document.getElementById("deleteSiteModal");
   if (modal) {
-    const bsModal = new Modal(modal)
-    bsModal.show()
+    const bsModal = new Modal(modal);
+    bsModal.show();
   }
-}
+};
 
 const confirmDelete = async () => {
-  if (!siteToDelete.value) return
+  if (!siteToDelete.value) return;
 
-  deleting.value = true
+  deleting.value = true;
   try {
-    await ApiService.delete(`sites/${siteToDelete.value.uid}`)
+    await ApiService.delete(`sites/${siteToDelete.value.uid}`);
     // Refresh the sites list
-    await fetchSites(pagination.value.page)
+    await fetchSites(pagination.value.page);
     // Hide modal
-    const modal = document.getElementById('deleteSiteModal')
+    const modal = document.getElementById("deleteSiteModal");
     if (modal) {
-      const bsModal = Modal.getInstance(modal)
-      bsModal?.hide()
+      const bsModal = Modal.getInstance(modal);
+      bsModal?.hide();
     }
-    siteToDelete.value = null
+    siteToDelete.value = null;
   } catch (e: any) {
-    error.value = e?.response?.data?.message || e.message || "Failed to delete site"
+    error.value =
+      e?.response?.data?.message || e.message || "Failed to delete site";
   } finally {
-    deleting.value = false
+    deleting.value = false;
   }
-}
+};
 
 const editSite = (site: Site) => {
-  siteToEdit.value = { ...site } // Create a copy to avoid direct mutation
+  siteToEdit.value = { ...site }; // Create a copy to avoid direct mutation
   // Show edit modal using Bootstrap
-  const modal = document.getElementById('editSiteModal')
+  const modal = document.getElementById("editSiteModal");
   if (modal) {
-    const bsModal = new Modal(modal)
-    bsModal.show()
+    const bsModal = new Modal(modal);
+    bsModal.show();
   }
-}
+};
 
 const updateSite = async () => {
-  if (!siteToEdit.value || !siteToEdit.value.name?.trim()) return
+  if (!siteToEdit.value || !siteToEdit.value.name?.trim()) return;
 
-  editing.value = true
+  editing.value = true;
   try {
     const resp = await ApiService.patch(`sites/${siteToEdit.value.uid}`, {
-      name: siteToEdit.value.name
-    })
+      name: siteToEdit.value.name,
+    });
     if (resp && resp.data) {
       // Refresh the sites list
-      await fetchSites(pagination.value.page)
-      
+      await fetchSites(pagination.value.page);
+
       // Hide modal
-      const modal = document.getElementById('editSiteModal')
+      const modal = document.getElementById("editSiteModal");
       if (modal) {
-        const bsModal = Modal.getInstance(modal)
-        bsModal?.hide()
+        const bsModal = Modal.getInstance(modal);
+        bsModal?.hide();
       }
-      siteToEdit.value = null
+      siteToEdit.value = null;
     }
   } catch (e: any) {
-    error.value = e?.response?.data?.message || e.message || "Failed to update site"
+    error.value =
+      e?.response?.data?.message || e.message || "Failed to update site";
   } finally {
-    editing.value = false
+    editing.value = false;
   }
-}
+};
 
 const formatDate = (date: string) => {
-  return date ? new Date(date).toLocaleDateString() : '-'
-}
+  return date ? new Date(date).toLocaleDateString() : "-";
+};
 
 // Computed properties for summary statistics
-const totalSites = computed(() => sites.value.length)
-const activeSites = computed(() => sites.value.length) // All sites are considered active for now
-const totalVisitors = computed(() => sites.value.reduce((sum, site) => sum + Math.floor(Math.random() * 1000) + 100, 0))
-const avgPerformance = computed(() => Math.floor(Math.random() * 30) + 70)
+const totalSites = computed(() => sites.value.length);
+const activeSites = computed(() => sites.value.length); // All sites are considered active for now
+const totalVisitors = computed(() =>
+  sites.value.reduce((sum) => sum + Math.floor(Math.random() * 1000) + 100, 0)
+);
+const avgPerformance = computed(() => Math.floor(Math.random() * 30) + 70);
 
 // Search and Sort functionality
 const filteredAndSortedSites = computed(() => {
-  let filtered = sites.value
+  let filtered = sites.value;
 
   // Filter by search query
   if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(site =>
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter((site) =>
       site.name.toLowerCase().includes(query)
-    )
+    );
   }
 
   // Sort data
   if (sortLabel.value) {
     filtered = [...filtered].sort((a, b) => {
-      const aValue = a[sortLabel.value as keyof Site]
-      const bValue = b[sortLabel.value as keyof Site]
+      const aValue = a[sortLabel.value as keyof Site];
+      const bValue = b[sortLabel.value as keyof Site];
 
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        const comparison = aValue.localeCompare(bValue)
-        return sortOrder.value === 'asc' ? comparison : -comparison
-      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
-        const comparison = aValue - bValue
-        return sortOrder.value === 'asc' ? comparison : -comparison
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        const comparison = aValue.localeCompare(bValue);
+        return sortOrder.value === "asc" ? comparison : -comparison;
+      } else if (typeof aValue === "number" && typeof bValue === "number") {
+        const comparison = aValue - bValue;
+        return sortOrder.value === "asc" ? comparison : -comparison;
       }
-      return 0
-    })
+      return 0;
+    });
   }
 
-  return filtered
-})
+  return filtered;
+});
 
 // Initialize
 onMounted(() => {
-  fetchOrganizations()
-})
+  fetchOrganizations();
+});
 
 // i18n
-const { t } = useI18n()
+const { t } = useI18n();
 </script>

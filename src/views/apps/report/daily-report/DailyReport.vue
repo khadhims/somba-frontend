@@ -13,17 +13,19 @@
           <div class="d-flex justify-content-end align-items-center gap-2">
             <!-- Date Filter -->
             <div class="d-flex align-items-center">
-              <label class="form-label me-2 mb-0 fw-semibold">Filter Tanggal:</label>
-              <input 
-                type="date" 
+              <label class="form-label me-2 mb-0 fw-semibold"
+                >Filter Tanggal:</label
+              >
+              <input
+                type="date"
                 v-model="filterDate"
                 class="form-control form-control-solid w-200px"
                 @change="onDateFilterChange"
               />
             </div>
             <!-- Settings Target Button -->
-            <button 
-              @click="openTargetModal" 
+            <button
+              @click="openTargetModal"
               class="btn btn-sm btn-light-warning"
               title="Atur Target"
             >
@@ -34,10 +36,7 @@
               Target
             </button>
             <!-- Add New Report Button -->
-            <button 
-              @click="openAddModal" 
-              class="btn btn-sm btn-primary"
-            >
+            <button @click="openAddModal" class="btn btn-sm btn-primary">
               <i class="ki-duotone ki-plus fs-2"></i>
               Tambah Report
             </button>
@@ -63,14 +62,18 @@
               </span>
             </div>
             <div class="flex-grow-1">
-              <span class="text-gray-400 fw-semibold d-block fs-7">Report Hari Ini</span>
-              <span class="text-gray-800 fw-bold d-block fs-2x">{{ todayReportCount }}</span>
+              <span class="text-gray-400 fw-semibold d-block fs-7"
+                >Report Hari Ini</span
+              >
+              <span class="text-gray-800 fw-bold d-block fs-2x">{{
+                todayReportCount
+              }}</span>
             </div>
           </div>
           <div class="progress h-6px bg-light-primary mt-5">
-            <div 
-              class="progress-bar bg-primary" 
-              role="progressbar" 
+            <div
+              class="progress-bar bg-primary"
+              role="progressbar"
               :style="`width: ${todayReportPercentage}%`"
             ></div>
           </div>
@@ -98,14 +101,18 @@
               </span>
             </div>
             <div class="flex-grow-1">
-              <span class="text-gray-400 fw-semibold d-block fs-7">Total Porsi</span>
-              <span class="text-gray-800 fw-bold d-block fs-2x">{{ totalPorsiToday }}</span>
+              <span class="text-gray-400 fw-semibold d-block fs-7"
+                >Total Porsi</span
+              >
+              <span class="text-gray-800 fw-bold d-block fs-2x">{{
+                totalPorsiToday
+              }}</span>
             </div>
           </div>
           <div class="progress h-6px bg-light-success mt-5">
-            <div 
-              class="progress-bar bg-success" 
-              role="progressbar" 
+            <div
+              class="progress-bar bg-success"
+              role="progressbar"
               style="width: 100%"
             ></div>
           </div>
@@ -131,14 +138,18 @@
               </span>
             </div>
             <div class="flex-grow-1">
-              <span class="text-gray-400 fw-semibold d-block fs-7">Sekolah Dilayani</span>
-              <span class="text-gray-800 fw-bold d-block fs-2x">{{ uniqueSchoolsToday }}</span>
+              <span class="text-gray-400 fw-semibold d-block fs-7"
+                >Sekolah Dilayani</span
+              >
+              <span class="text-gray-800 fw-bold d-block fs-2x">{{
+                uniqueSchoolsToday
+              }}</span>
             </div>
           </div>
           <div class="progress h-6px bg-light-warning mt-5">
-            <div 
-              class="progress-bar bg-warning" 
-              role="progressbar" 
+            <div
+              class="progress-bar bg-warning"
+              role="progressbar"
               :style="`width: ${schoolPercentage}%`"
             ></div>
           </div>
@@ -166,14 +177,18 @@
               </span>
             </div>
             <div class="flex-grow-1">
-              <span class="text-gray-400 fw-semibold d-block fs-7">Driver Aktif</span>
-              <span class="text-gray-800 fw-bold d-block fs-2x">{{ uniqueDriversToday }}</span>
+              <span class="text-gray-400 fw-semibold d-block fs-7"
+                >Driver Aktif</span
+              >
+              <span class="text-gray-800 fw-bold d-block fs-2x">{{
+                uniqueDriversToday
+              }}</span>
             </div>
           </div>
           <div class="progress h-6px bg-light-info mt-5">
-            <div 
-              class="progress-bar bg-info" 
-              role="progressbar" 
+            <div
+              class="progress-bar bg-info"
+              role="progressbar"
               :style="`width: ${driverPercentage}%`"
             ></div>
           </div>
@@ -201,9 +216,11 @@
       <div class="card-toolbar">
         <!--begin::Items per page-->
         <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">Items per page</label>
-          <select 
-            class="form-select form-select-sm w-auto" 
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0"
+            >Items per page</label
+          >
+          <select
+            class="form-select form-select-sm w-auto"
             v-model.number="itemsPerPage"
           >
             <option :value="5">5</option>
@@ -230,7 +247,11 @@
         </div>
         <!--end::Search-->
 
-        <button @click="refreshReports" class="btn btn-sm btn-light-primary btn-icon" title="Refresh">
+        <button
+          @click="refreshReports"
+          class="btn btn-sm btn-light-primary btn-icon"
+          title="Refresh"
+        >
           <i class="ki-duotone ki-arrows-circle fs-2">
             <span class="path1"></span>
             <span class="path2"></span>
@@ -257,19 +278,23 @@
       >
         <template v-slot:tanggal="{ row }">
           <span class="text-dark fw-bold d-block fs-6">{{
-            row.tanggal ? new Date(row.tanggal).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-'
+            row.tanggal
+              ? new Date(row.tanggal).toLocaleDateString("id-ID", {
+                  timeZone: "Asia/Jakarta",
+                })
+              : "-"
           }}</span>
         </template>
 
         <template v-slot:jam="{ row }">
           <span class="text-dark fw-bold fs-6">
-            {{ row.jam || '-' }}
+            {{ row.jam || "-" }}
           </span>
         </template>
 
         <template v-slot:tujuan_sekolah="{ row }">
-          <div style="max-width: 200px; min-width: 150px;">
-            <span class="text-dark fw-bold fs-6" style="word-break: break-all;">
+          <div style="max-width: 200px; min-width: 150px">
+            <span class="text-dark fw-bold fs-6" style="word-break: break-all">
               {{ row.tujuan_sekolah }}
             </span>
           </div>
@@ -326,7 +351,7 @@
           </div>
         </template>
       </KTDataTable>
-      
+
       <!--begin::Pagination-->
       <div class="d-flex justify-content-end align-items-center mt-4">
         <Pagination
@@ -344,61 +369,82 @@
   <!--end::Report List-->
 
   <!--begin::Add/Edit Report Modal-->
-  <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div
+    class="modal fade"
+    id="reportModal"
+    tabindex="-1"
+    aria-labelledby="reportModalLabel"
+    aria-hidden="true"
+  >
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h3 class="modal-title fw-bold" id="reportModalLabel">
-            {{ isEditMode ? 'Edit Report Harian' : 'Tambah Report Harian' }}
+            {{ isEditMode ? "Edit Report Harian" : "Tambah Report Harian" }}
           </h3>
-          <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            @click="closeModal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
           <form @submit.prevent="saveReport">
             <div class="row g-4">
               <div class="col-md-6">
-                <label class="form-label fw-bold text-dark required">Tanggal</label>
-                <input 
-                  type="date" 
-                  class="form-control" 
+                <label class="form-label fw-bold text-dark required"
+                  >Tanggal</label
+                >
+                <input
+                  type="date"
+                  class="form-control"
                   v-model="formData.tanggal"
                   required
                 />
               </div>
               <div class="col-md-6">
-                <label class="form-label fw-bold text-dark required">Jam Kirim</label>
-                <input 
-                  type="time" 
-                  class="form-control" 
+                <label class="form-label fw-bold text-dark required"
+                  >Jam Kirim</label
+                >
+                <input
+                  type="time"
+                  class="form-control"
                   v-model="formData.jam"
                   required
                 />
               </div>
               <div class="col-12">
-                <label class="form-label fw-bold text-dark required">Tujuan Sekolah</label>
-                <input 
-                  type="text" 
-                  class="form-control" 
+                <label class="form-label fw-bold text-dark required"
+                  >Tujuan Sekolah</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
                   v-model="formData.tujuan_sekolah"
                   placeholder="Masukkan nama sekolah tujuan"
                   required
                 />
               </div>
               <div class="col-md-6">
-                <label class="form-label fw-bold text-dark required">Driver</label>
-                <input 
-                  type="text" 
-                  class="form-control" 
+                <label class="form-label fw-bold text-dark required"
+                  >Driver</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
                   v-model="formData.driver"
                   placeholder="Masukkan nama driver"
                   required
                 />
               </div>
               <div class="col-md-6">
-                <label class="form-label fw-bold text-dark required">Total Porsi</label>
-                <input 
-                  type="number" 
-                  class="form-control" 
+                <label class="form-label fw-bold text-dark required"
+                  >Total Porsi</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
                   v-model.number="formData.total_porsi"
                   placeholder="Masukkan jumlah porsi"
                   min="1"
@@ -407,9 +453,9 @@
               </div>
               <div class="col-12">
                 <label class="form-label fw-bold text-dark">Catatan</label>
-                <textarea 
-                  class="form-control" 
-                  rows="3" 
+                <textarea
+                  class="form-control"
+                  rows="3"
                   v-model="formData.catatan"
                   placeholder="Catatan tambahan (opsional)"
                 ></textarea>
@@ -418,15 +464,24 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary fs-5 px-4 py-2" @click="closeModal">Batal</button>
-          <button 
-            type="button" 
-            class="btn btn-primary fs-5 px-4 py-2" 
+          <button
+            type="button"
+            class="btn btn-secondary fs-5 px-4 py-2"
+            @click="closeModal"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary fs-5 px-4 py-2"
             @click="saveReport"
             :disabled="isModalLoading"
           >
-            <span v-if="isModalLoading" class="spinner-border spinner-border-sm me-2"></span>
-            {{ isEditMode ? 'Update' : 'Simpan' }}
+            <span
+              v-if="isModalLoading"
+              class="spinner-border spinner-border-sm me-2"
+            ></span>
+            {{ isEditMode ? "Update" : "Simpan" }}
           </button>
         </div>
       </div>
@@ -435,12 +490,25 @@
   <!--end::Add/Edit Report Modal-->
 
   <!--begin::View Report Modal-->
-  <div class="modal fade" id="viewReportModal" tabindex="-1" aria-labelledby="viewReportModalLabel" aria-hidden="true">
+  <div
+    class="modal fade"
+    id="viewReportModal"
+    tabindex="-1"
+    aria-labelledby="viewReportModalLabel"
+    aria-hidden="true"
+  >
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 class="modal-title fw-bold" id="viewReportModalLabel">Detail Report Harian</h3>
-          <button type="button" class="btn-close" @click="closeViewModal" aria-label="Close"></button>
+          <h3 class="modal-title fw-bold" id="viewReportModalLabel">
+            Detail Report Harian
+          </h3>
+          <button
+            type="button"
+            class="btn-close"
+            @click="closeViewModal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body" v-if="selectedReport">
           <div class="row g-6">
@@ -448,7 +516,14 @@
               <div class="mb-4">
                 <label class="fw-semibold fs-4 mb-2">Tanggal</label>
                 <p class="text-gray-800 mb-0 fs-4">
-                  {{ selectedReport.tanggal ? new Date(selectedReport.tanggal).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-' }}
+                  {{
+                    selectedReport.tanggal
+                      ? new Date(selectedReport.tanggal).toLocaleDateString(
+                          "id-ID",
+                          { timeZone: "Asia/Jakarta" }
+                        )
+                      : "-"
+                  }}
                 </p>
               </div>
               <div class="mb-4">
@@ -457,31 +532,50 @@
               </div>
               <div class="mb-4">
                 <label class="fw-semibold fs-4 mb-2">Driver</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ selectedReport.driver }}</p>
+                <p class="text-gray-800 mb-0 fs-4">
+                  {{ selectedReport.driver }}
+                </p>
               </div>
             </div>
             <div class="col-md-6">
               <div class="mb-4">
                 <label class="fw-semibold fs-4 mb-2">Tujuan Sekolah</label>
-                <p class="text-gray-800 mb-0 fs-4">{{ selectedReport.tujuan_sekolah }}</p>
+                <p class="text-gray-800 mb-0 fs-4">
+                  {{ selectedReport.tujuan_sekolah }}
+                </p>
               </div>
               <div class="mb-4">
                 <label class="fw-semibold fs-4 mb-2">Total Porsi</label>
                 <p class="text-gray-800 mb-0 fs-4">
-                  <span class="badge badge-light-success fs-5">{{ selectedReport.total_porsi }} porsi</span>
+                  <span class="badge badge-light-success fs-5"
+                    >{{ selectedReport.total_porsi }} porsi</span
+                  >
                 </p>
               </div>
             </div>
             <div class="col-12" v-if="selectedReport.catatan">
               <div class="bg-light-info p-4 rounded">
-                <label class="fw-semibold fs-4 text-gray-700 mb-2 d-block">Catatan</label>
-                <p class="text-gray-800 mb-0 fs-5" style="white-space: pre-wrap;">{{ selectedReport.catatan }}</p>
+                <label class="fw-semibold fs-4 text-gray-700 mb-2 d-block"
+                  >Catatan</label
+                >
+                <p
+                  class="text-gray-800 mb-0 fs-5"
+                  style="white-space: pre-wrap"
+                >
+                  {{ selectedReport.catatan }}
+                </p>
               </div>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary fs-5 px-4 py-2" @click="closeViewModal">Tutup</button>
+          <button
+            type="button"
+            class="btn btn-secondary fs-5 px-4 py-2"
+            @click="closeViewModal"
+          >
+            Tutup
+          </button>
         </div>
       </div>
     </div>
@@ -489,7 +583,13 @@
   <!--end::View Report Modal-->
 
   <!--begin::Target Settings Modal-->
-  <div class="modal fade" id="targetSettingsModal" tabindex="-1" aria-labelledby="targetSettingsModalLabel" aria-hidden="true">
+  <div
+    class="modal fade"
+    id="targetSettingsModal"
+    tabindex="-1"
+    aria-labelledby="targetSettingsModalLabel"
+    aria-hidden="true"
+  >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -500,7 +600,12 @@
             </i>
             Pengaturan Target
           </h3>
-          <button type="button" class="btn-close" @click="closeTargetModal" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            @click="closeTargetModal"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
           <div class="alert alert-warning d-flex align-items-center">
@@ -511,7 +616,10 @@
             </i>
             <div class="d-flex flex-column">
               <h5 class="mb-1">Informasi Target</h5>
-              <span>Target digunakan untuk menghitung persentase pencapaian harian pada dashboard.</span>
+              <span
+                >Target digunakan untuk menghitung persentase pencapaian harian
+                pada dashboard.</span
+              >
             </div>
           </div>
 
@@ -520,16 +628,19 @@
               <div class="col-12">
                 <label class="form-label fw-bold text-dark required">
                   Target Report Harian
-                  <i class="ki-duotone ki-information-5 fs-6 text-gray-500" title="Jumlah target report yang harus dibuat per hari">
+                  <i
+                    class="ki-duotone ki-information-5 fs-6 text-gray-500"
+                    title="Jumlah target report yang harus dibuat per hari"
+                  >
                     <span class="path1"></span>
                     <span class="path2"></span>
                     <span class="path3"></span>
                   </i>
                 </label>
                 <div class="input-group">
-                  <input 
-                    type="number" 
-                    class="form-control form-control-lg" 
+                  <input
+                    type="number"
+                    class="form-control form-control-lg"
                     v-model.number="targetSettings.dailyReportTarget"
                     placeholder="Masukkan jumlah target report"
                     min="1"
@@ -538,22 +649,27 @@
                   />
                   <span class="input-group-text">report/hari</span>
                 </div>
-                <div class="form-text">Jumlah report yang ditargetkan dibuat setiap hari</div>
+                <div class="form-text">
+                  Jumlah report yang ditargetkan dibuat setiap hari
+                </div>
               </div>
 
               <div class="col-12">
                 <label class="form-label fw-bold text-dark required">
                   Target Sekolah
-                  <i class="ki-duotone ki-information-5 fs-6 text-gray-500" title="Jumlah target sekolah yang harus dilayani per hari">
+                  <i
+                    class="ki-duotone ki-information-5 fs-6 text-gray-500"
+                    title="Jumlah target sekolah yang harus dilayani per hari"
+                  >
                     <span class="path1"></span>
                     <span class="path2"></span>
                     <span class="path3"></span>
                   </i>
                 </label>
                 <div class="input-group">
-                  <input 
-                    type="number" 
-                    class="form-control form-control-lg" 
+                  <input
+                    type="number"
+                    class="form-control form-control-lg"
                     v-model.number="targetSettings.totalSchoolsTarget"
                     placeholder="Masukkan jumlah target sekolah"
                     min="1"
@@ -562,28 +678,46 @@
                   />
                   <span class="input-group-text">sekolah/hari</span>
                 </div>
-                <div class="form-text">Jumlah sekolah yang ditargetkan dilayani setiap hari</div>
+                <div class="form-text">
+                  Jumlah sekolah yang ditargetkan dilayani setiap hari
+                </div>
               </div>
 
               <div class="col-12">
                 <div class="separator separator-dashed my-3"></div>
                 <div class="bg-light-primary p-4 rounded">
                   <div class="d-flex align-items-center">
-                    <i class="ki-duotone ki-chart-simple-2 fs-2x text-primary me-3">
+                    <i
+                      class="ki-duotone ki-chart-simple-2 fs-2x text-primary me-3"
+                    >
                       <span class="path1"></span>
                       <span class="path2"></span>
                       <span class="path3"></span>
                       <span class="path4"></span>
                     </i>
                     <div>
-                      <h6 class="mb-1 text-primary">Preview Pencapaian Hari Ini</h6>
+                      <h6 class="mb-1 text-primary">
+                        Preview Pencapaian Hari Ini
+                      </h6>
                       <p class="mb-0 text-gray-700 fs-7">
-                        Report: <strong>{{ todayReportCount }}</strong> / {{ targetSettings.dailyReportTarget }} 
-                        ({{ Math.round((todayReportCount / targetSettings.dailyReportTarget) * 100) }}%)
+                        Report: <strong>{{ todayReportCount }}</strong> /
+                        {{ targetSettings.dailyReportTarget }} ({{
+                          Math.round(
+                            (todayReportCount /
+                              targetSettings.dailyReportTarget) *
+                              100
+                          )
+                        }}%)
                       </p>
                       <p class="mb-0 text-gray-700 fs-7">
-                        Sekolah: <strong>{{ uniqueSchoolsToday }}</strong> / {{ targetSettings.totalSchoolsTarget }} 
-                        ({{ Math.round((uniqueSchoolsToday / targetSettings.totalSchoolsTarget) * 100) }}%)
+                        Sekolah: <strong>{{ uniqueSchoolsToday }}</strong> /
+                        {{ targetSettings.totalSchoolsTarget }} ({{
+                          Math.round(
+                            (uniqueSchoolsToday /
+                              targetSettings.totalSchoolsTarget) *
+                              100
+                          )
+                        }}%)
                       </p>
                     </div>
                   </div>
@@ -593,14 +727,23 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary fs-5 px-4 py-2" @click="closeTargetModal">Batal</button>
-          <button 
-            type="button" 
-            class="btn btn-primary fs-5 px-4 py-2" 
+          <button
+            type="button"
+            class="btn btn-secondary fs-5 px-4 py-2"
+            @click="closeTargetModal"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary fs-5 px-4 py-2"
             @click="saveTargetSettings"
             :disabled="isTargetModalLoading"
           >
-            <span v-if="isTargetModalLoading" class="spinner-border spinner-border-sm me-2"></span>
+            <span
+              v-if="isTargetModalLoading"
+              class="spinner-border spinner-border-sm me-2"
+            ></span>
             <i class="ki-duotone ki-check fs-2 me-1">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -615,11 +758,15 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "DailyReportComponent",
+});
+
 import { ref, computed, onMounted, watch } from "vue";
 import { Modal } from "bootstrap";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
-import Pagination from '@/components/common/Pagination.vue';
-import ApiService from "@/core/services/ApiService";
+import Pagination from "@/components/common/Pagination.vue";
+// import ApiService from "@/core/services/ApiService";
 import Swal from "sweetalert2";
 
 // Interface definitions
@@ -639,7 +786,7 @@ const loading = ref(false);
 const searchQuery = ref("");
 const sortLabel = ref("tanggal");
 const sortOrder = ref<"asc" | "desc">("desc");
-const filterDate = ref(new Date().toISOString().split('T')[0]); // Today's date
+const filterDate = ref(new Date().toISOString().split("T")[0]); // Today's date
 
 // Pagination
 const currentPage = ref(1);
@@ -648,7 +795,7 @@ const totalItems = ref(0);
 const totalPages = ref(0);
 
 // Constants for targets
-const STORAGE_KEY_TARGETS = 'report_harian_targets';
+const STORAGE_KEY_TARGETS = "report_harian_targets";
 
 // Load targets from localStorage or use defaults
 const loadTargetsFromStorage = () => {
@@ -658,11 +805,11 @@ const loadTargetsFromStorage = () => {
       return JSON.parse(stored);
     }
   } catch (error) {
-    console.error('Error loading targets from storage:', error);
+    console.error("Error loading targets from storage:", error);
   }
   return {
     dailyReportTarget: 15,
-    totalSchoolsTarget: 10
+    totalSchoolsTarget: 10,
   };
 };
 
@@ -678,12 +825,12 @@ const selectedReport = ref<ReportHarian | null>(null);
 const isEditMode = ref(false);
 const isModalLoading = ref(false);
 const formData = ref<Partial<ReportHarian>>({
-  tanggal: '',
-  jam: '',
-  tujuan_sekolah: '',
-  driver: '',
+  tanggal: "",
+  jam: "",
+  tujuan_sekolah: "",
+  driver: "",
   total_porsi: 0,
-  catatan: ''
+  catatan: "",
 });
 
 // Date filter handler
@@ -696,10 +843,10 @@ const openTargetModal = () => {
   // Load current values
   targetSettings.value = {
     dailyReportTarget: dailyReportTarget.value,
-    totalSchoolsTarget: totalSchoolsTarget.value
+    totalSchoolsTarget: totalSchoolsTarget.value,
   };
-  
-  const modalElement = document.getElementById('targetSettingsModal');
+
+  const modalElement = document.getElementById("targetSettingsModal");
   if (modalElement) {
     const modal = new Modal(modalElement);
     modal.show();
@@ -707,7 +854,7 @@ const openTargetModal = () => {
 };
 
 const closeTargetModal = () => {
-  const modalElement = document.getElementById('targetSettingsModal');
+  const modalElement = document.getElementById("targetSettingsModal");
   if (modalElement) {
     const modal = Modal.getInstance(modalElement);
     if (modal) {
@@ -719,46 +866,48 @@ const closeTargetModal = () => {
 const saveTargetSettings = async () => {
   try {
     isTargetModalLoading.value = true;
-    
+
     // Update reactive values
     dailyReportTarget.value = targetSettings.value.dailyReportTarget;
     totalSchoolsTarget.value = targetSettings.value.totalSchoolsTarget;
-    
+
     // Save to localStorage
-    localStorage.setItem(STORAGE_KEY_TARGETS, JSON.stringify(targetSettings.value));
-    
+    localStorage.setItem(
+      STORAGE_KEY_TARGETS,
+      JSON.stringify(targetSettings.value)
+    );
+
     await Swal.fire({
-      icon: 'success',
-      title: 'Berhasil!',
-      text: 'Pengaturan target berhasil disimpan',
+      icon: "success",
+      title: "Berhasil!",
+      text: "Pengaturan target berhasil disimpan",
       timer: 2000,
-      showConfirmButton: false
+      showConfirmButton: false,
     });
-    
+
     closeTargetModal();
   } catch (error) {
-    console.error('Error saving target settings:', error);
+    console.error("Error saving target settings:", error);
     await Swal.fire({
-      icon: 'error',
-      title: 'Gagal!',
-      text: 'Terjadi kesalahan saat menyimpan pengaturan target'
+      icon: "error",
+      title: "Gagal!",
+      text: "Terjadi kesalahan saat menyimpan pengaturan target",
     });
   } finally {
     isTargetModalLoading.value = false;
   }
 };
 
-
 // Computed properties for statistics
 const todayReportCount = computed(() => {
   const today = filterDate.value;
-  return reports.value.filter(r => r.tanggal === today).length;
+  return reports.value.filter((r) => r.tanggal === today).length;
 });
 
 const totalPorsiToday = computed(() => {
   const today = filterDate.value;
   return reports.value
-    .filter(r => r.tanggal === today)
+    .filter((r) => r.tanggal === today)
     .reduce((sum, r) => sum + r.total_porsi, 0);
 });
 
@@ -766,8 +915,8 @@ const uniqueSchoolsToday = computed(() => {
   const today = filterDate.value;
   const schools = new Set(
     reports.value
-      .filter(r => r.tanggal === today)
-      .map(r => r.tujuan_sekolah)
+      .filter((r) => r.tanggal === today)
+      .map((r) => r.tujuan_sekolah)
   );
   return schools.size;
 });
@@ -775,29 +924,33 @@ const uniqueSchoolsToday = computed(() => {
 const uniqueDriversToday = computed(() => {
   const today = filterDate.value;
   const drivers = new Set(
-    reports.value
-      .filter(r => r.tanggal === today)
-      .map(r => r.driver)
+    reports.value.filter((r) => r.tanggal === today).map((r) => r.driver)
   );
   return drivers.size;
 });
 
 const todayReportPercentage = computed(() => {
   const target = dailyReportTarget.value;
-  return target > 0 ? Math.min(Math.round((todayReportCount.value / target) * 100), 100) : 0;
+  return target > 0
+    ? Math.min(Math.round((todayReportCount.value / target) * 100), 100)
+    : 0;
 });
 
 const schoolPercentage = computed(() => {
   const target = totalSchoolsTarget.value;
-  return target > 0 ? Math.min(Math.round((uniqueSchoolsToday.value / target) * 100), 100) : 0;
+  return target > 0
+    ? Math.min(Math.round((uniqueSchoolsToday.value / target) * 100), 100)
+    : 0;
 });
 
 const driverPercentage = computed(() => {
   // Assume we have 5 max drivers per day
   const maxDrivers = 5;
-  return Math.min(Math.round((uniqueDriversToday.value / maxDrivers) * 100), 100);
+  return Math.min(
+    Math.round((uniqueDriversToday.value / maxDrivers) * 100),
+    100
+  );
 });
-
 
 // Pagination handlers
 const goToPage = (page: number) => {
@@ -813,38 +966,38 @@ watch(itemsPerPage, () => {
 // Table header configuration
 const tableHeader = computed(() => [
   {
-    columnName: 'Tanggal',
-    columnLabel: 'tanggal',
+    columnName: "Tanggal",
+    columnLabel: "tanggal",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: 'Jam Kirim',
-    columnLabel: 'jam',
+    columnName: "Jam Kirim",
+    columnLabel: "jam",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: 'Tujuan Sekolah',
-    columnLabel: 'tujuan_sekolah',
+    columnName: "Tujuan Sekolah",
+    columnLabel: "tujuan_sekolah",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: 'Driver',
-    columnLabel: 'driver',
+    columnName: "Driver",
+    columnLabel: "driver",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: 'Total Porsi',
-    columnLabel: 'total_porsi',
+    columnName: "Total Porsi",
+    columnLabel: "total_porsi",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: 'Actions',
-    columnLabel: 'actions',
+    columnName: "Actions",
+    columnLabel: "actions",
     sortEnabled: false,
     searchable: false,
   },
@@ -861,139 +1014,142 @@ const fetchReports = async () => {
     //     per_page: itemsPerPage.value
     //   }
     // });
-    
+
     // Mock data for development - Lokasi sekitar Rumah Makan Laelae Makassar
-    const today = new Date().toISOString().split('T')[0];
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-    const twoDaysAgo = new Date(Date.now() - 172800000).toISOString().split('T')[0];
-    
+    const today = new Date().toISOString().split("T")[0];
+    const yesterday = new Date(Date.now() - 86400000)
+      .toISOString()
+      .split("T")[0];
+    const twoDaysAgo = new Date(Date.now() - 172800000)
+      .toISOString()
+      .split("T")[0];
+
     const mockData: ReportHarian[] = [
       // Today's reports - Area Pantai Losari & sekitarnya
       {
-        uid: '1',
+        uid: "1",
         tanggal: today,
-        jam: '06:00',
-        tujuan_sekolah: 'SDN Inp. Gunung Sari Makassar',
-        driver: 'Andi Mappasessu',
+        jam: "06:00",
+        tujuan_sekolah: "SDN Inp. Gunung Sari Makassar",
+        driver: "Andi Mappasessu",
         total_porsi: 280,
-        catatan: 'Pengiriman lancar, tepat waktu'
+        catatan: "Pengiriman lancar, tepat waktu",
       },
       {
-        uid: '2',
+        uid: "2",
         tanggal: today,
-        jam: '06:30',
-        tujuan_sekolah: 'SDN Mangkura Makassar',
-        driver: 'Arief Daeng Tompo',
+        jam: "06:30",
+        tujuan_sekolah: "SDN Mangkura Makassar",
+        driver: "Arief Daeng Tompo",
         total_porsi: 320,
-        catatan: 'Dekat area Pantai Losari'
+        catatan: "Dekat area Pantai Losari",
       },
       {
-        uid: '3',
+        uid: "3",
         tanggal: today,
-        jam: '07:00',
-        tujuan_sekolah: 'SDN Lajangiru Makassar',
-        driver: 'Nurhayati Daeng Sarro',
+        jam: "07:00",
+        tujuan_sekolah: "SDN Lajangiru Makassar",
+        driver: "Nurhayati Daeng Sarro",
         total_porsi: 250,
-        catatan: ''
+        catatan: "",
       },
       {
-        uid: '4',
+        uid: "4",
         tanggal: today,
-        jam: '07:15',
-        tujuan_sekolah: 'SDN Baji Pamai Makassar',
-        driver: 'Andi Mappasessu',
+        jam: "07:15",
+        tujuan_sekolah: "SDN Baji Pamai Makassar",
+        driver: "Andi Mappasessu",
         total_porsi: 290,
-        catatan: 'Pengiriman kedua, area dekat Fort Rotterdam'
+        catatan: "Pengiriman kedua, area dekat Fort Rotterdam",
       },
       {
-        uid: '5',
+        uid: "5",
         tanggal: today,
-        jam: '07:30',
-        tujuan_sekolah: 'SDN Cambaya Makassar',
-        driver: 'Muhammad Rivai',
+        jam: "07:30",
+        tujuan_sekolah: "SDN Cambaya Makassar",
+        driver: "Muhammad Rivai",
         total_porsi: 310,
-        catatan: 'Dekat Jalan Metro Tanjung Bunga'
+        catatan: "Dekat Jalan Metro Tanjung Bunga",
       },
       {
-        uid: '6',
+        uid: "6",
         tanggal: today,
-        jam: '07:45',
-        tujuan_sekolah: 'SDN Tanjung Merdeka Makassar',
-        driver: 'Nurhayati Daeng Sarro',
+        jam: "07:45",
+        tujuan_sekolah: "SDN Tanjung Merdeka Makassar",
+        driver: "Nurhayati Daeng Sarro",
         total_porsi: 270,
-        catatan: 'Area pelabuhan'
+        catatan: "Area pelabuhan",
       },
       // Yesterday's reports
       {
-        uid: '7',
+        uid: "7",
         tanggal: yesterday,
-        jam: '06:00',
-        tujuan_sekolah: 'SDN Inp. Gunung Sari Makassar',
-        driver: 'Arief Daeng Tompo',
+        jam: "06:00",
+        tujuan_sekolah: "SDN Inp. Gunung Sari Makassar",
+        driver: "Arief Daeng Tompo",
         total_porsi: 275,
-        catatan: ''
+        catatan: "",
       },
       {
-        uid: '8',
+        uid: "8",
         tanggal: yesterday,
-        jam: '06:30',
-        tujuan_sekolah: 'SDN Mangkura Makassar',
-        driver: 'Andi Mappasessu',
+        jam: "06:30",
+        tujuan_sekolah: "SDN Mangkura Makassar",
+        driver: "Andi Mappasessu",
         total_porsi: 315,
-        catatan: ''
+        catatan: "",
       },
       {
-        uid: '9',
+        uid: "9",
         tanggal: yesterday,
-        jam: '07:00',
-        tujuan_sekolah: 'SDN Lajangiru Makassar',
-        driver: 'Muhammad Rivai',
+        jam: "07:00",
+        tujuan_sekolah: "SDN Lajangiru Makassar",
+        driver: "Muhammad Rivai",
         total_porsi: 245,
-        catatan: 'Terlambat 10 menit karena hujan'
+        catatan: "Terlambat 10 menit karena hujan",
       },
       {
-        uid: '10',
+        uid: "10",
         tanggal: yesterday,
-        jam: '07:30',
-        tujuan_sekolah: 'SDN Cambaya Makassar',
-        driver: 'Nurhayati Daeng Sarro',
+        jam: "07:30",
+        tujuan_sekolah: "SDN Cambaya Makassar",
+        driver: "Nurhayati Daeng Sarro",
         total_porsi: 305,
-        catatan: ''
+        catatan: "",
       },
       // Two days ago
       {
-        uid: '11',
+        uid: "11",
         tanggal: twoDaysAgo,
-        jam: '06:00',
-        tujuan_sekolah: 'SDN Inp. Gunung Sari Makassar',
-        driver: 'Muhammad Rivai',
+        jam: "06:00",
+        tujuan_sekolah: "SDN Inp. Gunung Sari Makassar",
+        driver: "Muhammad Rivai",
         total_porsi: 270,
-        catatan: ''
+        catatan: "",
       },
       {
-        uid: '12',
+        uid: "12",
         tanggal: twoDaysAgo,
-        jam: '06:45',
-        tujuan_sekolah: 'SDN Baji Pamai Makassar',
-        driver: 'Arief Daeng Tompo',
+        jam: "06:45",
+        tujuan_sekolah: "SDN Baji Pamai Makassar",
+        driver: "Arief Daeng Tompo",
         total_porsi: 285,
-        catatan: 'Pengiriman lancar'
+        catatan: "Pengiriman lancar",
       },
       {
-        uid: '13',
+        uid: "13",
         tanggal: twoDaysAgo,
-        jam: '07:15',
-        tujuan_sekolah: 'SDN Tanjung Merdeka Makassar',
-        driver: 'Andi Mappasessu',
+        jam: "07:15",
+        tujuan_sekolah: "SDN Tanjung Merdeka Makassar",
+        driver: "Andi Mappasessu",
         total_porsi: 265,
-        catatan: ''
-      }
+        catatan: "",
+      },
     ];
-    
+
     reports.value = mockData;
     totalItems.value = mockData.length;
     totalPages.value = Math.ceil(totalItems.value / itemsPerPage.value);
-    
   } catch (error) {
     console.error("Error fetching reports:", error);
     reports.value = [];
@@ -1011,9 +1167,9 @@ const filteredAndSortedReports = computed(() => {
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter((report) => {
-      const tujuan = (report.tujuan_sekolah || '').toLowerCase();
-      const driver = (report.driver || '').toLowerCase();
-      const catatan = (report.catatan || '').toLowerCase();
+      const tujuan = (report.tujuan_sekolah || "").toLowerCase();
+      const driver = (report.driver || "").toLowerCase();
+      const catatan = (report.catatan || "").toLowerCase();
 
       return (
         tujuan.includes(query) ||
@@ -1028,19 +1184,19 @@ const filteredAndSortedReports = computed(() => {
       let aValue: any = a[sortLabel.value as keyof ReportHarian];
       let bValue: any = b[sortLabel.value as keyof ReportHarian];
 
-      if (sortLabel.value === 'tanggal') {
+      if (sortLabel.value === "tanggal") {
         aValue = aValue ? new Date(aValue as string).getTime() : 0;
         bValue = bValue ? new Date(bValue as string).getTime() : 0;
       }
 
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
+      if (typeof aValue === "string" && typeof bValue === "string") {
         const comparison = aValue.localeCompare(bValue);
-        return sortOrder.value === 'asc' ? comparison : -comparison;
+        return sortOrder.value === "asc" ? comparison : -comparison;
       }
 
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
+      if (typeof aValue === "number" && typeof bValue === "number") {
         const comparison = aValue - bValue;
-        return sortOrder.value === 'asc' ? comparison : -comparison;
+        return sortOrder.value === "asc" ? comparison : -comparison;
       }
 
       return 0;
@@ -1059,15 +1215,15 @@ const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
 const openAddModal = () => {
   isEditMode.value = false;
   formData.value = {
-    tanggal: new Date().toISOString().split('T')[0],
-    jam: '',
-    tujuan_sekolah: '',
-    driver: '',
+    tanggal: new Date().toISOString().split("T")[0],
+    jam: "",
+    tujuan_sekolah: "",
+    driver: "",
     total_porsi: 0,
-    catatan: ''
+    catatan: "",
   };
-  
-  const modalElement = document.getElementById('reportModal');
+
+  const modalElement = document.getElementById("reportModal");
   if (modalElement) {
     const modal = new Modal(modalElement);
     modal.show();
@@ -1077,8 +1233,8 @@ const openAddModal = () => {
 const editReport = (report: ReportHarian) => {
   isEditMode.value = true;
   formData.value = { ...report };
-  
-  const modalElement = document.getElementById('reportModal');
+
+  const modalElement = document.getElementById("reportModal");
   if (modalElement) {
     const modal = new Modal(modalElement);
     modal.show();
@@ -1087,8 +1243,8 @@ const editReport = (report: ReportHarian) => {
 
 const viewReport = (report: ReportHarian) => {
   selectedReport.value = report;
-  
-  const modalElement = document.getElementById('viewReportModal');
+
+  const modalElement = document.getElementById("viewReportModal");
   if (modalElement) {
     const modal = new Modal(modalElement);
     modal.show();
@@ -1098,45 +1254,48 @@ const viewReport = (report: ReportHarian) => {
 const saveReport = async () => {
   try {
     isModalLoading.value = true;
-    
+
     // TODO: API call to save/update report
     // if (isEditMode.value) {
     //   await ApiService.put(`report-harian/${formData.value.uid}`, formData.value);
     // } else {
     //   await ApiService.post('report-harian', formData.value);
     // }
-    
+
     // Mock: Update local state
     if (isEditMode.value) {
-      const index = reports.value.findIndex(r => r.uid === formData.value.uid);
+      const index = reports.value.findIndex(
+        (r) => r.uid === formData.value.uid
+      );
       if (index !== -1) {
         reports.value[index] = formData.value as ReportHarian;
       }
     } else {
       const newReport = {
         ...formData.value,
-        uid: `${Date.now()}`
+        uid: `${Date.now()}`,
       } as ReportHarian;
       reports.value.unshift(newReport);
     }
-    
+
     await Swal.fire({
-      icon: 'success',
-      title: 'Berhasil!',
-      text: isEditMode.value ? 'Report berhasil diupdate' : 'Report berhasil ditambahkan',
+      icon: "success",
+      title: "Berhasil!",
+      text: isEditMode.value
+        ? "Report berhasil diupdate"
+        : "Report berhasil ditambahkan",
       timer: 2000,
-      showConfirmButton: false
+      showConfirmButton: false,
     });
-    
+
     closeModal();
     fetchReports();
-    
   } catch (error) {
     console.error("Error saving report:", error);
     await Swal.fire({
-      icon: 'error',
-      title: 'Gagal!',
-      text: 'Terjadi kesalahan saat menyimpan report'
+      icon: "error",
+      title: "Gagal!",
+      text: "Terjadi kesalahan saat menyimpan report",
     });
   } finally {
     isModalLoading.value = false;
@@ -1145,38 +1304,38 @@ const saveReport = async () => {
 
 const deleteReport = async (report: ReportHarian) => {
   const result = await Swal.fire({
-    icon: 'warning',
-    title: 'Konfirmasi Hapus',
+    icon: "warning",
+    title: "Konfirmasi Hapus",
     text: `Apakah Anda yakin ingin menghapus report untuk ${report.tujuan_sekolah}?`,
     showCancelButton: true,
-    confirmButtonText: 'Ya, Hapus',
-    cancelButtonText: 'Batal',
-    confirmButtonColor: '#d33',
+    confirmButtonText: "Ya, Hapus",
+    cancelButtonText: "Batal",
+    confirmButtonColor: "#d33",
   });
-  
+
   if (result.isConfirmed) {
     try {
       // TODO: API call to delete report
       // await ApiService.delete(`report-harian/${report.uid}`);
-      
+
       // Mock: Update local state
-      reports.value = reports.value.filter(r => r.uid !== report.uid);
-      
+      reports.value = reports.value.filter((r) => r.uid !== report.uid);
+
       await Swal.fire({
-        icon: 'success',
-        title: 'Berhasil!',
-        text: 'Report berhasil dihapus',
+        icon: "success",
+        title: "Berhasil!",
+        text: "Report berhasil dihapus",
         timer: 2000,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
-      
+
       fetchReports();
     } catch (error) {
       console.error("Error deleting report:", error);
       await Swal.fire({
-        icon: 'error',
-        title: 'Gagal!',
-        text: 'Terjadi kesalahan saat menghapus report'
+        icon: "error",
+        title: "Gagal!",
+        text: "Terjadi kesalahan saat menghapus report",
       });
     }
   }
@@ -1187,27 +1346,27 @@ const refreshReports = () => {
 };
 
 const closeModal = () => {
-  const modalElement = document.getElementById('reportModal');
+  const modalElement = document.getElementById("reportModal");
   if (modalElement) {
     const modal = Modal.getInstance(modalElement);
     if (modal) {
       modal.hide();
     }
   }
-  
+
   formData.value = {
-    tanggal: '',
-    jam: '',
-    tujuan_sekolah: '',
-    driver: '',
+    tanggal: "",
+    jam: "",
+    tujuan_sekolah: "",
+    driver: "",
     total_porsi: 0,
-    catatan: ''
+    catatan: "",
   };
   isEditMode.value = false;
 };
 
 const closeViewModal = () => {
-  const modalElement = document.getElementById('viewReportModal');
+  const modalElement = document.getElementById("viewReportModal");
   if (modalElement) {
     const modal = Modal.getInstance(modalElement);
     if (modal) {
@@ -1223,7 +1382,7 @@ onMounted(() => {
   const savedTargets = loadTargetsFromStorage();
   dailyReportTarget.value = savedTargets.dailyReportTarget;
   totalSchoolsTarget.value = savedTargets.totalSchoolsTarget;
-  
+
   fetchReports();
 });
 </script>

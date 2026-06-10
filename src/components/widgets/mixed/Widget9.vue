@@ -73,7 +73,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "widget-1",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     widgetClasses: String,
     time: String,

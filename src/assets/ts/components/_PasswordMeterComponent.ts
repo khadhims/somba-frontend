@@ -140,7 +140,7 @@ class PasswordMeterComponent {
 
   private checkChar(): boolean {
     const val = this.inputElement ? this.inputElement.value : "";
-    return /[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/g.test(val); // 20 score
+    return /[~`!#$%\^&*+=\-\[\]\\';,/{ /* empty */ }|\\":<>\?]/g.test(val); // 20 score
   }
 
   private getCheckScore(): number {

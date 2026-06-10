@@ -89,9 +89,11 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "card-5",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
-    key: String,
+    itemKey: String,
     activityName: String,
     lastActivityTimestamp: String,
     currentlyActive: Boolean,

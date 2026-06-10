@@ -48,6 +48,10 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "CreateAccountHorizontalWizardStepperComponent",
+});
+
 import { ref } from "vue";
 import CreateAccountWizardForm from "@/components/wizards/create-account-wizard/CreateAccountWizardForm.vue";
 

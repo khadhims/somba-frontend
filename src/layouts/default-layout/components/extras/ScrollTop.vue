@@ -20,7 +20,9 @@ import { scrolltopDispaly } from "@/layouts/default-layout/config/helper";
 
 export default defineComponent({
   name: "KTScrollTop",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     onMounted(() => {
       ScrollTopComponent.reinitialization();

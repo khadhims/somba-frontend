@@ -46,14 +46,18 @@ import { useThemeStore } from "@/stores/theme";
 
 export default defineComponent({
   name: "default-dashboard-widget-9",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     className: { type: String, required: false },
     height: { type: Number, required: true },
   },
   setup(props) {
     const chartRef = ref<typeof VueApexCharts | null>(null);
-    const chart = ref<ApexOptions>({});
+    const chart = ref<ApexOptions>({
+      /* empty */
+    });
     const store = useThemeStore();
 
     const series = [
@@ -119,7 +123,9 @@ const chartOptions = (height: number): ApexOptions => {
         show: false,
       },
     },
-    plotOptions: {},
+    plotOptions: {
+      /* empty */
+    },
     legend: {
       show: false,
     },

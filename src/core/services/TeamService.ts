@@ -1,2 +1,2 @@
 // module placeholder to satisfy TypeScript isolatedModules
-export {};
+export /* empty */ {};

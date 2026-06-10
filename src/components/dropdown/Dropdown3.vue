@@ -134,6 +134,8 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "dropdown-3",
-  components: {},
+  components: {
+    /* empty */
+  },
 });
 </script>

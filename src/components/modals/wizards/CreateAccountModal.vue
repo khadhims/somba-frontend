@@ -44,6 +44,10 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "CreateAccountModalComponent",
+});
+
 import CreateAccountHorizontalWizardStepper from "@/components/wizards/create-account-wizard/CreateAccountHorizontalWizardStepper.vue";
 import { hideModal } from "@/core/helpers/modal";
 

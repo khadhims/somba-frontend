@@ -64,7 +64,9 @@ export default defineComponent({
   props: {
     fieldHeight: Number,
   },
-  components: {},
+  components: {
+    /* empty */
+  },
   setup(props) {
     const height = ref(props.fieldHeight);
 

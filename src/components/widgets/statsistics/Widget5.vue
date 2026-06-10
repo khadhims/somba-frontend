@@ -35,7 +35,9 @@ export default defineComponent({
     title: String,
     description: String,
   },
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getAssetPath,

@@ -156,7 +156,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "view-users-modal",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const users = [
       {

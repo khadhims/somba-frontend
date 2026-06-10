@@ -15,20 +15,39 @@ export const useConfigStore = defineStore("config", () => {
   }
 
   function setLayoutConfigProperty(property: string, value: any) {
-    objectPath.set(config.value, property, value);
-    localStorage.setItem(LS_CONFIG_NAME_KEY, JSON.stringify(config.value));
+    try {
+      objectPath.set(config.value, property, value);
+      localStorage.setItem(LS_CONFIG_NAME_KEY, JSON.stringify(config.value));
+    } catch (e) {
+      console.warn("[config] Failed to set layout config property", e);
+    }
   }
 
   function resetLayoutConfig() {
-    config.value = Object.assign({}, initial.value);
+    config.value = Object.assign(
+      {
+        /* empty */
+      },
+      initial.value
+    );
   }
 
   function overrideLayoutConfig() {
-    config.value = initial.value = Object.assign(
-      {},
-      initial.value,
-      JSON.parse(window.localStorage.getItem(LS_CONFIG_NAME_KEY) || "{}")
-    );
+    try {
+      const configStr = window.localStorage.getItem(LS_CONFIG_NAME_KEY);
+      const parsedConfig = configStr ? JSON.parse(configStr) : {};
+      config.value = initial.value = Object.assign(
+        {
+          /* empty */
+        },
+        initial.value,
+        parsedConfig
+      );
+    } catch (e) {
+      console.warn("[config] Failed to override layout config from localStorage", e);
+      // Fallback to initial config on error
+      config.value = initial.value;
+    }
   }
 
   return {

@@ -62,6 +62,10 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "CreateAccountWizardFormComponent",
+});
+
 import { computed, nextTick, onMounted, ref } from "vue";
 import { StepperComponent } from "@/assets/ts/components";
 import { useForm } from "vee-validate";

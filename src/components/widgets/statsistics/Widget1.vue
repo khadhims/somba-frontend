@@ -42,7 +42,9 @@ export default defineComponent({
     time: String,
     description: String,
   },
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getAssetPath,

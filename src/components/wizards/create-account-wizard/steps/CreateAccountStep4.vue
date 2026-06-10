@@ -238,6 +238,10 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "CreateAccountStep4Component",
+});
+
 import { getAssetPath } from "@/core/helpers/assets";
 import { ErrorMessage, Field } from "vee-validate";
 </script>

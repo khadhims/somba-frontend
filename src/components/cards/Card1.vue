@@ -113,7 +113,9 @@ import { computed, defineComponent } from "vue";
 
 export default defineComponent({
   name: "card-1",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     progress: Number,
 

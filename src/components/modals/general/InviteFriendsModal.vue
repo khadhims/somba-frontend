@@ -180,7 +180,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "invite-friends-modal",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const users = [
       {

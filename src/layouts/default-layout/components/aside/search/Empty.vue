@@ -23,7 +23,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "kt-empty",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getAssetPath,

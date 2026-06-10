@@ -6,7 +6,7 @@
         <img
           alt="Logo"
           :src="getAssetPath('logo-somba-3.png')"
-          style="height: 44px;"
+          style="height: 44px"
         />
       </router-link>
       <!--end::Logo-->

@@ -41,7 +41,7 @@
 
   <KTToolButtons />
   <KTHelpDrawer />
-  
+
   <!-- Global Search (Ctrl+K) -->
   <GlobalSearch />
 </template>

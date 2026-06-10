@@ -176,7 +176,9 @@ interface IQuestion {
 
 export default defineComponent({
   name: "dev-questions",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const questions = ref<Array<IQuestion>>([
       {

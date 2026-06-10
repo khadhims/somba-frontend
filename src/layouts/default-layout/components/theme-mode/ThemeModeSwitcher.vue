@@ -63,7 +63,9 @@ import { useRoute } from "vue-router";
 
 export default defineComponent({
   name: "kt-theme-switcher",
-  component: {},
+  component: {
+    /* empty */
+  },
   setup() {
     const storeTheme = useThemeStore();
     const storeConfig = useConfigStore();

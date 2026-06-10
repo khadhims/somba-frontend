@@ -55,16 +55,26 @@ window.addEventListener("auth:refresh_failed", () => {
 });
 
 // Listen to storage events (other tabs) - if token removed in another tab, force logout/redirect here too
-window.addEventListener('storage', (evt) => {
+window.addEventListener("storage", (evt) => {
   try {
-    if (evt.key === 'id_token' && evt.newValue === null) {
+    if (evt.key === "id_token" && evt.newValue === null) {
       try {
         const store = useAuthStore();
         store.logout();
-      } catch (e) {}
-      try { router.push({ name: 'sign-in' }).catch(() => {}); } catch (e) {}
+      } catch (e) {
+        /* empty */
+      }
+      try {
+        router.push({ name: "sign-in" }).catch(() => {
+          /* empty */
+        });
+      } catch (e) {
+        /* empty */
+      }
     }
-  } catch (e) {}
+  } catch (e) {
+    /* empty */
+  }
 });
 
 ApiService.init(app);
@@ -79,25 +89,43 @@ app.directive("tooltip", (el) => {
   new Tooltip(el);
 });
 
-// Do not mount app until we have attempted initial auth verification.
-// Mounting earlier could render protected pages before we know auth state.
-// We'll mount after the startup verifyAuth call below.
-// Verify auth on startup and redirect to sign-in on failure
+app.config.errorHandler = (err, instance, info) => {
+  console.error("[Global Error Handler]", err, info);
+};
+
+// Mount the app immediately. 
+// The router guard (src/router/index.ts) handles authentication verification 
+// and redirection to sign-in for protected routes.
+try {
+  app.mount("#app");
+} catch (mountErr) {
+  console.error("[main] Failed to mount app:", mountErr);
+  // fallback: still try to mount if target exists
+  try {
+    const root = document.getElementById("app");
+    if (root) {
+      app.mount(root);
+    }
+  } catch (e) {
+    /* empty */
+  }
+}
+
+// Fallback: Ensure splash screen is hidden after a few seconds even if mount/onMounted fails
+setTimeout(() => {
+  const splash = document.getElementById("splash-screen");
+  if (splash) {
+    splash.style.display = "none";
+    document.body.classList.remove("page-loading");
+  }
+}, 3000);
+
+// Background verification attempt to initialize store state
 (async () => {
   try {
     const store = useAuthStore();
     await store.verifyAuth();
-    // verified or refreshed successfully
   } catch (e) {
-    // couldn't verify or refresh, redirect to sign-in
-    // allow router to be ready
-    router.push({ name: "sign-in" }).catch(() => {});
-  }
-  // Now mount the app after auth verification attempt completes.
-  try {
-    app.mount("#app");
-  } catch (mountErr) {
-    // fallback: still try to mount
-    try { (document.getElementById('app') as HTMLElement | null) && app.mount('#app'); } catch (e) {}
+    // Silent catch — router guard will handle redirection for protected routes
   }
 })();

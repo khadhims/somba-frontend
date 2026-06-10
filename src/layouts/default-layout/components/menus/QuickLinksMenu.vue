@@ -102,7 +102,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "kt-quick-links-menu",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getAssetPath,

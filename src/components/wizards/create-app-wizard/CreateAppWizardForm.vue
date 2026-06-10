@@ -56,6 +56,10 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "CreateAppWizardFormComponent",
+});
+
 import { computed, nextTick, onMounted, ref } from "vue";
 
 import Swal from "sweetalert2/dist/sweetalert2.js";

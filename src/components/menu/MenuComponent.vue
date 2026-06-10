@@ -9,7 +9,9 @@ import { MenuComponent } from "@/assets/ts/components";
 
 export default defineComponent({
   name: "kt-menu-component",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     menuSelector: { type: String, required: true },
   },

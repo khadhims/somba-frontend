@@ -1,6 +1,8 @@
 <template>
   <!--begin::VMS Control Panel-->
-  <div class="d-flex align-items-center justify-content-between overflow-auto pt-3 pt-lg-0">
+  <div
+    class="d-flex align-items-center justify-content-between overflow-auto pt-3 pt-lg-0"
+  >
     <!--begin::System Status-->
     <!-- <div class="d-flex align-items-center">
       <div class="d-flex align-items-center me-5">
@@ -65,7 +67,7 @@
     <div class="d-flex align-items-center">
       <!--begin::Notifications-->
       <div class="d-flex align-items-center me-4">
-        <div 
+        <div
           class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px position-relative"
           data-kt-menu-trigger="{default: 'click'}"
           data-kt-menu-attach="parent"
@@ -73,7 +75,6 @@
           id="kt_menu_notifications"
         >
           <KTIcon icon-name="notification-bing" icon-class="fs-2" />
- 
         </div>
         <NotificationsMenu />
       </div>
@@ -95,13 +96,13 @@
       </div>
       <!--end::Theme mode-->
 
-  <!--begin::Language-->
-  <LanguageSwitcher />
-  <!--end::Language-->
+      <!--begin::Language-->
+      <LanguageSwitcher />
+      <!--end::Language-->
 
       <!--begin::User Profile-->
       <div class="d-flex align-items-center">
-        <div 
+        <div
           class="cursor-pointer symbol symbol-35px symbol-md-40px"
           data-kt-menu-trigger="click"
           data-kt-menu-attach="parent"
@@ -110,10 +111,10 @@
         >
           <img src="/media/avatars/300-1.jpg" alt="user" />
         </div>
-        
+
         <!--begin::User account menu-->
-        <div 
-          class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px" 
+        <div
+          class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
           data-kt-menu="true"
         >
           <!--begin::Menu item-->
@@ -124,7 +125,7 @@
                 <img alt="Avatar" src="/media/avatars/300-1.jpg" />
               </div>
               <!--end::Avatar-->
-              
+
               <!--begin::Username-->
               <div class="d-flex flex-column">
                 <div class="fw-bold d-flex align-items-center fs-5">
@@ -136,35 +137,41 @@
             </div>
           </div>
           <!--end::Menu item-->
-          
+
           <!--begin::Menu separator-->
           <div class="separator my-2"></div>
           <!--end::Menu separator-->
-          
+
           <!--begin::Menu item-->
           <div class="menu-item px-5">
-            <router-link to="/controlplane/account/overview" class="menu-link px-5">
-              {{ t('profile') }}
+            <router-link
+              to="/controlplane/account/overview"
+              class="menu-link px-5"
+            >
+              {{ t("profile") }}
             </router-link>
           </div>
           <!--end::Menu item-->
-          
+
           <!--begin::Menu item-->
           <div class="menu-item px-5">
-            <router-link to="/controlplane/account/settings" class="menu-link px-5">
-              {{ t('account') }} {{ t('settings') }}
+            <router-link
+              to="/controlplane/account/settings"
+              class="menu-link px-5"
+            >
+              {{ t("account") }} {{ t("settings") }}
             </router-link>
           </div>
           <!--end::Menu item-->
-          
+
           <!--begin::Menu separator-->
           <div class="separator my-2"></div>
           <!--end::Menu separator-->
-          
+
           <!--begin::Menu item-->
           <div class="menu-item px-5">
             <a href="#" class="menu-link px-5" @click.prevent="logout">
-              {{ t('signOut') }}
+              {{ t("signOut") }}
             </a>
           </div>
           <!--end::Menu item-->
@@ -186,7 +193,7 @@ import NotificationsMenu from "@/layouts/default-layout/components/menus/Notific
 import LanguageSwitcher from "@/layouts/default-layout/components/header/LanguageSwitcher.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
-import { useI18n } from 'vue-i18n';
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "layout-topbar",
@@ -207,50 +214,50 @@ export default defineComponent({
     const totalCameras = ref(28);
     const recordingCount = ref(18);
     const storageUsed = ref(68);
-    const systemUptime = ref('72h 15m');
+    const systemUptime = ref("72h 15m");
     const userName = computed(() => {
       const user = authStore.user;
       if (user?.first_name || user?.last_name) {
-        return `${user.first_name || ''} ${user.last_name || ''}`.trim();
+        return `${user.first_name || ""} ${user.last_name || ""}`.trim();
       }
-      return 'User';
+      return "User";
     });
-    const userRole = ref('Administrator');
+    const userRole = ref("Administrator");
 
     // Timer for real-time updates
     let timeInterval: number;
 
     // Methods
     const updateTime = () => {
-      currentTime.value = new Date().toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
+      currentTime.value = new Date().toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
       });
     };
 
     const getStorageColor = () => {
-      if (storageUsed.value >= 90) return 'text-danger';
-      if (storageUsed.value >= 75) return 'text-warning';
-      return 'text-success';
+      if (storageUsed.value >= 90) return "text-danger";
+      if (storageUsed.value >= 75) return "text-warning";
+      return "text-success";
     };
 
     const logout = async () => {
       try {
-        if (confirm(t('signOutConfirm') as string)) {
+        if (confirm(t("signOutConfirm") as string)) {
           // Clear authentication state
           await authStore.logout();
-          
+
           // Redirect to sign-in page
-          router.push({ name: 'sign-in' });
+          router.push({ name: "sign-in" });
         }
       } catch (error) {
-        console.error('Logout error:', error);
+        console.error("Logout error:", error);
         // Fallback: force logout
         localStorage.clear();
         sessionStorage.clear();
-        router.push({ name: 'sign-in' });
+        router.push({ name: "sign-in" });
       }
     };
 
@@ -259,7 +266,7 @@ export default defineComponent({
       // Update time every second
       timeInterval = setInterval(updateTime, 1000);
       updateTime(); // Initial call
-      
+
       // In real implementation, you would:
       // - Connect to WebSocket for real-time updates
       // - Fetch initial system status from API

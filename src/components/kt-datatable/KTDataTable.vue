@@ -9,7 +9,9 @@
         <thead class="table-header-modern">
           <tr>
             <th v-if="checkboxEnabled" class="checkbox-column">
-              <div class="form-check form-check-sm form-check-custom form-check-solid">
+              <div
+                class="form-check form-check-sm form-check-custom form-check-solid"
+              >
                 <input
                   class="form-check-input"
                   type="checkbox"
@@ -22,33 +24,39 @@
               <th
                 class="table-header-cell text-start"
                 :class="{
-                  'sortable': column.sortEnabled,
-                  'active-sort': currentSort.label === column.columnLabel
+                  sortable: column.sortEnabled,
+                  'active-sort': currentSort.label === column.columnLabel,
                 }"
                 @click="handleSort(column.columnLabel, column.sortEnabled)"
                 :style="{
-                  width: column.columnWidth ? `${column.columnWidth}px` : 'auto',
-                  minWidth: column.columnWidth ? `${column.columnWidth}px` : '0',
+                  width: column.columnWidth
+                    ? `${column.columnWidth}px`
+                    : 'auto',
+                  minWidth: column.columnWidth
+                    ? `${column.columnWidth}px`
+                    : '0',
                 }"
               >
                 <div class="header-content">
                   <span class="header-text">{{ column.columnName }}</span>
                   <div v-if="column.sortEnabled" class="sort-icon-wrapper">
-                    <ArrowUp 
-                      v-if="currentSort.label === column.columnLabel && currentSort.order === 'asc'" 
-                      :size="16" 
+                    <ArrowUp
+                      v-if="
+                        currentSort.label === column.columnLabel &&
+                        currentSort.order === 'asc'
+                      "
+                      :size="16"
                       class="sort-icon active"
                     />
-                    <ArrowDown 
-                      v-else-if="currentSort.label === column.columnLabel && currentSort.order === 'desc'" 
-                      :size="16" 
+                    <ArrowDown
+                      v-else-if="
+                        currentSort.label === column.columnLabel &&
+                        currentSort.order === 'desc'
+                      "
+                      :size="16"
                       class="sort-icon active"
                     />
-                    <ArrowUpDown 
-                      v-else 
-                      :size="16" 
-                      class="sort-icon inactive"
-                    />
+                    <ArrowUpDown v-else :size="16" class="sort-icon inactive" />
                   </div>
                 </div>
               </th>
@@ -57,11 +65,16 @@
         </thead>
 
         <!-- Table Body -->
-        <tbody v-if="dataToDisplay.length !== 0" class="fw-semibold text-gray-600">
+        <tbody
+          v-if="dataToDisplay.length !== 0"
+          class="fw-semibold text-gray-600"
+        >
           <template v-for="(row, i) in dataToDisplay" :key="i">
             <tr>
               <td v-if="checkboxEnabled">
-                <div class="form-check form-check-sm form-check-custom form-check-solid">
+                <div
+                  class="form-check form-check-sm form-check-custom form-check-solid"
+                >
                   <input
                     class="form-check-input"
                     type="checkbox"
@@ -81,11 +94,14 @@
             </tr>
           </template>
         </tbody>
-        
+
         <!-- Empty State -->
         <tbody v-else>
           <tr class="odd">
-            <td :colspan="header.length + (checkboxEnabled ? 1 : 0)" class="dataTables_empty">
+            <td
+              :colspan="header.length + (checkboxEnabled ? 1 : 0)"
+              class="dataTables_empty"
+            >
               {{ emptyTableText }}
             </td>
           </tr>
@@ -107,7 +123,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref, watch, onMounted } from "vue";
 import type { Sort } from "@/components/kt-datatable/table-partials/models";
-import { ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-vue-next';
+import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-vue-next";
 
 interface TableHeader {
   columnName: string;
@@ -122,7 +138,7 @@ export default defineComponent({
   components: {
     ArrowUp,
     ArrowDown,
-    ArrowUpDown
+    ArrowUpDown,
   },
   props: {
     header: { type: Array as () => TableHeader[], required: true },
@@ -161,7 +177,7 @@ export default defineComponent({
       label: props.sortLabel,
       order: props.sortOrder,
     });
-    
+
     // Sync itemsInTable with props.itemsPerPage
     watch(
       () => props.itemsPerPage,
@@ -254,8 +270,12 @@ export default defineComponent({
 
     const onItemsChange = () => {
       // Update header checkbox state based on selected items
-      const totalSelectableItems = props.data.filter((item: any) => item[props.checkboxLabel]).length;
-      headerChecked.value = selectedItems.value.length === totalSelectableItems && totalSelectableItems > 0;
+      const totalSelectableItems = props.data.filter(
+        (item: any) => item[props.checkboxLabel]
+      ).length;
+      headerChecked.value =
+        selectedItems.value.length === totalSelectableItems &&
+        totalSelectableItems > 0;
     };
 
     watch(
@@ -429,7 +449,7 @@ export default defineComponent({
     padding: 0.75rem 1rem !important;
     font-size: 0.8rem;
   }
-  
+
   .checkbox-column {
     width: 40px;
     padding: 0.75rem 0.5rem !important;

@@ -7,11 +7,7 @@
       data-kt-menu-placement="bottom-end"
     >
       <span class="symbol symbol-20px">
-        <img
-          class="rounded-1"
-          :src="currentLanguageFlag"
-          alt="flag"
-        />
+        <img class="rounded-1" :src="currentLanguageFlag" alt="flag" />
       </span>
     </div>
 
@@ -59,10 +55,7 @@
 import { defineComponent, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { getAssetPath } from "@/core/helpers/assets";
-import {
-  type AppLocale,
-  setAppLocale,
-} from "@/core/plugins/i18n";
+import { type AppLocale, setAppLocale } from "@/core/plugins/i18n";
 
 export default defineComponent({
   name: "LanguageSwitcher",
@@ -94,4 +87,3 @@ export default defineComponent({
   },
 });
 </script>
-

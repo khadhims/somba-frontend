@@ -4,31 +4,35 @@
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col-md-4">
-          <h4 class="card-title mb-0">{{ t('appsRecordingPlayback.overview.title') }}</h4>
+          <h4 class="card-title mb-0">
+            {{ t("appsRecordingPlayback.overview.title") }}
+          </h4>
           <p class="text-muted mb-0">
             {{
               currentSite
-                ? t('appsRecordingPlayback.overview.subtitleSite', { site: currentSite.name })
-                : t('appsRecordingPlayback.overview.subtitleAll')
+                ? t("appsRecordingPlayback.overview.subtitleSite", {
+                    site: currentSite.name,
+                  })
+                : t("appsRecordingPlayback.overview.subtitleAll")
             }}
           </p>
         </div>
         <div class="col-md-8">
           <div class="d-flex justify-content-end gap-3">
             <div class="d-flex align-items-center" v-if="sites.length > 0">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsRecordingPlayback.filters.siteLabel') }}</label>
+              <label class="form-label me-3 mb-0 fw-semibold">{{
+                t("appsRecordingPlayback.filters.siteLabel")
+              }}</label>
               <select
                 v-model="selectedSiteId"
                 @change="switchSite"
                 class="form-select form-select-solid w-200px"
                 :disabled="loadingSites"
               >
-                <option value="">{{ t('appsRecordingPlayback.filters.siteAll') }}</option>
-                <option
-                  v-for="site in sites"
-                  :key="site.uid"
-                  :value="site.uid"
-                >
+                <option value="">
+                  {{ t("appsRecordingPlayback.filters.siteAll") }}
+                </option>
+                <option v-for="site in sites" :key="site.uid" :value="site.uid">
                   {{ site.name }}
                 </option>
               </select>
@@ -78,7 +82,9 @@
       <Widget1
         :description="t('appsRecordingPlayback.cards.averageDuration.title')"
         :value="avgDurationValue"
-        :progress-text="t('appsRecordingPlayback.cards.averageDuration.progress')"
+        :progress-text="
+          t('appsRecordingPlayback.cards.averageDuration.progress')
+        "
         :progress-value="100"
         bg-color="#FFA800"
         text-color="white"
@@ -91,16 +97,16 @@
   <div class="card mb-5">
     <div class="card-header">
       <div class="card-title">
-        <h3 class="fw-bold">{{ t('appsRecordingPlayback.controls.title') }}</h3>
+        <h3 class="fw-bold">{{ t("appsRecordingPlayback.controls.title") }}</h3>
       </div>
       <div class="card-toolbar">
         <button @click="startAllRecording" class="btn btn-sm btn-success me-2">
           <i class="ki-duotone ki-play fs-2"></i>
-          {{ t('appsRecordingPlayback.controls.startAll') }}
+          {{ t("appsRecordingPlayback.controls.startAll") }}
         </button>
         <button @click="stopAllRecording" class="btn btn-sm btn-danger">
           <i class="ki-duotone ki-stop fs-2"></i>
-          {{ t('appsRecordingPlayback.controls.stopAll') }}
+          {{ t("appsRecordingPlayback.controls.stopAll") }}
         </button>
       </div>
     </div>
@@ -113,16 +119,20 @@
         >
           <div class="card border">
             <div class="card-body p-4">
-              <div class="d-flex justify-content-between align-items-center mb-3">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
                 <h6 class="card-title mb-0">{{ camera.name }}</h6>
                 <span
                   class="badge"
-                  :class="camera.recording ? 'badge-success' : 'badge-secondary'"
+                  :class="
+                    camera.recording ? 'badge-success' : 'badge-secondary'
+                  "
                 >
                   {{
                     camera.recording
-                      ? t('appsRecordingPlayback.controls.status.recording')
-                      : t('appsRecordingPlayback.controls.status.stopped')
+                      ? t("appsRecordingPlayback.controls.status.recording")
+                      : t("appsRecordingPlayback.controls.status.stopped")
                   }}
                 </span>
               </div>
@@ -134,7 +144,7 @@
                   class="btn btn-sm btn-success flex-fill"
                 >
                   <i class="ki-duotone ki-play fs-6"></i>
-                  {{ t('appsRecordingPlayback.controls.buttons.start') }}
+                  {{ t("appsRecordingPlayback.controls.buttons.start") }}
                 </button>
                 <button
                   v-else
@@ -142,14 +152,14 @@
                   class="btn btn-sm btn-danger flex-fill"
                 >
                   <i class="ki-duotone ki-stop fs-6"></i>
-                  {{ t('appsRecordingPlayback.controls.buttons.stop') }}
+                  {{ t("appsRecordingPlayback.controls.buttons.stop") }}
                 </button>
                 <button
                   @click="viewLive(camera)"
                   class="btn btn-sm btn-primary flex-fill"
                 >
                   <i class="ki-duotone ki-eye fs-6"></i>
-                  {{ t('appsRecordingPlayback.controls.buttons.live') }}
+                  {{ t("appsRecordingPlayback.controls.buttons.live") }}
                 </button>
               </div>
             </div>
@@ -166,7 +176,7 @@
     <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
       <div class="card-title">
-        <h3 class="fw-bold m-0">{{ t('appsRecordingPlayback.list.title') }}</h3>
+        <h3 class="fw-bold m-0">{{ t("appsRecordingPlayback.list.title") }}</h3>
       </div>
       <!--end::Card title-->
 
@@ -204,7 +214,9 @@
             @change="filterByCamera"
             class="form-select form-select-solid w-150px"
           >
-            <option value="">{{ t('appsRecordingPlayback.list.cameraFilterAll') }}</option>
+            <option value="">
+              {{ t("appsRecordingPlayback.list.cameraFilterAll") }}
+            </option>
             <option
               v-for="camera in cameras"
               :key="camera.uid"
@@ -217,7 +229,7 @@
 
         <button @click="refreshRecordings" class="btn btn-sm btn-light-primary">
           <i class="ki-duotone ki-arrows-circle fs-2"></i>
-          {{ t('appsRecordingPlayback.list.refresh') }}
+          {{ t("appsRecordingPlayback.list.refresh") }}
         </button>
       </div>
       <!--end::Card toolbar-->
@@ -279,10 +291,7 @@
         </template>
 
         <template v-slot:type="{ row }">
-          <span
-            class="badge"
-            :class="getRecordingTypeBadgeClass(row.type)"
-          >
+          <span class="badge" :class="getRecordingTypeBadgeClass(row.type)">
             {{ getRecordingTypeLabel(row.type) }}
           </span>
         </template>
@@ -329,22 +338,20 @@
           <div class="card-body py-3">
             <div class="d-flex align-items-center justify-content-between">
               <span class="fw-bold">
-                {{ t('appsRecordingPlayback.list.bulk.selected', { count: selectedRecordings.length }) }}
+                {{
+                  t("appsRecordingPlayback.list.bulk.selected", {
+                    count: selectedRecordings.length,
+                  })
+                }}
               </span>
               <div class="d-flex gap-2">
-                <button
-                  @click="bulkDownload"
-                  class="btn btn-sm btn-success"
-                >
+                <button @click="bulkDownload" class="btn btn-sm btn-success">
                   <i class="ki-duotone ki-download fs-6"></i>
-                  {{ t('appsRecordingPlayback.list.bulk.download') }}
+                  {{ t("appsRecordingPlayback.list.bulk.download") }}
                 </button>
-                <button
-                  @click="bulkDelete"
-                  class="btn btn-sm btn-danger"
-                >
+                <button @click="bulkDelete" class="btn btn-sm btn-danger">
                   <i class="ki-duotone ki-trash fs-6"></i>
-                  {{ t('appsRecordingPlayback.list.bulk.delete') }}
+                  {{ t("appsRecordingPlayback.list.bulk.delete") }}
                 </button>
               </div>
             </div>
@@ -359,10 +366,14 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "OverviewComponent",
+});
+
 import { ref, computed, onMounted } from "vue";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
-import ApiService from "@/core/services/ApiService";
+// import ApiService from "@/core/services/ApiService";
 import { useI18n } from "vue-i18n";
 
 // Interface definitions
@@ -376,7 +387,7 @@ interface Recording {
   duration_seconds: number;
   file_size_bytes: number;
   file_path: string;
-  type: 'scheduled' | 'motion' | 'manual';
+  type: "scheduled" | "motion" | "manual";
   site_uid?: string;
 }
 
@@ -419,37 +430,37 @@ const selectedRecordings = ref<Recording[]>([]);
 // Table header configuration
 const tableHeader = computed(() => [
   {
-    columnName: t('appsRecordingPlayback.list.table.columns.camera'),
+    columnName: t("appsRecordingPlayback.list.table.columns.camera"),
     columnLabel: "camera",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: t('appsRecordingPlayback.list.table.columns.startTime'),
+    columnName: t("appsRecordingPlayback.list.table.columns.startTime"),
     columnLabel: "start_time",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('appsRecordingPlayback.list.table.columns.duration'),
+    columnName: t("appsRecordingPlayback.list.table.columns.duration"),
     columnLabel: "duration",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('appsRecordingPlayback.list.table.columns.fileSize'),
+    columnName: t("appsRecordingPlayback.list.table.columns.fileSize"),
     columnLabel: "file_size",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('appsRecordingPlayback.list.table.columns.type'),
+    columnName: t("appsRecordingPlayback.list.table.columns.type"),
     columnLabel: "type",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('appsRecordingPlayback.list.table.columns.actions'),
+    columnName: t("appsRecordingPlayback.list.table.columns.actions"),
     columnLabel: "actions",
     sortEnabled: false,
     searchable: false,
@@ -469,7 +480,7 @@ const mockRecordings: Recording[] = [
     file_size_bytes: 1024 * 1024 * 500, // 500MB
     file_path: "/recordings/front_entrance_20241201_140000.mp4",
     type: "scheduled",
-    site_uid: "site1"
+    site_uid: "site1",
   },
   {
     uid: "2",
@@ -482,14 +493,32 @@ const mockRecordings: Recording[] = [
     file_size_bytes: 1024 * 1024 * 250, // 250MB
     file_path: "/recordings/parking_area_20241201_120000.mp4",
     type: "motion",
-    site_uid: "site1"
+    site_uid: "site1",
   },
 ];
 
 const mockCameras: Camera[] = [
-  { uid: "cam1", name: "Front Entrance", room: "Lobby", recording: true, site_uid: "site1" },
-  { uid: "cam2", name: "Parking Area", room: "Parking", recording: false, site_uid: "site1" },
-  { uid: "cam3", name: "Reception Desk", room: "Reception", recording: true, site_uid: "site1" },
+  {
+    uid: "cam1",
+    name: "Front Entrance",
+    room: "Lobby",
+    recording: true,
+    site_uid: "site1",
+  },
+  {
+    uid: "cam2",
+    name: "Parking Area",
+    room: "Parking",
+    recording: false,
+    site_uid: "site1",
+  },
+  {
+    uid: "cam3",
+    name: "Reception Desk",
+    room: "Reception",
+    recording: true,
+    site_uid: "site1",
+  },
 ];
 
 const mockSites: Site[] = [
@@ -508,10 +537,11 @@ const fetchRecordings = async () => {
     // }
     // const response = await ApiService.get(apiUrl);
     // recordings.value = response.data.data || response.data;
-    
+
     // Using mock data for now
-    recordings.value = mockRecordings.filter(recording => 
-      !selectedSiteId.value || recording.site_uid === selectedSiteId.value
+    recordings.value = mockRecordings.filter(
+      (recording) =>
+        !selectedSiteId.value || recording.site_uid === selectedSiteId.value
     );
   } catch (error) {
     console.error("Error fetching recordings:", error);
@@ -531,10 +561,11 @@ const fetchCameras = async () => {
     // }
     // const response = await ApiService.get(apiUrl);
     // cameras.value = response.data.data || response.data;
-    
+
     // Using mock data for now
-    cameras.value = mockCameras.filter(camera => 
-      !selectedSiteId.value || camera.site_uid === selectedSiteId.value
+    cameras.value = mockCameras.filter(
+      (camera) =>
+        !selectedSiteId.value || camera.site_uid === selectedSiteId.value
     );
   } catch (error) {
     console.error("Error fetching cameras:", error);
@@ -549,7 +580,7 @@ const fetchSites = async () => {
     // TODO: Replace with actual API call
     // const response = await ApiService.get("/sites");
     // sites.value = response.data.data || response.data;
-    
+
     // Using mock data for now
     sites.value = mockSites;
   } catch (error) {
@@ -562,7 +593,7 @@ const fetchSites = async () => {
 
 // Switch site
 const switchSite = () => {
-  const site = sites.value.find(s => s.uid === selectedSiteId.value);
+  const site = sites.value.find((s) => s.uid === selectedSiteId.value);
   currentSite.value = site || null;
   fetchRecordings();
   fetchCameras();
@@ -586,9 +617,9 @@ const startRecording = async (camera: Camera) => {
   try {
     // TODO: API call to start recording
     // await ApiService.post(`/cameras/${camera.uid}/start-recording`);
-    
+
     // Update local state
-    const index = cameras.value.findIndex(c => c.uid === camera.uid);
+    const index = cameras.value.findIndex((c) => c.uid === camera.uid);
     if (index !== -1) {
       cameras.value[index].recording = true;
     }
@@ -601,9 +632,9 @@ const stopRecording = async (camera: Camera) => {
   try {
     // TODO: API call to stop recording
     // await ApiService.post(`/cameras/${camera.uid}/stop-recording`);
-    
+
     // Update local state
-    const index = cameras.value.findIndex(c => c.uid === camera.uid);
+    const index = cameras.value.findIndex((c) => c.uid === camera.uid);
     if (index !== -1) {
       cameras.value[index].recording = false;
     }
@@ -645,13 +676,13 @@ const downloadRecording = (recording: Recording) => {
 };
 
 const deleteRecording = async (recording: Recording) => {
-  if (confirm(t('appsRecordingPlayback.list.bulk.confirmSingle'))) {
+  if (confirm(t("appsRecordingPlayback.list.bulk.confirmSingle"))) {
     try {
       // TODO: API call to delete recording
       // await ApiService.delete(`/recordings/${recording.uid}`);
-      
+
       // Remove from local state
-      const index = recordings.value.findIndex(r => r.uid === recording.uid);
+      const index = recordings.value.findIndex((r) => r.uid === recording.uid);
       if (index !== -1) {
         recordings.value.splice(index, 1);
       }
@@ -672,14 +703,22 @@ const bulkDownload = () => {
 };
 
 const bulkDelete = async () => {
-  if (confirm(t('appsRecordingPlayback.list.bulk.confirmMultiple', { count: selectedRecordings.value.length }))) {
+  if (
+    confirm(
+      t("appsRecordingPlayback.list.bulk.confirmMultiple", {
+        count: selectedRecordings.value.length,
+      })
+    )
+  ) {
     try {
       for (const recording of selectedRecordings.value) {
         // TODO: API call to delete recording
         // await ApiService.delete(`/recordings/${recording.uid}`);
-        
+
         // Remove from local state
-        const index = recordings.value.findIndex(r => r.uid === recording.uid);
+        const index = recordings.value.findIndex(
+          (r) => r.uid === recording.uid
+        );
         if (index !== -1) {
           recordings.value.splice(index, 1);
         }
@@ -694,7 +733,7 @@ const bulkDelete = async () => {
 // Utility methods
 const formatDuration = (seconds: number): string => {
   if (!Number.isFinite(seconds) || seconds < 0) {
-    return t('appsRecordingPlayback.format.notAvailable');
+    return t("appsRecordingPlayback.format.notAvailable");
   }
 
   const hours = Math.floor(seconds / 3600);
@@ -702,7 +741,7 @@ const formatDuration = (seconds: number): string => {
   const secs = Math.floor(seconds % 60);
 
   if (hours > 0) {
-    return t('appsRecordingPlayback.format.duration.hoursMinutesSeconds', {
+    return t("appsRecordingPlayback.format.duration.hoursMinutesSeconds", {
       hours,
       minutes,
       seconds: secs,
@@ -710,53 +749,60 @@ const formatDuration = (seconds: number): string => {
   }
 
   if (minutes > 0) {
-    return t('appsRecordingPlayback.format.duration.minutesSeconds', {
+    return t("appsRecordingPlayback.format.duration.minutesSeconds", {
       minutes,
       seconds: secs,
     });
   }
 
-  return t('appsRecordingPlayback.format.duration.seconds', { seconds: secs });
+  return t("appsRecordingPlayback.format.duration.seconds", { seconds: secs });
 };
 
 const formatFileSize = (bytes: number): string => {
   if (!Number.isFinite(bytes) || bytes <= 0) {
-    return t('appsRecordingPlayback.format.fileSize', { value: '0', unit: 'B' });
+    return t("appsRecordingPlayback.format.fileSize", {
+      value: "0",
+      unit: "B",
+    });
   }
 
-  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-  const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  const index = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(1024)),
+    units.length - 1
+  );
   const value = bytes / Math.pow(1024, index);
   const formatted = new Intl.NumberFormat(undefined, {
     maximumFractionDigits: value >= 10 ? 1 : 2,
     minimumFractionDigits: 0,
   }).format(value);
 
-  return t('appsRecordingPlayback.format.fileSize', {
+  return t("appsRecordingPlayback.format.fileSize", {
     value: formatted,
     unit: units[index],
   });
 };
 
-const normalizeKey = (value?: string) => (value ?? '').toLowerCase().replace(/[\s_-]/g, '');
+const normalizeKey = (value?: string) =>
+  (value ?? "").toLowerCase().replace(/[\s_-]/g, "");
 
 const typeKeyMap: Record<string, string> = {
-  scheduled: 'scheduled',
-  motion: 'motion',
-  manual: 'manual',
-  unknown: 'unknown',
+  scheduled: "scheduled",
+  motion: "motion",
+  manual: "manual",
+  unknown: "unknown",
 };
 
 const getRecordingTypeBadgeClass = (type: string) => {
   switch (normalizeKey(type)) {
-    case 'scheduled':
-      return 'badge-light-primary';
-    case 'motion':
-      return 'badge-light-warning';
-    case 'manual':
-      return 'badge-light-success';
+    case "scheduled":
+      return "badge-light-primary";
+    case "motion":
+      return "badge-light-warning";
+    case "manual":
+      return "badge-light-success";
     default:
-      return 'badge-light-secondary';
+      return "badge-light-secondary";
   }
 };
 
@@ -784,15 +830,16 @@ const filteredAndSortedRecordings = computed(() => {
   // Filter by date
   if (selectedDate.value) {
     const selectedDateStr = new Date(selectedDate.value).toDateString();
-    filtered = filtered.filter(recording =>
-      new Date(recording.start_time).toDateString() === selectedDateStr
+    filtered = filtered.filter(
+      (recording) =>
+        new Date(recording.start_time).toDateString() === selectedDateStr
     );
   }
 
   // Filter by camera
   if (selectedCameraFilter.value) {
-    filtered = filtered.filter(recording =>
-      recording.camera_uid === selectedCameraFilter.value
+    filtered = filtered.filter(
+      (recording) => recording.camera_uid === selectedCameraFilter.value
     );
   }
 
@@ -802,7 +849,7 @@ const filteredAndSortedRecordings = computed(() => {
       let aValue: any = a[sortLabel.value as keyof Recording];
       let bValue: any = b[sortLabel.value as keyof Recording];
 
-      if (sortLabel.value === 'start_time') {
+      if (sortLabel.value === "start_time") {
         aValue = new Date(aValue as string).getTime();
         bValue = new Date(bValue as string).getTime();
       }
@@ -823,77 +870,92 @@ const filteredAndSortedRecordings = computed(() => {
 
 // Statistics computed properties
 const totalStorageGB = computed(() => 1000); // Mock data
-const usedStorageGB = computed(() => 
-  Math.round(recordings.value.reduce((total, recording) => 
-    total + (recording.file_size_bytes / (1024 * 1024 * 1024)), 0
-  ))
+const usedStorageGB = computed(() =>
+  Math.round(
+    recordings.value.reduce(
+      (total, recording) =>
+        total + recording.file_size_bytes / (1024 * 1024 * 1024),
+      0
+    )
+  )
 );
-const recordingCameras = computed(() => cameras.value.filter(c => c.recording).length);
+const recordingCameras = computed(
+  () => cameras.value.filter((c) => c.recording).length
+);
 const totalCameras = computed(() => cameras.value.length);
 const recordingsToday = computed(() => {
   const today = new Date().toDateString();
-  return recordings.value.filter(r => 
-    new Date(r.start_time).toDateString() === today
+  return recordings.value.filter(
+    (r) => new Date(r.start_time).toDateString() === today
   ).length;
 });
 const totalRecordings = computed(() => recordings.value.length);
 const avgDurationMinutes = computed(() => {
   if (recordings.value.length === 0) return 0;
-  const totalSeconds = recordings.value.reduce((total, r) => total + r.duration_seconds, 0);
+  const totalSeconds = recordings.value.reduce(
+    (total, r) => total + r.duration_seconds,
+    0
+  );
   return Math.round(totalSeconds / recordings.value.length / 60);
 });
 
 const storageUsedPercentage = computed(() =>
-  totalStorageGB.value > 0 ? Math.round((usedStorageGB.value / totalStorageGB.value) * 100) : 0
+  totalStorageGB.value > 0
+    ? Math.round((usedStorageGB.value / totalStorageGB.value) * 100)
+    : 0
 );
 
 const recordingPercentage = computed(() =>
-  totalCameras.value > 0 ? Math.round((recordingCameras.value / totalCameras.value) * 100) : 0
+  totalCameras.value > 0
+    ? Math.round((recordingCameras.value / totalCameras.value) * 100)
+    : 0
 );
 
 const recordingsTodayPercentage = computed(() =>
-  totalRecordings.value > 0 ? Math.round((recordingsToday.value / totalRecordings.value) * 100) : 0
+  totalRecordings.value > 0
+    ? Math.round((recordingsToday.value / totalRecordings.value) * 100)
+    : 0
 );
 
 const totalStorageValue = computed(() =>
-  t('appsRecordingPlayback.cards.totalStorage.value', {
+  t("appsRecordingPlayback.cards.totalStorage.value", {
     total: formatNumber(totalStorageGB.value, 0),
   })
 );
 
 const totalStorageProgress = computed(() =>
-  t('appsRecordingPlayback.cards.totalStorage.progress', {
+  t("appsRecordingPlayback.cards.totalStorage.progress", {
     used: formatNumber(usedStorageGB.value, 0),
     total: formatNumber(totalStorageGB.value, 0),
   })
 );
 
 const recordingCamerasValue = computed(() =>
-  t('appsRecordingPlayback.cards.recordingCameras.value', {
+  t("appsRecordingPlayback.cards.recordingCameras.value", {
     count: formatNumber(recordingCameras.value, 0),
   })
 );
 
 const recordingCamerasProgress = computed(() =>
-  t('appsRecordingPlayback.cards.recordingCameras.progress', {
+  t("appsRecordingPlayback.cards.recordingCameras.progress", {
     total: formatNumber(totalCameras.value, 0),
   })
 );
 
 const recordingsTodayValue = computed(() =>
-  t('appsRecordingPlayback.cards.recordingsToday.value', {
+  t("appsRecordingPlayback.cards.recordingsToday.value", {
     count: formatNumber(recordingsToday.value, 0),
   })
 );
 
 const recordingsTodayProgress = computed(() =>
-  t('appsRecordingPlayback.cards.recordingsToday.progress', {
+  t("appsRecordingPlayback.cards.recordingsToday.progress", {
     total: formatNumber(totalRecordings.value, 0),
   })
 );
 
 const avgDurationValue = computed(() =>
-  t('appsRecordingPlayback.cards.averageDuration.value', {
+  t("appsRecordingPlayback.cards.averageDuration.value", {
     value: formatNumber(avgDurationMinutes.value, 0),
   })
 );

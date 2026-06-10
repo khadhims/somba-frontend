@@ -189,11 +189,7 @@
             @click.prevent="setLang(option.code)"
           >
             <span class="symbol symbol-20px me-4">
-              <img
-                class="rounded-1"
-                :src="option.flag"
-                :alt="option.name"
-              />
+              <img class="rounded-1" :src="option.flag" :alt="option.name" />
             </span>
             {{ option.name }}
           </a>
@@ -231,7 +227,9 @@ import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "kt-user-menu",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const router = useRouter();
     const { locale } = useI18n();
@@ -269,8 +267,9 @@ export default defineComponent({
 
     const currentLanguageOption = computed(() => {
       return (
-        languageOptions.find((option) => option.code === currentLanguage.value) ||
-        languageOptions[0]
+        languageOptions.find(
+          (option) => option.code === currentLanguage.value
+        ) || languageOptions[0]
       );
     });
 

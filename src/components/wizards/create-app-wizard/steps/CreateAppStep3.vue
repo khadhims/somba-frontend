@@ -156,5 +156,9 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "CreateAppStep3Component",
+});
+
 import { ErrorMessage, Field } from "vee-validate";
 </script>

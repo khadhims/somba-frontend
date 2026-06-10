@@ -47,7 +47,9 @@ export default defineComponent({
     progress: String,
     title: String,
   },
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getAssetPath,

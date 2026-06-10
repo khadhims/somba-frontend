@@ -63,6 +63,8 @@ export default defineComponent({
     color: { type: String, default: "primary" },
     padding: { type: String, default: "p-6" },
   },
-  components: {},
+  components: {
+    /* empty */
+  },
 });
 </script>

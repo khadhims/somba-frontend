@@ -1,4 +1,8 @@
 <script setup>
+defineOptions({
+  name: "RealTimeReportComponent",
+});
+
 /**
  * RealTimeReport Component
  *
@@ -16,7 +20,7 @@
 
 import { ref, onMounted, onUnmounted, nextTick, watch, computed } from "vue";
 import DatePicker from "@/components/DatePicker.vue";
-import { useI18n } from "vue-i18n";
+// import { useI18n } from "vue-i18n";
 import ApiService from "@/core/services/ApiService";
 import mockEventActivity from "@/assets/mockupData/dashboard/event_activity.json";
 import {
@@ -25,7 +29,7 @@ import {
   toMomentGMT8,
 } from "@/core/helpers/timezone";
 
-const { t } = useI18n();
+// const { t } = useI18n();
 
 // ========================
 // COMPONENT CONFIGURATION
@@ -33,7 +37,7 @@ const { t } = useI18n();
 
 // Component state
 const chartsReady = ref(false);
-const isRendering = ref(false);
+// const isRendering = ref(false);
 
 // Props definition
 const props = defineProps({
@@ -64,7 +68,7 @@ const selectedStatuses = ref(["active", "completed", "scheduled"]);
 
 // Date range state (from_date / to_date) - using single picker
 const selectedDate = ref(new Date());
-const showDatePicker = ref(false);
+// const showDatePicker = ref(false);
 const currentMonth = ref(new Date().getMonth());
 const currentYear = ref(new Date().getFullYear());
 const selectedDateValue = ref(""); // Single date picker value
@@ -379,28 +383,28 @@ const generateCalendarDays = () => {
   return calendarDays;
 };
 
-const calendarDays = ref(generateCalendarDays());
+// const calendarDays = ref(generateCalendarDays());
 
 // Month navigation
-const previousMonth = () => {
-  if (currentMonth.value === 0) {
-    currentMonth.value = 11;
-    currentYear.value--;
-  } else {
-    currentMonth.value--;
-  }
-  calendarDays.value = generateCalendarDays();
-};
+// const previousMonth = () => {
+//   if (currentMonth.value === 0) {
+//     currentMonth.value = 11;
+//     currentYear.value--;
+//   } else {
+//     currentMonth.value--;
+//   }
+//   calendarDays.value = generateCalendarDays();
+// };
 
-const nextMonth = () => {
-  if (currentMonth.value === 11) {
-    currentMonth.value = 0;
-    currentYear.value++;
-  } else {
-    currentMonth.value++;
-  }
-  calendarDays.value = generateCalendarDays();
-};
+// const nextMonth = () => {
+//   if (currentMonth.value === 11) {
+//     currentMonth.value = 0;
+//     currentYear.value++;
+//   } else {
+//     currentMonth.value++;
+//   }
+//   calendarDays.value = generateCalendarDays();
+// };
 
 // ========================
 // API AND DATA FUNCTIONS
@@ -914,7 +918,11 @@ const normalizeAlertDetail = (detail, fallbackPoint = null) => {
     return null;
   }
 
-  const pointReference = fallbackPoint ? { ...fallbackPoint } : {};
+  const pointReference = fallbackPoint
+    ? { ...fallbackPoint }
+    : {
+        /* empty */
+      };
   const primaryDetection =
     Array.isArray(detail?.detected_objects) &&
     detail.detected_objects.length > 0
@@ -1022,21 +1030,21 @@ const getAlertFromLocalData = (eventId) => {
   );
 };
 
-const fetchAlertById = async (eventId) => {
-  if (!eventId) {
-    console.warn("fetchAlertById: Event ID is required");
-    return null;
-  }
-
-  // Search in local data only (no API fallback)
-  const localAlert = getAlertFromLocalData(eventId);
-  if (localAlert) {
-    return localAlert;
-  }
-
-  console.warn(`Alert with ID ${eventId} not found in local data`);
-  return null;
-};
+// const fetchAlertById = async (eventId) => {
+//   if (!eventId) {
+//     console.warn("fetchAlertById: Event ID is required");
+//     return null;
+//   }
+//
+// Search in local data only (no API fallback)
+//   const localAlert = getAlertFromLocalData(eventId);
+//   if (localAlert) {
+//     return localAlert;
+//   }
+//
+//   console.warn(`Alert with ID ${eventId} not found in local data`);
+//   return null;
+// };
 
 // Generate process tracking data (now supports mapping detection objects to processes)
 const generateProcessTrackingData = () => {
@@ -1103,9 +1111,9 @@ const generateProcessTrackingData = () => {
   const validData = [];
   rawData.forEach((item) => {
     const rawActivities = item.activities;
-    const hadApiActivities = Array.isArray(rawActivities)
-      ? rawActivities.length > 0
-      : typeof rawActivities === "string" && rawActivities.trim().length > 0;
+    //     const hadApiActivities = Array.isArray(rawActivities)
+    //      ? rawActivities.length > 0
+    //      : typeof rawActivities === "string" && rawActivities.trim().length > 0;
 
     const normalizedActivities = normalizeActivitiesValue(
       rawActivities,
@@ -1117,11 +1125,11 @@ const generateProcessTrackingData = () => {
 
     // Prefer explicit activities (including camera fallbacks) before detection-based inference
     const process = primaryActivity ?? getProcessFromDetection(item);
-    const processSource = primaryActivity
-      ? hadApiActivities
-        ? "activities-api"
-        : "activities-fallback"
-      : "detection";
+    //     const processSource = primaryActivity
+    //      ? hadApiActivities
+    //        ? "activities-api"
+    //        : "activities-fallback"
+    //      : "detection";
 
     // Get mapped status
     const mappedStatus = statusMap[item.status] || item.status || "active";
@@ -1318,26 +1326,26 @@ const handleSelectedDateChange = async (newDateValue) => {
 };
 
 // Legacy select date function for backwards compatibility
-const selectDate = async (date) => {
-  if (date) {
-    const dateStr = date.toISOString().split("T")[0];
-    await handleSelectedDateChange(dateStr);
-    showDatePicker.value = false;
-  }
-};
+// const selectDate = async (date) => {
+//   if (date) {
+//     const dateStr = date.toISOString().split("T")[0];
+//     await handleSelectedDateChange(dateStr);
+//     showDatePicker.value = false;
+//   }
+// };
 
 // Check if date is today
-const isToday = (date) => {
-  if (!date) return false;
-  const today = new Date();
-  return date.toDateString() === today.toDateString();
-};
+// const isToday = (date) => {
+//   if (!date) return false;
+//   const today = new Date();
+//   return date.toDateString() === today.toDateString();
+// };
 
 // Check if date is selected
-const isSelected = (date) => {
-  if (!date) return false;
-  return date.toDateString() === selectedDate.value.toDateString();
-};
+// const isSelected = (date) => {
+//   if (!date) return false;
+//   return date.toDateString() === selectedDate.value.toDateString();
+// };
 
 // Format date for display
 const formatDate = (date) => {
@@ -1350,23 +1358,23 @@ const formatDate = (date) => {
 };
 
 // Month names
-const monthNames = [
-  "Januari",
-  "Februari",
-  "Maret",
-  "April",
-  "Mei",
-  "Juni",
-  "Juli",
-  "Agustus",
-  "September",
-  "Oktober",
-  "November",
-  "Desember",
-];
+// const monthNames = [
+//   "Januari",
+//   "Februari",
+//   "Maret",
+//   "April",
+//   "Mei",
+//   "Juni",
+//   "Juli",
+//   "Agustus",
+//   "September",
+//   "Oktober",
+//   "November",
+//   "Desember",
+// ];
 
 // Day names
-const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+// const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 
 // ========================
 // FILTER FUNCTIONS
@@ -1508,10 +1516,10 @@ const updateChartWithFilter = () => {
 };
 
 // Reset all filters
-const resetFilters = () => {
-  selectedStatuses.value = [];
-  updateChartWithFilter();
-};
+// const resetFilters = () => {
+//   selectedStatuses.value = [];
+//   updateChartWithFilter();
+// };
 
 // ========================
 // AUTO-PLAY FUNCTIONS
@@ -1642,7 +1650,9 @@ const checkDataAtPlayhead = (playheadTime) => {
 
   if (dataAtPlayhead.length > 0) {
     // Group data by process/row to show only one popup per row
-    const groupedByProcess = {};
+    const groupedByProcess = {
+      /* empty */
+    };
     dataAtPlayhead.forEach((item) => {
       // Only keep the first (or most relevant) data for each process
       if (!groupedByProcess[item.process]) {
@@ -2151,7 +2161,10 @@ const fetchAlertDetail = async (eventId, fallbackPoint = null) => {
   const normalizedEventId = eventId != null ? String(eventId) : null;
   if (!normalizedEventId) {
     modalDetailData.value = {
-      ...(fallbackPoint || {}),
+      ...(fallbackPoint ||
+        {
+          /* empty */
+        }),
       error: "Event ID tidak tersedia.",
     };
     showDetailModal.value = true;
@@ -2180,7 +2193,10 @@ const fetchAlertDetail = async (eventId, fallbackPoint = null) => {
         fallbackPoint ?? modalDetailData.value ?? null
       );
       modalDetailData.value = normalizedDetail || {
-        ...(fallbackPoint || {}),
+        ...(fallbackPoint ||
+          {
+            /* empty */
+          }),
         eventId: normalizedEventId,
         event_id: normalizedEventId,
       };
@@ -2193,7 +2209,10 @@ const fetchAlertDetail = async (eventId, fallbackPoint = null) => {
       fallbackPoint ?? modalDetailData.value ?? null
     );
     modalDetailData.value = normalizedDetail || {
-      ...(fallbackPoint || {}),
+      ...(fallbackPoint ||
+        {
+          /* empty */
+        }),
       eventId: normalizedEventId,
       event_id: normalizedEventId,
       error: "Detail tidak ditemukan dalam data lokal.",
@@ -2201,7 +2220,10 @@ const fetchAlertDetail = async (eventId, fallbackPoint = null) => {
   } catch (error) {
     console.error("[RealTimeReport] Failed to process alert detail:", error);
     modalDetailData.value = {
-      ...(fallbackPoint || {}),
+      ...(fallbackPoint ||
+        {
+          /* empty */
+        }),
       eventId: normalizedEventId,
       event_id: normalizedEventId,
       error: "Gagal memproses detail event.",
@@ -2243,18 +2265,18 @@ const formatTime = (dateString) => {
   return formatDateTimeGMT8(dateString, "HH:mm") ?? "";
 };
 
-const formatDuration = (point) => {
-  const startDate = new Date(point.start);
-  const endDate = new Date(point.end);
-  const durationMs = endDate.getTime() - startDate.getTime();
-  const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
-  const durationMinutes = Math.floor(
-    (durationMs % (1000 * 60 * 60)) / (1000 * 60)
-  );
-  return durationHours > 0
-    ? `${durationHours} jam ${durationMinutes} menit`
-    : `${durationMinutes} menit`;
-};
+// const formatDuration = (point) => {
+//   const startDate = new Date(point.start);
+//   const endDate = new Date(point.end);
+//   const durationMs = endDate.getTime() - startDate.getTime();
+//   const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
+//   const durationMinutes = Math.floor(
+//     (durationMs % (1000 * 60 * 60)) / (1000 * 60)
+//   );
+//   return durationHours > 0
+//     ? `${durationHours} jam ${durationMinutes} menit`
+//     : `${durationMinutes} menit`;
+// };
 
 // Function to download image from URL (used in modal)
 const downloadImageFromUrl = async (imageUrl, fileName) => {
@@ -2278,22 +2300,22 @@ const downloadImageFromUrl = async (imageUrl, fileName) => {
 };
 
 // Function to download image
-const downloadImage = async () => {
-  try {
-    const response = await fetch(modalImageSrc.value);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${modalImageAlt.value}.jpg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error("Error downloading image:", error);
-  }
-};
+// const downloadImage = async () => {
+//   try {
+//     const response = await fetch(modalImageSrc.value);
+//     const blob = await response.blob();
+//     const url = window.URL.createObjectURL(blob);
+//     const link = document.createElement("a");
+//     link.href = url;
+//     link.download = `${modalImageAlt.value}.jpg`;
+//     document.body.appendChild(link);
+//     link.click();
+//     document.body.removeChild(link);
+//     window.URL.revokeObjectURL(url);
+//   } catch (error) {
+//     console.error("Error downloading image:", error);
+//   }
+// };
 
 // Close image modal
 const closeImageModal = () => {
@@ -2341,7 +2363,7 @@ const loadScript = (src) => {
 
 // Initialize fromDate/toDate defaults (today for both)
 const initializeDefaultDates = () => {
-  const today = new Date().toISOString().split("T")[0];
+  //   const today = new Date().toISOString().split("T")[0];
 
   // Set both fromDate and toDate to today (same value)
   toDate.value = todayStr;
@@ -2506,8 +2528,8 @@ const renderHighchartsGantt = () => {
   seriesData = seriesData.sort((a, b) => a.y - b.y || a.start - b.start);
 
   // Current time indicator for today only
-  const now = new Date();
-  const isToday = now.getTime() >= xMin && now.getTime() <= xMax;
+  //   const now = new Date();
+  //   const isToday = now.getTime() >= xMin && now.getTime() <= xMax;
 
   // Ensure that data bounds are strictly within the selected day
   seriesData = seriesData.map((item) => {
@@ -2985,7 +3007,9 @@ const renderHighchartsGantt = () => {
       series: {
         cursor: "pointer",
         point: {
-          events: {},
+          events: {
+            /* empty */
+          },
         },
       },
     },
@@ -3020,7 +3044,7 @@ watch(chartsReady, (ready) => {
 });
 
 // Watch play speed: restart auto-play with new speed if currently playing
-watch(playSpeed, (newSpeed) => {
+watch(playSpeed, () => {
   if (isPlaying.value) {
     stopAutoPlay();
     // Restart with new speed after a small delay
@@ -3117,8 +3141,8 @@ onMounted(async () => {
   await loadHighchartsGantt();
 
   // Try to fetch alerts immediately if site is available
-  const initialSite =
-    props.siteUid || window.localStorage.getItem("lastSelectedSite");
+  //   const initialSite =
+  props.siteUid || window.localStorage.getItem("lastSelectedSite");
 
   startAlertsAutoRefresh();
 });
@@ -3130,7 +3154,9 @@ watch([fromDate, toDate], ([f, t]) => {
     if (t) window.localStorage.setItem(toDateKey, t);
     window.localStorage.removeItem(legacyFromDateKey);
     window.localStorage.removeItem(legacyToDateKey);
-  } catch (e) {}
+  } catch (e) {
+    /* empty */
+  }
 
   // In single date mode, both f and t should be the same
   // Update selectedDate and selectedDateValue to stay in sync

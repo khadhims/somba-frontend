@@ -22,7 +22,9 @@ export class ElementAnimateUtil {
 
     // Create mock done() function if necessary
     if (!complete) {
-      complete = function () {};
+      complete = function () {
+        /* empty */
+      };
     }
 
     // Animation loop

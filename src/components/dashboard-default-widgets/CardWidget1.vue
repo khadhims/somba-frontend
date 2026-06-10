@@ -25,8 +25,7 @@
     <!--begin::Card body-->
     <div class="card-body d-flex align-items-end pt-0">
       <!--begin::Progress-->
-      <div class="d-flex align-items-center flex-column mt-3 w-100">
-      </div>
+      <div class="d-flex align-items-center flex-column mt-3 w-100"></div>
       <!--end::Progress-->
     </div>
     <!--end::Card body-->
@@ -38,7 +37,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "default-dashboard-widget-1",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     className: { type: String, required: false },
     bgColor: { type: String, required: false, default: "#080655" },

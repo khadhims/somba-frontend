@@ -4,14 +4,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, nextTick, onBeforeMount, onMounted, computed } from "vue";
+import {
+  defineComponent,
+  nextTick,
+  onBeforeMount,
+  onMounted,
+  computed,
+} from "vue";
 import { RouterView } from "vue-router";
 import { useRoute } from "vue-router";
 import { useConfigStore } from "@/stores/config";
 import { useThemeStore } from "@/stores/theme";
 import { useBodyStore } from "@/stores/body";
-import FullScreenLoader from '@/components/FullScreenLoader.vue';
-import { useLoadingStore } from '@/stores/loading';
+import FullScreenLoader from "@/components/FullScreenLoader.vue";
+import { useLoadingStore } from "@/stores/loading";
 import { themeConfigValue } from "@/layouts/default-layout/config/helper";
 import { initializeComponents } from "@/core/plugins/keenthemes";
 
@@ -28,7 +34,9 @@ export default defineComponent({
     const loadingStore = useLoadingStore();
     const route = useRoute();
 
-    const disableGlobalLoader = computed(() => !!route.meta?.disableGlobalLoader);
+    const disableGlobalLoader = computed(
+      () => !!route.meta?.disableGlobalLoader
+    );
 
     onBeforeMount(() => {
       /**
@@ -44,17 +52,18 @@ export default defineComponent({
     });
 
     onMounted(() => {
+      // hide initial splash screen as early as possible after mounting
+      bodyStore.removeBodyClassName("page-loading");
+      const splash = document.getElementById("splash-screen");
+      if (splash) splash.style.display = "none";
+
       nextTick(() => {
         initializeComponents();
-        // hide initial splash
-        bodyStore.removeBodyClassName("page-loading");
-        const splash = document.getElementById("splash-screen");
-        if (splash) splash.style.display = "none";
 
         // Sync global loading events with loading store
         if (!disableGlobalLoader.value) {
-          window.addEventListener('loading:start', () => loadingStore.show());
-          window.addEventListener('loading:stop', () => loadingStore.hide());
+          window.addEventListener("loading:start", () => loadingStore.show());
+          window.addEventListener("loading:stop", () => loadingStore.hide());
         }
       });
     });

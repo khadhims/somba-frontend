@@ -118,8 +118,8 @@
               <span class="text-dark fw-bold text-hover-primary fs-6">{{
                 row.name
               }}</span>
-              <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-                row.ipAddress
+              <span class="text-muted fw-semibold text-muted d-block fs-7 text-truncate" style="max-width: 280px">{{
+                row.cameraUrl
               }}</span>
             </div>
           </div>
@@ -131,7 +131,7 @@
               getSiteName(row.siteId)
             }}</span>
             <span class="text-muted fw-semibold d-block fs-7">{{
-              getRoomName(row.roomId)
+              row.room || "-"
             }}</span>
             <span class="text-muted fw-semibold d-block fs-8">{{
               row.location
@@ -151,16 +151,10 @@
           </div>
         </template>
 
-        <template v-slot:nvr="{ row }">
-          <div>
-            <span class="text-dark fw-bold d-block fs-6">{{
-              getNvrName(row.nvrId)
-            }}</span>
-            <span class="text-muted fw-semibold d-block fs-7">
-              {{ t("controlplane.site.camera.table.channelPrefix") }}
-              {{ row.channel }}
-            </span>
-          </div>
+        <template v-slot:cameraUrl="{ row }">
+          <span class="text-dark fw-semibold d-block fs-7 text-truncate" style="max-width: 220px" :title="row.cameraUrl">
+            {{ row.cameraUrl || "-" }}
+          </span>
         </template>
 
         <template v-slot:status="{ row }">
@@ -306,24 +300,14 @@
                     {{ t("controlplane.site.camera.form.fields.room.label") }}
                   </label>
                   <!--end::Label-->
-                  <!--begin::Select-->
-                  <select
-                    v-model="cameraForm.roomId"
-                    @change="onRoomChange"
-                    class="form-select form-select-solid"
-                  >
-                    <option value="">
-                      {{ t("controlplane.site.camera.form.fields.room.placeholder") }}
-                    </option>
-                    <option
-                      v-for="room in availableRooms"
-                      :key="room.id"
-                      :value="room.id"
-                    >
-                      {{ room.name }}
-                    </option>
-                  </select>
-                  <!--end::Select-->
+                  <!--begin::Input-->
+                  <input
+                    type="text"
+                    v-model="cameraForm.room"
+                    class="form-control form-control-solid"
+                    :placeholder="t('controlplane.site.camera.form.fields.room.placeholder')"
+                  />
+                  <!--end::Input-->
                 </div>
                 <!--end::Col-->
 
@@ -356,17 +340,23 @@
                 <div class="col-md-6">
                   <!--begin::Label-->
                   <label class="required fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.camera.form.fields.ipAddress.label") }}
+                    {{ t("controlplane.site.camera.form.fields.cameraUrl.label") }}
                   </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <input
-                    type="text"
-                    v-model="cameraForm.ipAddress"
+                    type="url"
+                    v-model="cameraForm.cameraUrl"
                     class="form-control form-control-solid"
-                    :placeholder="t('controlplane.site.camera.form.fields.ipAddress.placeholder')"
+                    :class="{ 'is-invalid': cameraUrlError }"
+                    :placeholder="t('controlplane.site.camera.form.fields.cameraUrl.placeholder')"
+                    autocomplete="off"
                     required
+                    @input="cameraUrlError = ''"
                   />
+                  <div v-if="cameraUrlError" class="invalid-feedback d-block">
+                    {{ cameraUrlError }}
+                  </div>
                   <!--end::Input-->
                 </div>
                 <!--end::Col-->
@@ -505,27 +495,7 @@
               <!--begin::Row-->
               <div class="row mb-7">
                 <!--begin::Col-->
-                <div class="col-md-6">
-                  <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.camera.form.fields.channel.label") }}
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <input
-                    type="number"
-                    v-model="cameraForm.channel"
-                    class="form-control form-control-solid"
-                    :placeholder="t('controlplane.site.camera.form.fields.channel.placeholder')"
-                    min="1"
-                    max="64"
-                  />
-                  <!--end::Input-->
-                </div>
-                <!--end::Col-->
-
-                <!--begin::Col-->
-                <div class="col-md-6">
+                <div class="col-md-12">
                   <!--begin::Label-->
                   <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.location.label") }}
@@ -619,53 +589,35 @@ interface Site {
   name: string;
 }
 
-interface Room {
-  id: number;
-  siteId: string;
-  name: string;
-}
-
-interface Nvr {
-  uid: string;
-  site_uid: string;
-  roomId: number;
-  name: string;
-}
-
 interface Camera {
   id: number;
-  uid?: string; // Add uid field for API compatibility
+  uid?: string;
   siteId: string;
-  roomId: number;
-  nvrId: string;
+  room: string;
   name: string;
-  ipAddress: string;
+  cameraUrl: string;
   brand: string;
   model?: string;
   type: string;
   resolution: string;
-  channel: number;
   location?: string;
   description?: string;
   status: "online" | "offline";
   createdAt: string;
-  public_endpoint_url?: string; // Add for playback modal
-  room?: string; // Add for playback modal
+  public_endpoint_url?: string;
 }
 
 interface CameraForm {
   id?: number;
   uid?: string;
   siteId: string;
-  roomId: number | string;
-  nvrId: string;
+  room: string;
   name: string;
-  ipAddress: string;
+  cameraUrl: string;
   brand: string;
   model?: string;
   type: string;
   resolution: string;
-  channel: number;
   location?: string;
   description?: string;
 }
@@ -683,13 +635,10 @@ const sortLabel = ref("");
 const sortOrder = ref<"asc" | "desc">("asc");
 
 const sites = ref<Site[]>([]);
-const rooms = ref<Room[]>([]);
-const nvrs = ref<Nvr[]>([]);
 const cameras = ref<Camera[]>([]);
 
 // Header filter state
 const selectedSiteFilter = ref<string>("");
-const selectedNvrFilter = ref<string>("");
 
 // Pagination state
 const currentPage = ref<number>(1);
@@ -697,22 +646,42 @@ const perPage = ref<number>(10);
 const totalItems = ref<number>(0);
 const totalPages = ref<number>(0);
 const playbackModal = ref<InstanceType<typeof CameraPlaybackModal> | null>(null);
+const cameraUrlError = ref("");
 
 const cameraForm = ref<CameraForm>({
   uid: undefined,
   siteId: "",
-  roomId: "",
-  nvrId: "",
+  room: "",
   name: "",
-  ipAddress: "",
+  cameraUrl: "",
   brand: "",
   model: "",
   type: "Dome",
   resolution: "1080P (2MP)",
-  channel: 1,
   location: "",
   description: "",
 });
+
+const resolveCameraUrl = (camera: {
+  public_endpoint_url?: string;
+  ipAddress?: string;
+  ip_address?: string;
+  cameraUrl?: string;
+}): string =>
+  camera.public_endpoint_url ||
+  camera.cameraUrl ||
+  camera.ipAddress ||
+  camera.ip_address ||
+  "";
+
+const isValidCameraUrl = (value: string): boolean => {
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
 
 const onPerPageChange = () => {
   currentPage.value = 1;
@@ -743,8 +712,8 @@ const tableHeader = computed(() => [
     searchable: true,
   },
   {
-    columnName: t("controlplane.site.camera.table.nvr"),
-    columnLabel: "nvr",
+    columnName: t("controlplane.site.camera.table.cameraUrl"),
+    columnLabel: "cameraUrl",
     sortEnabled: true,
     searchable: true,
   },
@@ -762,47 +731,19 @@ const tableHeader = computed(() => [
   },
 ]);
 
-// Computed
-const availableRooms = computed(() => {
-  if (!cameraForm.value.siteId) return [];
-  return rooms.value.filter(
-    (room) => room.siteId === cameraForm.value.siteId
-  );
-});
-
-const availableNvrs = computed(() => {
-  if (!cameraForm.value.siteId) return [];
-  return nvrs.value.filter(
-    (nvr) => nvr.site_uid === cameraForm.value.siteId
-  );
-});
-
-const availableHeaderNvrs = computed(() => {
-  if (!selectedSiteFilter.value) return [];
-  return nvrs.value.filter(
-    (nvr) => nvr.site_uid === selectedSiteFilter.value
-  );
-});
-
 const filteredAndSortedCameras = computed(() => {
   let filtered = cameras.value;
-
-  // Filter by selected NVR in header only
-  // Site filter is handled by backend API call
-  if (selectedNvrFilter.value) {
-    filtered = filtered.filter((camera) => camera.nvrId === selectedNvrFilter.value);
-  }
 
   if (searchQuery.value.trim()) {
     const q = searchQuery.value.toLowerCase();
     filtered = filtered.filter(
       (camera) =>
         camera.name.toLowerCase().includes(q) ||
-        camera.ipAddress.includes(q) ||
+        camera.cameraUrl.toLowerCase().includes(q) ||
         camera.brand.toLowerCase().includes(q) ||
         camera.type.toLowerCase().includes(q) ||
         getSiteName(camera.siteId).toLowerCase().includes(q) ||
-        getRoomName(camera.roomId).toLowerCase().includes(q)
+        camera.room.toLowerCase().includes(q)
     );
   }
 
@@ -810,7 +751,6 @@ const filteredAndSortedCameras = computed(() => {
     filtered = [...filtered].sort((a, b) => {
       const getValue = (item: Camera, label: string) => {
         if (label === "location") return getSiteName(item.siteId);
-        if (label === "nvr") return getNvrName(item.nvrId);
         return (item as any)[label];
       };
 
@@ -870,14 +810,15 @@ const getSiteName = (siteId: string): string => {
   return site ? site.name : t("controlplane.site.camera.fallback.unknownSite");
 };
 
-const getRoomName = (roomId: number): string => {
-  const room = rooms.value.find((r) => r.id === roomId);
-  return room ? room.name : t("controlplane.site.camera.fallback.unknownRoom");
-};
-
-const getNvrName = (nvrId: string): string => {
-  const nvr = nvrs.value.find((n) => n.uid === nvrId);
-  return nvr ? nvr.name : t("controlplane.site.camera.fallback.unknownNvr");
+const resolveRoomName = (camera: {
+  room?: string;
+  camera_config?: { room?: string };
+}): string => {
+  if (camera.room?.trim()) return camera.room.trim();
+  if (typeof camera.camera_config?.room === "string" && camera.camera_config.room.trim()) {
+    return camera.camera_config.room.trim();
+  }
+  return "";
 };
 
 const getInitial = (name: string): string => {
@@ -886,21 +827,9 @@ const getInitial = (name: string): string => {
   return trimmed ? trimmed.charAt(0).toUpperCase() : "?";
 };
 
-const onSiteChange = () => {
-  cameraForm.value.roomId = "";
-  cameraForm.value.nvrId = "";
-  // Load NVRs for the selected site
-  if (cameraForm.value.siteId) {
-    loadNvrsBySite(cameraForm.value.siteId as string);
-  }
-};
-
-const onRoomChange = () => {
-  cameraForm.value.nvrId = "";
-};
+const onSiteChange = () => {};
 
 const onHeaderSiteFilterChange = () => {
-  selectedNvrFilter.value = "";
   currentPage.value = 1;
   localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || "");
   // Load cameras for the new selected site
@@ -911,134 +840,34 @@ const onHeaderSiteFilterChange = () => {
   }
 };
 
-const onHeaderNvrFilterChange = () => {
-  currentPage.value = 1;
+const parseApiList = (resp: { data?: unknown } | null | undefined): any[] => {
+  const payload = resp?.data;
+  if (!payload || typeof payload !== "object") return [];
+
+  const wrapped = payload as { data?: unknown };
+  if (Array.isArray(wrapped.data)) return wrapped.data;
+  if (Array.isArray(payload)) return payload;
+
+  return [];
 };
 
 const loadSites = async () => {
   try {
-    // Get selected team from localStorage or query params
-    const selectedTeamId = localStorage.getItem('lastSelectedTeam') || route.query.teamId as string;
-    if (!selectedTeamId) {
-      console.warn('No team selected, cannot load sites');
-      sites.value = [];
-      return;
-    }
+    const selectedTeamId =
+      localStorage.getItem("lastSelectedTeam") ||
+      (route.query.teamId as string);
 
-    const resp = await ApiService.query(`teams/${selectedTeamId}/sites`, {});
-    
-    // Parse response (wrapped or direct)
-    if (resp && resp.data) {
-      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
-        sites.value = resp.data.data;
-      } else if (Array.isArray(resp.data)) {
-        sites.value = resp.data;
-      } else {
-        console.warn('Unexpected sites response format:', resp.data);
-        sites.value = [];
-      }
-    } else {
-      console.warn('No data received from sites API');
-      sites.value = [];
-    }
-  } catch (error) {
-    console.error('Error loading sites:', error);
-    // Fallback to mock data for development
-    sites.value = [
-      { uid: "site-1", name: "Main Office" },
-      { uid: "site-2", name: "Branch Office" },
-      { uid: "site-3", name: "Warehouse A" },
-    ];
-  }
-};
+    const resp = selectedTeamId
+      ? await ApiService.query(`teams/${selectedTeamId}/sites`, {})
+      : await ApiService.query("sites", {});
 
-const loadRooms = async () => {
-  try {
-    // Get all rooms for all sites
-    const allRooms: Room[] = [];
-    
-    for (const site of sites.value) {
-      try {
-        // Assuming API endpoint exists for rooms by site
-        // const resp = await ApiService.query(`sites/${site.uid}/rooms`, {});
-        // For now use mock data mapped to actual site UIDs
-        const mockRoomsForSite = [
-          { id: Date.now() + Math.random(), siteId: site.uid, name: "Reception" },
-          { id: Date.now() + Math.random() + 1, siteId: site.uid, name: "Conference Room A" },
-        ];
-        allRooms.push(...mockRoomsForSite);
-      } catch (error) {
-        console.warn(`Error loading rooms for site ${site.uid}:`, error);
-      }
-    }
-    
-    rooms.value = allRooms;
+    sites.value = parseApiList(resp).map((site: any) => ({
+      uid: site.uid,
+      name: site.name,
+    }));
   } catch (error) {
-    console.error('Error loading rooms:', error);
-    // Fallback to mock data with updated site IDs
-    rooms.value = [
-      { id: 1, siteId: "site-1", name: "Reception" },
-      { id: 2, siteId: "site-1", name: "Conference Room A" },
-      { id: 3, siteId: "site-2", name: "Storage Area" },
-    ];
-  }
-};
-
-const loadNvrs = async () => {
-  try {
-    // Get all NVRs for all sites initially
-    const allNvrs: Nvr[] = [];
-    
-    for (const site of sites.value) {
-      try {
-        const resp = await ApiService.query(`sites/${site.uid}/video-recorders`, {});
-        if (resp && resp.data) {
-          const siteNvrs = resp.data.data && Array.isArray(resp.data.data) ? resp.data.data : Array.isArray(resp.data) ? resp.data : [];
-          
-          const mappedNvrs = siteNvrs.map((nvr: any) => ({
-            uid: nvr.uid,
-            site_uid: nvr.site_uid || site.uid,
-            roomId: nvr.room_id ?? nvr.roomId ?? 0,
-            name: nvr.name
-          }));
-          
-          allNvrs.push(...mappedNvrs);
-        }
-      } catch (error) {
-        console.warn(`Error loading NVRs for site ${site.uid}:`, error);
-      }
-    }
-    
-    nvrs.value = allNvrs;
-  } catch (error) {
-    console.error('Error loading NVRs:', error);
-    // Fallback to mock data
-    nvrs.value = [
-      { uid: "nvr-1", site_uid: "site-1", roomId: 1, name: "NVR-Reception-01" },
-      { uid: "nvr-2", site_uid: "site-1", roomId: 2, name: "NVR-Conference-01" },
-      { uid: "nvr-3", site_uid: "site-2", roomId: 3, name: "NVR-Storage-01" },
-    ];
-  }
-};
-
-const loadNvrsBySite = async (siteId: string) => {
-  try {
-    const resp = await ApiService.query(`sites/${siteId}/video-recorders`, {});
-    if (resp && resp.data) {
-      const siteNvrs = resp.data.data && Array.isArray(resp.data.data) ? resp.data.data : Array.isArray(resp.data) ? resp.data : [];
-      
-      // Update nvrs for this specific site
-      nvrs.value = nvrs.value.filter(nvr => nvr.site_uid !== siteId);
-      const mappedNvrs = siteNvrs.map((nvr: any) => ({
-        uid: nvr.uid,
-        site_uid: nvr.site_uid || siteId,
-        roomId: nvr.room_id ?? nvr.roomId ?? 0,
-        name: nvr.name
-      }));
-      nvrs.value.push(...mappedNvrs);
-    }
-  } catch (error) {
-    console.error(`Error loading NVRs for site ${siteId}:`, error);
+    console.error("Error loading sites:", error);
+    sites.value = [];
   }
 };
 
@@ -1057,28 +886,29 @@ const loadCameras = async () => {
     if (resp && resp.data) {
       const siteCameras = resp.data.data && Array.isArray(resp.data.data) ? resp.data.data : Array.isArray(resp.data) ? resp.data : [];
       
-      cameras.value = siteCameras.map((camera: any) => ({
-        id: camera.id || Date.now() + Math.random(),
-        uid: camera.uid, // Store uid from API
-        siteId: camera.site_uid || selectedSiteFilter.value,
-        roomId: camera.room_id ?? camera.roomId ?? 0,
-        nvrId: camera.video_recorder_uid || camera.nvrId || "",
-        name: camera.name || "",
-        ipAddress: camera.ip_address || camera.ipAddress || "",
-        brand: camera.brand || "",
-        model: camera.model || "",
-        type: camera.cam_type || "Dome",
-        resolution: camera.cam_resolution || "1080P (2MP)",
-        channel: camera.channels || camera.channel || 1,
-        location: camera.location || "",
-        description: camera.description || "",
-        status: normalizeStatusKey(
-          typeof camera.status !== "undefined" ? camera.status : camera.is_active
-        ),
-        createdAt: camera.created_at || new Date().toISOString().split("T")[0],
-        public_endpoint_url: camera.public_endpoint_url || "",
-        room: camera.room_name || camera.room || "",
-      }));
+      cameras.value = siteCameras.map((camera: any) => {
+        const cameraUrl = resolveCameraUrl(camera);
+
+        return {
+          id: camera.id || Date.now() + Math.random(),
+          uid: camera.uid,
+          siteId: camera.site_uid || selectedSiteFilter.value,
+          name: camera.name || "",
+          cameraUrl,
+          brand: camera.brand || "",
+          model: camera.model || "",
+          type: camera.cam_type || camera.type || "Dome",
+          resolution: camera.cam_resolution || "1080P (2MP)",
+          location: camera.location || "",
+          description: camera.description || "",
+          status: normalizeStatusKey(
+            typeof camera.status !== "undefined" ? camera.status : camera.is_active
+          ),
+          createdAt: camera.created_at || new Date().toISOString().split("T")[0],
+          public_endpoint_url: cameraUrl,
+          room: resolveRoomName(camera),
+        };
+      });
     } else {
       cameras.value = [];
     }
@@ -1092,6 +922,16 @@ const loadCameras = async () => {
 };
 
 const saveCamera = async () => {
+  cameraUrlError.value = "";
+  const trimmedCameraUrl = cameraForm.value.cameraUrl.trim();
+
+  if (!isValidCameraUrl(trimmedCameraUrl)) {
+    cameraUrlError.value = t(
+      "controlplane.site.camera.form.fields.cameraUrl.invalid"
+    );
+    return;
+  }
+
   isLoading.value = true;
 
   try {
@@ -1113,15 +953,14 @@ const saveCamera = async () => {
     const payload = {
       name: cameraForm.value.name,
       model: cameraForm.value.model || "",
-      public_endpoint_url: cameraForm.value.ipAddress, // mapping IP address to public_endpoint_url
+      public_endpoint_url: trimmedCameraUrl,
       brand: cameraForm.value.brand,
-      cam_type: cameraForm.value.type, // mapping type to cam_type
-      cam_resolution: cameraForm.value.resolution, // mapping resolution to cam_resolution
-      channels: cameraForm.value.channel,
+      cam_type: cameraForm.value.type,
+      cam_resolution: cameraForm.value.resolution,
       location: cameraForm.value.location || "",
       description: cameraForm.value.description || "",
+      room: cameraForm.value.room.trim() || undefined,
       camera_config: defaultCameraConfig,
-      video_recorder_uid: cameraForm.value.nvrId
     };
 
     if (isEdit.value) {
@@ -1140,8 +979,9 @@ const saveCamera = async () => {
           ...cameras.value[index],
           ...cameraForm.value,
           siteId: cameraForm.value.siteId,
-          roomId: Number(cameraForm.value.roomId),
-          nvrId: cameraForm.value.nvrId,
+          room: cameraForm.value.room.trim(),
+          cameraUrl: trimmedCameraUrl,
+          public_endpoint_url: trimmedCameraUrl,
         };
       }
     } else {
@@ -1155,19 +995,18 @@ const saveCamera = async () => {
       const newCamera: Camera = {
         id: createdCamera?.uid || createdCamera?.id || Date.now(),
         siteId: cameraForm.value.siteId,
-        roomId: Number(cameraForm.value.roomId),
-        nvrId: cameraForm.value.nvrId,
+        room: cameraForm.value.room.trim(),
         name: cameraForm.value.name,
-        ipAddress: cameraForm.value.ipAddress,
+        cameraUrl: trimmedCameraUrl,
         brand: cameraForm.value.brand,
         model: cameraForm.value.model,
         type: cameraForm.value.type,
         resolution: cameraForm.value.resolution,
-        channel: cameraForm.value.channel,
         location: cameraForm.value.location,
         description: cameraForm.value.description,
         status: "online",
         createdAt: new Date().toISOString().split("T")[0],
+        public_endpoint_url: trimmedCameraUrl,
       };
       cameras.value.unshift(newCamera);
     }
@@ -1212,54 +1051,46 @@ const editCamera = async (camera: Camera) => {
           uid: cameraData.uid || cameraData.id || camera.id,
           id: cameraData.id || camera.id,
           siteId: cameraData.site_uid || camera.siteId,
-          roomId: cameraData.room_id ?? cameraData.roomId ?? camera.roomId,
-          nvrId: cameraData.video_recorder_uid || cameraData.nvrId || camera.nvrId,
+          room: resolveRoomName({ ...camera, ...cameraData }),
           name: cameraData.name || camera.name,
-          ipAddress: cameraData.public_endpoint_url || cameraData.ipAddress || camera.ipAddress,
+          cameraUrl: resolveCameraUrl({ ...camera, ...cameraData }),
           brand: cameraData.brand || camera.brand,
           model: cameraData.model || camera.model || "",
           type: cameraData.cam_type || cameraData.type || camera.type,
           resolution: cameraData.cam_resolution || cameraData.resolution || camera.resolution,
-          channel: cameraData.channels || cameraData.channel || camera.channel,
           location: cameraData.location || camera.location || "",
           description: cameraData.description || camera.description || "",
         };
       } else {
         console.warn('API returned unexpected data structure, using local camera data');
-        // Use local camera data if API returns unexpected structure
         cameraForm.value = {
           uid: camera.uid,
           id: camera.id,
           siteId: camera.siteId,
-          roomId: camera.roomId,
-          nvrId: camera.nvrId,
+          room: camera.room,
           name: camera.name,
-          ipAddress: camera.ipAddress,
+          cameraUrl: camera.cameraUrl,
           brand: camera.brand,
           model: camera.model || "",
           type: camera.type,
           resolution: camera.resolution,
-          channel: camera.channel,
           location: camera.location || "",
           description: camera.description || "",
         };
       }
     } else {
       console.warn('No data received from API, using local camera data');
-      // Fallback to local camera data if API fails
       cameraForm.value = {
         uid: camera.uid,
         id: camera.id,
         siteId: camera.siteId,
-        roomId: camera.roomId,
-        nvrId: camera.nvrId,
+        room: camera.room,
         name: camera.name,
-        ipAddress: camera.ipAddress,
+        cameraUrl: camera.cameraUrl,
         brand: camera.brand,
         model: camera.model || "",
         type: camera.type,
         resolution: camera.resolution,
-        channel: camera.channel,
         location: camera.location || "",
         description: camera.description || "",
       };
@@ -1274,19 +1105,17 @@ const editCamera = async (camera: Camera) => {
     cameraForm.value = {
       id: camera.id,
       siteId: camera.siteId,
-      roomId: camera.roomId,
-      nvrId: camera.nvrId,
+      room: camera.room,
       name: camera.name,
-      ipAddress: camera.ipAddress,
+      cameraUrl: camera.cameraUrl,
       brand: camera.brand,
       model: camera.model || "",
       type: camera.type,
       resolution: camera.resolution,
-      channel: camera.channel,
       location: camera.location || "",
       description: camera.description || "",
     };
-    
+
     isEdit.value = true;
     showCameraForm.value = true;
   } finally {
@@ -1318,16 +1147,16 @@ const deleteCamera = async (camera: Camera) => {
 
 const viewCamera = (camera: Camera) => {
   console.log("Opening live stream for camera:", camera.name);
-  
-  // Prepare camera data for modal
+
+  const streamUrl = resolveCameraUrl(camera);
+
   const cameraData = {
     uid: camera.uid || camera.id.toString(),
     name: camera.name,
-    room: camera.room || getRoomName(camera.roomId),
+    room: camera.room,
     recording: false,
     site_uid: camera.siteId,
-    nvr_uid: camera.nvrId,
-    public_endpoint_url: camera.public_endpoint_url,
+    public_endpoint_url: streamUrl,
     model: camera.model
   };
   
@@ -1339,17 +1168,16 @@ const viewCamera = (camera: Camera) => {
 const closeForm = () => {
   showCameraForm.value = false;
   isEdit.value = false;
+  cameraUrlError.value = "";
   cameraForm.value = {
     siteId: "",
-    roomId: "",
-    nvrId: "",
+    room: "",
     name: "",
-    ipAddress: "",
+    cameraUrl: "",
     brand: "",
     model: "",
     type: "Dome",
     resolution: "1080P (2MP)",
-    channel: 1,
     location: "",
     description: "",
   };
@@ -1358,28 +1186,20 @@ const closeForm = () => {
 // Lifecycle
 onMounted(async () => {
   try {
-    // Load data in sequence since NVRs depend on sites
     await loadSites();
-    await loadRooms();
-    
-  // Initialize selected site filter (prefer route param siteId or legacy id, then localStorage)
-  const siteFromRoute = (route.query.siteId as string) || (route.query.id as string);
-  selectedSiteFilter.value = siteFromRoute || localStorage.getItem('lastSelectedSite') as string || (sites.value[0] && sites.value[0].uid) || "";
+
+    const siteFromRoute = (route.query.siteId as string) || (route.query.id as string);
+    selectedSiteFilter.value = siteFromRoute || localStorage.getItem('lastSelectedSite') as string || (sites.value[0] && sites.value[0].uid) || "";
     localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || "");
-    
-    await loadNvrs();
-    
-    // Pre-select NVR if coming from NVR overview
-    if (route.query.nvrId) {
-      const nvrId = route.query.nvrId as string;
-      const nvr = nvrs.value.find((n) => n.uid === nvrId);
-      if (nvr) {
-        selectedSiteFilter.value = nvr.site_uid;
-        selectedNvrFilter.value = nvrId;
-        cameraForm.value.siteId = nvr.site_uid;
-        cameraForm.value.roomId = nvr.roomId;
-        cameraForm.value.nvrId = nvrId;
-      }
+
+    if (route.query.siteId && typeof route.query.siteId === "string") {
+      cameraForm.value.siteId = route.query.siteId;
+      selectedSiteFilter.value = route.query.siteId;
+      localStorage.setItem("lastSelectedSite", route.query.siteId);
+    }
+
+    if (route.query.roomName && typeof route.query.roomName === "string") {
+      cameraForm.value.room = route.query.roomName;
     }
 
     // Load cameras for the selected site (after all initialization)

@@ -32,7 +32,9 @@ import { defineComponent, ref, watch } from "vue";
 
 export default defineComponent({
   name: "table-body-row",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     header: { type: Array as () => Array<any>, required: true },
     data: { type: Array as () => Array<any>, required: true },

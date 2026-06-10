@@ -51,7 +51,9 @@ import { themeMode } from "@/layouts/default-layout/config/helper";
 
 export default defineComponent({
   name: "error-500",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const bodyStore = useBodyStore();
 

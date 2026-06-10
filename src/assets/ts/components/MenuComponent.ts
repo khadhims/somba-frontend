@@ -635,7 +635,9 @@ class MenuComponent {
   };
 
   // TODO: not done
-  private _destroy = () => {};
+  private _destroy = () => {
+    /* empty */
+  };
 
   // Update all item state classes if item sub type changed
   private _update = () => {

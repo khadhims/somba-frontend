@@ -133,7 +133,9 @@ import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   name: "dev-replies",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const replies = ref([
       {

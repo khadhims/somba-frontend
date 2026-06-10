@@ -270,7 +270,9 @@ interface IPlans {
 
 export default defineComponent({
   name: "upgrade-plan-modal",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const current = ref<"month" | "annual">("month");
 

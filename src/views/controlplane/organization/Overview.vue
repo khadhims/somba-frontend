@@ -47,12 +47,12 @@
       <span class="path2"></span>
     </i>
     <div class="d-flex flex-column">
-      <h5 class="mb-1">{{ t('controlplane.organization.error.title') }}</h5>
+      <h5 class="mb-1">{{ t("controlplane.organization.error.title") }}</h5>
       <span>{{ error }}</span>
     </div>
-    <button 
-      type="button" 
-      class="btn-close ms-auto" 
+    <button
+      type="button"
+      class="btn-close ms-auto"
       @click="error = null"
       aria-label="Close"
     ></button>
@@ -61,10 +61,10 @@
 
   <!-- Debug Info (hapus setelah debugging selesai) -->
   <div class="alert alert-info" v-if="false">
-    <strong>Debug Info:</strong><br>
-    Loading: {{ loading }}<br>
-    Organizations count: {{ organizations.length }}<br>
-    Error: {{ error }}<br>
+    <strong>Debug Info:</strong><br />
+    Loading: {{ loading }}<br />
+    Organizations count: {{ organizations.length }}<br />
+    Error: {{ error }}<br />
     Pagination: {{ JSON.stringify(pagination, null, 2) }}
   </div>
 
@@ -74,7 +74,9 @@
     <div class="card-header border-0 pt-5">
       <!--begin::Card title-->
       <div class="card-title">
-        <h3 class="fw-bold m-0">{{ t('controlplane.organization.toolbar.title') }}</h3>
+        <h3 class="fw-bold m-0">
+          {{ t("controlplane.organization.toolbar.title") }}
+        </h3>
       </div>
       <!--end::Card title-->
 
@@ -82,9 +84,11 @@
       <div class="card-toolbar">
         <!--begin::Items per page-->
         <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('controlplane.organization.toolbar.itemsLabel') }}</label>
-          <select 
-            class="form-select form-select-sm w-auto" 
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{
+            t("controlplane.organization.toolbar.itemsLabel")
+          }}</label>
+          <select
+            class="form-select form-select-sm w-auto"
             v-model.number="pagination.per_page"
             @change="changeItemsPerPage"
           >
@@ -107,7 +111,9 @@
             type="text"
             v-model="searchQuery"
             class="form-control form-control-solid w-250px ps-12"
-            :placeholder="t('controlplane.organization.toolbar.searchPlaceholder')"
+            :placeholder="
+              t('controlplane.organization.toolbar.searchPlaceholder')
+            "
           />
         </div>
         <!--end::Search-->
@@ -118,12 +124,19 @@
           class="btn btn-sm btn-light-warning me-2"
           :disabled="loading"
         >
-          <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+          <span
+            v-if="loading"
+            class="spinner-border spinner-border-sm me-2"
+          ></span>
           <i v-else class="ki-duotone ki-arrows-circle fs-2">
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
-          {{ loading ? t('controlplane.organization.toolbar.retrying') : t('controlplane.organization.toolbar.retry') }}
+          {{
+            loading
+              ? t("controlplane.organization.toolbar.retrying")
+              : t("controlplane.organization.toolbar.retry")
+          }}
         </button>
 
         <button
@@ -132,7 +145,7 @@
           :disabled="loading"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
-          {{ t('controlplane.organization.toolbar.addButton') }}
+          {{ t("controlplane.organization.toolbar.addButton") }}
         </button>
       </div>
       <!--end::Card toolbar-->
@@ -153,7 +166,12 @@
         :sort-order="sortOrder"
         @on-sort="handleSort"
         @page-change="goToPage"
-        @on-items-per-page-change="(val) => { pagination.per_page = val; changeItemsPerPage(); }"
+        @on-items-per-page-change="
+          (val) => {
+            pagination.per_page = val;
+            changeItemsPerPage();
+          }
+        "
         :empty-table-text="emptyTableMessage"
       >
         <template v-slot:name="{ row }">
@@ -168,23 +186,29 @@
                 row.name
               }}</span>
               <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-                row.legalName || row.description || t('controlplane.organization.common.unknown')
+                row.legalName ||
+                row.description ||
+                t("controlplane.organization.common.unknown")
               }}</span>
             </div>
           </div>
         </template>
 
         <template v-slot:email="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{ row.email || t('controlplane.organization.common.unknown') }}</span>
+          <span class="text-dark fw-bold d-block fs-6">{{
+            row.email || t("controlplane.organization.common.unknown")
+          }}</span>
         </template>
 
         <template v-slot:phone="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{ row.phone || t('controlplane.organization.common.unknown') }}</span>
+          <span class="text-dark fw-bold d-block fs-6">{{
+            row.phone || t("controlplane.organization.common.unknown")
+          }}</span>
         </template>
 
         <template v-slot:country="{ row }">
           <span class="badge badge-light-info fs-7 fw-bold">{{
-            row.country || t('controlplane.organization.common.unknown')
+            row.country || t("controlplane.organization.common.unknown")
           }}</span>
         </template>
 
@@ -248,7 +272,7 @@
           </div>
         </template>
       </KTDataTable>
-      
+
       <!--begin::Pagination-->
       <Pagination
         v-if="!loading"
@@ -274,7 +298,9 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ t('controlplane.organization.modals.add.title') }}</h5>
+          <h5 class="modal-title">
+            {{ t("controlplane.organization.modals.add.title") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -286,7 +312,9 @@
           <div class="modal-body">
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.name') }}</label>
+                <label class="form-label">{{
+                  t("controlplane.organization.form.name")
+                }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -295,7 +323,9 @@
                 />
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.legalName') }}</label>
+                <label class="form-label">{{
+                  t("controlplane.organization.form.legalName")
+                }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -305,7 +335,9 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.email') }}</label>
+                <label class="form-label">{{
+                  t("controlplane.organization.form.email")
+                }}</label>
                 <input
                   type="email"
                   class="form-control"
@@ -314,7 +346,9 @@
                 />
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.phone') }}</label>
+                <label class="form-label">{{
+                  t("controlplane.organization.form.phone")
+                }}</label>
                 <input
                   type="tel"
                   class="form-control"
@@ -324,7 +358,9 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.website') }}</label>
+                <label class="form-label">{{
+                  t("controlplane.organization.form.website")
+                }}</label>
                 <input
                   type="url"
                   class="form-control"
@@ -332,7 +368,9 @@
                 />
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.country') }}</label>
+                <label class="form-label">{{
+                  t("controlplane.organization.form.country")
+                }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -341,7 +379,9 @@
               </div>
             </div>
             <div class="mb-3">
-              <label class="form-label">{{ t('controlplane.organization.form.address') }}</label>
+              <label class="form-label">{{
+                t("controlplane.organization.form.address")
+              }}</label>
               <textarea
                 class="form-control"
                 v-model="newOrganization.address"
@@ -349,23 +389,31 @@
               ></textarea>
             </div>
             <div class="mb-3">
-              <label class="form-label">{{ t('controlplane.organization.form.status') }}</label>
+              <label class="form-label">{{
+                t("controlplane.organization.form.status")
+              }}</label>
               <select class="form-select" v-model="newOrganization.status">
-                <option value="active">{{ t('controlplane.organization.form.statusOptions.active') }}</option>
-                <option value="inactive">{{ t('controlplane.organization.form.statusOptions.inactive') }}</option>
+                <option value="active">
+                  {{ t("controlplane.organization.form.statusOptions.active") }}
+                </option>
+                <option value="inactive">
+                  {{
+                    t("controlplane.organization.form.statusOptions.inactive")
+                  }}
+                </option>
               </select>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-              {{ t('controlplane.organization.common.cancel') }}
+              {{ t("controlplane.organization.common.cancel") }}
             </button>
             <button type="submit" class="btn btn-primary" :disabled="creating">
               <span
                 v-if="creating"
                 class="spinner-border spinner-border-sm me-2"
               ></span>
-              {{ t('controlplane.organization.modals.add.submit') }}
+              {{ t("controlplane.organization.modals.add.submit") }}
             </button>
           </div>
         </form>
@@ -383,7 +431,9 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ t('controlplane.organization.modals.edit.title') }}</h5>
+          <h5 class="modal-title">
+            {{ t("controlplane.organization.modals.edit.title") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -395,7 +445,9 @@
           <div class="modal-body">
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.name') }}</label>
+                <label class="form-label">{{
+                  t("controlplane.organization.form.name")
+                }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -404,7 +456,9 @@
                 />
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.legalName') }}</label>
+                <label class="form-label">{{
+                  t("controlplane.organization.form.legalName")
+                }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -414,7 +468,9 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.email') }}</label>
+                <label class="form-label">{{
+                  t("controlplane.organization.form.email")
+                }}</label>
                 <input
                   type="email"
                   class="form-control"
@@ -423,7 +479,9 @@
                 />
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.phone') }}</label>
+                <label class="form-label">{{
+                  t("controlplane.organization.form.phone")
+                }}</label>
                 <input
                   type="tel"
                   class="form-control"
@@ -433,7 +491,9 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.website') }}</label>
+                <label class="form-label">{{
+                  t("controlplane.organization.form.website")
+                }}</label>
                 <input
                   type="url"
                   class="form-control"
@@ -441,7 +501,9 @@
                 />
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.country') }}</label>
+                <label class="form-label">{{
+                  t("controlplane.organization.form.country")
+                }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -450,7 +512,9 @@
               </div>
             </div>
             <div class="mb-3">
-              <label class="form-label">{{ t('controlplane.organization.form.address') }}</label>
+              <label class="form-label">{{
+                t("controlplane.organization.form.address")
+              }}</label>
               <textarea
                 class="form-control"
                 v-model="editOrganization.address"
@@ -458,23 +522,31 @@
               ></textarea>
             </div>
             <div class="mb-3">
-              <label class="form-label">{{ t('controlplane.organization.form.status') }}</label>
+              <label class="form-label">{{
+                t("controlplane.organization.form.status")
+              }}</label>
               <select class="form-select" v-model="editOrganization.status">
-                <option value="active">{{ t('controlplane.organization.form.statusOptions.active') }}</option>
-                <option value="inactive">{{ t('controlplane.organization.form.statusOptions.inactive') }}</option>
+                <option value="active">
+                  {{ t("controlplane.organization.form.statusOptions.active") }}
+                </option>
+                <option value="inactive">
+                  {{
+                    t("controlplane.organization.form.statusOptions.inactive")
+                  }}
+                </option>
               </select>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-              {{ t('controlplane.organization.common.cancel') }}
+              {{ t("controlplane.organization.common.cancel") }}
             </button>
             <button type="submit" class="btn btn-primary" :disabled="updating">
               <span
                 v-if="updating"
                 class="spinner-border spinner-border-sm me-2"
               ></span>
-              {{ t('controlplane.organization.modals.edit.submit') }}
+              {{ t("controlplane.organization.modals.edit.submit") }}
             </button>
           </div>
         </form>
@@ -492,7 +564,9 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ t('controlplane.organization.modals.delete.title') }}</h5>
+          <h5 class="modal-title">
+            {{ t("controlplane.organization.modals.delete.title") }}
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -502,15 +576,17 @@
         </div>
         <div class="modal-body">
           <p>
-            {{ t('controlplane.organization.modals.delete.confirmPrefix') }}
+            {{ t("controlplane.organization.modals.delete.confirmPrefix") }}
             <strong>{{ organizationToDelete?.name }}</strong>
-            {{ t('controlplane.organization.modals.delete.confirmSuffix') }}
+            {{ t("controlplane.organization.modals.delete.confirmSuffix") }}
           </p>
-          <p class="text-muted">{{ t('controlplane.organization.modals.delete.warning') }}</p>
+          <p class="text-muted">
+            {{ t("controlplane.organization.modals.delete.warning") }}
+          </p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-            {{ t('controlplane.organization.common.cancel') }}
+            {{ t("controlplane.organization.common.cancel") }}
           </button>
           <button
             type="button"
@@ -522,7 +598,7 @@
               v-if="deleting"
               class="spinner-border spinner-border-sm me-2"
             ></span>
-            {{ t('controlplane.organization.modals.delete.submit') }}
+            {{ t("controlplane.organization.modals.delete.submit") }}
           </button>
         </div>
       </div>
@@ -539,8 +615,12 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "OverviewComponent",
+});
+
 import { ref, computed, onMounted, nextTick } from "vue";
-import Pagination from '@/components/common/Pagination.vue'
+import Pagination from "@/components/common/Pagination.vue";
 import { Modal } from "bootstrap";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
@@ -590,55 +670,57 @@ const newOrganization = ref<Partial<Organization>>({
   country: "",
   status: "active",
 });
-const editOrganization = ref<Partial<Organization>>({});
+const editOrganization = ref<Partial<Organization>>({
+  /* empty */
+});
 const organizationToDelete = ref<Organization | null>(null);
 
 // Modal references
 const organizationMembershipModalRef = ref();
-const selectedOrganizationUid = ref('');
+const selectedOrganizationUid = ref("");
 
 const { t } = useI18n();
 
 // Table header configuration
 const tableHeader = computed(() => [
   {
-    columnName: t('controlplane.organization.table.organizationName'),
+    columnName: t("controlplane.organization.table.organizationName"),
     columnLabel: "name",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: t('controlplane.organization.table.email'),
+    columnName: t("controlplane.organization.table.email"),
     columnLabel: "email",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: t('controlplane.organization.table.phone'),
+    columnName: t("controlplane.organization.table.phone"),
     columnLabel: "phone",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: t('controlplane.organization.table.country'),
+    columnName: t("controlplane.organization.table.country"),
     columnLabel: "country",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: t('controlplane.organization.table.status'),
+    columnName: t("controlplane.organization.table.status"),
     columnLabel: "status",
     sortEnabled: true,
     searchable: true,
   },
   {
-    columnName: t('controlplane.organization.table.created'),
+    columnName: t("controlplane.organization.table.created"),
     columnLabel: "created_at",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('controlplane.organization.table.actions'),
+    columnName: t("controlplane.organization.table.actions"),
     columnLabel: "actions",
     sortEnabled: false,
     searchable: false,
@@ -647,12 +729,14 @@ const tableHeader = computed(() => [
 
 const emptyTableMessage = computed(() => {
   if (loading.value) {
-    return t('controlplane.organization.empty.loading');
+    return t("controlplane.organization.empty.loading");
   }
   if (searchQuery.value.trim()) {
-    return t('controlplane.organization.empty.searchNoResults', { query: searchQuery.value });
+    return t("controlplane.organization.empty.searchNoResults", {
+      query: searchQuery.value,
+    });
   }
-  return t('controlplane.organization.empty.noResults');
+  return t("controlplane.organization.empty.noResults");
 });
 
 const resolveStatusLabel = (
@@ -661,7 +745,7 @@ const resolveStatusLabel = (
   if (status === "active" || status === "inactive" || status === "pending") {
     return t(`controlplane.organization.table.statusLabel.${status}`);
   }
-  return t('controlplane.organization.common.unknown');
+  return t("controlplane.organization.common.unknown");
 };
 
 const statusBadgeClass = (
@@ -694,26 +778,37 @@ const fetchOrganizations = async (page: number = 1) => {
   loading.value = true;
   error.value = null;
   try {
-    console.log("🚀 Fetching organizations...", { page, per_page: pagination.value.per_page });
+    console.log("🚀 Fetching organizations...", {
+      page,
+      per_page: pagination.value.per_page,
+    });
     // Some backends expect `page_size` instead of `per_page` (see API docs).
     // Send both for compatibility: `page_size` (server) and `per_page` (client-side/legacy)
     const resp = await ApiService.query("/organizations", {
-      params: { page, page_size: pagination.value.per_page, per_page: pagination.value.per_page },
+      params: {
+        page,
+        page_size: pagination.value.per_page,
+        per_page: pagination.value.per_page,
+      },
     });
     console.log("📡 Full API Response:", resp);
-    
+
     if (resp && resp.data) {
       // Backend mengembalikan struktur: { status, code, message, data: [...], pagination: {...} }
-      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+      if (resp.data?.data && Array.isArray(resp.data.data)) {
         console.log("✅ Found organizations in data array:", resp.data.data);
         organizations.value = resp.data.data;
-        
+
         // Update pagination info but preserve user-selected per_page
         if (resp.data.pagination) {
           const currentPerPage = pagination.value.per_page; // Preserve user's choice
-          const totalItems = resp.data.pagination.total_items ?? organizations.value.length;
+          const totalItems =
+            resp.data.pagination.total_items ?? organizations.value.length;
           // Recalculate total_pages based on the user's per_page selection (not server's per_page field)
-          const recalculatedTotalPages = Math.max(1, Math.ceil(totalItems / (currentPerPage || 1)));
+          const recalculatedTotalPages = Math.max(
+            1,
+            Math.ceil(totalItems / (currentPerPage || 1))
+          );
 
           pagination.value = {
             ...resp.data.pagination,
@@ -725,28 +820,38 @@ const fetchOrganizations = async (page: number = 1) => {
             prev_page: page > 1 ? page - 1 : null,
           };
         }
-        
+
         // Format created_at for each organization
         organizations.value.forEach((org) => {
           if (org.created_at && typeof org.created_at === "string") {
             org.created_at = new Date(org.created_at).toLocaleDateString();
           }
         });
-        
+
         // Ensure pagination.total_pages consistent with per_page and total_items
         if (pagination.value.total_items == null) {
           pagination.value.total_items = organizations.value.length;
         }
-        pagination.value.total_pages = Math.max(1, Math.ceil((pagination.value.total_items || 0) / (pagination.value.per_page || 1)));
-        pagination.value.next_page = pagination.value.page < pagination.value.total_pages ? pagination.value.page + 1 : null;
-        pagination.value.prev_page = pagination.value.page > 1 ? pagination.value.page - 1 : null;
+        pagination.value.total_pages = Math.max(
+          1,
+          Math.ceil(
+            (pagination.value.total_items || 0) /
+              (pagination.value.per_page || 1)
+          )
+        );
+        pagination.value.next_page =
+          pagination.value.page < pagination.value.total_pages
+            ? pagination.value.page + 1
+            : null;
+        pagination.value.prev_page =
+          pagination.value.page > 1 ? pagination.value.page - 1 : null;
 
         console.log("🎯 Final organizations:", organizations.value);
         console.log("📄 Pagination:", pagination.value);
       } else if (Array.isArray(resp.data)) {
         console.log("✅ Found organizations in direct data array:", resp.data);
         organizations.value = resp.data;
-        
+
         // Calculate pagination manually if server doesn't provide it
         const totalItems = organizations.value.length;
         const totalPages = Math.ceil(totalItems / pagination.value.per_page);
@@ -758,14 +863,14 @@ const fetchOrganizations = async (page: number = 1) => {
           next_page: page < totalPages ? page + 1 : null,
           prev_page: page > 1 ? page - 1 : null,
         };
-        
+
         // Format created_at for each organization
         organizations.value.forEach((org) => {
           if (org.created_at && typeof org.created_at === "string") {
             org.created_at = new Date(org.created_at).toLocaleDateString();
           }
         });
-        
+
         console.log("🎯 Final organizations:", organizations.value);
         console.log("📄 Pagination:", pagination.value);
       } else {
@@ -785,22 +890,24 @@ const fetchOrganizations = async (page: number = 1) => {
   } catch (e: any) {
     console.error("💥 Error fetching organizations:", e);
     error.value =
-      e?.response?.data?.message || e.message || t('controlplane.organization.error.loadFailed');
+      e?.response?.data?.message ||
+      e.message ||
+      t("controlplane.organization.error.loadFailed");
   } finally {
     loading.value = false;
   }
 };
 
 // Computed properties for summary statistics
-const totalOrganizations = computed(() => organizations.value.length);
-const activeOrganizations = computed(
-  () => organizations.value.filter((org) => org.status === "active").length
-);
-const activeOrganizationsPercentage = computed(() =>
-  totalOrganizations.value > 0
-    ? Math.round((activeOrganizations.value / totalOrganizations.value) * 100)
-    : 0
-);
+// const totalOrganizations = computed(() => organizations.value.length);
+// const activeOrganizations = computed(
+//   () => organizations.value.filter((org) => org.status === "active").length
+// );
+// const activeOrganizationsPercentage = computed(() =>
+//   totalOrganizations.value > 0
+//     ? Math.round((activeOrganizations.value / totalOrganizations.value) * 100)
+//     : 0
+// );
 
 // Mock data for other stats (replace with actual API calls)
 const totalUsers = computed(() =>
@@ -809,12 +916,12 @@ const totalUsers = computed(() =>
     0
   )
 );
-const activeUsers = computed(() => Math.floor(totalUsers.value * 0.8));
-const activeUsersPercentage = computed(() =>
-  totalUsers.value > 0
-    ? Math.round((activeUsers.value / totalUsers.value) * 100)
-    : 0
-);
+// const activeUsers = computed(() => Math.floor(totalUsers.value * 0.8));
+// const activeUsersPercentage = computed(() =>
+//   totalUsers.value > 0
+//     ? Math.round((activeUsers.value / totalUsers.value) * 100)
+//     : 0
+// );
 
 const totalProjects = computed(() =>
   organizations.value.reduce(
@@ -822,17 +929,17 @@ const totalProjects = computed(() =>
     0
   )
 );
-const activeProjects = computed(() => Math.floor(totalProjects.value * 0.7));
-const activeProjectsPercentage = computed(() =>
-  totalProjects.value > 0
-    ? Math.round((activeProjects.value / totalProjects.value) * 100)
-    : 0
-);
+// const activeProjects = computed(() => Math.floor(totalProjects.value * 0.7));
+// const activeProjectsPercentage = computed(() =>
+//   totalProjects.value > 0
+//     ? Math.round((activeProjects.value / totalProjects.value) * 100)
+//     : 0
+// );
 
-const totalRevenue = computed(
-  () => `$${(organizations.value.length * 15000).toLocaleString()}`
-);
-const revenueGrowth = computed(() => 75); // Mock percentage
+// const totalRevenue = computed(
+//   () => `$${(organizations.value.length * 15000).toLocaleString()}`
+// );
+// const revenueGrowth = computed(() => 75); // Mock percentage
 
 // Search and Sort functionality
 const filteredAndSortedOrganizations = computed(() => {
@@ -912,7 +1019,7 @@ const createOrganization = async () => {
     if (resp && resp.data) {
       // Refresh the organizations list
       await fetchOrganizations(pagination.value.page);
-      
+
       // Hide modal
       const modal = document.getElementById("addOrganizationModal");
       if (modal) {
@@ -924,7 +1031,7 @@ const createOrganization = async () => {
     error.value =
       e?.response?.data?.message ||
       e.message ||
-      t('controlplane.organization.error.createFailed');
+      t("controlplane.organization.error.createFailed");
   } finally {
     creating.value = false;
   }
@@ -957,7 +1064,7 @@ const updateOrganization = async () => {
     if (resp && resp.data) {
       // Refresh the organizations list
       await fetchOrganizations(pagination.value.page);
-      
+
       // Hide modal
       const modal = document.getElementById("editOrganizationModal");
       if (modal) {
@@ -969,7 +1076,7 @@ const updateOrganization = async () => {
     error.value =
       e?.response?.data?.message ||
       e.message ||
-      t('controlplane.organization.error.updateFailed');
+      t("controlplane.organization.error.updateFailed");
   } finally {
     updating.value = false;
   }
@@ -991,10 +1098,10 @@ const confirmDelete = async () => {
   deleting.value = true;
   try {
     await ApiService.delete(`organizations/${organizationToDelete.value.uid}`);
-    
+
     // Refresh the organizations list
     await fetchOrganizations(pagination.value.page);
-    
+
     // Hide modal
     const modal = document.getElementById("deleteOrganizationModal");
     if (modal) {
@@ -1006,7 +1113,7 @@ const confirmDelete = async () => {
     error.value =
       e?.response?.data?.message ||
       e.message ||
-      t('controlplane.organization.error.deleteFailed');
+      t("controlplane.organization.error.deleteFailed");
   } finally {
     deleting.value = false;
   }
@@ -1017,10 +1124,10 @@ const formatDate = (date: string) => {
 };
 
 const showOrganizationMembers = (organization: Organization) => {
-  console.log('showOrganizationMembers called for organization:', organization);
+  console.log("showOrganizationMembers called for organization:", organization);
   selectedOrganizationUid.value = organization.uid;
-  console.log('selectedOrganizationUid set to:', selectedOrganizationUid.value);
-  
+  console.log("selectedOrganizationUid set to:", selectedOrganizationUid.value);
+
   // Wait a tick for Vue reactivity to update
   nextTick(() => {
     organizationMembershipModalRef.value?.showModal();
@@ -1039,27 +1146,27 @@ const changeItemsPerPage = () => {
   fetchOrganizations(1);
 };
 
-const visiblePages = computed((): number[] => {
-  const current = pagination.value.page;
-  const total = Math.max(1, pagination.value.total_pages); // Pastikan minimal 1 halaman
-  const pages: number[] = [];
-  
-  // Show max 5 page numbers
-  const maxVisible = 5;
-  let start = Math.max(1, current - Math.floor(maxVisible / 2));
-  let end = Math.min(total, start + maxVisible - 1);
-  
-  // Adjust start if we're near the end
-  if (end - start + 1 < maxVisible) {
-    start = Math.max(1, end - maxVisible + 1);
-  }
-  
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-  
-  return pages;
-});
+// const visiblePages = computed((): number[] => {
+//   const current = pagination.value.page;
+//   const total = Math.max(1, pagination.value.total_pages); // Pastikan minimal 1 halaman
+//   const pages: number[] = [];
+//
+// Show max 5 page numbers
+//   const maxVisible = 5;
+//   let start = Math.max(1, current - Math.floor(maxVisible / 2));
+//   let end = Math.min(total, start + maxVisible - 1);
+//
+// Adjust start if we're near the end
+//   if (end - start + 1 < maxVisible) {
+//     start = Math.max(1, end - maxVisible + 1);
+//   }
+//
+//   for (let i = start; i <= end; i++) {
+//     pages.push(i);
+//   }
+//
+//   return pages;
+// });
 
 // Initialize
 onMounted(() => {

@@ -29,7 +29,9 @@
               type="text"
               v-model="siteForm.name"
               class="form-control form-control-solid"
-              :placeholder="t('controlplane.site.settings.form.fields.name.placeholder')"
+              :placeholder="
+                t('controlplane.site.settings.form.fields.name.placeholder')
+              "
               required
             />
             <!--end::Input-->
@@ -48,7 +50,9 @@
               type="text"
               v-model="siteForm.code"
               class="form-control form-control-solid"
-              :placeholder="t('controlplane.site.settings.form.fields.code.placeholder')"
+              :placeholder="
+                t('controlplane.site.settings.form.fields.code.placeholder')
+              "
               readonly
             />
             <!--end::Input-->
@@ -63,7 +67,9 @@
           <div class="col-md-12">
             <!--begin::Label-->
             <label class="fw-semibold fs-6 mb-2">
-              {{ t("controlplane.site.settings.form.fields.description.label") }}
+              {{
+                t("controlplane.site.settings.form.fields.description.label")
+              }}
             </label>
             <!--end::Label-->
             <!--begin::Input-->
@@ -71,7 +77,11 @@
               v-model="siteForm.description"
               class="form-control form-control-solid"
               rows="3"
-              :placeholder="t('controlplane.site.settings.form.fields.description.placeholder')"
+              :placeholder="
+                t(
+                  'controlplane.site.settings.form.fields.description.placeholder'
+                )
+              "
             ></textarea>
             <!--end::Input-->
           </div>
@@ -93,7 +103,9 @@
               v-model="siteForm.address"
               class="form-control form-control-solid"
               rows="3"
-              :placeholder="t('controlplane.site.settings.form.fields.address.placeholder')"
+              :placeholder="
+                t('controlplane.site.settings.form.fields.address.placeholder')
+              "
               required
             ></textarea>
             <!--end::Input-->
@@ -116,7 +128,9 @@
               type="number"
               v-model="siteForm.latitude"
               class="form-control form-control-solid"
-              :placeholder="t('controlplane.site.settings.form.fields.latitude.placeholder')"
+              :placeholder="
+                t('controlplane.site.settings.form.fields.latitude.placeholder')
+              "
               step="any"
             />
             <!--end::Input-->
@@ -135,7 +149,11 @@
               type="number"
               v-model="siteForm.longitude"
               class="form-control form-control-solid"
-              :placeholder="t('controlplane.site.settings.form.fields.longitude.placeholder')"
+              :placeholder="
+                t(
+                  'controlplane.site.settings.form.fields.longitude.placeholder'
+                )
+              "
               step="any"
             />
             <!--end::Input-->
@@ -150,7 +168,9 @@
           <div class="col-md-6">
             <!--begin::Label-->
             <label class="fw-semibold fs-6 mb-2">
-              {{ t("controlplane.site.settings.form.fields.contactPerson.label") }}
+              {{
+                t("controlplane.site.settings.form.fields.contactPerson.label")
+              }}
             </label>
             <!--end::Label-->
             <!--begin::Input-->
@@ -158,7 +178,11 @@
               type="text"
               v-model="siteForm.contact_person"
               class="form-control form-control-solid"
-              :placeholder="t('controlplane.site.settings.form.fields.contactPerson.placeholder')"
+              :placeholder="
+                t(
+                  'controlplane.site.settings.form.fields.contactPerson.placeholder'
+                )
+              "
             />
             <!--end::Input-->
           </div>
@@ -168,7 +192,9 @@
           <div class="col-md-6">
             <!--begin::Label-->
             <label class="fw-semibold fs-6 mb-2">
-              {{ t("controlplane.site.settings.form.fields.contactPhone.label") }}
+              {{
+                t("controlplane.site.settings.form.fields.contactPhone.label")
+              }}
             </label>
             <!--end::Label-->
             <!--begin::Input-->
@@ -176,7 +202,11 @@
               type="tel"
               v-model="siteForm.contact_phone"
               class="form-control form-control-solid"
-              :placeholder="t('controlplane.site.settings.form.fields.contactPhone.placeholder')"
+              :placeholder="
+                t(
+                  'controlplane.site.settings.form.fields.contactPhone.placeholder'
+                )
+              "
             />
             <!--end::Input-->
           </div>
@@ -199,10 +229,18 @@
               class="form-select form-select-solid"
             >
               <option :value="true">
-                {{ t("controlplane.site.settings.form.fields.status.options.active") }}
+                {{
+                  t(
+                    "controlplane.site.settings.form.fields.status.options.active"
+                  )
+                }}
               </option>
               <option :value="false">
-                {{ t("controlplane.site.settings.form.fields.status.options.inactive") }}
+                {{
+                  t(
+                    "controlplane.site.settings.form.fields.status.options.inactive"
+                  )
+                }}
               </option>
             </select>
             <!--end::Select-->
@@ -222,13 +260,25 @@
               class="form-select form-select-solid"
             >
               <option value="WIB">
-                {{ t("controlplane.site.settings.form.fields.timezone.options.wib") }}
+                {{
+                  t(
+                    "controlplane.site.settings.form.fields.timezone.options.wib"
+                  )
+                }}
               </option>
               <option value="WITA">
-                {{ t("controlplane.site.settings.form.fields.timezone.options.wita") }}
+                {{
+                  t(
+                    "controlplane.site.settings.form.fields.timezone.options.wita"
+                  )
+                }}
               </option>
               <option value="WIT">
-                {{ t("controlplane.site.settings.form.fields.timezone.options.wit") }}
+                {{
+                  t(
+                    "controlplane.site.settings.form.fields.timezone.options.wit"
+                  )
+                }}
               </option>
             </select>
             <!--end::Select-->
@@ -268,10 +318,14 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "SettingsComponent",
+});
+
 import { ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import ApiService from '@/core/services/ApiService'
+import ApiService from "@/core/services/ApiService";
 
 // Interface
 interface SiteForm {
@@ -357,9 +411,9 @@ const saveSite = async () => {
 
     // Redirect back to overview after save (defensive: log and fallback on failure)
     try {
-      await router.push('/controlplane/site/overview');
+      await router.push("/controlplane/site/overview");
     } catch (navErr) {
-      console.error('[Settings] router.push failed:', navErr);    
+      console.error("[Settings] router.push failed:", navErr);
     }
   } catch (error) {
     console.error("Error saving site:", error);
@@ -387,9 +441,12 @@ const loadSite = async (id: string) => {
   isLoading.value = true;
 
   try {
-    const resp = await ApiService.query(`sites/${id}`, {});
+    const resp = await ApiService.query(`sites/${id}`, {
+      /* empty */
+    });
     // backend may return wrapped response { is_active, code, message, data }
-    const data = resp && resp.data && resp.data.data ? resp.data.data : resp.data;
+    const data =
+      resp && resp.data && resp.data.data ? resp.data.data : resp.data;
 
     if (data) {
       siteForm.value = {

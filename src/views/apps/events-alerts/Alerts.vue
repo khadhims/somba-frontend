@@ -4,28 +4,75 @@
     <div class="card-body py-4">
       <div class="row align-items-center gy-3">
         <div class="col-12 col-md-4">
-          <h4 class="card-title mb-0">{{ t('appsEventsAlerts.alerts.title') }}</h4>
-          <p class="text-muted mb-0">{{ currentSite ? t('appsEventsAlerts.alerts.subtitleSite', { site: currentSite.name }) : t('appsEventsAlerts.alerts.subtitleAll') }}</p>
+          <h4 class="card-title mb-0">
+            {{ t("appsEventsAlerts.alerts.title") }}
+          </h4>
+          <p class="text-muted mb-0">
+            {{
+              currentSite
+                ? t("appsEventsAlerts.alerts.subtitleSite", {
+                    site: currentSite.name,
+                  })
+                : t("appsEventsAlerts.alerts.subtitleAll")
+            }}
+          </p>
         </div>
         <div class="col-12 col-md-8">
-          <div class="d-flex flex-column flex-md-row justify-content-md-end align-items-start align-items-md-center gap-3">
+          <div
+            class="d-flex flex-column flex-md-row justify-content-md-end align-items-start align-items-md-center gap-3"
+          >
             <div class="d-flex align-items-center w-100 w-md-auto mb-2 mb-md-0">
-              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{ t('appsEventsAlerts.alertsFilters.siteLabel') }}</label>
-              <select v-model="tempSelectedSiteFilter" class="form-select form-select-solid w-100 w-md-200px" :disabled="loadingSites" @change="onTempFilterSiteChange">
-                <option value="">{{ t('appsEventsAlerts.alertsFilters.siteAll') }}</option>
-                <option v-for="site in sites" :key="site.uid" :value="site.uid">{{ site.name }}</option>
+              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{
+                t("appsEventsAlerts.alertsFilters.siteLabel")
+              }}</label>
+              <select
+                v-model="tempSelectedSiteFilter"
+                class="form-select form-select-solid w-100 w-md-200px"
+                :disabled="loadingSites"
+                @change="onTempFilterSiteChange"
+              >
+                <option value="">
+                  {{ t("appsEventsAlerts.alertsFilters.siteAll") }}
+                </option>
+                <option v-for="site in sites" :key="site.uid" :value="site.uid">
+                  {{ site.name }}
+                </option>
               </select>
             </div>
             <div class="d-flex align-items-center w-100 w-md-auto">
-              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{ t('appsEventsAlerts.alertsFilters.cameraLabel') || 'Camera' }}</label>
-              <select v-model="tempSelectedCameraFilter" class="form-select form-select-solid w-100 w-md-200px" :disabled="loadingCameras || !tempSelectedSiteFilter" @change="onTempFilterCameraChange">
-                <option value="">{{ t('appsEventsAlerts.alertsFilters.cameraAll') || 'All Cameras' }}</option>
-                <option v-for="camera in cameras" :key="camera.uid" :value="camera.uid">{{ camera.name }}</option>
+              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{
+                t("appsEventsAlerts.alertsFilters.cameraLabel") || "Camera"
+              }}</label>
+              <select
+                v-model="tempSelectedCameraFilter"
+                class="form-select form-select-solid w-100 w-md-200px"
+                :disabled="loadingCameras || !tempSelectedSiteFilter"
+                @change="onTempFilterCameraChange"
+              >
+                <option value="">
+                  {{
+                    t("appsEventsAlerts.alertsFilters.cameraAll") ||
+                    "All Cameras"
+                  }}
+                </option>
+                <option
+                  v-for="camera in cameras"
+                  :key="camera.uid"
+                  :value="camera.uid"
+                >
+                  {{ camera.name }}
+                </option>
               </select>
             </div>
-            <button @click="applyFilters" class="btn btn-md btn-primary py-3 px-2" title="Apply All Filters">
-              <i class="ki-duotone ki-check fs-2"><span class="path1"></span><span class="path2"></span></i>
-              {{ t('common.apply') || 'Apply' }}
+            <button
+              @click="applyFilters"
+              class="btn btn-md btn-primary py-3 px-2"
+              title="Apply All Filters"
+            >
+              <i class="ki-duotone ki-check fs-2"
+                ><span class="path1"></span><span class="path2"></span
+              ></i>
+              {{ t("common.apply") || "Apply" }}
             </button>
           </div>
         </div>
@@ -36,35 +83,83 @@
   <!-- Alerts List -->
   <div class="card">
     <div class="card-header border-0 pt-5">
-      <div class="card-title"><h3 class="fw-bold m-0">{{ t('appsEventsAlerts.alerts.title') }}</h3></div>
-      <div class="card-toolbar d-flex flex-column flex-xl-row justify-content-between align-items-start align-items-xl-center w-100 gap-3">
+      <div class="card-title">
+        <h3 class="fw-bold m-0">{{ t("appsEventsAlerts.alerts.title") }}</h3>
+      </div>
+      <div
+        class="card-toolbar d-flex flex-column flex-xl-row justify-content-between align-items-start align-items-xl-center w-100 gap-3"
+      >
         <div class="d-flex flex-wrap align-items-center gap-2 w-100 w-xl-auto">
-          <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center me-0 me-sm-2 w-100 w-sm-auto gap-2">
+          <div
+            class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center me-0 me-sm-2 w-100 w-sm-auto gap-2"
+          >
             <div class="d-flex align-items-center w-100 w-sm-auto">
-              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.alertsFilters.fromDateLabel') }}</label>
-              <DatePicker ref="dateFromPicker" v-model="tempDateFrom" size="sm" :clearable="true" style="width:100%; min-width: 140px;" class="w-100 w-sm-auto" />
+              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{
+                t("appsEventsAlerts.alertsFilters.fromDateLabel")
+              }}</label>
+              <DatePicker
+                ref="dateFromPicker"
+                v-model="tempDateFrom"
+                size="sm"
+                :clearable="true"
+                style="width: 100%; min-width: 140px"
+                class="w-100 w-sm-auto"
+              />
             </div>
             <div class="d-flex align-items-center w-100 w-sm-auto">
-              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{ t('appsEventsAlerts.alertsFilters.toDateLabel') }}</label>
-              <DatePicker ref="dateToPicker" v-model="tempDateTo" size="sm" :clearable="true" style="width:100%; min-width: 140px;" class="w-100 w-sm-auto" />
+              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{
+                t("appsEventsAlerts.alertsFilters.toDateLabel")
+              }}</label>
+              <DatePicker
+                ref="dateToPicker"
+                v-model="tempDateTo"
+                size="sm"
+                :clearable="true"
+                style="width: 100%; min-width: 140px"
+                class="w-100 w-sm-auto"
+              />
             </div>
           </div>
-          
+
           <div class="d-flex flex-wrap gap-2 mt-2 mt-sm-0">
-            <button @click="resetFilters" class="btn btn-sm btn-light py-1 px-2" title="Reset to Applied Filters">
-              <i class="ki-duotone ki-arrows-circle fs-2"><span class="path1"></span><span class="path2"></span></i>
-              {{ t('common.reset') || 'Reset' }}
+            <button
+              @click="resetFilters"
+              class="btn btn-sm btn-light py-1 px-2"
+              title="Reset to Applied Filters"
+            >
+              <i class="ki-duotone ki-arrows-circle fs-2"
+                ><span class="path1"></span><span class="path2"></span
+              ></i>
+              {{ t("common.reset") || "Reset" }}
             </button>
           </div>
         </div>
-        
+
         <div class="d-flex align-items-center w-100 w-xl-auto gap-2">
-          <div class="d-flex align-items-center position-relative my-1 flex-grow-1 flex-xl-grow-0">
-            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4"><span class="path1"></span><span class="path2"></span></i>
-            <input type="text" v-model="searchQuery" class="form-control form-control-sm form-control-solid w-100 w-xl-200px ps-12" :placeholder="t('appsEventsAlerts.alertsFilters.searchPlaceholder') || 'Search'" />
+          <div
+            class="d-flex align-items-center position-relative my-1 flex-grow-1 flex-xl-grow-0"
+          >
+            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4"
+              ><span class="path1"></span><span class="path2"></span
+            ></i>
+            <input
+              type="text"
+              v-model="searchQuery"
+              class="form-control form-control-sm form-control-solid w-100 w-xl-200px ps-12"
+              :placeholder="
+                t('appsEventsAlerts.alertsFilters.searchPlaceholder') ||
+                'Search'
+              "
+            />
           </div>
-          <button @click="refreshAlerts" class="btn btn-sm btn-light-primary btn-icon" title="Refresh">
-            <i class="ki-duotone ki-arrows-circle fs-2"><span class="path1"></span><span class="path2"></span></i>
+          <button
+            @click="refreshAlerts"
+            class="btn btn-sm btn-light-primary btn-icon"
+            title="Refresh"
+          >
+            <i class="ki-duotone ki-arrows-circle fs-2"
+              ><span class="path1"></span><span class="path2"></span
+            ></i>
           </button>
         </div>
       </div>
@@ -83,26 +178,53 @@
           @view-detail="viewAlertDetail"
         />
       </div>
-      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3">
-        <ItemPerPage :model-value="pagination.per_page" :label="t('appsEventsAlerts.alertsTable.pagination.itemsLabel') || 'Items per page:'" :options="[10,20,30,50]" @change="changeItemsPerPage" />
-        <Pagination :page="pagination.page" :per-page="pagination.per_page" :total-items="pagination.total_items" :total-pages="Math.max(1, pagination.total_pages)" @page-change="goToPage" />
+      <div
+        class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3"
+      >
+        <ItemPerPage
+          :model-value="pagination.per_page"
+          :label="
+            t('appsEventsAlerts.alertsTable.pagination.itemsLabel') ||
+            'Items per page:'
+          "
+          :options="[10, 20, 30, 50]"
+          @change="changeItemsPerPage"
+        />
+        <Pagination
+          :page="pagination.page"
+          :per-page="pagination.per_page"
+          :total-items="pagination.total_items"
+          :total-pages="Math.max(1, pagination.total_pages)"
+          @page-change="goToPage"
+        />
       </div>
     </div>
   </div>
 
   <!-- Detail Modal Component -->
-  <AlertDetailModal :show="showDetailModal" :alert="selectedAlertDetail" :loading="loadingDetail" :updating="loadingUpdate" @close="closeDetailModal" @update="handleDetailUpdate" />
+  <AlertDetailModal
+    :show="showDetailModal"
+    :alert="selectedAlertDetail"
+    :loading="loadingDetail"
+    :updating="loadingUpdate"
+    @close="closeDetailModal"
+    @update="handleDetailUpdate"
+  />
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useI18n } from 'vue-i18n';
-import AlertsTable from '@/components/apps/events-alerts/AlertsTable.vue';
-import AlertDetailModal from '@/components/apps/events-alerts/AlertDetailModal.vue';
-import Pagination from '@/components/common/Pagination.vue';
-import ItemPerPage from '@/components/ItemPerPage.vue';
-import DatePicker from '@/components/DatePicker.vue';
-import ApiService from '@/core/services/ApiService';
+defineOptions({
+  name: "AlertsComponent",
+});
+
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { useI18n } from "vue-i18n";
+import AlertsTable from "@/components/apps/events-alerts/AlertsTable.vue";
+import AlertDetailModal from "@/components/apps/events-alerts/AlertDetailModal.vue";
+import Pagination from "@/components/common/Pagination.vue";
+import ItemPerPage from "@/components/ItemPerPage.vue";
+import DatePicker from "@/components/DatePicker.vue";
+import ApiService from "@/core/services/ApiService";
 
 const { t } = useI18n();
 
@@ -112,7 +234,7 @@ type detectedObjects = {
   duration_seconds: number;
   duration_minutes: number;
   detection_count?: number;
-}
+};
 
 // Interface definitions
 interface Alert {
@@ -208,10 +330,10 @@ const loadingUpdate = ref(false); // retained for modal prop compatibility
 // Pagination handlers - simplified like Camera.vue
 let fetchTimeout: number | null = null;
 
-const FROM_DATE_STORAGE_KEY = 'lastSelectedFromDate';
-const TO_DATE_STORAGE_KEY = 'lastSelectedToDate';
-const LEGACY_FROM_DATE_STORAGE_KEY = 'globalFromDate';
-const LEGACY_TO_DATE_STORAGE_KEY = 'globalToDate';
+const FROM_DATE_STORAGE_KEY = "lastSelectedFromDate";
+const TO_DATE_STORAGE_KEY = "lastSelectedToDate";
+const LEGACY_FROM_DATE_STORAGE_KEY = "globalFromDate";
+const LEGACY_TO_DATE_STORAGE_KEY = "globalToDate";
 
 // Initialize default dates (yesterday to today)
 const initializeDefaultDates = () => {
@@ -221,8 +343,8 @@ const initializeDefaultDates = () => {
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
@@ -271,13 +393,12 @@ const goToPage = (page: number) => {
 };
 
 const changeItemsPerPage = (newPerPage: number) => {
-  
   // Force update the reactive value
   pagination.value.per_page = newPerPage;
-  
+
   // Reset to first page
   pagination.value.page = 1;
-  
+
   // Fetch immediately without debounce for items per page change
   fetchAlerts();
 };
@@ -285,38 +406,38 @@ const changeItemsPerPage = (newPerPage: number) => {
 // Table header configuration
 const tableHeader = computed(() => [
   {
-    columnName: t('appsEventsAlerts.alertsTable.columns.alert'),
-    columnLabel: 'alert_name',
+    columnName: t("appsEventsAlerts.alertsTable.columns.alert"),
+    columnLabel: "alert_name",
     sortEnabled: false,
     searchable: true,
   },
   {
-    columnName: t('appsEventsAlerts.alertsTable.columns.duration'),
-    columnLabel: 'duration',
+    columnName: t("appsEventsAlerts.alertsTable.columns.duration"),
+    columnLabel: "duration",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('appsEventsAlerts.alertsTable.columns.detections'),
-    columnLabel: 'detections',
+    columnName: t("appsEventsAlerts.alertsTable.columns.detections"),
+    columnLabel: "detections",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('appsEventsAlerts.alertsTable.columns.timestamp'),
-    columnLabel: 'timestamp',
+    columnName: t("appsEventsAlerts.alertsTable.columns.timestamp"),
+    columnLabel: "timestamp",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('appsEventsAlerts.alertsTable.columns.status'),
-    columnLabel: 'status',
+    columnName: t("appsEventsAlerts.alertsTable.columns.status"),
+    columnLabel: "status",
     sortEnabled: true,
     searchable: false,
   },
   {
-    columnName: t('appsEventsAlerts.alertsTable.columns.actions'),
-    columnLabel: 'actions',
+    columnName: t("appsEventsAlerts.alertsTable.columns.actions"),
+    columnLabel: "actions",
     sortEnabled: false,
     searchable: false,
   },
@@ -332,23 +453,23 @@ const fetchCameras = async (siteUid: string) => {
   loadingCameras.value = true;
   try {
     const resp = await ApiService.get(`sites/${siteUid}/cameras`);
-    
+
     // Parse response (wrapped or direct)
     if (resp && resp.data) {
-      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+      if (resp.data?.data && Array.isArray(resp.data.data)) {
         cameras.value = resp.data.data;
       } else if (Array.isArray(resp.data)) {
         cameras.value = resp.data;
       } else {
-        console.warn('Unexpected cameras response format:', resp.data);
+        console.warn("Unexpected cameras response format:", resp.data);
         cameras.value = [];
       }
     } else {
-      console.warn('No data received from cameras API');
+      console.warn("No data received from cameras API");
       cameras.value = [];
     }
   } catch (error) {
-    console.error('Error loading cameras:', error);
+    console.error("Error loading cameras:", error);
     cameras.value = [];
   } finally {
     loadingCameras.value = false;
@@ -359,23 +480,23 @@ const fetchCameras = async (siteUid: string) => {
 const fetchSites = async () => {
   try {
     const resp = await ApiService.get(`sites`);
-    
+
     // Parse response (wrapped or direct)
     if (resp && resp.data) {
-      if (resp.data.status === "success" && resp.data.data && Array.isArray(resp.data.data)) {
+      if (resp.data?.data && Array.isArray(resp.data.data)) {
         sites.value = resp.data.data;
       } else if (Array.isArray(resp.data)) {
         sites.value = resp.data;
       } else {
-        console.warn('Unexpected sites response format:', resp.data);
+        console.warn("Unexpected sites response format:", resp.data);
         sites.value = [];
       }
     } else {
-      console.warn('No data received from sites API');
+      console.warn("No data received from sites API");
       sites.value = [];
     }
   } catch (error) {
-    console.error('Error loading sites:', error);
+    console.error("Error loading sites:", error);
     // Fallback to mock data for development
     sites.value = [
       { uid: "site-1", name: "Main Office" },
@@ -397,14 +518,18 @@ const fetchAlerts = async () => {
   try {
     const params: any = {
       page: pagination.value.page,
-      page_size: pagination.value.per_page
+      page_size: pagination.value.per_page,
     };
-    
+
     // Add camera filter if set
-    if (selectedCameraFilter.value && selectedCameraFilter.value !== '' && selectedCameraFilter.value !== 'undefined') {
+    if (
+      selectedCameraFilter.value &&
+      selectedCameraFilter.value !== "" &&
+      selectedCameraFilter.value !== "undefined"
+    ) {
       params.camera_uuid = selectedCameraFilter.value;
     }
-    
+
     // Add date range filters if set
     if (dateFrom.value) {
       params.from_date = dateFrom.value;
@@ -412,60 +537,71 @@ const fetchAlerts = async () => {
     if (dateTo.value) {
       params.to_date = dateTo.value;
     }
-    
-    const resp = await ApiService.query(`sites/${selectedSiteFilter.value}/alerts`, {
-      params: Object.keys(params).length > 0 ? params : undefined
-    });
-    
+
+    const resp = await ApiService.query(
+      `sites/${selectedSiteFilter.value}/alerts`,
+      {
+        params: Object.keys(params).length > 0 ? params : undefined,
+      }
+    );
+
     if (resp && resp.data) {
       const payload = resp.data;
-      
+
       // Handle the response structure: { data: [...], pagination: {...} }
       if (Array.isArray(payload.data)) {
         alerts.value = payload.data.map((item: any) => {
           // Get violation name from first detected object
-          const violationName = item.detected_objects && item.detected_objects.length > 0 
-            ? item.detected_objects[0].display_name 
-            : 'Unknown Violation';
-          
+          const violationName =
+            item.detected_objects && item.detected_objects.length > 0
+              ? item.detected_objects[0].display_name
+              : "Unknown Violation";
+
           return {
             event_id: item.event_id || `alert-${Date.now()}-${Math.random()}`,
-            camera_uuid: item.camera_uuid || '',
-            camera_name: item.camera_name || 'Unknown Camera',
+            camera_uuid: item.camera_uuid || "",
+            camera_name: item.camera_name || "Unknown Camera",
             violation_name: violationName,
-            event_start: item.event_start || '',
-            event_end: item.event_end || '',
-            timestamp: item.event_start || 'Unknown Timestamp',
+            event_start: item.event_start || "",
+            event_end: item.event_end || "",
+            timestamp: item.event_start || "Unknown Timestamp",
             duration_minutes: item.duration_minutes || 0,
             total_detections: item.total_detections || 0,
             detected_objects: item.detected_objects || [],
-            status: item.status || 'not_resolved',
-            image_url: item.image_url || '',
+            status: item.status || "not_resolved",
+            image_url: item.image_url || "",
             image_urls: item.image_urls || [],
             activities: item.activities || [],
             comment: item.comment || null,
           };
         });
-        
+
         // Update pagination from API response
         if (payload.pagination) {
           const p = payload.pagination;
-          
+
           pagination.value.page = p.page || 1;
           pagination.value.total_items = p.total_items || alerts.value.length;
           pagination.value.next_page = p.next_page || null;
           pagination.value.prev_page = p.prev_page || null;
-          
+
           // DON'T update per_page from API response - keep user's selection
-          if (typeof p.per_page === "number" && p.per_page !== pagination.value.per_page) {
-            console.warn(`API returned different per_page: ${p.per_page}, but keeping user selection: ${pagination.value.per_page}`);
+          if (
+            typeof p.per_page === "number" &&
+            p.per_page !== pagination.value.per_page
+          ) {
+            console.warn(
+              `API returned different per_page: ${p.per_page}, but keeping user selection: ${pagination.value.per_page}`
+            );
           }
-          
+
           // Use API total_pages if available, otherwise calculate
           if (typeof p.total_pages === "number") {
             pagination.value.total_pages = p.total_pages;
           } else {
-            pagination.value.total_pages = Math.ceil(pagination.value.total_items / pagination.value.per_page);
+            pagination.value.total_pages = Math.ceil(
+              pagination.value.total_items / pagination.value.per_page
+            );
           }
         }
       } else {
@@ -475,7 +611,7 @@ const fetchAlerts = async () => {
       alerts.value = [];
     }
   } catch (error) {
-    console.error('Error loading alerts:', error);
+    console.error("Error loading alerts:", error);
     alerts.value = [];
   } finally {
     loading.value = false;
@@ -485,15 +621,15 @@ const fetchAlerts = async () => {
 // Removed remote detail fetch; list data already has needed fields.
 
 // Filter alerts
-const filterAlerts = () => {
-  // Filtering is handled in computed property
-};
+// const filterAlerts = () => {
+// Filtering is handled in computed property
+// };
 
-const applyDateFilter = () => {
-  // Reset to first page when applying date filter
-  pagination.value.page = 1;
-  debouncedFetchAlerts();
-};
+// const applyDateFilter = () => {
+// Reset to first page when applying date filter
+//   pagination.value.page = 1;
+//   debouncedFetchAlerts();
+// };
 
 // Refresh alerts
 const refreshAlerts = () => {
@@ -503,8 +639,8 @@ const refreshAlerts = () => {
 // Temp filter handlers (no immediate API calls)
 const onTempFilterSiteChange = async () => {
   // Reset camera filter when site changes
-  tempSelectedCameraFilter.value = '';
-  
+  tempSelectedCameraFilter.value = "";
+
   // Fetch cameras for the selected site immediately for dropdown
   if (tempSelectedSiteFilter.value) {
     await fetchCameras(tempSelectedSiteFilter.value);
@@ -519,23 +655,23 @@ const onTempFilterCameraChange = () => {
 
 // Apply all filters at once
 const applyFilters = async () => {
-  
   // Update actual filter values from temp values
-  selectedSiteFilter.value = tempSelectedSiteFilter.value || '';
-  selectedCameraFilter.value = tempSelectedCameraFilter.value || '';
+  selectedSiteFilter.value = tempSelectedSiteFilter.value || "";
+  selectedCameraFilter.value = tempSelectedCameraFilter.value || "";
   dateFrom.value = tempDateFrom.value;
   dateTo.value = tempDateTo.value;
-  
+
   // Update current site
-  currentSite.value = sites.value.find(s => s.uid === selectedSiteFilter.value) || null;
-  
+  currentSite.value =
+    sites.value.find((s) => s.uid === selectedSiteFilter.value) || null;
+
   // Save to localStorage
-  localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || '');
-  localStorage.setItem('lastSelectedCamera', selectedCameraFilter.value || '');
-  
+  localStorage.setItem("lastSelectedSite", selectedSiteFilter.value || "");
+  localStorage.setItem("lastSelectedCamera", selectedCameraFilter.value || "");
+
   // Reset pagination and fetch alerts
   pagination.value.page = 1;
-  
+
   if (selectedSiteFilter.value) {
     await debouncedFetchAlerts();
   } else {
@@ -551,8 +687,8 @@ const resetFilters = () => {
   // Reset dates to Today
   const today = new Date();
   const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
   const todayStr = `${year}-${month}-${day}`;
 
   dateFrom.value = todayStr;
@@ -563,123 +699,124 @@ const resetFilters = () => {
   // Update localStorage immediately
   localStorage.setItem(FROM_DATE_STORAGE_KEY, todayStr);
   localStorage.setItem(TO_DATE_STORAGE_KEY, todayStr);
-  
+
   // Refresh data
   pagination.value.page = 1;
   debouncedFetchAlerts();
 };
 
 // Reset filters to default values (clear site/camera, reset dates to yesterday-today)
-const resetToDefaults = () => {
-  // Reset site and camera filters
-  tempSelectedSiteFilter.value = '';
-  tempSelectedCameraFilter.value = '';
-  
-  // Reset dates to default range (yesterday to today)
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-  
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-  
-  const defaultFromDate = formatDate(yesterday);
-  const defaultToDate = formatDate(today);
-  
-  tempDateFrom.value = defaultFromDate;
-  tempDateTo.value = defaultToDate;
-  
-  // Update localStorage with new defaults
-  localStorage.setItem(FROM_DATE_STORAGE_KEY, defaultFromDate);
-  localStorage.setItem(TO_DATE_STORAGE_KEY, defaultToDate);
-  localStorage.removeItem(LEGACY_FROM_DATE_STORAGE_KEY);
-  localStorage.removeItem(LEGACY_TO_DATE_STORAGE_KEY);
-};
+// const resetToDefaults = () => {
+// Reset site and camera filters
+//   tempSelectedSiteFilter.value = "";
+//   tempSelectedCameraFilter.value = "";
+//
+// Reset dates to default range (yesterday to today)
+//   const today = new Date();
+//   const yesterday = new Date(today);
+//   yesterday.setDate(today.getDate() - 1);
+//
+//   const formatDate = (date: Date) => {
+//     const year = date.getFullYear();
+//     const month = String(date.getMonth() + 1).padStart(2, "0");
+//     const day = String(date.getDate()).padStart(2, "0");
+//     return `${year}-${month}-${day}`;
+//   };
+//
+//   const defaultFromDate = formatDate(yesterday);
+//   const defaultToDate = formatDate(today);
+//
+//   tempDateFrom.value = defaultFromDate;
+//   tempDateTo.value = defaultToDate;
+//
+// Update localStorage with new defaults
+//   localStorage.setItem(FROM_DATE_STORAGE_KEY, defaultFromDate);
+//   localStorage.setItem(TO_DATE_STORAGE_KEY, defaultToDate);
+//   localStorage.removeItem(LEGACY_FROM_DATE_STORAGE_KEY);
+//   localStorage.removeItem(LEGACY_TO_DATE_STORAGE_KEY);
+// };
 
 // Helpers for badge styling and translated labels
-const normalizeKey = (value?: string) => (value ?? '').toLowerCase().replace(/[\s_-]/g, '');
+// const normalizeKey = (value?: string) =>
+//   (value ?? "").toLowerCase().replace(/[\s_-]/g, "");
 
-const statusKeyMap: Record<string, string> = {
-  notresolved: 'notResolved',
-  resolved: 'resolved',
-  falsealarm: 'falseAlarm',
-};
+// const statusKeyMap: Record<string, string> = {
+//   notresolved: "notResolved",
+//   resolved: "resolved",
+//   falsealarm: "falseAlarm",
+// };
 
-const severityKeyMap: Record<string, string> = {
-  low: 'low',
-  medium: 'medium',
-  high: 'high',
-  critical: 'critical',
-};
+// const severityKeyMap: Record<string, string> = {
+//   low: "low",
+//   medium: "medium",
+//   high: "high",
+//   critical: "critical",
+// };
 
-const typeKeyMap: Record<string, string> = {
-  motion: 'motion',
-  intrusion: 'intrusion',
-  system: 'system',
-  cameraoffline: 'cameraOffline',
-};
+// const typeKeyMap: Record<string, string> = {
+//   motion: "motion",
+//   intrusion: "intrusion",
+//   system: "system",
+//   cameraoffline: "cameraOffline",
+// };
 
-const getAlertTypeBadgeClass = (type: string) => {
-  switch (normalizeKey(type)) {
-    case 'motion':
-      return 'badge-light-primary';
-    case 'intrusion':
-      return 'badge-light-danger';
-    case 'system':
-      return 'badge-light-info';
-    case 'cameraoffline':
-      return 'badge-light-warning';
-    default:
-      return 'badge-light-secondary';
-  }
-};
+// const getAlertTypeBadgeClass = (type: string) => {
+//   switch (normalizeKey(type)) {
+//     case "motion":
+//       return "badge-light-primary";
+//     case "intrusion":
+//       return "badge-light-danger";
+//     case "system":
+//       return "badge-light-info";
+//     case "cameraoffline":
+//       return "badge-light-warning";
+//     default:
+//       return "badge-light-secondary";
+//   }
+// };
 
-const getSeverityBadgeClass = (severity: string) => {
-  switch (normalizeKey(severity)) {
-    case 'critical':
-      return 'badge-danger';
-    case 'high':
-      return 'badge-warning';
-    case 'medium':
-      return 'badge-primary';
-    case 'low':
-      return 'badge-success';
-    default:
-      return 'badge-secondary';
-  }
-};
+// const getSeverityBadgeClass = (severity: string) => {
+//   switch (normalizeKey(severity)) {
+//     case "critical":
+//       return "badge-danger";
+//     case "high":
+//       return "badge-warning";
+//     case "medium":
+//       return "badge-primary";
+//     case "low":
+//       return "badge-success";
+//     default:
+//       return "badge-secondary";
+//   }
+// };
 
-const getStatusBadgeClass = (status: string) => {
-  const normalized = normalizeKey(status);
-  if (normalized === 'notresolved') return 'badge-light-danger';
-  if (normalized === 'resolved') return 'badge-light-success';
-  if (normalized === 'falsealarm') return 'badge-light-info';
-  if (!status || status === 'No Status') return 'badge-light-secondary';
-  return 'badge-light-secondary'; // Default return
-};
+// const getStatusBadgeClass = (status: string) => {
+//   const normalized = normalizeKey(status);
+//   if (normalized === "notresolved") return "badge-light-danger";
+//   if (normalized === "resolved") return "badge-light-success";
+//   if (normalized === "falsealarm") return "badge-light-info";
+//   if (!status || status === "No Status") return "badge-light-secondary";
+//   return "badge-light-secondary"; // Default return
+// };
 
-const getStatusLabel = (status: string) => {
-  // Handle fallback values directly
-  if (!status || status === 'No Status') {
-    return status || 'No Status';
-  }
-  const key = statusKeyMap[normalizeKey(status)];
-  return key ? t(`appsEventsAlerts.alertsTable.status.${key}`) : status;
-};
+// const getStatusLabel = (status: string) => {
+// Handle fallback values directly
+//   if (!status || status === "No Status") {
+//     return status || "No Status";
+//   }
+//   const key = statusKeyMap[normalizeKey(status)];
+//   return key ? t(`appsEventsAlerts.alertsTable.status.${key}`) : status;
+// };
 
-const getSeverityLabel = (severity: string) => {
-  const key = severityKeyMap[normalizeKey(severity)];
-  return key ? t(`appsEventsAlerts.alertsTable.severity.${key}`) : severity;
-};
+// const getSeverityLabel = (severity: string) => {
+//   const key = severityKeyMap[normalizeKey(severity)];
+//   return key ? t(`appsEventsAlerts.alertsTable.severity.${key}`) : severity;
+// };
 
-const getAlertTypeLabel = (type: string) => {
-  const key = typeKeyMap[normalizeKey(type)];
-  return key ? t(`appsEventsAlerts.alertsTable.types.${key}`) : type;
-};
+// const getAlertTypeLabel = (type: string) => {
+//   const key = typeKeyMap[normalizeKey(type)];
+//   return key ? t(`appsEventsAlerts.alertsTable.types.${key}`) : type;
+// };
 
 const formatNumber = (value: number, maximumFractionDigits = 1) =>
   new Intl.NumberFormat(undefined, {
@@ -687,44 +824,44 @@ const formatNumber = (value: number, maximumFractionDigits = 1) =>
     minimumFractionDigits: 0,
   }).format(value);
 
-const formatMinutesShort = (minutes?: number | null) => {
-  if (minutes === undefined || minutes === null || Number.isNaN(minutes)) {
-    return t('appsEventsAlerts.format.notAvailable');
-  }
-  return t('appsEventsAlerts.format.minutesShort', {
-    value: formatNumber(Math.max(0, minutes), 1),
-  });
-};
+// const formatMinutesShort = (minutes?: number | null) => {
+//   if (minutes === undefined || minutes === null || Number.isNaN(minutes)) {
+//     return t("appsEventsAlerts.format.notAvailable");
+//   }
+//   return t("appsEventsAlerts.format.minutesShort", {
+//     value: formatNumber(Math.max(0, minutes), 1),
+//   });
+// };
 
-const formatSecondsShort = (seconds?: number | null) => {
-  if (seconds === undefined || seconds === null || Number.isNaN(seconds)) {
-    return t('appsEventsAlerts.format.notAvailable');
-  }
-  return t('appsEventsAlerts.format.secondsShort', {
-    value: formatNumber(Math.max(0, seconds), 1),
-  });
-};
+// const formatSecondsShort = (seconds?: number | null) => {
+//   if (seconds === undefined || seconds === null || Number.isNaN(seconds)) {
+//     return t("appsEventsAlerts.format.notAvailable");
+//   }
+//   return t("appsEventsAlerts.format.secondsShort", {
+//     value: formatNumber(Math.max(0, seconds), 1),
+//   });
+// };
 
-const formatSecondsLong = (seconds?: number | null) => {
-  if (seconds === undefined || seconds === null || Number.isNaN(seconds)) {
-    return t('appsEventsAlerts.format.notAvailable');
-  }
-  return t('appsEventsAlerts.format.secondsLong', {
-    value: formatNumber(Math.max(0, seconds), 2),
-  });
-};
+// const formatSecondsLong = (seconds?: number | null) => {
+//   if (seconds === undefined || seconds === null || Number.isNaN(seconds)) {
+//     return t("appsEventsAlerts.format.notAvailable");
+//   }
+//   return t("appsEventsAlerts.format.secondsLong", {
+//     value: formatNumber(Math.max(0, seconds), 2),
+//   });
+// };
 
-const formatDuration = (minutes?: number | null) => {
-  if (minutes === undefined || minutes === null || Number.isNaN(minutes)) {
-    return t('appsEventsAlerts.format.notAvailable');
-  }
-  if (minutes < 1) {
-    return formatSecondsLong(minutes * 60);
-  }
-  return t('appsEventsAlerts.format.minutesLong', {
-    value: formatNumber(Math.max(0, minutes), 2),
-  });
-};
+// const formatDuration = (minutes?: number | null) => {
+//   if (minutes === undefined || minutes === null || Number.isNaN(minutes)) {
+//     return t("appsEventsAlerts.format.notAvailable");
+//   }
+//   if (minutes < 1) {
+//     return formatSecondsLong(minutes * 60);
+//   }
+//   return t("appsEventsAlerts.format.minutesLong", {
+//     value: formatNumber(Math.max(0, minutes), 2),
+//   });
+// };
 
 const filteredAndSortedAlerts = computed(() => {
   let filtered = alerts.value;
@@ -732,9 +869,9 @@ const filteredAndSortedAlerts = computed(() => {
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter((alert) => {
-      const camera = (alert.camera_name || '').toLowerCase();
-      const status = (alert.status || '').toLowerCase();
-      const violation = (alert.violation_name || '').toLowerCase();
+      const camera = (alert.camera_name || "").toLowerCase();
+      const status = (alert.status || "").toLowerCase();
+      const violation = (alert.violation_name || "").toLowerCase();
 
       return (
         camera.includes(query) ||
@@ -748,32 +885,32 @@ const filteredAndSortedAlerts = computed(() => {
     filtered = [...filtered].sort((a, b) => {
       let sortKey = sortLabel.value;
       // Map sort keys to data keys
-      if (sortKey === 'duration') sortKey = 'duration_minutes';
-      if (sortKey === 'timestamp') sortKey = 'event_start';
-      if (sortKey === 'alert_name') sortKey = 'violation_name';
-      if (sortKey === 'detections') sortKey = 'total_detections';
-      
+      if (sortKey === "duration") sortKey = "duration_minutes";
+      if (sortKey === "timestamp") sortKey = "event_start";
+      if (sortKey === "alert_name") sortKey = "violation_name";
+      if (sortKey === "detections") sortKey = "total_detections";
+
       let aValue: any = a[sortKey as keyof Alert];
       let bValue: any = b[sortKey as keyof Alert];
 
-      if (sortKey === 'event_start') {
+      if (sortKey === "event_start") {
         aValue = aValue ? new Date(aValue as string).getTime() : 0;
         bValue = bValue ? new Date(bValue as string).getTime() : 0;
       }
 
       // User defines Descending as Smallest to Largest (Ascending behavior)
-      // So we flip standard logic: 
+      // So we flip standard logic:
       // asc -> Large to Small (Standard Descending)
       // desc -> Small to Large (Standard Ascending)
 
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
+      if (typeof aValue === "string" && typeof bValue === "string") {
         const comparison = aValue.localeCompare(bValue);
-        return sortOrder.value === 'asc' ? -comparison : comparison;
+        return sortOrder.value === "asc" ? -comparison : comparison;
       }
 
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
+      if (typeof aValue === "number" && typeof bValue === "number") {
         const comparison = aValue - bValue;
-        return sortOrder.value === 'asc' ? -comparison : comparison;
+        return sortOrder.value === "asc" ? -comparison : comparison;
       }
 
       return 0;
@@ -783,28 +920,27 @@ const filteredAndSortedAlerts = computed(() => {
   return filtered;
 });
 
-
 // Methods
 const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
   sortLabel.value = sort.label;
   sortOrder.value = sort.order;
 };
 
-const handleImageError = (event: Event) => {
-  const target = event.target as HTMLImageElement;
-  target.style.display = 'none';
-  const parent = target.parentElement;
-  if (parent) {
-    parent.innerHTML = `
-      <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-        <i class="ki-duotone ki-picture fs-2x text-muted">
-          <span class="path1"></span>
-          <span class="path2"></span>
-        </i>
-      </div>
-    `;
-  }
-};
+// const handleImageError = (event: Event) => {
+//   const target = event.target as HTMLImageElement;
+//   target.style.display = "none";
+//   const parent = target.parentElement;
+//   if (parent) {
+//     parent.innerHTML = `
+//       <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+//         <i class="ki-duotone ki-picture fs-2x text-muted">
+//           <span class="path1"></span>
+//           <span class="path2"></span>
+//         </i>
+//       </div>
+//     `;
+//   }
+// };
 
 const viewAlertDetail = (alert: Alert) => {
   selectedAlertDetail.value = {
@@ -816,7 +952,7 @@ const viewAlertDetail = (alert: Alert) => {
     event_end: alert.event_end,
     duration_minutes: alert.duration_minutes,
     total_detections: alert.total_detections,
-    detected_objects: (alert.detected_objects || []).map(o => ({
+    detected_objects: (alert.detected_objects || []).map((o) => ({
       object_type: o.object_type,
       display_name: o.display_name,
       duration_seconds: o.duration_seconds,
@@ -836,13 +972,18 @@ const closeDetailModal = () => {
   selectedAlertDetail.value = null;
 };
 
-const handleDetailUpdate = (payload: { status: string; comment: string | null }) => {
+const handleDetailUpdate = (payload: {
+  status: string;
+  comment: string | null;
+}) => {
   if (!selectedAlertDetail.value) return;
   // Update local detail
   selectedAlertDetail.value.status = payload.status;
   selectedAlertDetail.value.comment = payload.comment;
   // Reflect in list
-  const idx = alerts.value.findIndex(a => a.event_id === selectedAlertDetail.value?.event_id);
+  const idx = alerts.value.findIndex(
+    (a) => a.event_id === selectedAlertDetail.value?.event_id
+  );
   if (idx !== -1) {
     alerts.value[idx].status = payload.status;
     alerts.value[idx].comment = payload.comment;
@@ -856,50 +997,51 @@ onMounted(async () => {
     initializeDefaultDates();
     await fetchSites();
     // Determine initial site: prefer stored value, otherwise first site in list
-    const storedSite = localStorage.getItem('lastSelectedSite');
-    let initialSiteUid = '';
-    if (storedSite && sites.value.some(s => s.uid === storedSite)) {
+    const storedSite = localStorage.getItem("lastSelectedSite");
+    let initialSiteUid = "";
+    if (storedSite && sites.value.some((s) => s.uid === storedSite)) {
       initialSiteUid = storedSite;
     } else if (sites.value.length > 0) {
       initialSiteUid = sites.value[0].uid;
     }
-    
+
     if (initialSiteUid) {
       // Set selected site and temp selection
       selectedSiteFilter.value = initialSiteUid;
       tempSelectedSiteFilter.value = initialSiteUid;
-      currentSite.value = sites.value.find(s => s.uid === initialSiteUid) || null;
-      localStorage.setItem('lastSelectedSite', initialSiteUid);
+      currentSite.value =
+        sites.value.find((s) => s.uid === initialSiteUid) || null;
+      localStorage.setItem("lastSelectedSite", initialSiteUid);
       // Load cameras for the selected site
       await fetchCameras(initialSiteUid);
       // Determine initial camera: prefer stored value, otherwise first camera in list
-      const storedCamera = localStorage.getItem('lastSelectedCamera');
-      let initialCameraUid = '';
-      if (storedCamera && cameras.value.some(c => c.uid === storedCamera)) {
+      const storedCamera = localStorage.getItem("lastSelectedCamera");
+      let initialCameraUid = "";
+      if (storedCamera && cameras.value.some((c) => c.uid === storedCamera)) {
         initialCameraUid = storedCamera;
       } else if (cameras.value.length > 0) {
         initialCameraUid = cameras.value[0].uid;
       }
-      
+
       selectedCameraFilter.value = initialCameraUid;
       tempSelectedCameraFilter.value = initialCameraUid;
       if (initialCameraUid) {
-        localStorage.setItem('lastSelectedCamera', initialCameraUid);
+        localStorage.setItem("lastSelectedCamera", initialCameraUid);
       }
       // Fetch alerts for the selected site (and camera if set)
       await fetchAlerts();
     } else {
       // No sites available — clear stored selections
-      localStorage.removeItem('lastSelectedSite');
-      localStorage.removeItem('lastSelectedCamera');
-      selectedSiteFilter.value = '';
-      selectedCameraFilter.value = '';
-      tempSelectedSiteFilter.value = '';
-      tempSelectedCameraFilter.value = '';
+      localStorage.removeItem("lastSelectedSite");
+      localStorage.removeItem("lastSelectedCamera");
+      selectedSiteFilter.value = "";
+      selectedCameraFilter.value = "";
+      tempSelectedSiteFilter.value = "";
+      tempSelectedCameraFilter.value = "";
       currentSite.value = null;
     }
   } catch (error) {
-    console.error('Error initializing alerts:', error);
+    console.error("Error initializing alerts:", error);
   }
 });
 

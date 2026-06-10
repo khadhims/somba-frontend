@@ -176,7 +176,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "item-1",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     return {
       getAssetPath,

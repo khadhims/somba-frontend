@@ -16,7 +16,7 @@
         <!--end::Title-->
 
         <!--begin::Link-->
-        <div class="fw-semibold fs-4" style="color: rgba(255,255,255,0.75)">
+        <div class="fw-semibold fs-4" style="color: rgba(255, 255, 255, 0.75)">
           Already have an account?
 
           <router-link to="/sign-in" class="link-primary fw-bold">
@@ -162,7 +162,9 @@
 
       <!--begin::Input group-->
       <div class="fv-row mb-5">
-        <label class="form-label fw-bold text-white fs-6">Confirm Password</label>
+        <label class="form-label fw-bold text-white fs-6"
+          >Confirm Password</label
+        >
         <Field
           class="form-control form-control-lg custom-input"
           type="password"
@@ -283,19 +285,26 @@ export default defineComponent({
 
         // Apply a swipe-out transition to the signup card, fade/blur background,
         // then navigate to the Sign In page.
-        try { document.body.classList.add('transitioning-to-dashboard'); } catch {}
-        if (signupWrapper.value) signupWrapper.value.classList.add('swipe-out');
+        try {
+          document.body.classList.add("transitioning-to-dashboard");
+        } catch {
+          /* empty */
+        }
+        if (signupWrapper.value) signupWrapper.value.classList.add("swipe-out");
 
         await new Promise((resolve) => {
           const el = signupWrapper.value as HTMLElement | null;
           if (!el) return setTimeout(resolve, 700);
-          const onEnd = () => { el.removeEventListener('animationend', onEnd); resolve(null); };
-          el.addEventListener('animationend', onEnd, { once: true });
+          const onEnd = () => {
+            el.removeEventListener("animationend", onEnd);
+            resolve(null);
+          };
+          el.addEventListener("animationend", onEnd, { once: true });
           // safety timeout
           setTimeout(resolve, 900);
         });
 
-        router.push({ name: 'sign-in' });
+        router.push({ name: "sign-in" });
       } catch (error) {
         // Normalize and show server error inline if present
         const errObj = store.errors as any;
@@ -345,31 +354,58 @@ export default defineComponent({
 
 <style scoped>
 @keyframes foldAwaySignup {
-  0% { transform: translateY(0) rotateZ(0) scale(1); opacity: 1; }
-  30% { transform: translateY(-8vh) rotateZ(-6deg) scale(0.96); opacity: 0.9; }
-  60% { transform: translateY(-45vh) rotateZ(12deg) scale(0.5); opacity: 0.7; filter: blur(2px); }
-  100% { transform: translateY(-140vh) rotateZ(40deg) scale(0.08); opacity: 0; filter: blur(8px); }
+  0% {
+    transform: translateY(0) rotateZ(0) scale(1);
+    opacity: 1;
+  }
+  30% {
+    transform: translateY(-8vh) rotateZ(-6deg) scale(0.96);
+    opacity: 0.9;
+  }
+  60% {
+    transform: translateY(-45vh) rotateZ(12deg) scale(0.5);
+    opacity: 0.7;
+    filter: blur(2px);
+  }
+  100% {
+    transform: translateY(-140vh) rotateZ(40deg) scale(0.08);
+    opacity: 0;
+    filter: blur(8px);
+  }
 }
 
 .crumple {
-  animation: foldAwaySignup 1000ms cubic-bezier(0.2,0.9,0.3,1) forwards;
+  animation: foldAwaySignup 1000ms cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
   transform-origin: 50% 50%;
 }
 
 /* Swipe-out animation for signup -> sign-in transition */
 @keyframes swipeOutLeft {
-  0% { transform: translateX(0) scale(1); opacity: 1; }
-  40% { transform: translateX(-8%) scale(0.99); opacity: 0.95; }
-  100% { transform: translateX(-120%) scale(0.92); opacity: 0; filter: blur(6px); }
+  0% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  40% {
+    transform: translateX(-8%) scale(0.99);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateX(-120%) scale(0.92);
+    opacity: 0;
+    filter: blur(6px);
+  }
 }
 .swipe-out {
-  animation: swipeOutLeft 700ms cubic-bezier(0.2,0.9,0.25,1) forwards;
+  animation: swipeOutLeft 700ms cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
   transform-origin: 50% 50%;
 }
 
 /* ensure the global background fade (body class) shows a smooth blur */
-.transitioning-to-dashboard .auth-layout-bg { transition: filter 1s ease, opacity 1s ease; filter: blur(10px); opacity: 0.45; }
-
+.transitioning-to-dashboard .auth-layout-bg {
+  transition: filter 1s ease, opacity 1s ease;
+  filter: blur(10px);
+  opacity: 0.45;
+}
 </style>
 
 <style scoped>
@@ -385,7 +421,7 @@ export default defineComponent({
 }
 .custom-input:focus {
   border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 6px rgba(59,130,246,0.08) !important;
+  box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.08) !important;
   background: rgba(15, 23, 42, 0.9) !important;
 }
 
@@ -404,28 +440,53 @@ export default defineComponent({
   transition: all 0.3s;
   box-shadow: 0 6px 22px rgba(37, 99, 235, 0.35);
 }
-.btn-neon:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(37,99,235,0.5); }
+.btn-neon:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.5);
+}
 .btn-neon::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.18),
+    transparent
+  );
   transition: 0.6s;
 }
-.btn-neon:hover::after { left: 100%; }
+.btn-neon:hover::after {
+  left: 100%;
+}
 
 /* Entrance animation for the heading/form groups */
-.form-entrance { opacity: 0; transform: translateY(8px); animation: fadeSlideIn 0.9s ease-out forwards; }
-@keyframes fadeSlideIn { to { opacity: 1; transform: translateY(0); } }
+.form-entrance {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: fadeSlideIn 0.9s ease-out forwards;
+}
+@keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* Improve checkbox label contrast */
-.form-check-label { color: #cbd5e1 !important; }
+.form-check-label {
+  color: #cbd5e1 !important;
+}
 
 /* Ensure separators and helpers are visible */
-.d-flex .border-bottom { border-color: rgba(255,255,255,0.06) !important; }
-.fw-semobold, .text-muted { color: rgba(255,255,255,0.68) !important; }
-
+.d-flex .border-bottom {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+.fw-semobold,
+.text-muted {
+  color: rgba(255, 255, 255, 0.68) !important;
+}
 </style>

@@ -353,7 +353,9 @@ import { getCSSVariableValue } from "@/assets/ts/_utils";
 
 export default defineComponent({
   name: "default-dashboard-widget-6",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     className: { type: String, required: false },
     height: { type: String, required: false, default: "425px" },
@@ -361,7 +363,9 @@ export default defineComponent({
   setup(props) {
     const chartRef1 = ref<typeof VueApexCharts | null>(null);
     const chartRef2 = ref<typeof VueApexCharts | null>(null);
-    const chart = ref<ApexOptions>({});
+    const chart = ref<ApexOptions>({
+      /* empty */
+    });
     const store = useThemeStore();
 
     const series1 = [
@@ -463,7 +467,9 @@ const chartOptions = (height: string): ApexOptions => {
       },
     },
     plotOptions: {
-      bubble: {},
+      bubble: {
+        /* empty */
+      },
     },
     stroke: {
       show: false,

@@ -214,7 +214,9 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "notifications-menu",
-  components: {},
+  components: {
+    /* empty */
+  },
   setup() {
     const data1 = [
       {

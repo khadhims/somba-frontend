@@ -15,7 +15,7 @@
         <!--end::Title-->
 
         <!--begin::Link-->
-        <div class="fw-semibold fs-4" style="color: rgba(255,255,255,0.75)">
+        <div class="fw-semibold fs-4" style="color: rgba(255, 255, 255, 0.75)">
           Enter your email to reset your password.
         </div>
         <!--end::Link-->
@@ -158,7 +158,7 @@ export default defineComponent({
 }
 .custom-input:focus {
   border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 6px rgba(59,130,246,0.08) !important;
+  box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.08) !important;
   background: rgba(15, 23, 42, 0.9) !important;
 }
 
@@ -176,23 +176,44 @@ export default defineComponent({
   transition: all 0.3s;
   box-shadow: 0 6px 22px rgba(37, 99, 235, 0.35);
 }
-.btn-neon:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(37,99,235,0.5); }
+.btn-neon:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.5);
+}
 .btn-neon::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.18),
+    transparent
+  );
   transition: 0.6s;
 }
-.btn-neon:hover::after { left: 100%; }
+.btn-neon:hover::after {
+  left: 100%;
+}
 
-.form-entrance { opacity: 0; transform: translateY(8px); animation: fadeSlideIn 0.9s ease-out forwards; }
-@keyframes fadeSlideIn { to { opacity: 1; transform: translateY(0); } }
+.form-entrance {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: fadeSlideIn 0.9s ease-out forwards;
+}
+@keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* Ensure links and helper text are readable */
-.text-gray-500, .fw-semibold { color: rgba(255,255,255,0.75) !important; }
-
+.text-gray-500,
+.fw-semibold {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
 </style>

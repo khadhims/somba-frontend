@@ -74,7 +74,9 @@ import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   name: "logs-card",
-  components: {},
+  components: {
+    /* empty */
+  },
   props: {
     cardClasses: String,
   },
