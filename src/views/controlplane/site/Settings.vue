@@ -1,30 +1,18 @@
 <template>
-  <!--begin::Site Settings-->
   <div class="card">
-    <!--begin::Card header-->
     <div class="card-header border-0 pt-5">
-      <!--begin::Card title-->
       <div class="card-title">
         <h3 class="fw-bold m-0">{{ t("controlplane.site.settings.title") }}</h3>
       </div>
-      <!--end::Card title-->
     </div>
-    <!--begin::Card header-->
 
-    <!--begin::Card body-->
     <div class="card-body py-3">
-      <!--begin::Form-->
       <form @submit.prevent="saveSite" class="form">
-        <!--begin::Row-->
         <div class="row mb-7">
-          <!--begin::Col-->
-          <div class="col-md-6">
-            <!--begin::Label-->
+          <div class="col-md-12">
             <label class="required fw-semibold fs-6 mb-2">
               {{ t("controlplane.site.settings.form.fields.name.label") }}
             </label>
-            <!--end::Label-->
-            <!--begin::Input-->
             <input
               type="text"
               v-model="siteForm.name"
@@ -34,45 +22,14 @@
               "
               required
             />
-            <!--end::Input-->
           </div>
-          <!--end::Col-->
-
-          <!--begin::Col-->
-          <div class="col-md-6">
-            <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">
-              {{ t("controlplane.site.settings.form.fields.code.label") }}
-            </label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <input
-              type="text"
-              v-model="siteForm.code"
-              class="form-control form-control-solid"
-              :placeholder="
-                t('controlplane.site.settings.form.fields.code.placeholder')
-              "
-              readonly
-            />
-            <!--end::Input-->
-          </div>
-          <!--end::Col-->
         </div>
-        <!--end::Row-->
 
-        <!--begin::Row-->
         <div class="row mb-7">
-          <!--begin::Col-->
           <div class="col-md-12">
-            <!--begin::Label-->
             <label class="fw-semibold fs-6 mb-2">
-              {{
-                t("controlplane.site.settings.form.fields.description.label")
-              }}
+              {{ t("controlplane.site.settings.form.fields.description.label") }}
             </label>
-            <!--end::Label-->
-            <!--begin::Input-->
             <textarea
               v-model="siteForm.description"
               class="form-control form-control-solid"
@@ -83,22 +40,14 @@
                 )
               "
             ></textarea>
-            <!--end::Input-->
           </div>
-          <!--end::Col-->
         </div>
-        <!--end::Row-->
 
-        <!--begin::Row-->
         <div class="row mb-7">
-          <!--begin::Col-->
           <div class="col-md-12">
-            <!--begin::Label-->
             <label class="required fw-semibold fs-6 mb-2">
               {{ t("controlplane.site.settings.form.fields.address.label") }}
             </label>
-            <!--end::Label-->
-            <!--begin::Input-->
             <textarea
               v-model="siteForm.address"
               class="form-control form-control-solid"
@@ -108,122 +57,69 @@
               "
               required
             ></textarea>
-            <!--end::Input-->
           </div>
-          <!--end::Col-->
         </div>
-        <!--end::Row-->
 
-        <!--begin::Row-->
-        <div class="row mb-7">
-          <!--begin::Col-->
-          <div class="col-md-6">
-            <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">
-              {{ t("controlplane.site.settings.form.fields.latitude.label") }}
-            </label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <input
-              type="number"
-              v-model="siteForm.latitude"
-              class="form-control form-control-solid"
-              :placeholder="
-                t('controlplane.site.settings.form.fields.latitude.placeholder')
-              "
-              step="any"
-            />
-            <!--end::Input-->
+        <div v-if="isEdit" class="row mb-7">
+          <div class="col-md-12">
+            <label class="fw-semibold fs-6 mb-2">API Key Mini-PC</label>
+            <div class="d-flex align-items-center gap-3">
+              <input
+                :type="showApiKey && siteForm.api_key ? 'text' : 'password'"
+                :value="siteForm.api_key || '••••••••••••••••••••••••••••••••'"
+                class="form-control form-control-solid"
+                readonly
+              />
+              <button
+                v-if="siteForm.api_key"
+                type="button"
+                class="btn btn-light"
+                @click="showApiKey = !showApiKey"
+              >
+                {{ showApiKey ? "Sembunyikan" : "Tampilkan" }}
+              </button>
+              <button
+                v-if="siteForm.api_key"
+                type="button"
+                class="btn btn-light-primary"
+                @click="copyApiKey"
+              >
+                Salin
+              </button>
+              <button
+                type="button"
+                class="btn btn-light-warning"
+                @click="regenerateApiKey"
+                :disabled="isRegenerating"
+              >
+                Regenerate
+              </button>
+            </div>
+            <div v-if="!siteForm.api_key" class="form-text">
+              API key disimpan ter-hash di database. Klik Regenerate untuk
+              mendapatkan key baru (hanya ditampilkan sekali).
+            </div>
+            <div class="form-text">
+              Status koneksi:
+              <span
+                class="badge ms-2"
+                :class="
+                  siteForm.status === 'online'
+                    ? 'badge-light-success'
+                    : 'badge-light-danger'
+                "
+              >
+                {{ siteForm.status || "offline" }}
+              </span>
+            </div>
           </div>
-          <!--end::Col-->
-
-          <!--begin::Col-->
-          <div class="col-md-6">
-            <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">
-              {{ t("controlplane.site.settings.form.fields.longitude.label") }}
-            </label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <input
-              type="number"
-              v-model="siteForm.longitude"
-              class="form-control form-control-solid"
-              :placeholder="
-                t(
-                  'controlplane.site.settings.form.fields.longitude.placeholder'
-                )
-              "
-              step="any"
-            />
-            <!--end::Input-->
-          </div>
-          <!--end::Col-->
         </div>
-        <!--end::Row-->
 
-        <!--begin::Row-->
         <div class="row mb-7">
-          <!--begin::Col-->
           <div class="col-md-6">
-            <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">
-              {{
-                t("controlplane.site.settings.form.fields.contactPerson.label")
-              }}
-            </label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <input
-              type="text"
-              v-model="siteForm.contact_person"
-              class="form-control form-control-solid"
-              :placeholder="
-                t(
-                  'controlplane.site.settings.form.fields.contactPerson.placeholder'
-                )
-              "
-            />
-            <!--end::Input-->
-          </div>
-          <!--end::Col-->
-
-          <!--begin::Col-->
-          <div class="col-md-6">
-            <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">
-              {{
-                t("controlplane.site.settings.form.fields.contactPhone.label")
-              }}
-            </label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <input
-              type="tel"
-              v-model="siteForm.contact_phone"
-              class="form-control form-control-solid"
-              :placeholder="
-                t(
-                  'controlplane.site.settings.form.fields.contactPhone.placeholder'
-                )
-              "
-            />
-            <!--end::Input-->
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Row-->
-
-        <!--begin::Row-->
-        <div class="row mb-7">
-          <!--begin::Col-->
-          <div class="col-md-6">
-            <!--begin::Label-->
             <label class="fw-semibold fs-6 mb-2">
               {{ t("controlplane.site.settings.form.fields.status.label") }}
             </label>
-            <!--end::Label-->
-            <!--begin::Select-->
             <select
               v-model="siteForm.is_active"
               class="form-select form-select-solid"
@@ -243,51 +139,28 @@
                 }}
               </option>
             </select>
-            <!--end::Select-->
           </div>
-          <!--end::Col-->
 
-          <!--begin::Col-->
           <div class="col-md-6">
-            <!--begin::Label-->
             <label class="fw-semibold fs-6 mb-2">
               {{ t("controlplane.site.settings.form.fields.timezone.label") }}
             </label>
-            <!--end::Label-->
-            <!--begin::Select-->
-            <select
-              v-model="siteForm.timezone"
-              class="form-select form-select-solid"
-            >
-              <option value="WIB">
-                {{
-                  t(
-                    "controlplane.site.settings.form.fields.timezone.options.wib"
-                  )
-                }}
-              </option>
-              <option value="WITA">
-                {{
-                  t(
-                    "controlplane.site.settings.form.fields.timezone.options.wita"
-                  )
-                }}
-              </option>
-              <option value="WIT">
-                {{
-                  t(
-                    "controlplane.site.settings.form.fields.timezone.options.wit"
-                  )
-                }}
-              </option>
-            </select>
-            <!--end::Select-->
+            <input
+              type="text"
+              class="form-control form-control-solid"
+              :value="displayTimezone"
+              readonly
+            />
+            <div class="form-text">
+              {{
+                isEdit
+                  ? "Timezone disimpan saat site dibuat."
+                  : "Akan disimpan otomatis dari timezone browser Anda."
+              }}
+            </div>
           </div>
-          <!--end::Col-->
         </div>
-        <!--end::Row-->
 
-        <!--begin::Actions-->
         <div class="text-center pt-10">
           <button type="button" class="btn btn-light me-3" @click="resetForm">
             {{ t("controlplane.site.settings.form.actions.reset") }}
@@ -308,13 +181,9 @@
             </span>
           </button>
         </div>
-        <!--end::Actions-->
       </form>
-      <!--end::Form-->
     </div>
-    <!--end::Card body-->
   </div>
-  <!--end::Site Settings-->
 </template>
 
 <script setup lang="ts">
@@ -322,99 +191,65 @@ defineOptions({
   name: "SettingsComponent",
 });
 
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import ApiService from "@/core/services/ApiService";
+import { getUserTimezone } from "@/core/helpers/timezone";
 
-// Interface
 interface SiteForm {
   id?: string;
   name: string;
-  code: string;
   description: string;
   address: string;
-  latitude?: number;
-  longitude?: number;
-  contact_person: string;
-  contact_phone: string;
+  api_key: string;
+  status: string;
   is_active: boolean;
-  timezone: string; // enum: WIB | WITA | WIT
+  timezone: string;
 }
 
-// Router
 const route = useRoute();
 const router = useRouter();
-
 const { t } = useI18n();
 
-// Reactive data
 const isLoading = ref(false);
+const isRegenerating = ref(false);
+const showApiKey = ref(false);
 const siteForm = ref<SiteForm>({
   name: "",
-  code: "",
   description: "",
   address: "",
-  latitude: undefined,
-  longitude: undefined,
-  contact_person: "",
-  contact_phone: "",
+  api_key: "",
+  status: "offline",
   is_active: true,
-  timezone: "WIB",
+  timezone: getUserTimezone(),
 });
 
-// Computed
 const isEdit = computed(() => !!route.query.id);
-
-// Methods
-const generateSiteCode = (name: string) => {
-  return (
-    name.toUpperCase().replace(/\s+/g, "").substring(0, 6) +
-    "_" +
-    Date.now().toString().slice(-4)
-  );
-};
+const displayTimezone = computed(() =>
+  isEdit.value ? siteForm.value.timezone : getUserTimezone()
+);
 
 const saveSite = async () => {
   isLoading.value = true;
 
   try {
-    // Generate code if new site
-    if (!isEdit.value && !siteForm.value.code) {
-      siteForm.value.code = generateSiteCode(siteForm.value.name);
-    }
-
-    // Build payload matching backend field names
-    const payload: any = {
+    const payload = {
       name: siteForm.value.name,
-      code: siteForm.value.code,
       description: siteForm.value.description,
       address: siteForm.value.address,
-      latitude: siteForm.value.latitude,
-      longitude: siteForm.value.longitude,
-      contact_person: siteForm.value.contact_person,
-      contact_phone: siteForm.value.contact_phone,
       is_active: siteForm.value.is_active,
-      timezone: siteForm.value.timezone,
+      ...(!isEdit.value ? { timezone: getUserTimezone() } : {}),
     };
 
     if (isEdit.value && route.query.id) {
-      // Update existing site via PATCH /sites/{site_uid}
       const siteUid = route.query.id as string;
-      const resp = await ApiService.patch(`sites/${siteUid}`, payload);
-      console.log("Site updated:", resp);
+      await ApiService.patch(`sites/${siteUid}`, payload);
     } else {
-      // Create new site via POST /sites
-      const resp = await ApiService.post("sites", payload);
-      console.log("Site created:", resp);
+      await ApiService.post("sites", payload);
     }
 
-    // Redirect back to overview after save (defensive: log and fallback on failure)
-    try {
-      await router.push("/controlplane/site/overview");
-    } catch (navErr) {
-      console.error("[Settings] router.push failed:", navErr);
-    }
+    await router.push("/controlplane/site/overview");
   } catch (error) {
     console.error("Error saving site:", error);
   } finally {
@@ -425,26 +260,53 @@ const saveSite = async () => {
 const resetForm = () => {
   siteForm.value = {
     name: "",
-    code: "",
     description: "",
     address: "",
-    latitude: undefined,
-    longitude: undefined,
-    contact_person: "",
-    contact_phone: "",
+    api_key: "",
+    status: "offline",
     is_active: true,
-    timezone: "WIB",
+    timezone: getUserTimezone(),
   };
+};
+
+const copyApiKey = async () => {
+  if (!siteForm.value.api_key) return;
+  await navigator.clipboard.writeText(siteForm.value.api_key);
+};
+
+const regenerateApiKey = async () => {
+  if (!route.query.id) return;
+  if (
+    !confirm("Regenerate API key? Mini-PC harus di-update dengan key baru.")
+  ) {
+    return;
+  }
+
+  isRegenerating.value = true;
+  try {
+    const resp = await ApiService.post(
+      `sites/${route.query.id}/regenerate-key`,
+      {}
+    );
+    const data =
+      resp && resp.data && resp.data.data ? resp.data.data : resp.data;
+    if (data?.api_key) {
+      siteForm.value.api_key = data.api_key;
+      siteForm.value.status = data.status || "offline";
+      showApiKey.value = false;
+    }
+  } catch (error) {
+    console.error("Error regenerating API key:", error);
+  } finally {
+    isRegenerating.value = false;
+  }
 };
 
 const loadSite = async (id: string) => {
   isLoading.value = true;
 
   try {
-    const resp = await ApiService.query(`sites/${id}`, {
-      /* empty */
-    });
-    // backend may return wrapped response { is_active, code, message, data }
+    const resp = await ApiService.query(`sites/${id}`, {});
     const data =
       resp && resp.data && resp.data.data ? resp.data.data : resp.data;
 
@@ -452,15 +314,12 @@ const loadSite = async (id: string) => {
       siteForm.value = {
         id: data.uid || data.id || id,
         name: data.name || "",
-        code: data.code || "",
         description: data.description || "",
         address: data.address || "",
-        latitude: data.latitude ?? undefined,
-        longitude: data.longitude ?? undefined,
-        contact_person: data.contact_person || "",
-        contact_phone: data.contact_phone || "",
+        api_key: "",
+        status: data.status || "offline",
         is_active: !!data.is_active,
-        timezone: data.timezone || data.timeZone || "WIB",
+        timezone: data.timezone || getUserTimezone(),
       };
     }
   } catch (error) {
@@ -470,20 +329,9 @@ const loadSite = async (id: string) => {
   }
 };
 
-// Lifecycle
 onMounted(() => {
   if (isEdit.value && route.query.id) {
     loadSite(route.query.id as string);
   }
 });
-
-// Watch for name changes to auto-generate code
-watch(
-  () => siteForm.value.name,
-  (newName) => {
-    if (!isEdit.value && newName) {
-      siteForm.value.code = generateSiteCode(newName);
-    }
-  }
-);
 </script>

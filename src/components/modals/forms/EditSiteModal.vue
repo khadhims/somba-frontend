@@ -83,11 +83,76 @@
                 ></textarea>
                 <!--end::Input-->
               </div>
-              <!--end::Input group-->
+              <div class="fv-row mb-7">
+                <label class="required fs-6 fw-semibold mb-2">{{
+                  t("controlplane.site.settings.form.fields.address.label")
+                }}</label>
+                <textarea
+                  class="form-control form-control-solid"
+                  rows="3"
+                  :placeholder="
+                    t('controlplane.site.settings.form.fields.address.placeholder')
+                  "
+                  v-model="formData.address"
+                  name="address"
+                ></textarea>
+                <div v-if="errors.address" class="fv-plugins-message-container">
+                  <div class="fv-help-block">
+                    <span role="alert">{{ errors.address }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="fv-row mb-7">
+                <label class="fs-6 fw-semibold mb-2">{{
+                  t("controlplane.site.settings.form.fields.status.label")
+                }}</label>
+                <select
+                  v-model="formData.is_active"
+                  class="form-select form-select-solid"
+                >
+                  <option :value="true">
+                    {{
+                      t(
+                        "controlplane.site.settings.form.fields.status.options.active"
+                      )
+                    }}
+                  </option>
+                  <option :value="false">
+                    {{
+                      t(
+                        "controlplane.site.settings.form.fields.status.options.inactive"
+                      )
+                    }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="fv-row mb-7">
+                <label class="fs-6 fw-semibold mb-2">API Key Mini-PC</label>
+                <input
+                  type="password"
+                  class="form-control form-control-solid"
+                  value="••••••••••••••••••••••••••••••••"
+                  readonly
+                />
+                <div class="form-text">
+                  API key disimpan ter-hash. Regenerate dari Site Settings untuk
+                  key baru.
+                </div>
+              </div>
+
+              <div class="fv-row mb-7">
+                <label class="fs-6 fw-semibold mb-2">Timezone</label>
+                <input
+                  type="text"
+                  class="form-control form-control-solid"
+                  :value="formData.timezone"
+                  readonly
+                />
+              </div>
             </div>
-            <!--end::Scroll-->
           </div>
-          <!--end::Modal body-->
 
           <!--begin::Modal footer-->
           <div class="modal-footer flex-center">
@@ -139,6 +204,9 @@ interface SiteFormData {
   uid: string;
   name: string;
   description?: string;
+  address: string;
+  is_active: boolean;
+  timezone: string;
   team_uid?: string;
   created_by?: {
     username: string;
@@ -161,6 +229,9 @@ const formData = reactive<SiteFormData>({
   uid: "",
   name: "",
   description: "",
+  address: "",
+  is_active: true,
+  timezone: "",
   team_uid: "",
   created_by: undefined,
   created_at: "",
@@ -170,6 +241,7 @@ const formData = reactive<SiteFormData>({
 const errors = reactive({
   name: "",
   description: "",
+  address: "",
 });
 
 const { t } = useI18n();
@@ -178,9 +250,15 @@ const { t } = useI18n();
 const validateForm = () => {
   errors.name = "";
   errors.description = "";
+  errors.address = "";
 
   if (!formData.name.trim()) {
     errors.name = t("controlplane.site.modals.form.name.required");
+    return false;
+  }
+
+  if (!formData.address.trim()) {
+    errors.address = "Alamat wajib diisi";
     return false;
   }
 
@@ -200,6 +278,8 @@ const submitForm = async () => {
     const payload: any = {
       name: formData.name,
       description: formData.description,
+      address: formData.address,
+      is_active: formData.is_active,
     };
 
     // Call PATCH /sites/{site_uid}
@@ -241,6 +321,9 @@ const showModal = (siteData: any) => {
   formData.uid = siteData.uid ?? "";
   formData.name = siteData.name ?? "";
   formData.description = siteData.description ?? "";
+  formData.address = siteData.address ?? "";
+  formData.is_active = siteData.is_active !== false;
+  formData.timezone = siteData.timezone ?? "";
   formData.team_uid = siteData.team_uid ?? "";
   formData.created_by = siteData.created_by;
   formData.created_at = siteData.created_at ?? "";
@@ -249,6 +332,7 @@ const showModal = (siteData: any) => {
   // Reset errors
   errors.name = "";
   errors.description = "";
+  errors.address = "";
 
   // Show modal (static backdrop, disable keyboard/ESC)
   const modal = new Modal(editSiteModalRef.value!, {

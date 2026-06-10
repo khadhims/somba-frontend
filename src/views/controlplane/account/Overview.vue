@@ -366,6 +366,22 @@
                   required
                 />
               </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  v-model="newAccount.email"
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Phone</label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  v-model="newAccount.phone"
+                />
+              </div>
             </div>
           </div>
           <div class="modal-footer">
@@ -471,6 +487,22 @@
                   required
                 />
               </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  v-model="accountToEdit.email"
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Phone</label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  v-model="accountToEdit.phone"
+                />
+              </div>
             </div>
           </div>
           <div class="modal-footer">
@@ -523,6 +555,8 @@ import MembershipListModal from "@/components/modals/membership/MembershipListMo
 interface Account {
   uid: string;
   name: string;
+  email?: string;
+  phone?: string;
   organization_uid?: string;
   created_by?: {
     username: string;
@@ -581,6 +615,8 @@ const deleting = ref(false);
 const editing = ref(false);
 const newAccount = ref<Partial<Account>>({
   name: "",
+  email: "",
+  phone: "",
 });
 const accountToEdit = ref<Account | null>(null);
 const accountToDelete = ref<Account | null>(null);
@@ -881,6 +917,8 @@ const showAddAccountModal = () => {
   // Reset form
   newAccount.value = {
     name: "",
+    email: "",
+    phone: "",
   };
   // Show modal using Bootstrap
   const modal = document.getElementById("addAccountModal");
@@ -979,6 +1017,8 @@ const updateAccount = async () => {
   try {
     const resp = await ApiService.patch(`accounts/${accountToEdit.value.uid}`, {
       name: accountToEdit.value.name,
+      email: accountToEdit.value.email,
+      phone: accountToEdit.value.phone,
     });
     if (resp && resp.data) {
       // Refresh the accounts list

@@ -79,7 +79,7 @@
         <!--end::Search-->
 
         <button 
-          @click.prevent="showCameraForm = true" 
+          @click.prevent="openCreateForm" 
           class="btn btn-sm btn-light-primary"
         >
           <i class="ki-duotone ki-plus fs-2 me-1"></i>
@@ -274,7 +274,6 @@
                   <!--begin::Select-->
                   <select
                     v-model="cameraForm.siteId"
-                    @change="onSiteChange"
                     class="form-select form-select-solid"
                     required
                   >
@@ -293,7 +292,9 @@
                 </div>
                 <!--end::Col-->
 
-                <!--begin::Col-->
+              </div>
+
+              <div class="row mb-7">
                 <div class="col-md-6">
                   <!--begin::Label-->
                   <label class="fw-semibold fs-6 mb-2">
@@ -356,6 +357,9 @@
                   />
                   <div v-if="cameraUrlError" class="invalid-feedback d-block">
                     {{ cameraUrlError }}
+                  </div>
+                  <div class="form-text">
+                    RTSP URL stream utama (subtype=0). Sub-stream AI akan di-generate otomatis untuk Dahua/Hikvision.
                   </div>
                   <!--end::Input-->
                 </div>
@@ -664,11 +668,13 @@ const cameraForm = ref<CameraForm>({
 
 const resolveCameraUrl = (camera: {
   public_endpoint_url?: string;
+  master_rtsp_url?: string;
   ipAddress?: string;
   ip_address?: string;
   cameraUrl?: string;
 }): string =>
   camera.public_endpoint_url ||
+  camera.master_rtsp_url ||
   camera.cameraUrl ||
   camera.ipAddress ||
   camera.ip_address ||
@@ -677,7 +683,7 @@ const resolveCameraUrl = (camera: {
 const isValidCameraUrl = (value: string): boolean => {
   try {
     const url = new URL(value.trim());
-    return url.protocol === "http:" || url.protocol === "https:";
+    return ["http:", "https:", "rtsp:"].includes(url.protocol);
   } catch {
     return false;
   }
@@ -827,8 +833,6 @@ const getInitial = (name: string): string => {
   return trimmed ? trimmed.charAt(0).toUpperCase() : "?";
 };
 
-const onSiteChange = () => {};
-
 const onHeaderSiteFilterChange = () => {
   currentPage.value = 1;
   localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || "");
@@ -938,15 +942,18 @@ const saveCamera = async () => {
     // Hard-coded camera_config as requested
     const defaultCameraConfig: any = {
       zones: [],
-      // Do not send a hard-coded UID for camera_config — the backend should
-      // generate or preserve it. Including a fixed UID causes DB uniqueness
-      // / integrity errors when multiple cameras share the same config UID.
       name: "default",
       allow_labels: [],
       deny_labels: [],
       min_score: 0.3,
       zone_test: "center",
-      iou_threshold: 0.1
+      iou_threshold: 0.1,
+      recording: {
+        enabled: true,
+        post_buffer_sec: 10,
+        max_segment_sec: 300,
+        activity_class: "person",
+      },
     };
 
     // Build payload according to API specification
@@ -1165,6 +1172,12 @@ const viewCamera = (camera: Camera) => {
   }
 };
 
+const openCreateForm = () => {
+  cameraForm.value.siteId = selectedSiteFilter.value || cameraForm.value.siteId;
+  showCameraForm.value = true;
+  isEdit.value = false;
+};
+
 const closeForm = () => {
   showCameraForm.value = false;
   isEdit.value = false;
@@ -1209,8 +1222,7 @@ onMounted(async () => {
 
     // Open add camera modal if query param present
     if (route.query.addCamera === '1') {
-      showCameraForm.value = true;
-      isEdit.value = false;
+      await openCreateForm();
     }
   } catch (error) {
     console.error('Error initializing camera management:', error);
@@ -1218,10 +1230,9 @@ onMounted(async () => {
 });
 
 // Watch for changes to addCamera query param to open modal dynamically
-watch(() => route.query.addCamera, (val) => {
+watch(() => route.query.addCamera, async (val) => {
   if (val === '1') {
-    showCameraForm.value = true;
-    isEdit.value = false;
+    await openCreateForm();
   }
 });
 </script>
