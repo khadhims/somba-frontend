@@ -119,7 +119,7 @@
                 row.name
               }}</span>
               <span class="text-muted fw-semibold text-muted d-block fs-7 text-truncate" style="max-width: 280px">{{
-                row.cameraUrl
+                row.rtspUrl
               }}</span>
             </div>
           </div>
@@ -151,9 +151,9 @@
           </div>
         </template>
 
-        <template v-slot:cameraUrl="{ row }">
-          <span class="text-dark fw-semibold d-block fs-7 text-truncate" style="max-width: 220px" :title="row.cameraUrl">
-            {{ row.cameraUrl || "-" }}
+        <template v-slot:rtspUrl="{ row }">
+          <span class="text-dark fw-semibold d-block fs-7 text-truncate" style="max-width: 220px" :title="row.rtspUrl">
+            {{ row.rtspUrl || "-" }}
           </span>
         </template>
 
@@ -339,31 +339,50 @@
 
                 <!--begin::Col-->
                 <div class="col-md-6">
-                  <!--begin::Label-->
                   <label class="required fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.camera.form.fields.cameraUrl.label") }}
+                    {{ t("controlplane.site.camera.form.fields.rtspUrl.label") }}
                   </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
                   <input
                     type="url"
-                    v-model="cameraForm.cameraUrl"
+                    v-model="cameraForm.rtspUrl"
                     class="form-control form-control-solid"
-                    :class="{ 'is-invalid': cameraUrlError }"
-                    :placeholder="t('controlplane.site.camera.form.fields.cameraUrl.placeholder')"
+                    :class="{ 'is-invalid': rtspUrlError }"
+                    :placeholder="t('controlplane.site.camera.form.fields.rtspUrl.placeholder')"
                     autocomplete="off"
                     required
-                    @input="cameraUrlError = ''"
+                    @input="rtspUrlError = ''"
                   />
-                  <div v-if="cameraUrlError" class="invalid-feedback d-block">
-                    {{ cameraUrlError }}
+                  <div v-if="rtspUrlError" class="invalid-feedback d-block">
+                    {{ rtspUrlError }}
                   </div>
                   <div class="form-text">
-                    RTSP URL stream utama (subtype=0). Sub-stream AI akan di-generate otomatis untuk Dahua/Hikvision.
+                    {{ t("controlplane.site.camera.form.fields.rtspUrl.hint") }}
                   </div>
-                  <!--end::Input-->
                 </div>
-                <!--end::Col-->
+              </div>
+
+              <div class="row mb-7">
+                <div class="col-md-12">
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.streamUrl.label") }}
+                  </label>
+                  <input
+                    type="url"
+                    v-model="cameraForm.streamUrl"
+                    class="form-control form-control-solid"
+                    :class="{ 'is-invalid': streamUrlError }"
+                    :placeholder="t('controlplane.site.camera.form.fields.streamUrl.placeholder')"
+                    autocomplete="off"
+                    required
+                    @input="streamUrlError = ''"
+                  />
+                  <div v-if="streamUrlError" class="invalid-feedback d-block">
+                    {{ streamUrlError }}
+                  </div>
+                  <div class="form-text">
+                    {{ t("controlplane.site.camera.form.fields.streamUrl.hint") }}
+                  </div>
+                </div>
               </div>
               <!--end::Row-->
 
@@ -599,7 +618,8 @@ interface Camera {
   siteId: string;
   room: string;
   name: string;
-  cameraUrl: string;
+  rtspUrl: string;
+  streamUrl: string;
   brand: string;
   model?: string;
   type: string;
@@ -608,7 +628,6 @@ interface Camera {
   description?: string;
   status: "online" | "offline";
   createdAt: string;
-  public_endpoint_url?: string;
 }
 
 interface CameraForm {
@@ -617,7 +636,8 @@ interface CameraForm {
   siteId: string;
   room: string;
   name: string;
-  cameraUrl: string;
+  rtspUrl: string;
+  streamUrl: string;
   brand: string;
   model?: string;
   type: string;
@@ -650,14 +670,16 @@ const perPage = ref<number>(10);
 const totalItems = ref<number>(0);
 const totalPages = ref<number>(0);
 const playbackModal = ref<InstanceType<typeof CameraPlaybackModal> | null>(null);
-const cameraUrlError = ref("");
+const rtspUrlError = ref("");
+const streamUrlError = ref("");
 
 const cameraForm = ref<CameraForm>({
   uid: undefined,
   siteId: "",
   room: "",
   name: "",
-  cameraUrl: "",
+  rtspUrl: "",
+  streamUrl: "",
   brand: "",
   model: "",
   type: "Dome",
@@ -666,24 +688,32 @@ const cameraForm = ref<CameraForm>({
   description: "",
 });
 
-const resolveCameraUrl = (camera: {
-  public_endpoint_url?: string;
-  master_rtsp_url?: string;
-  ipAddress?: string;
-  ip_address?: string;
-  cameraUrl?: string;
-}): string =>
-  camera.public_endpoint_url ||
-  camera.master_rtsp_url ||
-  camera.cameraUrl ||
-  camera.ipAddress ||
-  camera.ip_address ||
-  "";
+const resolveRtspUrl = (camera: {
+  rtsp_url?: string;
+  rtspUrl?: string;
+}): string => camera.rtsp_url || camera.rtspUrl || "";
 
-const isValidCameraUrl = (value: string): boolean => {
+const resolveStreamUrl = (camera: {
+  stream_url?: string;
+  streamUrl?: string;
+}): string => camera.stream_url || camera.streamUrl || "";
+
+const isValidRtspUrl = (value: string): boolean => {
   try {
     const url = new URL(value.trim());
-    return ["http:", "https:", "rtsp:"].includes(url.protocol);
+    return url.protocol === "rtsp:";
+  } catch {
+    return false;
+  }
+};
+
+const isValidHlsUrl = (value: string): boolean => {
+  try {
+    const url = new URL(value.trim());
+    return (
+      ["http:", "https:"].includes(url.protocol) &&
+      value.includes(".m3u8")
+    );
   } catch {
     return false;
   }
@@ -718,8 +748,8 @@ const tableHeader = computed(() => [
     searchable: true,
   },
   {
-    columnName: t("controlplane.site.camera.table.cameraUrl"),
-    columnLabel: "cameraUrl",
+    columnName: t("controlplane.site.camera.table.rtspUrl"),
+    columnLabel: "rtspUrl",
     sortEnabled: true,
     searchable: true,
   },
@@ -745,7 +775,8 @@ const filteredAndSortedCameras = computed(() => {
     filtered = filtered.filter(
       (camera) =>
         camera.name.toLowerCase().includes(q) ||
-        camera.cameraUrl.toLowerCase().includes(q) ||
+        camera.rtspUrl.toLowerCase().includes(q) ||
+        camera.streamUrl.toLowerCase().includes(q) ||
         camera.brand.toLowerCase().includes(q) ||
         camera.type.toLowerCase().includes(q) ||
         getSiteName(camera.siteId).toLowerCase().includes(q) ||
@@ -891,14 +922,16 @@ const loadCameras = async () => {
       const siteCameras = resp.data.data && Array.isArray(resp.data.data) ? resp.data.data : Array.isArray(resp.data) ? resp.data : [];
       
       cameras.value = siteCameras.map((camera: any) => {
-        const cameraUrl = resolveCameraUrl(camera);
+        const rtspUrl = resolveRtspUrl(camera);
+        const streamUrl = resolveStreamUrl(camera);
 
         return {
           id: camera.id || Date.now() + Math.random(),
           uid: camera.uid,
           siteId: camera.site_uid || selectedSiteFilter.value,
           name: camera.name || "",
-          cameraUrl,
+          rtspUrl,
+          streamUrl,
           brand: camera.brand || "",
           model: camera.model || "",
           type: camera.cam_type || camera.type || "Dome",
@@ -909,7 +942,6 @@ const loadCameras = async () => {
             typeof camera.status !== "undefined" ? camera.status : camera.is_active
           ),
           createdAt: camera.created_at || new Date().toISOString().split("T")[0],
-          public_endpoint_url: cameraUrl,
           room: resolveRoomName(camera),
         };
       });
@@ -926,12 +958,21 @@ const loadCameras = async () => {
 };
 
 const saveCamera = async () => {
-  cameraUrlError.value = "";
-  const trimmedCameraUrl = cameraForm.value.cameraUrl.trim();
+  rtspUrlError.value = "";
+  streamUrlError.value = "";
+  const trimmedRtspUrl = cameraForm.value.rtspUrl.trim();
+  const trimmedStreamUrl = cameraForm.value.streamUrl.trim();
 
-  if (!isValidCameraUrl(trimmedCameraUrl)) {
-    cameraUrlError.value = t(
-      "controlplane.site.camera.form.fields.cameraUrl.invalid"
+  if (!isValidRtspUrl(trimmedRtspUrl)) {
+    rtspUrlError.value = t(
+      "controlplane.site.camera.form.fields.rtspUrl.invalid"
+    );
+    return;
+  }
+
+  if (!isValidHlsUrl(trimmedStreamUrl)) {
+    streamUrlError.value = t(
+      "controlplane.site.camera.form.fields.streamUrl.invalid"
     );
     return;
   }
@@ -960,7 +1001,8 @@ const saveCamera = async () => {
     const payload = {
       name: cameraForm.value.name,
       model: cameraForm.value.model || "",
-      public_endpoint_url: trimmedCameraUrl,
+      rtsp_url: trimmedRtspUrl,
+      stream_url: trimmedStreamUrl,
       brand: cameraForm.value.brand,
       cam_type: cameraForm.value.type,
       cam_resolution: cameraForm.value.resolution,
@@ -987,8 +1029,8 @@ const saveCamera = async () => {
           ...cameraForm.value,
           siteId: cameraForm.value.siteId,
           room: cameraForm.value.room.trim(),
-          cameraUrl: trimmedCameraUrl,
-          public_endpoint_url: trimmedCameraUrl,
+          rtspUrl: trimmedRtspUrl,
+          streamUrl: trimmedStreamUrl,
         };
       }
     } else {
@@ -1004,7 +1046,8 @@ const saveCamera = async () => {
         siteId: cameraForm.value.siteId,
         room: cameraForm.value.room.trim(),
         name: cameraForm.value.name,
-        cameraUrl: trimmedCameraUrl,
+        rtspUrl: trimmedRtspUrl,
+        streamUrl: trimmedStreamUrl,
         brand: cameraForm.value.brand,
         model: cameraForm.value.model,
         type: cameraForm.value.type,
@@ -1013,7 +1056,6 @@ const saveCamera = async () => {
         description: cameraForm.value.description,
         status: "online",
         createdAt: new Date().toISOString().split("T")[0],
-        public_endpoint_url: trimmedCameraUrl,
       };
       cameras.value.unshift(newCamera);
     }
@@ -1060,7 +1102,8 @@ const editCamera = async (camera: Camera) => {
           siteId: cameraData.site_uid || camera.siteId,
           room: resolveRoomName({ ...camera, ...cameraData }),
           name: cameraData.name || camera.name,
-          cameraUrl: resolveCameraUrl({ ...camera, ...cameraData }),
+          rtspUrl: resolveRtspUrl({ ...camera, ...cameraData }),
+          streamUrl: resolveStreamUrl({ ...camera, ...cameraData }),
           brand: cameraData.brand || camera.brand,
           model: cameraData.model || camera.model || "",
           type: cameraData.cam_type || cameraData.type || camera.type,
@@ -1076,7 +1119,8 @@ const editCamera = async (camera: Camera) => {
           siteId: camera.siteId,
           room: camera.room,
           name: camera.name,
-          cameraUrl: camera.cameraUrl,
+          rtspUrl: camera.rtspUrl,
+          streamUrl: camera.streamUrl,
           brand: camera.brand,
           model: camera.model || "",
           type: camera.type,
@@ -1093,7 +1137,8 @@ const editCamera = async (camera: Camera) => {
         siteId: camera.siteId,
         room: camera.room,
         name: camera.name,
-        cameraUrl: camera.cameraUrl,
+        rtspUrl: camera.rtspUrl,
+        streamUrl: camera.streamUrl,
         brand: camera.brand,
         model: camera.model || "",
         type: camera.type,
@@ -1114,7 +1159,8 @@ const editCamera = async (camera: Camera) => {
       siteId: camera.siteId,
       room: camera.room,
       name: camera.name,
-      cameraUrl: camera.cameraUrl,
+      rtspUrl: camera.rtspUrl,
+      streamUrl: camera.streamUrl,
       brand: camera.brand,
       model: camera.model || "",
       type: camera.type,
@@ -1155,15 +1201,13 @@ const deleteCamera = async (camera: Camera) => {
 const viewCamera = (camera: Camera) => {
   console.log("Opening live stream for camera:", camera.name);
 
-  const streamUrl = resolveCameraUrl(camera);
-
   const cameraData = {
     uid: camera.uid || camera.id.toString(),
     name: camera.name,
     room: camera.room,
     recording: false,
     site_uid: camera.siteId,
-    public_endpoint_url: streamUrl,
+    stream_url: camera.streamUrl ?? null,
     model: camera.model
   };
   
@@ -1181,12 +1225,14 @@ const openCreateForm = () => {
 const closeForm = () => {
   showCameraForm.value = false;
   isEdit.value = false;
-  cameraUrlError.value = "";
+  rtspUrlError.value = "";
+  streamUrlError.value = "";
   cameraForm.value = {
     siteId: "",
     room: "",
     name: "",
-    cameraUrl: "",
+    rtspUrl: "",
+    streamUrl: "",
     brand: "",
     model: "",
     type: "Dome",

@@ -80,7 +80,7 @@ interface Camera {
   room: string;
   recording: boolean;
   site_uid: string;
-  public_endpoint_url?: string;
+  stream_url?: string | null;
   model?: string;
 }
 
@@ -138,13 +138,13 @@ const snapToLiveEdge = (
 };
 
 const initializePlayer = () => {
-  if (!videoPlayer.value || !camera.value?.public_endpoint_url) {
+  if (!videoPlayer.value || !camera.value?.stream_url) {
     hasError.value = true;
     isLoading.value = false;
     return;
   }
 
-  const url = camera.value.public_endpoint_url;
+  const url = camera.value.stream_url;
   const HlsGlobal = (window as any).Hls;
 
   if (HlsGlobal && HlsGlobal.isSupported && HlsGlobal.isSupported()) {

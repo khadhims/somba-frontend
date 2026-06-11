@@ -119,10 +119,17 @@
 					"label": "Ruangan",
 					"placeholder": "Masukkan nama ruangan"
 				},
-				"cameraUrl": {
-					"label": "URL Kamera",
-					"placeholder": "http://192.168.1.10:8554/camera1/index.m3u8",
-					"invalid": "Masukkan URL HLS yang valid (http:// atau https://)"
+				"rtspUrl": {
+					"label": "RTSP URL",
+					"placeholder": "rtsp://admin:pass@192.168.1.64:554/cam/realmonitor?channel=1&subtype=0",
+					"invalid": "Masukkan RTSP URL yang valid (rtsp://)",
+					"hint": "Referensi RTSP — dikonfigurasi manual di go2rtc.yaml di edge."
+				},
+				"streamUrl": {
+					"label": "Stream URL (HLS)",
+					"placeholder": "http://103.53.184.186:1984/api/stream.m3u8?src=camera-uuid_main",
+					"invalid": "Masukkan URL HLS yang valid (http/https, berisi .m3u8)",
+					"hint": "URL HLS dari go2rtc — dipakai langsung untuk live view di Web UI."
 				},
 				"brand": {
 					"label": "Merek",
@@ -185,7 +192,8 @@
 			"name": "Nama Kamera",
 			"location": "Lokasi",
 			"specs": "Spesifikasi",
-			"cameraUrl": "URL Kamera",
+			"rtspUrl": "RTSP URL",
+			"streamUrl": "Stream URL",
 			"status": "Status",
 			"actions": "Aksi",
 			"empty": "Tidak ada kamera"
@@ -207,6 +215,62 @@
 			"unknownSite": "Lokasi Tidak Dikenal",
 			"unknownRoom": "Ruangan Tidak Dikenal",
 			"unknownNvr": "NVR Tidak Dikenal"
+		}
+	},
+	"activity": {
+		"title": "Aktivitas",
+		"header": {
+			"title": "Master Data Aktivitas",
+			"subtitle": "Definisikan aktivitas, model AI, dan class deteksi per lokasi"
+		},
+		"filters": {
+			"siteLabel": "Lokasi",
+			"siteAll": "Pilih lokasi"
+		},
+		"toolbar": {
+			"addButton": "Tambah Aktivitas"
+		},
+		"table": {
+			"name": "Nama",
+			"code": "Kode",
+			"model": "Model AI",
+			"classes": "Class",
+			"cameras": "Kamera",
+			"actions": "Aksi",
+			"empty": "Belum ada aktivitas"
+		},
+		"actions": {
+			"edit": "Ubah",
+			"delete": "Hapus"
+		},
+		"form": {
+			"titleCreate": "Tambah Aktivitas",
+			"titleEdit": "Ubah Aktivitas",
+			"fields": {
+				"code": { "label": "Kode" },
+				"name": { "label": "Nama Aktivitas" },
+				"aiModel": { "label": "Model AI" },
+				"minConfidence": { "label": "Min. Confidence" },
+				"targetClasses": {
+					"label": "Target Class",
+					"hint": "Pisahkan dengan koma, mis. person, pot"
+				},
+				"postBuffer": { "label": "Post Buffer (detik)" },
+				"maxSegment": { "label": "Max Segment (detik)" },
+				"cameras": {
+					"label": "Assign ke Kamera",
+					"hint": "Pilih satu atau lebih kamera (Ctrl+klik)"
+				}
+			},
+			"actions": {
+				"cancel": "Batal",
+				"loading": "Menyimpan...",
+				"create": "Simpan",
+				"update": "Perbarui"
+			}
+		},
+		"notifications": {
+			"deleteConfirm": "Hapus aktivitas ini?"
 		}
 	},
 	"nvr": {

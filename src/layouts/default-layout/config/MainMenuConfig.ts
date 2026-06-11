@@ -46,6 +46,12 @@ const MainMenuConfig: Array<MenuItem> = [
         bootstrapIcon: "bi-camera-video",
       },
       {
+        heading: "activity",
+        route: "/controlplane/site/activity",
+        keenthemesIcon: "pulse",
+        bootstrapIcon: "bi-activity",
+      },
+      {
         sectionTitle: "pages",
         keenthemesIcon: "plus",
         bootstrapIcon: "bi-archive",

@@ -104,7 +104,7 @@
                     }"
                   >
                     <video
-                      v-if="camera.public_endpoint_url"
+                      v-if="camera.stream_url"
                       :id="`video-${camera.uid}`"
                       class="camera-video"
                       playsinline
@@ -323,7 +323,7 @@ interface Camera {
   room: string;
   recording: boolean;
   site_uid: string;
-  public_endpoint_url?: string;
+  stream_url?: string | null;
   model?: string;
 }
 
@@ -363,7 +363,7 @@ const attachStreamToVideo = (cam: Camera) => {
   const videoEl = document.getElementById(
     `video-${cam.uid}`
   ) as HTMLVideoElement | null;
-  const url = cam.public_endpoint_url;
+  const url = cam.stream_url || undefined;
   if (!videoEl || !url) return;
 
   // Destroy previous instance if exists and source changed
@@ -606,12 +606,7 @@ const fetchCameras = async () => {
       room: it.room_name ?? it.roomName ?? it.room ?? it.location ?? "",
       recording: Boolean(it.is_recording || it.recording),
       site_uid: (it.site_uid ?? it.site?.uid) || selectedSiteId.value,
-      public_endpoint_url:
-        it.public_endpoint_url ??
-        it.publicEndpointUrl ??
-        it.ipAddress ??
-        it.url ??
-        undefined,
+      stream_url: it.stream_url ?? null,
       model: it.model ?? it.camera_model ?? it.modelName ?? undefined,
     }));
 

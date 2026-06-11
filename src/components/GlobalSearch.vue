@@ -324,12 +324,12 @@ const navigateToCamera = async (camera: any) => {
       room: camera.room || camera.site_name,
       recording: true,
       site_uid: camera.site_uid,
-      public_endpoint_url: camera.public_endpoint_url,
+      stream_url: camera.stream_url ?? null,
       model: camera.model,
     };
 
-    // If public_endpoint_url is missing, try to fetch it
-    if (!cameraData.public_endpoint_url && camera.site_uid) {
+    // If stream_url is missing, try to fetch it
+    if (!cameraData.stream_url && camera.site_uid) {
       try {
         const resp = await ApiService.query(
           `sites/${camera.site_uid}/cameras`,
@@ -339,8 +339,8 @@ const navigateToCamera = async (camera: any) => {
         );
         const cameras = resp?.data?.data || resp?.data || [];
         const fullCamera = cameras.find((c: any) => c.uid === camera.uid);
-        if (fullCamera?.public_endpoint_url) {
-          cameraData.public_endpoint_url = fullCamera.public_endpoint_url;
+        if (fullCamera?.stream_url) {
+          cameraData.stream_url = fullCamera.stream_url;
         }
       } catch (err) {
         console.error("[GlobalSearch] Error fetching camera details:", err);
@@ -474,7 +474,7 @@ const fetchData = async () => {
           model: cam.model || cam.camera_model,
           site_uid: site.uid,
           site_name: site.name,
-          public_endpoint_url: cam.public_endpoint_url || "",
+          stream_url: cam.stream_url || "",
         }));
         allCameras.push(...normalizedCameras);
       } catch (err) {

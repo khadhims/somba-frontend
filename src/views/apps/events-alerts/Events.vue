@@ -305,7 +305,7 @@ interface Camera {
     iou_threshold?: number;
   };
   model?: string;
-  public_endpoint_url?: string;
+  stream_url?: string;
   created_by?: {
     username?: string;
     email?: string;
@@ -534,10 +534,11 @@ const fetchEvents = async () => {
       return {
         severity: "medium", // default severity based on detection activity
         site_uid: siteUid,
-        camera_uuid: item.camera_uuid || "",
-        camera_name: item.camera_name || "",
+        camera_uuid: item.camera_uid || item.camera_uuid || "",
+        camera_name: item.camera?.name || item.camera_name || "",
         event_id: item.event_id || "",
-        event_name: item.event_name || "",
+        event_name:
+          item.activity?.name || item.activity_type || item.event_name || "",
         event_start: convertToGMT8(item.event_start),
         event_end: convertToGMT8(item.event_end),
         duration_minutes: item.duration_minutes,
@@ -687,7 +688,7 @@ const fetchCamerasForFilter = async (siteUid: string) => {
       site_name: camera.site_name,
       camera_config: camera.camera_config,
       model: camera.model,
-      public_endpoint_url: camera.public_endpoint_url,
+      stream_url: camera.stream_url,
       created_by: camera.created_by,
     }));
   } catch (error) {
