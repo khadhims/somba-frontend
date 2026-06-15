@@ -54,6 +54,15 @@
 			"description": {
 				"label": "Deskripsi",
 				"placeholder": "Masukkan deskripsi Lokasi"
+			},
+			"apiKey": {
+				"label": "API Key Mini-PC",
+				"placeholder": "Klik Generate untuk membuat API key",
+				"generate": "Generate",
+				"show": "Tampilkan API key",
+				"hide": "Sembunyikan API key",
+				"hint": "Simpan API key ke file .env pada mini-PC (EDGE_API_KEY).",
+				"required": "Generate API key terlebih dahulu"
 			}
 		},
 		"actions": {
@@ -147,6 +156,9 @@
 					"label": "Model",
 					"placeholder": "Nomor model"
 				},
+				"status": {
+					"label": "Status"
+				},
 				"type": {
 					"label": "Jenis Kamera",
 					"options": {
@@ -170,6 +182,10 @@
 				"location": {
 					"label": "Lokasi",
 					"placeholder": "Deskripsi lokasi spesifik"
+				},
+				"position": {
+					"label": "Posisi Kamera",
+					"placeholder": "Contoh: pintu masuk dapur, area prep"
 				},
 				"description": {
 					"label": "Deskripsi",
@@ -218,20 +234,22 @@
 		}
 	},
 	"activity": {
-		"title": "Aktivitas",
+		"title": "Manajemen Aktivitas",
 		"header": {
-			"title": "Master Data Aktivitas",
-			"subtitle": "Definisikan aktivitas, model AI, dan class deteksi per lokasi"
+			"title": "Manajemen Aktivitas",
+			"subtitleDefault": "Kelola aktivitas, model AI, dan class deteksi untuk tim Anda"
 		},
 		"filters": {
-			"siteLabel": "Lokasi",
-			"siteAll": "Pilih lokasi"
+			"siteLabel": "Lokasi:",
+			"siteAll": "Semua Lokasi"
 		},
 		"toolbar": {
+			"itemsLabel": "Item:",
+			"searchPlaceholder": "Cari aktivitas...",
 			"addButton": "Tambah Aktivitas"
 		},
 		"table": {
-			"name": "Nama",
+			"name": "Nama Aktivitas",
 			"code": "Kode",
 			"model": "Model AI",
 			"classes": "Class",
@@ -247,19 +265,32 @@
 			"titleCreate": "Tambah Aktivitas",
 			"titleEdit": "Ubah Aktivitas",
 			"fields": {
-				"code": { "label": "Kode" },
+				"code": {
+					"label": "Kode",
+					"hint": "Kode otomatis"
+				},
 				"name": { "label": "Nama Aktivitas" },
-				"aiModel": { "label": "Model AI" },
+				"aiModel": {
+					"label": "Nama File Model",
+					"hint": "Edge memuat models/{nama}.pt — cukup isi nama file tanpa .pt"
+				},
 				"minConfidence": { "label": "Min. Confidence" },
 				"targetClasses": {
 					"label": "Target Class",
-					"hint": "Pisahkan dengan koma, mis. person, pot"
+					"placeholder": "person",
+					"addButton": "Tambah",
+					"empty": "Belum ada class dipilih",
+					"remove": "Hapus class",
+					"required": "Tambahkan minimal satu target class"
 				},
 				"postBuffer": { "label": "Post Buffer (detik)" },
 				"maxSegment": { "label": "Max Segment (detik)" },
 				"cameras": {
 					"label": "Assign ke Kamera",
-					"hint": "Pilih satu atau lebih kamera (Ctrl+klik)"
+					"placeholder": "Pilih kamera",
+					"addButton": "Tambah",
+					"empty": "Belum ada kamera dipilih",
+					"remove": "Hapus kamera"
 				}
 			},
 			"actions": {

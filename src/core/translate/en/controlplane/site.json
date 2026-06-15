@@ -54,6 +54,15 @@
 			"description": {
 				"label": "Description",
 				"placeholder": "Enter site description"
+			},
+			"apiKey": {
+				"label": "Mini-PC API Key",
+				"placeholder": "Click Generate to create an API key",
+				"generate": "Generate",
+				"show": "Show API key",
+				"hide": "Hide API key",
+				"hint": "Save this API key to the mini-PC .env file (EDGE_API_KEY).",
+				"required": "Generate an API key first"
 			}
 		},
 		"actions": {
@@ -147,6 +156,9 @@
 					"label": "Model",
 					"placeholder": "Model number"
 				},
+				"status": {
+					"label": "Status"
+				},
 				"type": {
 					"label": "Camera Type",
 					"options": {
@@ -170,6 +182,10 @@
 				"location": {
 					"label": "Location",
 					"placeholder": "Specific location description"
+				},
+				"position": {
+					"label": "Camera Position",
+					"placeholder": "e.g. kitchen entrance, prep area"
 				},
 				"description": {
 					"label": "Description",
@@ -218,20 +234,22 @@
 		}
 	},
 	"activity": {
-		"title": "Activities",
+		"title": "Activity Management",
 		"header": {
-			"title": "Activity Master Data",
-			"subtitle": "Define activities, AI models, and detection classes per site"
+			"title": "Activity Management",
+			"subtitleDefault": "Manage activities, AI models, and detection classes for your team"
 		},
 		"filters": {
-			"siteLabel": "Site",
-			"siteAll": "Select site"
+			"siteLabel": "Site:",
+			"siteAll": "All Sites"
 		},
 		"toolbar": {
+			"itemsLabel": "Items:",
+			"searchPlaceholder": "Search activities...",
 			"addButton": "Add Activity"
 		},
 		"table": {
-			"name": "Name",
+			"name": "Activity Name",
 			"code": "Code",
 			"model": "AI Model",
 			"classes": "Classes",
@@ -247,19 +265,32 @@
 			"titleCreate": "Add Activity",
 			"titleEdit": "Edit Activity",
 			"fields": {
-				"code": { "label": "Code" },
+				"code": {
+					"label": "Code",
+					"hint": "Auto-generated code"
+				},
 				"name": { "label": "Activity Name" },
-				"aiModel": { "label": "AI Model" },
+				"aiModel": {
+					"label": "Model Filename",
+					"hint": "Edge loads models/{name}.pt — enter the filename without .pt"
+				},
 				"minConfidence": { "label": "Min. Confidence" },
 				"targetClasses": {
 					"label": "Target Classes",
-					"hint": "Comma-separated, e.g. person, pot"
+					"placeholder": "person",
+					"addButton": "Add",
+					"empty": "No classes selected yet",
+					"remove": "Remove class",
+					"required": "Add at least one target class"
 				},
 				"postBuffer": { "label": "Post Buffer (seconds)" },
 				"maxSegment": { "label": "Max Segment (seconds)" },
 				"cameras": {
 					"label": "Assign to Cameras",
-					"hint": "Select one or more cameras (Ctrl+click)"
+					"placeholder": "Select camera",
+					"addButton": "Add",
+					"empty": "No cameras selected yet",
+					"remove": "Remove camera"
 				}
 			},
 			"actions": {

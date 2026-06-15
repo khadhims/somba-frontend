@@ -262,16 +262,11 @@
           <!-- Modal Body -->
           <div class="camera-form-modal-body">
             <form @submit.prevent="saveCamera" class="form">
-              <!--begin::Row-->
               <div class="row mb-7">
-                <!--begin::Col-->
                 <div class="col-md-6">
-                  <!--begin::Label-->
                   <label class="required fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.site.label") }}
                   </label>
-                  <!--end::Label-->
-                  <!--begin::Select-->
                   <select
                     v-model="cameraForm.siteId"
                     class="form-select form-select-solid"
@@ -288,44 +283,25 @@
                       {{ site.name }}
                     </option>
                   </select>
-                  <!--end::Select-->
                 </div>
-                <!--end::Col-->
-
-              </div>
-
-              <div class="row mb-7">
                 <div class="col-md-6">
-                  <!--begin::Label-->
                   <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.room.label") }}
                   </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
                   <input
                     type="text"
                     v-model="cameraForm.room"
                     class="form-control form-control-solid"
                     :placeholder="t('controlplane.site.camera.form.fields.room.placeholder')"
                   />
-                  <!--end::Input-->
                 </div>
-                <!--end::Col-->
-
-               
               </div>
-              <!--end::Row-->
 
-              <!--begin::Row-->
               <div class="row mb-7">
-                <!--begin::Col-->
                 <div class="col-md-6">
-                  <!--begin::Label-->
                   <label class="required fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.name.label") }}
                   </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
                   <input
                     type="text"
                     v-model="cameraForm.name"
@@ -333,12 +309,27 @@
                     :placeholder="t('controlplane.site.camera.form.fields.name.placeholder')"
                     required
                   />
-                  <!--end::Input-->
                 </div>
-                <!--end::Col-->
-
-                <!--begin::Col-->
                 <div class="col-md-6">
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.status.label") }}
+                  </label>
+                  <select
+                    v-model="cameraForm.status"
+                    class="form-select form-select-solid"
+                  >
+                    <option value="online">
+                      {{ t("controlplane.site.camera.status.online") }}
+                    </option>
+                    <option value="offline">
+                      {{ t("controlplane.site.camera.status.offline") }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-7">
+                <div class="col-md-12">
                   <label class="required fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.rtspUrl.label") }}
                   </label>
@@ -384,18 +375,12 @@
                   </div>
                 </div>
               </div>
-              <!--end::Row-->
 
-              <!--begin::Row-->
               <div class="row mb-7">
-                <!--begin::Col-->
                 <div class="col-md-6">
-                  <!--begin::Label-->
                   <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.brand.label") }}
                   </label>
-                  <!--end::Label-->
-                  <!--begin::Select-->
                   <select
                     v-model="cameraForm.brand"
                     class="form-select form-select-solid"
@@ -422,18 +407,11 @@
                       {{ t("controlplane.site.camera.form.fields.brand.options.other") }}
                     </option>
                   </select>
-                  <!--end::Select-->
                 </div>
-                <!--end::Col-->
-
-                <!--begin::Col-->
                 <div class="col-md-6">
-                  <!--begin::Label-->
                   <label class="required fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.model.label") }}
                   </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
                   <input
                     type="text"
                     v-model="cameraForm.model"
@@ -441,22 +419,14 @@
                     :placeholder="t('controlplane.site.camera.form.fields.model.placeholder')"
                     required
                   />
-                  <!--end::Input-->
                 </div>
-                <!--end::Col-->
               </div>
-              <!--end::Row-->
 
-              <!--begin::Row-->
               <div class="row mb-7">
-                <!--begin::Col-->
                 <div class="col-md-6">
-                  <!--begin::Label-->
                   <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.type.label") }}
                   </label>
-                  <!--end::Label-->
-                  <!--begin::Select-->
                   <select
                     v-model="cameraForm.type"
                     class="form-select form-select-solid"
@@ -477,18 +447,11 @@
                       {{ t("controlplane.site.camera.form.fields.type.options.turret") }}
                     </option>
                   </select>
-                  <!--end::Select-->
                 </div>
-                <!--end::Col-->
-
-                <!--begin::Col-->
                 <div class="col-md-6">
-                  <!--begin::Label-->
                   <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.resolution.label") }}
                   </label>
-                  <!--end::Label-->
-                  <!--begin::Select-->
                   <select
                     v-model="cameraForm.resolution"
                     class="form-select form-select-solid"
@@ -509,55 +472,36 @@
                       {{ t("controlplane.site.camera.form.fields.resolution.options.12mp") }}
                     </option>
                   </select>
-                  <!--end::Select-->
                 </div>
-                <!--end::Col-->
               </div>
-              <!--end::Row-->
 
-              <!--begin::Row-->
               <div class="row mb-7">
-                <!--begin::Col-->
                 <div class="col-md-12">
-                  <!--begin::Label-->
                   <label class="fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.camera.form.fields.location.label") }}
+                    {{ t("controlplane.site.camera.form.fields.position.label") }}
                   </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
                   <input
                     type="text"
                     v-model="cameraForm.location"
                     class="form-control form-control-solid"
-                    :placeholder="t('controlplane.site.camera.form.fields.location.placeholder')"
+                    :placeholder="t('controlplane.site.camera.form.fields.position.placeholder')"
                   />
-                  <!--end::Input-->
                 </div>
-                <!--end::Col-->
               </div>
-              <!--end::Row-->
 
-              <!--begin::Row-->
               <div class="row mb-7">
-                <!--begin::Col-->
                 <div class="col-md-12">
-                  <!--begin::Label-->
                   <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.description.label") }}
                   </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
                   <textarea
                     v-model="cameraForm.description"
                     class="form-control form-control-solid"
                     rows="3"
                     :placeholder="t('controlplane.site.camera.form.fields.description.placeholder')"
                   ></textarea>
-                  <!--end::Input-->
                 </div>
-                <!--end::Col-->
               </div>
-              <!--end::Row-->
 
               <!--begin::Actions-->
               <div class="text-center pt-3">
@@ -636,6 +580,7 @@ interface CameraForm {
   siteId: string;
   room: string;
   name: string;
+  status: "online" | "offline";
   rtspUrl: string;
   streamUrl: string;
   brand: string;
@@ -678,6 +623,7 @@ const cameraForm = ref<CameraForm>({
   siteId: "",
   room: "",
   name: "",
+  status: "online",
   rtspUrl: "",
   streamUrl: "",
   brand: "",
@@ -938,9 +884,7 @@ const loadCameras = async () => {
           resolution: camera.cam_resolution || "1080P (2MP)",
           location: camera.location || "",
           description: camera.description || "",
-          status: normalizeStatusKey(
-            typeof camera.status !== "undefined" ? camera.status : camera.is_active
-          ),
+          status: normalizeStatusKey(camera.status),
           createdAt: camera.created_at || new Date().toISOString().split("T")[0],
           room: resolveRoomName(camera),
         };
@@ -1009,6 +953,7 @@ const saveCamera = async () => {
       location: cameraForm.value.location || "",
       description: cameraForm.value.description || "",
       room: cameraForm.value.room.trim() || undefined,
+      status: cameraForm.value.status,
       camera_config: defaultCameraConfig,
     };
 
@@ -1054,7 +999,7 @@ const saveCamera = async () => {
         resolution: cameraForm.value.resolution,
         location: cameraForm.value.location,
         description: cameraForm.value.description,
-        status: "online",
+        status: cameraForm.value.status,
         createdAt: new Date().toISOString().split("T")[0],
       };
       cameras.value.unshift(newCamera);
@@ -1102,6 +1047,7 @@ const editCamera = async (camera: Camera) => {
           siteId: cameraData.site_uid || camera.siteId,
           room: resolveRoomName({ ...camera, ...cameraData }),
           name: cameraData.name || camera.name,
+          status: normalizeStatusKey(cameraData.status ?? camera.status),
           rtspUrl: resolveRtspUrl({ ...camera, ...cameraData }),
           streamUrl: resolveStreamUrl({ ...camera, ...cameraData }),
           brand: cameraData.brand || camera.brand,
@@ -1119,6 +1065,7 @@ const editCamera = async (camera: Camera) => {
           siteId: camera.siteId,
           room: camera.room,
           name: camera.name,
+          status: normalizeStatusKey(camera.status),
           rtspUrl: camera.rtspUrl,
           streamUrl: camera.streamUrl,
           brand: camera.brand,
@@ -1137,6 +1084,7 @@ const editCamera = async (camera: Camera) => {
         siteId: camera.siteId,
         room: camera.room,
         name: camera.name,
+        status: normalizeStatusKey(camera.status),
         rtspUrl: camera.rtspUrl,
         streamUrl: camera.streamUrl,
         brand: camera.brand,
@@ -1159,6 +1107,7 @@ const editCamera = async (camera: Camera) => {
       siteId: camera.siteId,
       room: camera.room,
       name: camera.name,
+      status: normalizeStatusKey(camera.status),
       rtspUrl: camera.rtspUrl,
       streamUrl: camera.streamUrl,
       brand: camera.brand,
@@ -1231,6 +1180,7 @@ const closeForm = () => {
     siteId: "",
     room: "",
     name: "",
+    status: "online",
     rtspUrl: "",
     streamUrl: "",
     brand: "",

@@ -104,12 +104,12 @@
               <span
                 class="badge ms-2"
                 :class="
-                  siteForm.status === 'online'
+                  siteForm.connection_status === 'online'
                     ? 'badge-light-success'
                     : 'badge-light-danger'
                 "
               >
-                {{ siteForm.status || "offline" }}
+                {{ siteForm.connection_status || "offline" }}
               </span>
             </div>
           </div>
@@ -121,17 +121,17 @@
               {{ t("controlplane.site.settings.form.fields.status.label") }}
             </label>
             <select
-              v-model="siteForm.is_active"
+              v-model="siteForm.status"
               class="form-select form-select-solid"
             >
-              <option :value="true">
+              <option value="active">
                 {{
                   t(
                     "controlplane.site.settings.form.fields.status.options.active"
                   )
                 }}
               </option>
-              <option :value="false">
+              <option value="inactive">
                 {{
                   t(
                     "controlplane.site.settings.form.fields.status.options.inactive"
@@ -204,9 +204,31 @@ interface SiteForm {
   address: string;
   api_key: string;
   status: string;
-  is_active: boolean;
+  connection_status: string;
   timezone: string;
 }
+
+const resolveSiteStatus = (data: Record<string, unknown>): string => {
+  const status = String(data.status ?? "");
+  if (status === "active" || status === "inactive") {
+    return status;
+  }
+  if (data.is_active === false) {
+    return "inactive";
+  }
+  return "active";
+};
+
+const resolveConnectionStatus = (data: Record<string, unknown>): string => {
+  if (data.connection_status) {
+    return String(data.connection_status);
+  }
+  const status = String(data.status ?? "");
+  if (status === "online" || status === "offline") {
+    return status;
+  }
+  return "offline";
+};
 
 const route = useRoute();
 const router = useRouter();
@@ -220,8 +242,8 @@ const siteForm = ref<SiteForm>({
   description: "",
   address: "",
   api_key: "",
-  status: "offline",
-  is_active: true,
+  status: "active",
+  connection_status: "offline",
   timezone: getUserTimezone(),
 });
 
@@ -238,7 +260,7 @@ const saveSite = async () => {
       name: siteForm.value.name,
       description: siteForm.value.description,
       address: siteForm.value.address,
-      is_active: siteForm.value.is_active,
+      status: siteForm.value.status,
       ...(!isEdit.value ? { timezone: getUserTimezone() } : {}),
     };
 
@@ -263,8 +285,8 @@ const resetForm = () => {
     description: "",
     address: "",
     api_key: "",
-    status: "offline",
-    is_active: true,
+    status: "active",
+    connection_status: "offline",
     timezone: getUserTimezone(),
   };
 };
@@ -292,7 +314,7 @@ const regenerateApiKey = async () => {
       resp && resp.data && resp.data.data ? resp.data.data : resp.data;
     if (data?.api_key) {
       siteForm.value.api_key = data.api_key;
-      siteForm.value.status = data.status || "offline";
+      siteForm.value.connection_status = resolveConnectionStatus(data);
       showApiKey.value = false;
     }
   } catch (error) {
@@ -317,8 +339,8 @@ const loadSite = async (id: string) => {
         description: data.description || "",
         address: data.address || "",
         api_key: "",
-        status: data.status || "offline",
-        is_active: !!data.is_active,
+        status: resolveSiteStatus(data),
+        connection_status: resolveConnectionStatus(data),
         timezone: data.timezone || getUserTimezone(),
       };
     }

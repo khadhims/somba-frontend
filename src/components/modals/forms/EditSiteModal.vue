@@ -108,17 +108,17 @@
                   t("controlplane.site.settings.form.fields.status.label")
                 }}</label>
                 <select
-                  v-model="formData.is_active"
+                  v-model="formData.status"
                   class="form-select form-select-solid"
                 >
-                  <option :value="true">
+                  <option value="active">
                     {{
                       t(
                         "controlplane.site.settings.form.fields.status.options.active"
                       )
                     }}
                   </option>
-                  <option :value="false">
+                  <option value="inactive">
                     {{
                       t(
                         "controlplane.site.settings.form.fields.status.options.inactive"
@@ -205,7 +205,7 @@ interface SiteFormData {
   name: string;
   description?: string;
   address: string;
-  is_active: boolean;
+  status: string;
   timezone: string;
   team_uid?: string;
   created_by?: {
@@ -230,7 +230,7 @@ const formData = reactive<SiteFormData>({
   name: "",
   description: "",
   address: "",
-  is_active: true,
+  status: "active",
   timezone: "",
   team_uid: "",
   created_by: undefined,
@@ -279,7 +279,7 @@ const submitForm = async () => {
       name: formData.name,
       description: formData.description,
       address: formData.address,
-      is_active: formData.is_active,
+      status: formData.status,
     };
 
     // Call PATCH /sites/{site_uid}
@@ -322,7 +322,13 @@ const showModal = (siteData: any) => {
   formData.name = siteData.name ?? "";
   formData.description = siteData.description ?? "";
   formData.address = siteData.address ?? "";
-  formData.is_active = siteData.is_active !== false;
+  const siteStatus = String(siteData.status ?? "");
+  formData.status =
+    siteStatus === "active" || siteStatus === "inactive"
+      ? siteStatus
+      : siteData.is_active === false
+        ? "inactive"
+        : "active";
   formData.timezone = siteData.timezone ?? "";
   formData.team_uid = siteData.team_uid ?? "";
   formData.created_by = siteData.created_by;

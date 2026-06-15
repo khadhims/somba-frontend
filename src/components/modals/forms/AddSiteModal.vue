@@ -36,7 +36,6 @@
                   "
                   v-model="formData.name"
                   name="name"
-                  :disabled="!!createdApiKey"
                 />
                 <div v-if="errors.name" class="fv-plugins-message-container">
                   <div class="fv-help-block">
@@ -57,7 +56,6 @@
                   "
                   v-model="formData.description"
                   name="description"
-                  :disabled="!!createdApiKey"
                 ></textarea>
               </div>
 
@@ -73,7 +71,6 @@
                   "
                   v-model="formData.address"
                   name="address"
-                  :disabled="!!createdApiKey"
                 ></textarea>
                 <div v-if="errors.address" class="fv-plugins-message-container">
                   <div class="fv-help-block">
@@ -87,18 +84,17 @@
                   t("controlplane.site.settings.form.fields.status.label")
                 }}</label>
                 <select
-                  v-model="formData.is_active"
+                  v-model="formData.status"
                   class="form-select form-select-solid"
-                  :disabled="!!createdApiKey"
                 >
-                  <option :value="true">
+                  <option value="active">
                     {{
                       t(
                         "controlplane.site.settings.form.fields.status.options.active"
                       )
                     }}
                   </option>
-                  <option :value="false">
+                  <option value="inactive">
                     {{
                       t(
                         "controlplane.site.settings.form.fields.status.options.inactive"
@@ -106,6 +102,58 @@
                     }}
                   </option>
                 </select>
+              </div>
+
+              <div class="fv-row mb-7">
+                <label class="required fs-6 fw-semibold mb-2">
+                  {{ t("controlplane.site.modals.form.apiKey.label") }}
+                </label>
+                <div class="d-flex gap-2">
+                  <div class="position-relative flex-grow-1">
+                    <input
+                      :type="showApiKey ? 'text' : 'password'"
+                      v-model="formData.api_key"
+                      class="form-control form-control-solid pe-12"
+                      :placeholder="t('controlplane.site.modals.form.apiKey.placeholder')"
+                      autocomplete="off"
+                      readonly
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-icon btn-active-color-primary position-absolute top-50 end-0 translate-middle-y me-1"
+                      :title="showApiKey ? t('controlplane.site.modals.form.apiKey.hide') : t('controlplane.site.modals.form.apiKey.show')"
+                      :disabled="!formData.api_key"
+                      @click="showApiKey = !showApiKey"
+                    >
+                      <i v-if="showApiKey" class="ki-duotone ki-eye-slash fs-2">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
+                      </i>
+                      <i v-else class="ki-duotone ki-eye fs-2">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                      </i>
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-light-primary text-nowrap"
+                    @click="generateApiKey"
+                  >
+                    {{ t("controlplane.site.modals.form.apiKey.generate") }}
+                  </button>
+                </div>
+                <div v-if="errors.api_key" class="fv-plugins-message-container">
+                  <div class="fv-help-block">
+                    <span role="alert">{{ errors.api_key }}</span>
+                  </div>
+                </div>
+                <div class="form-text">
+                  {{ t("controlplane.site.modals.form.apiKey.hint") }}
+                </div>
               </div>
 
               <div class="fv-row mb-7">
@@ -120,35 +168,6 @@
                   Diambil otomatis dari timezone sistem browser Anda.
                 </div>
               </div>
-
-              <div v-if="createdApiKey" class="fv-row mb-7">
-                <label class="fs-6 fw-semibold mb-2">API Key Mini-PC</label>
-                <div class="d-flex align-items-center gap-3">
-                  <input
-                    :type="showApiKey ? 'text' : 'password'"
-                    class="form-control form-control-solid"
-                    :value="createdApiKey"
-                    readonly
-                  />
-                  <button
-                    type="button"
-                    class="btn btn-light"
-                    @click="showApiKey = !showApiKey"
-                  >
-                    {{ showApiKey ? "Sembunyikan" : "Tampilkan" }}
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-light-primary"
-                    @click="copyApiKey"
-                  >
-                    Salin
-                  </button>
-                </div>
-                <div class="form-text text-warning">
-                  Simpan API key ini ke file `.env` pada mini-PC (`EDGE_API_KEY`).
-                </div>
-              </div>
             </div>
           </div>
 
@@ -159,10 +178,9 @@
               data-bs-dismiss="modal"
               @click="resetForm"
             >
-              {{ createdApiKey ? "Tutup" : t("controlplane.site.modals.actions.cancel") }}
+              {{ t("controlplane.site.modals.actions.cancel") }}
             </button>
             <button
-              v-if="!createdApiKey"
               type="submit"
               class="btn btn-primary"
               :disabled="loading"
@@ -200,9 +218,10 @@ interface SiteFormData {
   name: string;
   description?: string;
   address: string;
-  is_active: boolean;
+  status: string;
   timezone: string;
   team_uid: string;
+  api_key: string;
 }
 
 const emit = defineEmits<{
@@ -216,21 +235,22 @@ const props = defineProps<{
 const route = useRoute();
 const addSiteModalRef = ref<HTMLElement>();
 const loading = ref(false);
-const createdApiKey = ref("");
 const showApiKey = ref(false);
 
 const formData = reactive<SiteFormData>({
   name: "",
   description: "",
   address: "",
-  is_active: true,
+  status: "active",
   timezone: getUserTimezone(),
   team_uid: "",
+  api_key: "",
 });
 
 const errors = reactive({
   name: "",
   address: "",
+  api_key: "",
 });
 
 const { t } = useI18n();
@@ -238,6 +258,7 @@ const { t } = useI18n();
 const validateForm = (): boolean => {
   errors.name = "";
   errors.address = "";
+  errors.api_key = "";
 
   let isValid = true;
 
@@ -251,19 +272,21 @@ const validateForm = (): boolean => {
     isValid = false;
   }
 
+  if (!formData.api_key.trim()) {
+    errors.api_key = t("controlplane.site.modals.form.apiKey.required");
+    isValid = false;
+  }
+
   return isValid;
 };
 
-const copyApiKey = async () => {
-  if (!createdApiKey.value) return;
-  await navigator.clipboard.writeText(createdApiKey.value);
+const generateApiKey = () => {
+  formData.api_key = crypto.randomUUID();
+  showApiKey.value = false;
+  errors.api_key = "";
 };
 
 const submitForm = async () => {
-  if (createdApiKey.value) {
-    return;
-  }
-
   if (!validateForm()) {
     return;
   }
@@ -286,8 +309,9 @@ const submitForm = async () => {
       name: formData.name,
       description: formData.description,
       address: formData.address,
-      is_active: formData.is_active,
+      status: formData.status,
       timezone: getUserTimezone(),
+      api_key: formData.api_key.trim(),
     };
 
     const resp = await ApiService.post(`/teams/${teamUid}/sites`, payload);
@@ -296,16 +320,13 @@ const submitForm = async () => {
       name: formData.name,
       team_uid: teamUid,
       address: formData.address,
+      api_key: formData.api_key,
     };
 
-    createdApiKey.value = newSite.api_key || "";
     emit("site-added", newSite);
-
-    if (!createdApiKey.value) {
-      resetForm();
-      const modal = Modal.getInstance(addSiteModalRef.value!);
-      modal?.hide();
-    }
+    resetForm();
+    const modal = Modal.getInstance(addSiteModalRef.value!);
+    modal?.hide();
   } catch (error: any) {
     console.error("Error adding site:", error);
     const respErrors =
@@ -328,13 +349,14 @@ const resetForm = () => {
   formData.name = "";
   formData.description = "";
   formData.address = "";
-  formData.is_active = true;
+  formData.status = "active";
   formData.timezone = getUserTimezone();
   formData.team_uid = "";
-  createdApiKey.value = "";
+  formData.api_key = "";
   showApiKey.value = false;
   errors.name = "";
   errors.address = "";
+  errors.api_key = "";
 };
 
 const showModal = (teamId?: string) => {
