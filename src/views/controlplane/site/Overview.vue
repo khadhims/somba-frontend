@@ -293,118 +293,120 @@
       />
 
       <template v-else>
-      <KTDataTable
-        :data="filteredAndSortedSites"
-        :header="tableHeader"
-        :checkbox-enabled="false"
-        :items-per-page-dropdown-enabled="false"
-        :items-per-page="pagination.per_page"
-        :current-page="pagination.page"
-        :loading="loading"
-        :sort-label="sortLabel"
-        :sort-order="sortOrder"
-        @on-sort="handleSort"
-        @page-change="goToPage"
-        @on-items-per-page-change="
-          (val) => {
-            pagination.per_page = val;
-            changeItemsPerPage();
-          }
-        "
-        :empty-table-text="emptyTableMessage"
-      >
-        <template v-slot:name="{ row }">
-          <div class="d-flex align-items-center">
-            <div class="symbol symbol-45px me-5">
-              <span class="symbol-label bg-light-primary text-primary fw-bold">
-                {{ row.name.charAt(0).toUpperCase() }}
-              </span>
+        <KTDataTable
+          :data="filteredAndSortedSites"
+          :header="tableHeader"
+          :checkbox-enabled="false"
+          :items-per-page-dropdown-enabled="false"
+          :items-per-page="pagination.per_page"
+          :current-page="pagination.page"
+          :loading="loading"
+          :sort-label="sortLabel"
+          :sort-order="sortOrder"
+          @on-sort="handleSort"
+          @page-change="goToPage"
+          @on-items-per-page-change="
+            (val) => {
+              pagination.per_page = val;
+              changeItemsPerPage();
+            }
+          "
+          :empty-table-text="emptyTableMessage"
+        >
+          <template v-slot:name="{ row }">
+            <div class="d-flex align-items-center">
+              <div class="symbol symbol-45px me-5">
+                <span
+                  class="symbol-label bg-light-primary text-primary fw-bold"
+                >
+                  {{ row.name.charAt(0).toUpperCase() }}
+                </span>
+              </div>
+              <div class="d-flex justify-content-start flex-column">
+                <span class="text-dark fw-bold text-hover-primary fs-6">{{
+                  row.name
+                }}</span>
+                <span class="text-muted fw-semibold text-muted d-block fs-7">{{
+                  row.description || t("controlplane.site.common.noDescription")
+                }}</span>
+              </div>
             </div>
-            <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">{{
-                row.name
-              }}</span>
-              <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-                row.description || t("controlplane.site.common.noDescription")
-              }}</span>
+          </template>
+
+          <template v-slot:description="{ row }">
+            <span class="text-dark fw-bold d-block fs-6">{{
+              row.description || t("controlplane.site.common.noDescription")
+            }}</span>
+          </template>
+
+          <template v-slot:created_by="{ row }">
+            <span class="text-dark fw-bold d-block fs-6">
+              {{
+                row.created_by?.email || t("controlplane.site.common.unknown")
+              }}
+            </span>
+            <span class="text-muted fw-semibold text-muted d-block fs-7">
+              {{ row.created_by?.email || "" }}
+            </span>
+          </template>
+
+          <template v-slot:created_at="{ row }">
+            <span class="text-dark fw-bold d-block fs-6">{{
+              new Date(row.created_at).toLocaleDateString()
+            }}</span>
+          </template>
+
+          <template v-slot:actions="{ row }">
+            <div class="d-flex justify-content-end flex-shrink-0">
+              <button
+                class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
+                @click="viewSiteDetails(row)"
+                :title="t('controlplane.site.actions.viewDetails')"
+              >
+                <i class="ki-duotone ki-instagram fs-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                </i>
+              </button>
+              <button
+                class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
+                @click="editSiteDetails(row)"
+                :title="t('controlplane.site.actions.edit')"
+              >
+                <i class="ki-duotone ki-pencil fs-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </button>
+              <button
+                class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
+                @click="deleteSite(row)"
+                :title="t('controlplane.site.actions.delete')"
+              >
+                <i class="ki-duotone ki-trash fs-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
+              </button>
             </div>
-          </div>
-        </template>
+          </template>
+        </KTDataTable>
 
-        <template v-slot:description="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{
-            row.description || t("controlplane.site.common.noDescription")
-          }}</span>
-        </template>
-
-        <template v-slot:created_by="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">
-            {{
-              row.created_by?.username || t("controlplane.site.common.unknown")
-            }}
-          </span>
-          <span class="text-muted fw-semibold text-muted d-block fs-7">
-            {{ row.created_by?.email || "" }}
-          </span>
-        </template>
-
-        <template v-slot:created_at="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{
-            new Date(row.created_at).toLocaleDateString()
-          }}</span>
-        </template>
-
-        <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end flex-shrink-0">
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              @click="viewSiteDetails(row)"
-              :title="t('controlplane.site.actions.viewDetails')"
-            >
-              <i class="ki-duotone ki-instagram fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-              </i>
-            </button>
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              @click="editSiteDetails(row)"
-              :title="t('controlplane.site.actions.edit')"
-            >
-              <i class="ki-duotone ki-pencil fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-            </button>
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
-              @click="deleteSite(row)"
-              :title="t('controlplane.site.actions.delete')"
-            >
-              <i class="ki-duotone ki-trash fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-                <span class="path5"></span>
-              </i>
-            </button>
-          </div>
-        </template>
-      </KTDataTable>
-
-      <!--begin::Pagination-->
-      <Pagination
-        v-if="!loading"
-        :page="pagination.page"
-        :per-page="pagination.per_page"
-        :total-items="pagination.total_items || sites.length"
-        :total-pages="Math.max(1, pagination.total_pages)"
-        @page-change="goToPage"
-      />
-      <!--end::Pagination-->
+        <!--begin::Pagination-->
+        <Pagination
+          v-if="!loading"
+          :page="pagination.page"
+          :per-page="pagination.per_page"
+          :total-items="pagination.total_items || sites.length"
+          :total-pages="Math.max(1, pagination.total_pages)"
+          @page-change="goToPage"
+        />
+        <!--end::Pagination-->
       </template>
     </div>
     <!--end::Card body-->
@@ -1052,21 +1054,25 @@ const selectionEmptyState = computed(() => {
   if (organizations.value.length === 0) {
     return {
       title: t("controlplane.site.emptyState.noOrganizations.title"),
-      description: t("controlplane.site.emptyState.noOrganizations.description"),
+      description: t(
+        "controlplane.site.emptyState.noOrganizations.description"
+      ),
     };
   }
   if (!selectedOrganizationId.value) {
     return {
       title: t("controlplane.site.emptyState.noOrganizationSelected.title"),
       description: t(
-        "controlplane.site.emptyState.noOrganizationSelected.description",
+        "controlplane.site.emptyState.noOrganizationSelected.description"
       ),
     };
   }
   if (!loadingAccounts.value && !selectedAccountId.value) {
     return {
       title: t("controlplane.site.emptyState.noAccountSelected.title"),
-      description: t("controlplane.site.emptyState.noAccountSelected.description"),
+      description: t(
+        "controlplane.site.emptyState.noAccountSelected.description"
+      ),
     };
   }
   if (!loadingTeams.value && !selectedTeamIdFilter.value) {
@@ -1079,7 +1085,7 @@ const selectionEmptyState = computed(() => {
 });
 
 const showSelectionEmptyState = computed(
-  () => selectionEmptyState.value !== null,
+  () => selectionEmptyState.value !== null
 );
 
 const emptyTableMessage = computed(() => {

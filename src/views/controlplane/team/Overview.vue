@@ -304,7 +304,8 @@
         <template v-slot:created_by="{ row }">
           <span class="text-dark fw-bold d-block fs-6">
             {{
-              row.created_by?.username || t("controlplane.team.common.unknown")
+              formatUserDisplayName(row.created_by) ||
+              t("controlplane.team.common.unknown")
             }}
           </span>
           <span class="text-muted fw-semibold text-muted d-block fs-7">
@@ -558,16 +559,20 @@ import ControlPlaneEmptyState from "@/components/controlplane/ControlPlaneEmptyS
 import ApiService from "@/core/services/ApiService";
 import Pagination from "@/components/common/Pagination.vue";
 import MembershipListModal from "@/components/modals/membership/MembershipListModal.vue";
+import {
+  formatUserDisplayName,
+  getCreatedByUid,
+  normalizeCreatedBy,
+  resolveUsersByUid,
+  type UserInfo,
+} from "@/core/helpers/user";
 
 // Interface definitions
 interface Team {
   uid: string;
   name: string;
   account_uid?: string;
-  created_by?: {
-    username: string;
-    email: string;
-  };
+  created_by?: UserInfo | null;
   created_at: string;
   updated_at: string;
 }
@@ -969,8 +974,15 @@ const fetchTeams = async (page: number = 1) => {
         };
       }
 
-      // Format created_at for each team
+      const creatorUids = teams.value
+        .map((team) => getCreatedByUid(team.created_by))
+        .filter((uid): uid is string => !!uid);
+      const userMap = await resolveUsersByUid(creatorUids);
+
+      // Format created_at and resolve created_by for each team
       teams.value.forEach((team) => {
+        team.created_by = normalizeCreatedBy(team.created_by, userMap);
+
         if (team.created_at && typeof team.created_at === "string") {
           team.created_at = new Date(team.created_at).toLocaleDateString();
         }

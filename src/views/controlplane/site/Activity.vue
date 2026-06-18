@@ -385,7 +385,7 @@ const route = useRoute();
 const sites = ref<Site[]>([]);
 const activities = ref<ActivityItem[]>([]);
 const siteCameras = ref<CameraItem[]>([]);
-const cameraAssignments = ref<Record<string, string[]>>({});
+
 const selectedSiteFilter = ref("");
 const searchQuery = ref("");
 const sortLabel = ref("");
@@ -489,12 +489,14 @@ const removeCameraAssignment = (cameraUid: string) => {
   );
 };
 
-const getAssignedCameraNames = (activityUid: string): string[] =>
-  Object.entries(cameraAssignments.value)
-    .filter(([, uids]) => uids.includes(activityUid))
-    .map(([cameraUid]) => cameraName(cameraUid))
+const getAssignedCameraNames = (activityUid: string): string[] => {
+  const activity = activities.value.find(a => a.uid === activityUid);
+  if (!activity || !activity.camera_uids) return [];
+  return activity.camera_uids
+    .map((cameraUid) => cameraName(cameraUid))
     .filter(Boolean)
     .sort((a, b) => a.localeCompare(b));
+};
 
 const tableHeader = computed(() => [
   {
@@ -612,7 +614,6 @@ const onHeaderSiteFilterChange = () => {
   } else {
     activities.value = [];
     siteCameras.value = [];
-    cameraAssignments.value = {};
   }
 };
 
@@ -655,20 +656,7 @@ const loadSiteCameras = async () => {
   }));
 };
 
-const loadCameraAssignments = async () => {
-  cameraAssignments.value = {};
-  for (const camera of siteCameras.value) {
-    const resp = await ApiService.query(
-      `sites/${selectedSiteFilter.value}/cameras/${camera.uid}/activity-definitions`,
-      {}
-    );
-    const rows = resp?.data?.data ?? resp?.data ?? [];
-    const uids = (Array.isArray(rows) ? rows : [])
-      .map((row: any) => row.activity?.uid ?? row.activity_uid)
-      .filter(Boolean);
-    cameraAssignments.value[camera.uid] = uids;
-  }
-};
+
 
 const loadActivities = async () => {
   if (!selectedSiteFilter.value) {
@@ -684,7 +672,6 @@ const loadActivities = async () => {
     );
     const data = resp?.data?.data ?? resp?.data ?? [];
     activities.value = Array.isArray(data) ? data : [];
-    await loadCameraAssignments();
   } finally {
     isLoading.value = false;
   }
@@ -714,10 +701,6 @@ const openCreateForm = () => {
 };
 
 const editActivity = (activity: ActivityItem) => {
-  const assignedCameras = Object.entries(cameraAssignments.value)
-    .filter(([, uids]) => uids.includes(activity.uid))
-    .map(([cameraUid]) => cameraUid);
-
   activityForm.value = {
     uid: activity.uid,
     code: activity.code,
@@ -727,7 +710,7 @@ const editActivity = (activity: ActivityItem) => {
     targetClasses: [...(activity.target_classes || [])],
     post_buffer_sec: activity.recording_config?.post_buffer_sec ?? 10,
     max_segment_sec: activity.recording_config?.max_segment_sec ?? 300,
-    cameraUids: assignedCameras,
+    cameraUids: [...(activity.camera_uids || [])],
   };
   targetClassToAdd.value = "";
   selectedCameraToAdd.value = "";
@@ -740,20 +723,7 @@ const closeForm = () => {
   isEdit.value = false;
 };
 
-const syncCameraAssignments = async (activityUid: string, cameraUids: string[]) => {
-  for (const camera of siteCameras.value) {
-    const current = new Set(cameraAssignments.value[camera.uid] || []);
-    if (cameraUids.includes(camera.uid)) {
-      current.add(activityUid);
-    } else {
-      current.delete(activityUid);
-    }
-    await ApiService.put(
-      `sites/${selectedSiteFilter.value}/cameras/${camera.uid}/activity-definitions`,
-      { activity_uids: Array.from(current) }
-    );
-  }
-};
+
 
 const saveActivity = async () => {
   if (!selectedSiteFilter.value) return;
@@ -772,6 +742,7 @@ const saveActivity = async () => {
         post_buffer_sec: activityForm.value.post_buffer_sec,
         max_segment_sec: activityForm.value.max_segment_sec,
       },
+      camera_uids: [...activityForm.value.cameraUids],
     };
 
     let activityUid = activityForm.value.uid;
@@ -781,15 +752,10 @@ const saveActivity = async () => {
         payload as object
       );
     } else {
-      const resp = await ApiService.post(
+      await ApiService.post(
         `sites/${selectedSiteFilter.value}/activity-definitions`,
         payload
       );
-      activityUid = resp?.data?.data?.uid ?? resp?.data?.uid ?? "";
-    }
-
-    if (activityUid) {
-      await syncCameraAssignments(activityUid, activityForm.value.cameraUids);
     }
 
     closeForm();
