@@ -372,6 +372,7 @@ interface ActivityItem {
   target_classes: string[];
   min_confidence?: number;
   recording_config?: { post_buffer_sec?: number; max_segment_sec?: number };
+  camera_uids?: string[];
 }
 
 interface CameraItem {
