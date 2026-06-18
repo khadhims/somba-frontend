@@ -38,7 +38,11 @@
 	},
 	"emptyState": {
 		"title": "No Organization Selected",
-		"description": "Please select an organization from the dropdown above to view payment accounts."
+		"description": "Please select an organization from the dropdown above to view payment accounts.",
+		"noOrganizations": {
+			"title": "No Organizations Available",
+			"description": "Create an organization first in Organization Management."
+		}
 	},
 	"empty": {
 		"loading": "Loading payment accounts...",

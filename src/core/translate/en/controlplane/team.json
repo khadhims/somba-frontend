@@ -5,8 +5,12 @@
 	},
 	"header": {
 		"title": "Team Management",
+		"subtitleLoading": "Loading organizations...",
 		"subtitleDefault": "Manage teams for your account",
-		"subtitleWithAccount": "Manage teams for {name}"
+		"subtitleWithAccount": "Manage teams for {name}",
+		"subtitleNoOrganizations": "No organizations available",
+		"subtitleSelectOrganization": "Select an organization to view teams",
+		"subtitleSelectAccount": "Select an account to view teams"
 	},
 	"filters": {
 		"organizationLabel": "Organization",
@@ -35,6 +39,20 @@
 		"addSite": "Add Site",
 		"edit": "Edit Team Name",
 		"delete": "Delete Team"
+	},
+	"emptyState": {
+		"noOrganizations": {
+			"title": "No Organizations Available",
+			"description": "Create an organization first to manage teams."
+		},
+		"noOrganizationSelected": {
+			"title": "No Organization Selected",
+			"description": "Please select an organization from the dropdown above to view teams."
+		},
+		"noAccountSelected": {
+			"title": "No Account Selected",
+			"description": "Please select a payment account from the dropdown above to view teams."
+		}
 	},
 	"empty": {
 		"selectOrganization": "Please select an organization to view teams",

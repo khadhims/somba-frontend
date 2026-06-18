@@ -40,6 +40,10 @@
 		"edit": "Edit Organization",
 		"delete": "Delete Organization"
 	},
+	"emptyState": {
+		"title": "No Organizations Yet",
+		"description": "Get started by adding your first organization using the button above."
+	},
 	"empty": {
 		"loading": "Loading organizations...",
 		"searchNoResults": "No organizations found matching \"{query}\"",

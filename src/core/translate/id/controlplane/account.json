@@ -38,7 +38,11 @@
 	},
 	"emptyState": {
 		"title": "Belum Ada Organisasi Dipilih",
-		"description": "Silakan pilih organisasi dari dropdown di atas untuk melihat akun pembayaran."
+		"description": "Silakan pilih organisasi dari dropdown di atas untuk melihat akun pembayaran.",
+		"noOrganizations": {
+			"title": "Tidak Ada Organisasi Tersedia",
+			"description": "Buat organisasi terlebih dahulu di Manajemen Organisasi."
+		}
 	},
 	"empty": {
 		"loading": "Memuat akun pembayaran...",

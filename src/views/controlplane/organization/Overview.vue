@@ -154,7 +154,14 @@
 
     <!--begin::Card body-->
     <div class="card-body py-3">
+      <ControlPlaneEmptyState
+        v-if="showDataEmptyState"
+        :title="t('controlplane.organization.emptyState.title')"
+        :description="t('controlplane.organization.emptyState.description')"
+      />
+
       <KTDataTable
+        v-else
         :data="filteredAndSortedOrganizations"
         :header="tableHeader"
         :checkbox-enabled="false"
@@ -623,6 +630,7 @@ import { ref, computed, onMounted, nextTick } from "vue";
 import Pagination from "@/components/common/Pagination.vue";
 import { Modal } from "bootstrap";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import ControlPlaneEmptyState from "@/components/controlplane/ControlPlaneEmptyState.vue";
 import ApiService from "@/core/services/ApiService";
 import MembershipListModal from "@/components/modals/membership/MembershipListModal.vue";
 import CardWidget1 from "@/components/dashboard-default-widgets/CardWidget1.vue";
@@ -726,6 +734,13 @@ const tableHeader = computed(() => [
     searchable: false,
   },
 ]);
+
+const showDataEmptyState = computed(
+  () =>
+    !loading.value &&
+    !searchQuery.value.trim() &&
+    organizations.value.length === 0,
+);
 
 const emptyTableMessage = computed(() => {
   if (loading.value) {

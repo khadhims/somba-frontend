@@ -197,23 +197,11 @@
     <!--begin::Card body-->
     <div class="card-body py-3">
       <!-- Show message when no organization is selected -->
-      <div
-        v-if="!selectedOrganizationId && !loadingOrganizations"
-        class="d-flex flex-column align-items-center justify-content-center py-10"
-      >
-        <div class="text-center">
-          <i class="ki-duotone ki-questionnaire-tablet fs-4x text-muted mb-4">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          <h3 class="fw-semibold text-gray-500 mb-2">
-            {{ t("controlplane.account.emptyState.title") }}
-          </h3>
-          <p class="text-muted fs-6">
-            {{ t("controlplane.account.emptyState.description") }}
-          </p>
-        </div>
-      </div>
+      <ControlPlaneEmptyState
+        v-if="showSelectionEmptyState"
+        :title="selectionEmptyState!.title"
+        :description="selectionEmptyState!.description"
+      />
 
       <!-- Show table when organization is selected -->
       <KTDataTable
@@ -547,6 +535,7 @@ import { useI18n } from "vue-i18n";
 import { Modal } from "bootstrap";
 // import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import ControlPlaneEmptyState from "@/components/controlplane/ControlPlaneEmptyState.vue";
 import ApiService from "@/core/services/ApiService";
 import Pagination from "@/components/common/Pagination.vue";
 import MembershipListModal from "@/components/modals/membership/MembershipListModal.vue";
@@ -672,6 +661,29 @@ const emptyTableMessage = computed(() => {
   }
   return t("controlplane.account.empty.noResults");
 });
+
+const selectionEmptyState = computed(() => {
+  if (loadingOrganizations.value) {
+    return null;
+  }
+  if (organizations.value.length === 0) {
+    return {
+      title: t("controlplane.account.emptyState.noOrganizations.title"),
+      description: t("controlplane.account.emptyState.noOrganizations.description"),
+    };
+  }
+  if (!selectedOrganizationId.value) {
+    return {
+      title: t("controlplane.account.emptyState.title"),
+      description: t("controlplane.account.emptyState.description"),
+    };
+  }
+  return null;
+});
+
+const showSelectionEmptyState = computed(
+  () => selectionEmptyState.value !== null,
+);
 
 // Fetch accounts from API
 const fetchAccounts = async (page: number = 1) => {

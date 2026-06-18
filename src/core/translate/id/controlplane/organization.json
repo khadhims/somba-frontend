@@ -40,6 +40,10 @@
 		"edit": "Ubah Detail Organisasi",
 		"delete": "Hapus Organisasi"
 	},
+	"emptyState": {
+		"title": "Belum Ada Organisasi",
+		"description": "Mulai dengan menambahkan organisasi pertama Anda menggunakan tombol di atas."
+	},
 	"empty": {
 		"loading": "Memuat organisasi...",
 		"searchNoResults": "Tidak ada organisasi yang cocok dengan \"{query}\"",

@@ -5,8 +5,12 @@
 	},
 	"header": {
 		"title": "Manajemen Tim",
+		"subtitleLoading": "Memuat organisasi...",
 		"subtitleDefault": "Kelola Tim untuk Akun Anda",
-		"subtitleWithAccount": "Kelola Tim untuk Akun {name}"
+		"subtitleWithAccount": "Kelola Tim untuk Akun {name}",
+		"subtitleNoOrganizations": "Tidak ada organisasi tersedia",
+		"subtitleSelectOrganization": "Pilih organisasi untuk melihat tim",
+		"subtitleSelectAccount": "Pilih akun untuk melihat tim"
 	},
 	"filters": {
 		"organizationLabel": "Organisasi",
@@ -35,6 +39,20 @@
 		"addSite": "Kelola Situs",
 		"edit": "Ubah Detail Tim",
 		"delete": "Hapus Tim"
+	},
+	"emptyState": {
+		"noOrganizations": {
+			"title": "Tidak Ada Organisasi Tersedia",
+			"description": "Buat organisasi terlebih dahulu untuk mengelola tim."
+		},
+		"noOrganizationSelected": {
+			"title": "Belum Ada Organisasi Dipilih",
+			"description": "Silakan pilih organisasi dari dropdown di atas untuk melihat tim."
+		},
+		"noAccountSelected": {
+			"title": "Belum Ada Akun Dipilih",
+			"description": "Silakan pilih akun pembayaran dari dropdown di atas untuk melihat tim."
+		}
 	},
 	"empty": {
 		"selectOrganization": "Silakan pilih organisasi untuk melihat tim",

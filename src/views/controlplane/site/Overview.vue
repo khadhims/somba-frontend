@@ -9,10 +9,25 @@
             {{ t("controlplane.site.header.title") }}
           </h4>
           <p class="text-muted mb-0">
-            <span v-if="currentTeam">{{
+            <span v-if="loadingOrganizations">{{
+              t("controlplane.site.header.subtitleLoading")
+            }}</span>
+            <span v-else-if="currentTeam">{{
               t("controlplane.site.header.subtitleWithTeam", {
                 name: currentTeam.name,
               })
+            }}</span>
+            <span v-else-if="organizations.length === 0">{{
+              t("controlplane.site.header.subtitleNoOrganizations")
+            }}</span>
+            <span v-else-if="!selectedOrganizationId">{{
+              t("controlplane.site.header.subtitleSelectOrganization")
+            }}</span>
+            <span v-else-if="!selectedAccountId">{{
+              t("controlplane.site.header.subtitleSelectAccount")
+            }}</span>
+            <span v-else-if="!selectedTeamIdFilter">{{
+              t("controlplane.site.header.subtitleSelectTeam")
             }}</span>
             <span v-else>{{
               t("controlplane.site.header.subtitleDefault")
@@ -259,7 +274,7 @@
         <button
           @click="showAddSiteModal"
           class="btn btn-sm btn-light-primary"
-          :disabled="!selectedTeamIdFilter"
+          :disabled="loading || loadingOrganizations || !selectedTeamIdFilter"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
           {{ t("controlplane.site.toolbar.addButton") }}
@@ -271,6 +286,13 @@
 
     <!--begin::Card body-->
     <div class="card-body py-3">
+      <ControlPlaneEmptyState
+        v-if="showSelectionEmptyState"
+        :title="selectionEmptyState!.title"
+        :description="selectionEmptyState!.description"
+      />
+
+      <template v-else>
       <KTDataTable
         :data="filteredAndSortedSites"
         :header="tableHeader"
@@ -383,6 +405,7 @@
         @page-change="goToPage"
       />
       <!--end::Pagination-->
+      </template>
     </div>
     <!--end::Card body-->
   </div>
@@ -409,6 +432,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 // import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import ControlPlaneEmptyState from "@/components/controlplane/ControlPlaneEmptyState.vue";
 import AddSiteModal from "@/components/modals/forms/AddSiteModal.vue";
 import EditSiteModal from "@/components/modals/forms/EditSiteModal.vue";
 import ApiService from "@/core/services/ApiService";
@@ -1021,6 +1045,43 @@ onMounted(() => {
 // });
 
 // Empty table message based on current state
+const selectionEmptyState = computed(() => {
+  if (loadingOrganizations.value) {
+    return null;
+  }
+  if (organizations.value.length === 0) {
+    return {
+      title: t("controlplane.site.emptyState.noOrganizations.title"),
+      description: t("controlplane.site.emptyState.noOrganizations.description"),
+    };
+  }
+  if (!selectedOrganizationId.value) {
+    return {
+      title: t("controlplane.site.emptyState.noOrganizationSelected.title"),
+      description: t(
+        "controlplane.site.emptyState.noOrganizationSelected.description",
+      ),
+    };
+  }
+  if (!loadingAccounts.value && !selectedAccountId.value) {
+    return {
+      title: t("controlplane.site.emptyState.noAccountSelected.title"),
+      description: t("controlplane.site.emptyState.noAccountSelected.description"),
+    };
+  }
+  if (!loadingTeams.value && !selectedTeamIdFilter.value) {
+    return {
+      title: t("controlplane.site.emptyState.noTeamSelected.title"),
+      description: t("controlplane.site.emptyState.noTeamSelected.description"),
+    };
+  }
+  return null;
+});
+
+const showSelectionEmptyState = computed(
+  () => selectionEmptyState.value !== null,
+);
+
 const emptyTableMessage = computed(() => {
   if (!selectedOrganizationId.value) {
     return t("controlplane.site.empty.selectOrganization");
@@ -1028,7 +1089,7 @@ const emptyTableMessage = computed(() => {
   if (!selectedAccountId.value) {
     return t("controlplane.site.empty.selectAccount");
   }
-  if (!selectedTeamId.value) {
+  if (!selectedTeamIdFilter.value) {
     return t("controlplane.site.empty.selectTeam");
   }
   if (loading.value) {

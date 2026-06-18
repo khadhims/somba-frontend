@@ -7,7 +7,20 @@
         <div class="col-md-4">
           <h4 class="card-title mb-0">{{ t('controlplane.site.camera.header.title') }}</h4>
           <p class="text-muted mb-0">
-            <span>{{ t('controlplane.site.camera.header.subtitleDefault') }}</span>
+            <span v-if="isLoadingSites">{{
+              t('controlplane.site.camera.header.subtitleLoading')
+            }}</span>
+            <span v-else-if="sites.length === 0">{{
+              t('controlplane.site.camera.header.subtitleNoSites')
+            }}</span>
+            <span v-else-if="currentSite">{{
+              t('controlplane.site.camera.header.subtitleWithSite', {
+                name: currentSite.name,
+              })
+            }}</span>
+            <span v-else>{{
+              t('controlplane.site.camera.header.subtitleSelectSite')
+            }}</span>
           </p>
         </div>
 
@@ -23,8 +36,17 @@
                 v-model="selectedSiteFilter"
                 @change="onHeaderSiteFilterChange"
                 class="form-select form-select-solid w-200px"
+                :disabled="isLoadingSites || sites.length === 0"
               >
-                <option value="">{{ t("controlplane.site.camera.filters.siteAll") }}</option>
+                <option value="" disabled>
+                  {{
+                    isLoadingSites
+                      ? t('controlplane.site.camera.header.subtitleLoading')
+                      : sites.length === 0
+                        ? t('controlplane.site.camera.header.subtitleNoSites')
+                        : t('controlplane.site.camera.form.fields.site.placeholder')
+                  }}
+                </option>
                 <option v-for="site in sites" :key="site.uid" :value="site.uid">{{ site.name }}</option>
               </select>
             </div>
@@ -81,6 +103,7 @@
         <button 
           @click.prevent="openCreateForm" 
           class="btn btn-sm btn-light-primary"
+          :disabled="isLoadingSites || !selectedSiteFilter"
         >
           <i class="ki-duotone ki-plus fs-2 me-1"></i>
           {{ t('controlplane.site.camera.toolbar.addButton') }}
@@ -92,8 +115,13 @@
 
     <!--begin::Card body-->
     <div class="card-body py-3">
-      <!-- Form is now in modal below, not inline -->
+      <ControlPlaneEmptyState
+        v-if="showSelectionEmptyState"
+        :title="selectionEmptyState!.title"
+        :description="selectionEmptyState!.description"
+      />
 
+      <template v-else>
       <!--begin::Table-->
       <KTDataTable
         :data="filteredAndSortedCameras"
@@ -218,6 +246,7 @@
         />
       </div>
       <!--end::Pagination-->
+      </template>
     </div>
     <!--end::Card body-->
   </div>
@@ -546,6 +575,7 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import ControlPlaneEmptyState from "@/components/controlplane/ControlPlaneEmptyState.vue";
 import Pagination from '@/components/common/Pagination.vue';
 import ApiService from '@/core/services/ApiService';
 import CameraPlaybackModal from "@/components/CameraPlaybackModal.vue";
@@ -597,6 +627,7 @@ const route = useRoute();
 
 // Reactive data
 const isLoading = ref(false);
+const isLoadingSites = ref(false);
 const showCameraForm = ref(false);
 const isEdit = ref(false);
 const searchQuery = ref("");
@@ -793,6 +824,35 @@ const getSiteName = (siteId: string): string => {
   return site ? site.name : t("controlplane.site.camera.fallback.unknownSite");
 };
 
+const currentSite = computed(() =>
+  sites.value.find((site) => site.uid === selectedSiteFilter.value) ?? null,
+);
+
+const selectionEmptyState = computed(() => {
+  if (isLoadingSites.value) {
+    return null;
+  }
+  if (sites.value.length === 0) {
+    return {
+      title: t("controlplane.site.camera.emptyState.noSites.title"),
+      description: t("controlplane.site.camera.emptyState.noSites.description"),
+    };
+  }
+  if (!selectedSiteFilter.value) {
+    return {
+      title: t("controlplane.site.camera.emptyState.noSiteSelected.title"),
+      description: t(
+        "controlplane.site.camera.emptyState.noSiteSelected.description",
+      ),
+    };
+  }
+  return null;
+});
+
+const showSelectionEmptyState = computed(
+  () => selectionEmptyState.value !== null,
+);
+
 const resolveRoomName = (camera: {
   room?: string;
   camera_config?: { room?: string };
@@ -833,6 +893,7 @@ const parseApiList = (resp: { data?: unknown } | null | undefined): any[] => {
 };
 
 const loadSites = async () => {
+  isLoadingSites.value = true;
   try {
     const selectedTeamId =
       localStorage.getItem("lastSelectedTeam") ||
@@ -849,6 +910,8 @@ const loadSites = async () => {
   } catch (error) {
     console.error("Error loading sites:", error);
     sites.value = [];
+  } finally {
+    isLoadingSites.value = false;
   }
 };
 
@@ -1198,7 +1261,10 @@ onMounted(async () => {
     await loadSites();
 
     const siteFromRoute = (route.query.siteId as string) || (route.query.id as string);
-    selectedSiteFilter.value = siteFromRoute || localStorage.getItem('lastSelectedSite') as string || (sites.value[0] && sites.value[0].uid) || "";
+    selectedSiteFilter.value =
+      siteFromRoute ||
+      (localStorage.getItem("lastSelectedSite") as string) ||
+      "";
     localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || "");
 
     if (route.query.siteId && typeof route.query.siteId === "string") {

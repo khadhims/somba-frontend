@@ -5,8 +5,13 @@
 	},
 	"header": {
 		"title": "Manajemen Lokasi",
+		"subtitleLoading": "Memuat organisasi...",
 		"subtitleDefault": "Kelola Lokasi untuk tim Anda",
-		"subtitleWithTeam": "Kelola Lokasi untuk tim {name}"
+		"subtitleWithTeam": "Kelola Lokasi untuk tim {name}",
+		"subtitleNoOrganizations": "Tidak ada organisasi tersedia",
+		"subtitleSelectOrganization": "Pilih organisasi untuk melihat lokasi",
+		"subtitleSelectAccount": "Pilih akun untuk melihat lokasi",
+		"subtitleSelectTeam": "Pilih tim untuk melihat lokasi"
 	},
 	"filters": {
 		"organizationLabel": "Organisasi",
@@ -78,6 +83,24 @@
 		"edit": "Ubah Lokasi",
 		"delete": "Hapus Lokasi"
 	},
+	"emptyState": {
+		"noOrganizations": {
+			"title": "Tidak Ada Organisasi Tersedia",
+			"description": "Buat organisasi terlebih dahulu untuk mengelola lokasi."
+		},
+		"noOrganizationSelected": {
+			"title": "Belum Ada Organisasi Dipilih",
+			"description": "Silakan pilih organisasi dari dropdown di atas untuk melihat lokasi."
+		},
+		"noAccountSelected": {
+			"title": "Belum Ada Akun Dipilih",
+			"description": "Silakan pilih akun pembayaran dari dropdown di atas untuk melihat lokasi."
+		},
+		"noTeamSelected": {
+			"title": "Belum Ada Tim Dipilih",
+			"description": "Silakan pilih tim dari dropdown di atas untuk melihat lokasi."
+		}
+	},
 	"empty": {
 		"selectOrganization": "Silakan pilih organisasi untuk melihat Lokasi",
 		"selectAccount": "Silakan pilih akun untuk melihat Lokasi",
@@ -99,7 +122,21 @@
 		"title": "Manajemen Kamera",
 		"header": {
 			"title": "Manajemen Kamera",
-			"subtitleDefault": "Kelola Kamera untuk tim Anda"
+			"subtitleDefault": "Kelola Kamera untuk tim Anda",
+			"subtitleLoading": "Memuat lokasi...",
+			"subtitleNoSites": "Tidak ada lokasi tersedia",
+			"subtitleWithSite": "Kelola kamera untuk {name}",
+			"subtitleSelectSite": "Pilih lokasi untuk melihat kamera"
+		},
+		"emptyState": {
+			"noSites": {
+				"title": "Tidak Ada Lokasi Tersedia",
+				"description": "Buat lokasi terlebih dahulu di Manajemen Lokasi sebelum menambahkan kamera."
+			},
+			"noSiteSelected": {
+				"title": "Belum Ada Lokasi Dipilih",
+				"description": "Silakan pilih lokasi dari dropdown di atas untuk melihat kamera."
+			}
 		},
 		"filters": {
 			"siteLabel": "Lokasi:",
@@ -237,11 +274,26 @@
 		"title": "Manajemen Aktivitas",
 		"header": {
 			"title": "Manajemen Aktivitas",
-			"subtitleDefault": "Kelola aktivitas, model AI, dan class deteksi untuk tim Anda"
+			"subtitleDefault": "Kelola aktivitas, model AI, dan class deteksi untuk tim Anda",
+			"subtitleLoading": "Memuat lokasi...",
+			"subtitleNoSites": "Tidak ada lokasi tersedia",
+			"subtitleWithSite": "Kelola aktivitas untuk {name}",
+			"subtitleSelectSite": "Pilih lokasi untuk melihat aktivitas"
+		},
+		"emptyState": {
+			"noSites": {
+				"title": "Tidak Ada Lokasi Tersedia",
+				"description": "Buat lokasi terlebih dahulu di Manajemen Lokasi sebelum menambahkan aktivitas."
+			},
+			"noSiteSelected": {
+				"title": "Belum Ada Lokasi Dipilih",
+				"description": "Silakan pilih lokasi dari dropdown di atas untuk melihat aktivitas."
+			}
 		},
 		"filters": {
 			"siteLabel": "Lokasi:",
-			"siteAll": "Semua Lokasi"
+			"siteAll": "Semua Lokasi",
+			"sitePlaceholder": "Pilih Lokasi"
 		},
 		"toolbar": {
 			"itemsLabel": "Item:",

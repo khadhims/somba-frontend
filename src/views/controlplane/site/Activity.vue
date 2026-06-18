@@ -5,7 +5,20 @@
         <div class="col-md-4">
           <h4 class="card-title mb-0">{{ t("controlplane.site.activity.header.title") }}</h4>
           <p class="text-muted mb-0">
-            <span>{{ t("controlplane.site.activity.header.subtitleDefault") }}</span>
+            <span v-if="isLoadingSites">{{
+              t("controlplane.site.activity.header.subtitleLoading")
+            }}</span>
+            <span v-else-if="sites.length === 0">{{
+              t("controlplane.site.activity.header.subtitleNoSites")
+            }}</span>
+            <span v-else-if="currentSite">{{
+              t("controlplane.site.activity.header.subtitleWithSite", {
+                name: currentSite.name,
+              })
+            }}</span>
+            <span v-else>{{
+              t("controlplane.site.activity.header.subtitleSelectSite")
+            }}</span>
           </p>
         </div>
         <div class="col-md-8">
@@ -17,9 +30,18 @@
               <select
                 v-model="selectedSiteFilter"
                 class="form-select form-select-solid w-200px"
+                :disabled="isLoadingSites || sites.length === 0"
                 @change="onHeaderSiteFilterChange"
               >
-                <option value="">{{ t("controlplane.site.activity.filters.siteAll") }}</option>
+                <option value="" disabled>
+                  {{
+                    isLoadingSites
+                      ? t("controlplane.site.activity.header.subtitleLoading")
+                      : sites.length === 0
+                        ? t("controlplane.site.activity.header.subtitleNoSites")
+                        : t("controlplane.site.activity.filters.sitePlaceholder")
+                  }}
+                </option>
                 <option v-for="site in sites" :key="site.uid" :value="site.uid">
                   {{ site.name }}
                 </option>
@@ -64,7 +86,11 @@
             :placeholder="t('controlplane.site.activity.toolbar.searchPlaceholder')"
           />
         </div>
-        <button class="btn btn-sm btn-light-primary" @click.prevent="openCreateForm">
+        <button
+          class="btn btn-sm btn-light-primary"
+          :disabled="isLoadingSites || !selectedSiteFilter"
+          @click.prevent="openCreateForm"
+        >
           <i class="ki-duotone ki-plus fs-2 me-1"></i>
           {{ t("controlplane.site.activity.toolbar.addButton") }}
         </button>
@@ -72,6 +98,13 @@
     </div>
 
     <div class="card-body py-3">
+      <ControlPlaneEmptyState
+        v-if="showSelectionEmptyState"
+        :title="selectionEmptyState!.title"
+        :description="selectionEmptyState!.description"
+      />
+
+      <template v-else>
       <KTDataTable
         :data="filteredAndSortedActivities"
         :header="tableHeader"
@@ -168,6 +201,7 @@
           @per-page-change="onPerPageChange"
         />
       </div>
+      </template>
     </div>
   </div>
 
@@ -321,6 +355,7 @@ import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import ControlPlaneEmptyState from "@/components/controlplane/ControlPlaneEmptyState.vue";
 import Pagination from "@/components/common/Pagination.vue";
 import ApiService from "@/core/services/ApiService";
 
@@ -358,6 +393,7 @@ const sortOrder = ref<"asc" | "desc">("asc");
 const currentPage = ref(1);
 const perPage = ref(10);
 const isLoading = ref(false);
+const isLoadingSites = ref(false);
 const isSaving = ref(false);
 const showForm = ref(false);
 const isEdit = ref(false);
@@ -403,6 +439,35 @@ const formatModelFile = (value: string): string => {
 
 const cameraName = (cameraUid: string): string =>
   siteCameras.value.find((camera) => camera.uid === cameraUid)?.name || cameraUid;
+
+const currentSite = computed(() =>
+  sites.value.find((site) => site.uid === selectedSiteFilter.value) ?? null,
+);
+
+const selectionEmptyState = computed(() => {
+  if (isLoadingSites.value) {
+    return null;
+  }
+  if (sites.value.length === 0) {
+    return {
+      title: t("controlplane.site.activity.emptyState.noSites.title"),
+      description: t("controlplane.site.activity.emptyState.noSites.description"),
+    };
+  }
+  if (!selectedSiteFilter.value) {
+    return {
+      title: t("controlplane.site.activity.emptyState.noSiteSelected.title"),
+      description: t(
+        "controlplane.site.activity.emptyState.noSiteSelected.description",
+      ),
+    };
+  }
+  return null;
+});
+
+const showSelectionEmptyState = computed(
+  () => selectionEmptyState.value !== null,
+);
 
 const availableCamerasToAdd = computed(() =>
   siteCameras.value.filter(
@@ -542,25 +607,38 @@ const onPageChange = (page: number) => {
 const onHeaderSiteFilterChange = () => {
   currentPage.value = 1;
   localStorage.setItem("lastSelectedSite", selectedSiteFilter.value || "");
-  loadActivities();
+  if (selectedSiteFilter.value) {
+    loadActivities();
+  } else {
+    activities.value = [];
+    siteCameras.value = [];
+    cameraAssignments.value = {};
+  }
 };
 
 const loadSites = async () => {
-  const teamId = localStorage.getItem("lastSelectedTeam") || (route.query.teamId as string);
-  const resp = teamId
-    ? await ApiService.query(`teams/${teamId}/sites`, {})
-    : await ApiService.query("sites", {});
-  const data = resp?.data?.data ?? resp?.data ?? [];
-  sites.value = (Array.isArray(data) ? data : []).map((site: any) => ({
-    uid: site.uid,
-    name: site.name,
-  }));
-  if (!selectedSiteFilter.value) {
-    selectedSiteFilter.value =
-      (route.query.siteId as string) ||
-      localStorage.getItem("lastSelectedSite") ||
-      sites.value[0]?.uid ||
-      "";
+  isLoadingSites.value = true;
+  try {
+    const teamId = localStorage.getItem("lastSelectedTeam") || (route.query.teamId as string);
+    const resp = teamId
+      ? await ApiService.query(`teams/${teamId}/sites`, {})
+      : await ApiService.query("sites", {});
+    const data = resp?.data?.data ?? resp?.data ?? [];
+    sites.value = (Array.isArray(data) ? data : []).map((site: any) => ({
+      uid: site.uid,
+      name: site.name,
+    }));
+    if (!selectedSiteFilter.value) {
+      selectedSiteFilter.value =
+        (route.query.siteId as string) ||
+        localStorage.getItem("lastSelectedSite") ||
+        "";
+    }
+  } catch (error) {
+    console.error("Error loading sites:", error);
+    sites.value = [];
+  } finally {
+    isLoadingSites.value = false;
   }
 };
 
@@ -733,7 +811,9 @@ const deleteActivity = async (activity: ActivityItem) => {
 
 onMounted(async () => {
   await loadSites();
-  await loadActivities();
+  if (selectedSiteFilter.value) {
+    await loadActivities();
+  }
 });
 </script>
 

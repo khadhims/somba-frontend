@@ -9,10 +9,22 @@
             {{ t("controlplane.team.header.title") }}
           </h4>
           <p class="text-muted mb-0">
-            <span v-if="currentAccount">{{
+            <span v-if="loadingOrganizations">{{
+              t("controlplane.team.header.subtitleLoading")
+            }}</span>
+            <span v-else-if="currentAccount">{{
               t("controlplane.team.header.subtitleWithAccount", {
                 name: currentAccount.name,
               })
+            }}</span>
+            <span v-else-if="organizations.length === 0">{{
+              t("controlplane.team.header.subtitleNoOrganizations")
+            }}</span>
+            <span v-else-if="!selectedOrganizationId">{{
+              t("controlplane.team.header.subtitleSelectOrganization")
+            }}</span>
+            <span v-else-if="!selectedAccountId">{{
+              t("controlplane.team.header.subtitleSelectAccount")
             }}</span>
             <span v-else>{{
               t("controlplane.team.header.subtitleDefault")
@@ -235,7 +247,7 @@
         <button
           @click="showAddTeamModal"
           class="btn btn-sm btn-light-primary"
-          :disabled="!selectedAccountId"
+          :disabled="loading || loadingOrganizations || !selectedAccountId"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
           {{ t("controlplane.team.toolbar.addButton") }}
@@ -247,6 +259,13 @@
 
     <!--begin::Card body-->
     <div class="card-body py-3">
+      <ControlPlaneEmptyState
+        v-if="showSelectionEmptyState"
+        :title="selectionEmptyState!.title"
+        :description="selectionEmptyState!.description"
+      />
+
+      <template v-else>
       <KTDataTable
         :data="filteredAndSortedTeams"
         :header="tableHeader"
@@ -361,6 +380,7 @@
         @page-change="goToPage"
       />
       <!--end::Pagination-->
+      </template>
     </div>
     <!--end::Card body-->
   </div>
@@ -534,6 +554,7 @@ import { useI18n } from "vue-i18n";
 import { Modal } from "bootstrap";
 // import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import ControlPlaneEmptyState from "@/components/controlplane/ControlPlaneEmptyState.vue";
 import ApiService from "@/core/services/ApiService";
 import Pagination from "@/components/common/Pagination.vue";
 import MembershipListModal from "@/components/modals/membership/MembershipListModal.vue";
@@ -1262,6 +1283,37 @@ const changeItemsPerPage = () => {
 // });
 
 // Empty table message based on current state
+const selectionEmptyState = computed(() => {
+  if (loadingOrganizations.value) {
+    return null;
+  }
+  if (organizations.value.length === 0) {
+    return {
+      title: t("controlplane.team.emptyState.noOrganizations.title"),
+      description: t("controlplane.team.emptyState.noOrganizations.description"),
+    };
+  }
+  if (!selectedOrganizationId.value) {
+    return {
+      title: t("controlplane.team.emptyState.noOrganizationSelected.title"),
+      description: t(
+        "controlplane.team.emptyState.noOrganizationSelected.description",
+      ),
+    };
+  }
+  if (!loadingAccounts.value && !selectedAccountId.value) {
+    return {
+      title: t("controlplane.team.emptyState.noAccountSelected.title"),
+      description: t("controlplane.team.emptyState.noAccountSelected.description"),
+    };
+  }
+  return null;
+});
+
+const showSelectionEmptyState = computed(
+  () => selectionEmptyState.value !== null,
+);
+
 const emptyTableMessage = computed(() => {
   if (!selectedOrganizationId.value) {
     return t("controlplane.team.empty.selectOrganization");

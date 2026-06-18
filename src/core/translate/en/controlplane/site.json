@@ -5,8 +5,13 @@
 	},
 	"header": {
 		"title": "Site Management",
+		"subtitleLoading": "Loading organizations...",
 		"subtitleDefault": "Manage sites for your team",
-		"subtitleWithTeam": "Manage sites for team {name}"
+		"subtitleWithTeam": "Manage sites for team {name}",
+		"subtitleNoOrganizations": "No organizations available",
+		"subtitleSelectOrganization": "Select an organization to view sites",
+		"subtitleSelectAccount": "Select an account to view sites",
+		"subtitleSelectTeam": "Select a team to view sites"
 	},
 	"filters": {
 		"organizationLabel": "Organization",
@@ -78,6 +83,24 @@
 		"edit": "Edit Site",
 		"delete": "Delete Site"
 	},
+	"emptyState": {
+		"noOrganizations": {
+			"title": "No Organizations Available",
+			"description": "Create an organization first to manage sites."
+		},
+		"noOrganizationSelected": {
+			"title": "No Organization Selected",
+			"description": "Please select an organization from the dropdown above to view sites."
+		},
+		"noAccountSelected": {
+			"title": "No Account Selected",
+			"description": "Please select a payment account from the dropdown above to view sites."
+		},
+		"noTeamSelected": {
+			"title": "No Team Selected",
+			"description": "Please select a team from the dropdown above to view sites."
+		}
+	},
 	"empty": {
 		"selectOrganization": "Please select an organization to view sites",
 		"selectAccount": "Please select an account to view sites",
@@ -99,7 +122,21 @@
 		"title": "Camera Management",
 		"header": {
 			"title": "Camera Management",
-			"subtitleDefault": "Manage cameras for your team"
+			"subtitleDefault": "Manage cameras for your team",
+			"subtitleLoading": "Loading sites...",
+			"subtitleNoSites": "No sites available",
+			"subtitleWithSite": "Manage cameras for {name}",
+			"subtitleSelectSite": "Select a site to view cameras"
+		},
+		"emptyState": {
+			"noSites": {
+				"title": "No Sites Available",
+				"description": "Create a site in Site Management before adding cameras."
+			},
+			"noSiteSelected": {
+				"title": "No Site Selected",
+				"description": "Please select a site from the dropdown above to view cameras."
+			}
 		},
 		"filters": {
 			"siteLabel": "Site:",
@@ -237,11 +274,26 @@
 		"title": "Activity Management",
 		"header": {
 			"title": "Activity Management",
-			"subtitleDefault": "Manage activities, AI models, and detection classes for your team"
+			"subtitleDefault": "Manage activities, AI models, and detection classes for your team",
+			"subtitleLoading": "Loading sites...",
+			"subtitleNoSites": "No sites available",
+			"subtitleWithSite": "Manage activities for {name}",
+			"subtitleSelectSite": "Select a site to view activities"
+		},
+		"emptyState": {
+			"noSites": {
+				"title": "No Sites Available",
+				"description": "Create a site in Site Management before adding activities."
+			},
+			"noSiteSelected": {
+				"title": "No Site Selected",
+				"description": "Please select a site from the dropdown above to view activities."
+			}
 		},
 		"filters": {
 			"siteLabel": "Site:",
-			"siteAll": "All Sites"
+			"siteAll": "All Sites",
+			"sitePlaceholder": "Select Site"
 		},
 		"toolbar": {
 			"itemsLabel": "Items:",
