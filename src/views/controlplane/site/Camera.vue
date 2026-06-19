@@ -185,6 +185,23 @@
           </span>
         </template>
 
+        <template v-slot:activity="{ row }">
+          <span class="text-dark fw-bold d-block fs-6">{{ row.activity || "-" }}</span>
+        </template>
+
+        <template v-slot:alert="{ row }">
+          <span
+            class="badge fs-7 fw-bold"
+            :class="row.alert ? 'badge-light-danger' : 'badge-light-secondary'"
+          >
+            {{
+              row.alert
+                ? t("controlplane.site.camera.table.alertEnabled")
+                : t("controlplane.site.camera.table.alertDisabled")
+            }}
+          </span>
+        </template>
+
         <template v-slot:status="{ row }">
           <span
             :class="`badge badge-light-${statusBadgeVariant(row.status)} fs-7 fw-bold`"
@@ -505,6 +522,37 @@
               </div>
 
               <div class="row mb-7">
+                <div class="col-md-6">
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.activity.label") }}
+                  </label>
+                  <input
+                    type="text"
+                    v-model="cameraForm.activity"
+                    class="form-control form-control-solid"
+                    :placeholder="t('controlplane.site.camera.form.fields.activity.placeholder')"
+                    required
+                  />
+                  <div class="form-text">
+                    {{ t("controlplane.site.camera.form.fields.activity.hint") }}
+                  </div>
+                </div>
+                <div class="col-md-6 d-flex align-items-center">
+                  <div class="form-check form-switch form-check-custom form-check-solid mt-6">
+                    <input
+                      id="camera-alert-toggle"
+                      v-model="cameraForm.alert"
+                      class="form-check-input"
+                      type="checkbox"
+                    />
+                    <label class="form-check-label fw-semibold fs-6" for="camera-alert-toggle">
+                      {{ t("controlplane.site.camera.form.fields.alert.label") }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mb-7">
                 <div class="col-md-12">
                   <label class="fw-semibold fs-6 mb-2">
                     {{ t("controlplane.site.camera.form.fields.position.label") }}
@@ -601,6 +649,8 @@ interface Camera {
   location?: string;
   description?: string;
   status: "online" | "offline";
+  activity?: string;
+  alert?: boolean;
   createdAt: string;
 }
 
@@ -619,6 +669,8 @@ interface CameraForm {
   resolution: string;
   location?: string;
   description?: string;
+  activity: string;
+  alert: boolean;
 }
 
 // i18n & Router
@@ -663,6 +715,8 @@ const cameraForm = ref<CameraForm>({
   resolution: "1080P (2MP)",
   location: "",
   description: "",
+  activity: "",
+  alert: false,
 });
 
 const resolveRtspUrl = (camera: {
@@ -729,6 +783,18 @@ const tableHeader = computed(() => [
     columnLabel: "rtspUrl",
     sortEnabled: true,
     searchable: true,
+  },
+  {
+    columnName: t("controlplane.site.camera.table.activity"),
+    columnLabel: "activity",
+    sortEnabled: true,
+    searchable: true,
+  },
+  {
+    columnName: t("controlplane.site.camera.table.alert"),
+    columnLabel: "alert",
+    sortEnabled: true,
+    searchable: false,
   },
   {
     columnName: t("controlplane.site.camera.table.status"),
@@ -948,6 +1014,8 @@ const loadCameras = async () => {
           location: camera.location || "",
           description: camera.description || "",
           status: normalizeStatusKey(camera.status),
+          activity: camera.activity || "",
+          alert: Boolean(camera.alert),
           createdAt: camera.created_at || new Date().toISOString().split("T")[0],
           room: resolveRoomName(camera),
         };
@@ -1017,6 +1085,8 @@ const saveCamera = async () => {
       description: cameraForm.value.description || "",
       room: cameraForm.value.room.trim() || undefined,
       status: cameraForm.value.status,
+      activity: cameraForm.value.activity.trim(),
+      alert: cameraForm.value.alert,
       camera_config: defaultCameraConfig,
     };
 
@@ -1119,6 +1189,8 @@ const editCamera = async (camera: Camera) => {
           resolution: cameraData.cam_resolution || cameraData.resolution || camera.resolution,
           location: cameraData.location || camera.location || "",
           description: cameraData.description || camera.description || "",
+          activity: cameraData.activity || camera.activity || "",
+          alert: Boolean(cameraData.alert ?? camera.alert),
         };
       } else {
         console.warn('API returned unexpected data structure, using local camera data');
@@ -1137,6 +1209,8 @@ const editCamera = async (camera: Camera) => {
           resolution: camera.resolution,
           location: camera.location || "",
           description: camera.description || "",
+          activity: camera.activity || "",
+          alert: Boolean(camera.alert),
         };
       }
     } else {
@@ -1156,6 +1230,8 @@ const editCamera = async (camera: Camera) => {
         resolution: camera.resolution,
         location: camera.location || "",
         description: camera.description || "",
+        activity: camera.activity || "",
+        alert: Boolean(camera.alert),
       };
     }
     
@@ -1179,6 +1255,8 @@ const editCamera = async (camera: Camera) => {
       resolution: camera.resolution,
       location: camera.location || "",
       description: camera.description || "",
+      activity: camera.activity || "",
+      alert: Boolean(camera.alert),
     };
 
     isEdit.value = true;
@@ -1252,6 +1330,8 @@ const closeForm = () => {
     resolution: "1080P (2MP)",
     location: "",
     description: "",
+    activity: "",
+    alert: false,
   };
 };
 

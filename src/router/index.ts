@@ -227,14 +227,6 @@ const routes: Array<RouteRecordRaw> = [
             },
           },
           {
-            path: "activity",
-            name: "site-activity",
-            component: () => import("@/views/controlplane/site/Activity.vue"),
-            meta: {
-              pageTitle: "Activity",
-            },
-          },
-          {
             path: "settings",
             name: "site-settings",
             component: () => import("@/views/controlplane/site/Settings.vue"),

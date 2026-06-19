@@ -227,6 +227,14 @@
 				"description": {
 					"label": "Deskripsi",
 					"placeholder": "Deskripsi kamera"
+				},
+				"activity": {
+					"label": "Aktivitas",
+					"placeholder": "memasak",
+					"hint": "Label aktivitas untuk worker edge (rekaman saat terdeteksi person)."
+				},
+				"alert": {
+					"label": "Mode Pelanggaran (best.pt + yolov5s)"
 				}
 			},
 			"actions": {
@@ -247,6 +255,10 @@
 			"specs": "Spesifikasi",
 			"rtspUrl": "RTSP URL",
 			"streamUrl": "Stream URL",
+			"activity": "Aktivitas",
+			"alert": "Pelanggaran",
+			"alertEnabled": "Aktif",
+			"alertDisabled": "Nonaktif",
 			"status": "Status",
 			"actions": "Aksi",
 			"empty": "Tidak ada kamera"

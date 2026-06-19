@@ -227,6 +227,14 @@
 				"description": {
 					"label": "Description",
 					"placeholder": "Camera description"
+				},
+				"activity": {
+					"label": "Activity",
+					"placeholder": "cooking",
+					"hint": "Activity label for edge worker (records when person is detected)."
+				},
+				"alert": {
+					"label": "Violation mode (best.pt + yolov5s)"
 				}
 			},
 			"actions": {
@@ -247,6 +255,10 @@
 			"specs": "Specifications",
 			"rtspUrl": "RTSP URL",
 			"streamUrl": "Stream URL",
+			"activity": "Activity",
+			"alert": "Violation",
+			"alertEnabled": "On",
+			"alertDisabled": "Off",
 			"status": "Status",
 			"actions": "Actions",
 			"empty": "No cameras found"

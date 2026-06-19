@@ -538,7 +538,7 @@ const fetchEvents = async () => {
         camera_name: item.camera?.name || item.camera_name || "",
         event_id: item.event_id || "",
         event_name:
-          item.activity?.name || item.activity_type || item.event_name || "",
+          item.activity_type || item.event_name || item.camera?.activity || "",
         event_start: convertToGMT8(item.event_start),
         event_end: convertToGMT8(item.event_end),
         duration_minutes: item.duration_minutes,
