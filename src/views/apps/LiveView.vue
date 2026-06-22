@@ -313,6 +313,7 @@ const loadHlsCdn = (): Promise<void> => {
 };
 // import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import ApiService from "@/core/services/ApiService";
+import { parsePaginatedResponse } from "@/core/helpers/paginated-response";
 
 const { t } = useI18n();
 
@@ -531,8 +532,8 @@ const setupVideoObservers = () => {
     { root: null, rootMargin: "64px", threshold: 0.25 }
   );
 
-  // Observe current rendered videos
-  cameras.value.forEach((cam) => {
+  // Observe currently rendered videos in the grid
+  filteredCameras.value.forEach((cam) => {
     const el = document.getElementById(
       `video-${cam.uid}`
     ) as HTMLVideoElement | null;
@@ -559,43 +560,18 @@ const fetchCameras = async () => {
     const resp = await ApiService.query(
       `sites/${selectedSiteId.value}/cameras`,
       {
-        /* empty */
+        params: {
+          page: 1,
+          page_size: 100,
+        },
       }
     );
-    // Debug raw response for troubleshooting when status 200 but no cameras shown
-    console.debug("[LiveView] fetchCameras raw response:", resp);
 
-    // Normalize different API shapes: resp.data.data, resp.data, or single object
-    let raw: any = resp?.data?.data ?? resp?.data ?? null;
+    const { items: data } = parsePaginatedResponse(resp);
     console.debug(
       "[LiveView] fetchCameras selectedSiteId:",
       selectedSiteId.value,
-      "rawType:",
-      typeof raw,
-      "isArray:",
-      Array.isArray(raw)
-    );
-
-    let data: any[] = [];
-    if (Array.isArray(raw)) {
-      data = raw;
-    } else if (raw == null) {
-      data = [];
-    } else if (typeof raw === "object") {
-      // If server wrapped list under common keys, detect them
-      if (Array.isArray(raw.items)) data = raw.items;
-      else if (Array.isArray(raw.cameras)) data = raw.cameras;
-      else if (Array.isArray(raw.results)) data = raw.results;
-      else {
-        // single object -> wrap into array
-        data = [raw];
-      }
-    } else {
-      data = [];
-    }
-
-    console.debug(
-      "[LiveView] fetchCameras normalized data length:",
+      "count:",
       data.length
     );
 
@@ -603,8 +579,18 @@ const fetchCameras = async () => {
     cameras.value = data.map((it: any) => ({
       uid: it.uid ?? it.id?.toString() ?? (Math.random() * 1e9).toString(),
       name: it.name ?? it.camera_name ?? "",
-      room: it.room_name ?? it.roomName ?? it.room ?? it.location ?? "",
-      recording: Boolean(it.is_recording || it.recording),
+      room:
+        it.room_name ??
+        it.roomName ??
+        it.room ??
+        it.location ??
+        it.name ??
+        "",
+      recording: Boolean(
+        it.is_recording ||
+          it.recording ||
+          it.camera_config?.recording?.enabled
+      ),
       site_uid: (it.site_uid ?? it.site?.uid) || selectedSiteId.value,
       stream_url: it.stream_url ?? null,
       model: it.model ?? it.camera_model ?? it.modelName ?? undefined,
@@ -663,7 +649,6 @@ const fetchSites = async () => {
       selectedSiteId.value = selectedUid;
 
       console.debug("[LiveView] selectedSiteId set to:", selectedSiteId.value);
-      await fetchCameras();
     }
   } catch (error) {
     console.error("[LiveView] Error loading sites:", error);
@@ -677,7 +662,6 @@ const fetchSites = async () => {
       // Initialize both filter and internal state
       selectedSiteFilter.value = sites.value[0].uid;
       selectedSiteId.value = sites.value[0].uid;
-      await fetchCameras();
     }
   } finally {
     loadingSites.value = false;
@@ -686,15 +670,7 @@ const fetchSites = async () => {
 
 // Header filter change handlers (following Camera.vue pattern)
 const onHeaderSiteFilterChange = () => {
-  selectedSiteId.value = selectedSiteFilter.value; // Sync internal state
-  // cleanup previous streams
-  detachAllStreams();
-  // Load cameras for the new selected site
-  if (selectedSiteFilter.value) {
-    fetchCameras();
-  } else {
-    cameras.value = [];
-  }
+  selectedSiteId.value = selectedSiteFilter.value;
 };
 
 // const onHeaderNvrFilterChange = async () => {
@@ -736,11 +712,14 @@ onUnmounted(() => {
   detachAllStreams();
 });
 
-// if selected site changes elsewhere, refresh cameras
+// if selected site changes elsewhere, refresh cameras (single entry point)
 watch(selectedSiteId, (nv, ov) => {
-  if (nv !== ov) {
-    detachAllStreams();
+  if (nv === ov) return;
+  detachAllStreams();
+  if (nv) {
     fetchCameras();
+  } else {
+    cameras.value = [];
   }
 });
 

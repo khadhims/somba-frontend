@@ -255,6 +255,10 @@ import ApiService from "@/core/services/ApiService";
 import EventsTable from "@/components/apps/events-alerts/EventsTable.vue";
 import EventDetailModal from "@/components/apps/events-alerts/EventDetailModal.vue";
 import { convertToGMT8 } from "@/core/helpers/timezone";
+import {
+  applyPaginationMeta,
+  parsePaginatedResponse,
+} from "@/core/helpers/paginated-response";
 
 const { t } = useI18n();
 
@@ -275,6 +279,7 @@ interface Event {
   status: "active" | "acknowledged" | "resolved";
   image_url?: string;
   image_urls?: string[];
+  recording_url?: string;
   activities?: any[];
 }
 
@@ -493,7 +498,13 @@ const fetchEvents = async () => {
     const params: any = {
       page: currentPage.value,
       page_size: itemsPerPage.value,
+      sort_by: sortLabel.value || "timestamp",
+      sort_order: sortOrder.value,
     };
+
+    if (searchQuery.value.trim()) {
+      params.search = searchQuery.value.trim();
+    }
 
     // Add camera filter if set
     if (
@@ -515,22 +526,9 @@ const fetchEvents = async () => {
     const resp = await ApiService.query(`sites/${siteUid}/activities`, {
       params,
     });
-    const payload = resp && resp.data ? resp.data : resp;
+    const { items: results, pagination } = parsePaginatedResponse(resp);
 
-    // Handle API response structure: { status, code, message, data: [...], pagination: {...} }
-    let results = [];
-    if (Array.isArray(payload?.data)) {
-      results = payload.data;
-    } else if (Array.isArray(payload?.results)) {
-      // Fallback untuk struktur lama
-      results = payload.results;
-    } else {
-      console.warn("Unexpected API response format:", payload);
-      results = [];
-    }
-
-    // Map response data items to internal event structure
-    events.value = results.map((item: any, idx: number) => {
+    events.value = results.map((item: any) => {
       return {
         severity: "medium", // default severity based on detection activity
         site_uid: siteUid,
@@ -548,43 +546,17 @@ const fetchEvents = async () => {
         status: item.status || "active",
         image_url: item.image_url || "",
         image_urls: item.image_urls || [],
+        recording_url: item.recording_url || "",
         activities: item.activities || [],
       };
     });
 
-    // Use pagination from API response
-    const pagination =
-      payload?.pagination ||
-      {
-        /* empty */
-      };
-
-    // Use pagination values from API response
-    if (typeof pagination.total_items === "number") {
-      totalItems.value = pagination.total_items;
-    }
-    if (typeof pagination.total_pages === "number") {
-      totalPages.value = pagination.total_pages;
-    }
-
-    // DON'T update itemsPerPage from API response - keep user's selection
-    // The API should respect our per_page parameter, but if it doesn't,
-    // we still want to maintain the user's choice in the UI
-    if (
-      typeof pagination.per_page === "number" &&
-      pagination.per_page !== itemsPerPage.value
-    ) {
-      console.warn(
-        `API returned different per_page: ${pagination.per_page}, but keeping user selection: ${itemsPerPage.value}`
-      );
-    }
-
-    // Apply client-side filters if header filters are set
-    if (selectedSiteFilter.value) {
-      events.value = events.value.filter(
-        (e) => !e.site_uid || e.site_uid === selectedSiteFilter.value
-      );
-    }
+    applyPaginationMeta(pagination, {
+      totalItems,
+      totalPages,
+      page: currentPage,
+      perPage: itemsPerPage,
+    });
   } catch (error) {
     console.error("Error fetching events:", error);
     events.value = [];
@@ -614,6 +586,17 @@ watch([dateFrom, dateTo], ([from, to]) => {
   } catch (error) {
     console.warn("Unable to persist date filters to localStorage", error);
   }
+});
+
+let searchTimeout: number | null = null;
+watch(searchQuery, () => {
+  currentPage.value = 1;
+  if (searchTimeout) {
+    clearTimeout(searchTimeout);
+  }
+  searchTimeout = window.setTimeout(() => {
+    fetchEvents();
+  }, 300);
 });
 
 // Fetch sites from API (following Camera.vue pattern)
@@ -651,27 +634,11 @@ const fetchCamerasForFilter = async (siteUid: string) => {
   }
   loadingCameras.value = true;
   try {
-    const resp = await ApiService.get(`sites/${siteUid}/cameras`);
+    const resp = await ApiService.query(`sites/${siteUid}/cameras`, {
+      params: { page: 1, page_size: 100 },
+    });
+    const { items: rawCameras } = parsePaginatedResponse(resp);
 
-    // Parse response - handle direct array or wrapped response
-    let rawCameras: any[] = [];
-    if (resp && resp.data) {
-      if (resp.data?.data && Array.isArray(resp.data.data)) {
-        rawCameras = resp.data.data;
-      } else if (Array.isArray(resp.data)) {
-        rawCameras = resp.data;
-      } else {
-        console.warn("Unexpected cameras response format:", resp.data);
-        rawCameras = [];
-      }
-    } else if (Array.isArray(resp)) {
-      rawCameras = resp;
-    } else {
-      console.warn("No data received from cameras API");
-      rawCameras = [];
-    }
-
-    // Map all camera data to expected structure, preserving all original fields
     cameras.value = rawCameras.map((camera: any) => ({
       // Map uid to uuid for compatibility with existing code
       uuid: camera.uid || camera.uuid || camera.id,
@@ -1012,79 +979,7 @@ const formatNumber = (value: number, maximumFractionDigits = 1) =>
 // };
 
 // Computed properties
-const filteredAndSortedEvents = computed(() => {
-  let filtered = events.value;
-
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter((event) => {
-      const camera = (event.camera_name || "").toLowerCase();
-      // const type = (event.type || '').toLowerCase();
-      const status = (event.status || "").toLowerCase();
-      const severity = (event.severity || "").toLowerCase();
-      // const translatedType = getEventTypeLabel(event.type).toLowerCase();
-
-      return (
-        camera.includes(query) ||
-        // type.includes(query) ||
-        status.includes(query) ||
-        severity.includes(query)
-        // translatedType.includes(query)
-      );
-    });
-  }
-
-  // if (selectedEventType.value) {
-  //   filtered = filtered.filter((event) => event.type === selectedEventType.value);
-  // }
-
-  if (selectedSeverityType.value) {
-    filtered = filtered.filter(
-      (event) => event.severity === selectedSeverityType.value
-    );
-  }
-
-  if (sortLabel.value) {
-    filtered = [...filtered].sort((a, b) => {
-      let sortKey = sortLabel.value;
-      if (sortKey === "duration") sortKey = "duration_minutes";
-      if (sortKey === "timestamp") sortKey = "event_start";
-
-      let aValue: any = a[sortKey as keyof Event];
-      let bValue: any = b[sortKey as keyof Event];
-
-      if (
-        sortKey === "startTime" ||
-        sortKey === "endTime" ||
-        sortKey === "event_start"
-      ) {
-        aValue = aValue ? new Date(aValue as string).getTime() : 0;
-        bValue = bValue ? new Date(bValue as string).getTime() : 0;
-      }
-
-      // User defines Descending as Smallest to Largest (Ascending behavior)
-      // So we flip standard logic:
-      // asc -> Large to Small (Standard Descending)
-      // desc -> Small to Large (Standard Ascending)
-
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        const comparison = aValue.localeCompare(bValue);
-        return sortOrder.value === "asc" ? -comparison : comparison;
-      }
-
-      if (typeof aValue === "number" && typeof bValue === "number") {
-        const comparison = aValue - bValue;
-        return sortOrder.value === "asc" ? -comparison : comparison;
-      }
-
-      return 0;
-    });
-  }
-
-  // Don't recalculate pagination here - use server-side pagination values
-  // Just return filtered/sorted events without slicing
-  return filtered;
-});
+const filteredAndSortedEvents = computed(() => events.value);
 
 // Statistics computed properties
 // const activeAlerts = computed(() => events.value.filter(e => e.status === 'active').length);
@@ -1126,6 +1021,8 @@ const filteredAndSortedEvents = computed(() => {
 const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
   sortLabel.value = sort.label;
   sortOrder.value = sort.order;
+  currentPage.value = 1;
+  fetchEvents();
 };
 
 const viewEventDetails = (event: Event) => {

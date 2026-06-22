@@ -217,7 +217,7 @@ defineOptions({
   name: "AlertsComponent",
 });
 
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import AlertsTable from "@/components/apps/events-alerts/AlertsTable.vue";
 import AlertDetailModal from "@/components/apps/events-alerts/AlertDetailModal.vue";
@@ -225,6 +225,9 @@ import Pagination from "@/components/common/Pagination.vue";
 import ItemPerPage from "@/components/ItemPerPage.vue";
 import DatePicker from "@/components/DatePicker.vue";
 import ApiService from "@/core/services/ApiService";
+import {
+  parsePaginatedResponse,
+} from "@/core/helpers/paginated-response";
 
 const { t } = useI18n();
 
@@ -452,22 +455,16 @@ const fetchCameras = async (siteUid: string) => {
 
   loadingCameras.value = true;
   try {
-    const resp = await ApiService.get(`sites/${siteUid}/cameras`);
-
-    // Parse response (wrapped or direct)
-    if (resp && resp.data) {
-      if (resp.data?.data && Array.isArray(resp.data.data)) {
-        cameras.value = resp.data.data;
-      } else if (Array.isArray(resp.data)) {
-        cameras.value = resp.data;
-      } else {
-        console.warn("Unexpected cameras response format:", resp.data);
-        cameras.value = [];
-      }
-    } else {
-      console.warn("No data received from cameras API");
-      cameras.value = [];
-    }
+    const resp = await ApiService.query(`sites/${siteUid}/cameras`, {
+      params: { page: 1, page_size: 100 },
+    });
+    const { items } = parsePaginatedResponse(resp);
+    cameras.value = items.map((camera: any) => ({
+      uid: camera.uid,
+      uuid: camera.uid,
+      name: camera.name,
+      site_uid: camera.site_uid || siteUid,
+    }));
   } catch (error) {
     console.error("Error loading cameras:", error);
     cameras.value = [];
@@ -519,7 +516,13 @@ const fetchAlerts = async () => {
     const params: any = {
       page: pagination.value.page,
       page_size: pagination.value.per_page,
+      sort_by: sortLabel.value || "timestamp",
+      sort_order: sortOrder.value,
     };
+
+    if (searchQuery.value.trim()) {
+      params.search = searchQuery.value.trim();
+    }
 
     // Add camera filter if set
     if (
@@ -546,73 +549,50 @@ const fetchAlerts = async () => {
     );
 
     if (resp && resp.data) {
-      const payload = resp.data;
+      const { items, pagination: paginationMeta } = parsePaginatedResponse(resp);
 
-      // Handle the response structure: { data: [...], pagination: {...} }
-      if (Array.isArray(payload.data)) {
-        alerts.value = payload.data.map((item: any) => {
-          // Get violation name from first detected object
-          const violationName =
-            item.detected_objects && item.detected_objects.length > 0
-              ? item.detected_objects[0].display_name
-              : "Unknown Violation";
+      alerts.value = items.map((item: any) => ({
+        event_id: item.alert_id || item.event_id || `alert-${Date.now()}-${Math.random()}`,
+        camera_uuid: item.camera_uid || item.camera_uuid || "",
+        camera_name: item.camera?.name || item.camera_name || "Unknown Camera",
+        violation_name: item.violation_name || "Unknown Violation",
+        event_start: item.detected_at || item.event_start || "",
+        event_end: item.event_end || "",
+        timestamp: item.detected_at || item.event_start || "",
+        duration_minutes: item.duration_minutes || 0,
+        total_detections: item.total_detections || 1,
+        detected_objects: item.detected_objects || [],
+        status: item.status || "notResolved",
+        image_url: item.image_url || "",
+        image_urls: item.image_urls || [],
+        activities: item.activities || [],
+        comment: item.comment || null,
+      }));
 
-          return {
-            event_id: item.event_id || `alert-${Date.now()}-${Math.random()}`,
-            camera_uuid: item.camera_uuid || "",
-            camera_name: item.camera_name || "Unknown Camera",
-            violation_name: violationName,
-            event_start: item.event_start || "",
-            event_end: item.event_end || "",
-            timestamp: item.event_start || "Unknown Timestamp",
-            duration_minutes: item.duration_minutes || 0,
-            total_detections: item.total_detections || 0,
-            detected_objects: item.detected_objects || [],
-            status: item.status || "not_resolved",
-            image_url: item.image_url || "",
-            image_urls: item.image_urls || [],
-            activities: item.activities || [],
-            comment: item.comment || null,
-          };
-        });
-
-        // Update pagination from API response
-        if (payload.pagination) {
-          const p = payload.pagination;
-
-          pagination.value.page = p.page || 1;
-          pagination.value.total_items = p.total_items || alerts.value.length;
-          pagination.value.next_page = p.next_page || null;
-          pagination.value.prev_page = p.prev_page || null;
-
-          // DON'T update per_page from API response - keep user's selection
-          if (
-            typeof p.per_page === "number" &&
-            p.per_page !== pagination.value.per_page
-          ) {
-            console.warn(
-              `API returned different per_page: ${p.per_page}, but keeping user selection: ${pagination.value.per_page}`
-            );
-          }
-
-          // Use API total_pages if available, otherwise calculate
-          if (typeof p.total_pages === "number") {
-            pagination.value.total_pages = p.total_pages;
-          } else {
-            pagination.value.total_pages = Math.ceil(
-              pagination.value.total_items / pagination.value.per_page
-            );
-          }
-        }
-      } else {
-        alerts.value = [];
+      if (typeof paginationMeta.total_items === "number") {
+        pagination.value.total_items = paginationMeta.total_items;
       }
+      if (typeof paginationMeta.total_pages === "number") {
+        pagination.value.total_pages = paginationMeta.total_pages;
+      } else {
+        pagination.value.total_pages = Math.max(
+          1,
+          Math.ceil(pagination.value.total_items / pagination.value.per_page),
+        );
+      }
+      if (typeof paginationMeta.page === "number") {
+        pagination.value.page = paginationMeta.page;
+      }
+      pagination.value.next_page = paginationMeta.next_page ?? null;
+      pagination.value.prev_page = paginationMeta.prev_page ?? null;
     } else {
       alerts.value = [];
     }
   } catch (error) {
     console.error("Error loading alerts:", error);
     alerts.value = [];
+    pagination.value.total_items = 0;
+    pagination.value.total_pages = 0;
   } finally {
     loading.value = false;
   }
@@ -863,67 +843,14 @@ const formatNumber = (value: number, maximumFractionDigits = 1) =>
 //   });
 // };
 
-const filteredAndSortedAlerts = computed(() => {
-  let filtered = alerts.value;
-
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter((alert) => {
-      const camera = (alert.camera_name || "").toLowerCase();
-      const status = (alert.status || "").toLowerCase();
-      const violation = (alert.violation_name || "").toLowerCase();
-
-      return (
-        camera.includes(query) ||
-        status.includes(query) ||
-        violation.includes(query)
-      );
-    });
-  }
-
-  if (sortLabel.value) {
-    filtered = [...filtered].sort((a, b) => {
-      let sortKey = sortLabel.value;
-      // Map sort keys to data keys
-      if (sortKey === "duration") sortKey = "duration_minutes";
-      if (sortKey === "timestamp") sortKey = "event_start";
-      if (sortKey === "alert_name") sortKey = "violation_name";
-      if (sortKey === "detections") sortKey = "total_detections";
-
-      let aValue: any = a[sortKey as keyof Alert];
-      let bValue: any = b[sortKey as keyof Alert];
-
-      if (sortKey === "event_start") {
-        aValue = aValue ? new Date(aValue as string).getTime() : 0;
-        bValue = bValue ? new Date(bValue as string).getTime() : 0;
-      }
-
-      // User defines Descending as Smallest to Largest (Ascending behavior)
-      // So we flip standard logic:
-      // asc -> Large to Small (Standard Descending)
-      // desc -> Small to Large (Standard Ascending)
-
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        const comparison = aValue.localeCompare(bValue);
-        return sortOrder.value === "asc" ? -comparison : comparison;
-      }
-
-      if (typeof aValue === "number" && typeof bValue === "number") {
-        const comparison = aValue - bValue;
-        return sortOrder.value === "asc" ? -comparison : comparison;
-      }
-
-      return 0;
-    });
-  }
-
-  return filtered;
-});
+const filteredAndSortedAlerts = computed(() => alerts.value);
 
 // Methods
 const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
   sortLabel.value = sort.label;
   sortOrder.value = sort.order;
+  pagination.value.page = 1;
+  void fetchAlerts();
 };
 
 // const handleImageError = (event: Event) => {
@@ -991,6 +918,17 @@ const handleDetailUpdate = (payload: {
 };
 
 // Initialize data on component mount - following Camera.vue pattern
+let alertsSearchTimeout: number | null = null;
+watch(searchQuery, () => {
+  pagination.value.page = 1;
+  if (alertsSearchTimeout) {
+    clearTimeout(alertsSearchTimeout);
+  }
+  alertsSearchTimeout = window.setTimeout(() => {
+    void fetchAlerts();
+  }, 300);
+});
+
 onMounted(async () => {
   try {
     // Initialize default dates first

@@ -74,7 +74,7 @@
           <select 
             class="form-select form-select-sm w-auto" 
             v-model.number="perPage"
-            @change="onPerPageChange"
+            @change="onPerPageSelectChange"
             >
             <option :value="1">1</option>
             <option :value="5">5</option>
@@ -124,7 +124,7 @@
       <template v-else>
       <!--begin::Table-->
       <KTDataTable
-        :data="filteredAndSortedCameras"
+        :data="cameras"
         :header="tableHeader"
         :checkbox-enabled="false"
         :items-per-page-dropdown-enabled="false"
@@ -192,13 +192,9 @@
         <template v-slot:alert="{ row }">
           <span
             class="badge fs-7 fw-bold"
-            :class="row.alert ? 'badge-light-danger' : 'badge-light-secondary'"
+            :class="alertBadgeClass(row.alert)"
           >
-            {{
-              row.alert
-                ? t("controlplane.site.camera.table.alertEnabled")
-                : t("controlplane.site.camera.table.alertDisabled")
-            }}
+            {{ resolveAlertLabel(row.alert) }}
           </span>
         </template>
 
@@ -256,8 +252,8 @@
         <Pagination
           :page="currentPage"
           :per-page="perPage"
-          :total-items="cameras.length"
-          :total-pages="Math.max(1, Math.ceil(cameras.length / perPage))"
+          :total-items="totalItems"
+          :total-pages="totalPages"
           @page-change="onPageChange"
           @per-page-change="onPerPageChange"
         />
@@ -537,17 +533,24 @@
                     {{ t("controlplane.site.camera.form.fields.activity.hint") }}
                   </div>
                 </div>
-                <div class="col-md-6 d-flex align-items-center">
-                  <div class="form-check form-switch form-check-custom form-check-solid mt-6">
-                    <input
-                      id="camera-alert-toggle"
-                      v-model="cameraForm.alert"
-                      class="form-check-input"
-                      type="checkbox"
-                    />
-                    <label class="form-check-label fw-semibold fs-6" for="camera-alert-toggle">
-                      {{ t("controlplane.site.camera.form.fields.alert.label") }}
-                    </label>
+                <div class="col-md-6">
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{ t("controlplane.site.camera.form.fields.alert.label") }}
+                  </label>
+                  <select
+                    v-model="alertSelectValue"
+                    class="form-select form-select-solid"
+                    required
+                  >
+                    <option value="disabled">
+                      {{ t("controlplane.site.camera.form.fields.alert.options.disabled") }}
+                    </option>
+                    <option value="enabled">
+                      {{ t("controlplane.site.camera.form.fields.alert.options.enabled") }}
+                    </option>
+                  </select>
+                  <div class="form-text">
+                    {{ t("controlplane.site.camera.form.fields.alert.hint") }}
                   </div>
                 </div>
               </div>
@@ -627,6 +630,10 @@ import ControlPlaneEmptyState from "@/components/controlplane/ControlPlaneEmptyS
 import Pagination from '@/components/common/Pagination.vue';
 import ApiService from '@/core/services/ApiService';
 import CameraPlaybackModal from "@/components/CameraPlaybackModal.vue";
+import {
+  applyPaginationMeta,
+  parsePaginatedResponse,
+} from "@/core/helpers/paginated-response";
 
 // Interfaces
 interface Site {
@@ -750,12 +757,20 @@ const isValidHlsUrl = (value: string): boolean => {
   }
 };
 
-const onPerPageChange = () => {
+const onPerPageSelectChange = () => {
   currentPage.value = 1;
+  void loadCameras();
+};
+
+const onPerPageChange = (newPerPage: number) => {
+  perPage.value = newPerPage;
+  currentPage.value = 1;
+  void loadCameras();
 };
 
 const onPageChange = (page: number) => {
   currentPage.value = page;
+  void loadCameras();
 };
 
 // Table header configuration
@@ -810,50 +825,11 @@ const tableHeader = computed(() => [
   },
 ]);
 
-const filteredAndSortedCameras = computed(() => {
-  let filtered = cameras.value;
-
-  if (searchQuery.value.trim()) {
-    const q = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(
-      (camera) =>
-        camera.name.toLowerCase().includes(q) ||
-        camera.rtspUrl.toLowerCase().includes(q) ||
-        camera.streamUrl.toLowerCase().includes(q) ||
-        camera.brand.toLowerCase().includes(q) ||
-        camera.type.toLowerCase().includes(q) ||
-        getSiteName(camera.siteId).toLowerCase().includes(q) ||
-        camera.room.toLowerCase().includes(q)
-    );
-  }
-
-  if (sortLabel.value) {
-    filtered = [...filtered].sort((a, b) => {
-      const getValue = (item: Camera, label: string) => {
-        if (label === "location") return getSiteName(item.siteId);
-        return (item as any)[label];
-      };
-
-      const aVal = getValue(a, sortLabel.value);
-      const bVal = getValue(b, sortLabel.value);
-
-      if (typeof aVal === "string" && typeof bVal === "string") {
-        const cmp = aVal.localeCompare(bVal);
-        return sortOrder.value === "asc" ? cmp : -cmp;
-      } else if (typeof aVal === "number" && typeof bVal === "number") {
-        const cmp = aVal - bVal;
-        return sortOrder.value === "asc" ? cmp : -cmp;
-      }
-      return 0;
-    });
-  }
-
-  return filtered;
-});
-
 const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
   sortLabel.value = sort.label;
   sortOrder.value = sort.order;
+  currentPage.value = 1;
+  void loadCameras();
 };
 
 const normalizeStatusKey = (status?: unknown): "online" | "offline" => {
@@ -883,6 +859,21 @@ const statusBadgeVariant = (status?: unknown): string =>
 
 const resolveStatusLabel = (status?: unknown): string =>
   t(`controlplane.site.camera.status.${normalizeStatusKey(status)}`);
+
+const resolveAlertLabel = (alert?: boolean): string =>
+  alert
+    ? t("controlplane.site.camera.table.alertEnabled")
+    : t("controlplane.site.camera.table.alertDisabled");
+
+const alertBadgeClass = (alert?: boolean): string =>
+  alert ? "badge-light-primary text-primary" : "badge-light-danger text-danger";
+
+const alertSelectValue = computed({
+  get: () => (cameraForm.value.alert ? "enabled" : "disabled"),
+  set: (value: "enabled" | "disabled") => {
+    cameraForm.value.alert = value === "enabled";
+  },
+});
 
 // Methods
 const getSiteName = (siteId: string): string => {
@@ -939,11 +930,12 @@ const getInitial = (name: string): string => {
 const onHeaderSiteFilterChange = () => {
   currentPage.value = 1;
   localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || "");
-  // Load cameras for the new selected site
   if (selectedSiteFilter.value) {
-    loadCameras();
+    void loadCameras();
   } else {
     cameras.value = [];
+    totalItems.value = 0;
+    totalPages.value = 0;
   }
 };
 
@@ -991,12 +983,19 @@ const loadCameras = async () => {
       return;
     }
 
-    const resp = await ApiService.query(`sites/${selectedSiteFilter.value}/cameras`, {});
-    
-    if (resp && resp.data) {
-      const siteCameras = resp.data.data && Array.isArray(resp.data.data) ? resp.data.data : Array.isArray(resp.data) ? resp.data : [];
-      
-      cameras.value = siteCameras.map((camera: any) => {
+    const resp = await ApiService.query(`sites/${selectedSiteFilter.value}/cameras`, {
+      params: {
+        page: currentPage.value,
+        page_size: perPage.value,
+        search: searchQuery.value.trim() || undefined,
+        sort_by: sortLabel.value || "name",
+        sort_order: sortOrder.value,
+      },
+    });
+
+    const { items: siteCameras, pagination } = parsePaginatedResponse(resp);
+
+    cameras.value = siteCameras.map((camera: any) => {
         const rtspUrl = resolveRtspUrl(camera);
         const streamUrl = resolveStreamUrl(camera);
 
@@ -1020,13 +1019,18 @@ const loadCameras = async () => {
           room: resolveRoomName(camera),
         };
       });
-    } else {
-      cameras.value = [];
-    }
+
+    applyPaginationMeta(pagination, {
+      totalItems,
+      totalPages,
+      page: currentPage,
+      perPage,
+    });
   } catch (error) {
     console.error("Error loading cameras:", error);
-    // Fallback to empty array or mock data if needed
     cameras.value = [];
+    totalItems.value = 0;
+    totalPages.value = 0;
   } finally {
     isLoading.value = false;
   }
@@ -1112,30 +1116,8 @@ const saveCamera = async () => {
         };
       }
     } else {
-      // POST for create new camera using sites/{site_uid}/cameras
-      const resp = await ApiService.post(`sites/${cameraForm.value.siteId}/cameras`, payload);
-      
-      // Get the created camera data from response
-      const createdCamera = resp?.data?.data || resp?.data;
-      
-      // Add new camera to local state
-      const newCamera: Camera = {
-        id: createdCamera?.uid || createdCamera?.id || Date.now(),
-        siteId: cameraForm.value.siteId,
-        room: cameraForm.value.room.trim(),
-        name: cameraForm.value.name,
-        rtspUrl: trimmedRtspUrl,
-        streamUrl: trimmedStreamUrl,
-        brand: cameraForm.value.brand,
-        model: cameraForm.value.model,
-        type: cameraForm.value.type,
-        resolution: cameraForm.value.resolution,
-        location: cameraForm.value.location,
-        description: cameraForm.value.description,
-        status: cameraForm.value.status,
-        createdAt: new Date().toISOString().split("T")[0],
-      };
-      cameras.value.unshift(newCamera);
+      await ApiService.post(`sites/${cameraForm.value.siteId}/cameras`, payload);
+      await loadCameras();
     }
 
     closeForm();
@@ -1334,6 +1316,17 @@ const closeForm = () => {
     alert: false,
   };
 };
+
+let cameraSearchTimeout: number | null = null;
+watch(searchQuery, () => {
+  currentPage.value = 1;
+  if (cameraSearchTimeout) {
+    clearTimeout(cameraSearchTimeout);
+  }
+  cameraSearchTimeout = window.setTimeout(() => {
+    void loadCameras();
+  }, 300);
+});
 
 // Lifecycle
 onMounted(async () => {

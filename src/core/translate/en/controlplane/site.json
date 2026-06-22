@@ -234,7 +234,12 @@
 					"hint": "Activity label for edge worker (records when person is detected)."
 				},
 				"alert": {
-					"label": "Violation mode (best.pt + yolov5s)"
+					"label": "Violation",
+					"hint": "On: violation detection (best.pt + yolov5s). Off: person detection only (yolov5s).",
+					"options": {
+						"enabled": "On",
+						"disabled": "Off"
+					}
 				}
 			},
 			"actions": {

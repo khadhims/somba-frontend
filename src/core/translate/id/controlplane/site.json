@@ -234,7 +234,12 @@
 					"hint": "Label aktivitas untuk worker edge (rekaman saat terdeteksi person)."
 				},
 				"alert": {
-					"label": "Mode Pelanggaran (best.pt + yolov5s)"
+					"label": "Pelanggaran",
+					"hint": "Aktif: deteksi pelanggaran (best.pt + yolov5s). Nonaktif: hanya deteksi person (yolov5s).",
+					"options": {
+						"enabled": "Aktif",
+						"disabled": "Nonaktif"
+					}
 				}
 			},
 			"actions": {
