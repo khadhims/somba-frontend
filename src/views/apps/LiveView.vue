@@ -226,7 +226,10 @@
               v-for="cam in siteCameras"
               :key="cam.uid"
               class="list-group-item border-0 py-3 px-4 d-flex justify-content-between align-items-center cursor-grab sidebar-camera-item"
-              :class="{ dragging: draggedCamera?.uid === cam.uid }"
+              :class="{
+                dragging: draggedCamera?.uid === cam.uid,
+                'sidebar-camera-item--active': focusedCameraUid === cam.uid,
+              }"
               draggable="true"
               @dragstart="onDragStartFromSidebar($event, cam)"
               @dragend="onDragEnd"
@@ -343,6 +346,7 @@ const selectedSiteId = ref(""); // Keep for internal use
 // Header filter state (like Camera.vue)
 const selectedSiteFilter = ref<string>("");
 const gridView = ref("1x1");
+const focusedCameraUid = ref<string | null>(null);
 const isSiteSelectionOpen = ref(false);
 const siteSearchQuery = ref("");
 
@@ -715,6 +719,7 @@ onUnmounted(() => {
 // if selected site changes elsewhere, refresh cameras (single entry point)
 watch(selectedSiteId, (nv, ov) => {
   if (nv === ov) return;
+  focusedCameraUid.value = null;
   detachAllStreams();
   if (nv) {
     fetchCameras();
@@ -728,6 +733,9 @@ const setGridView = async (view: string) => {
   // Clean up existing streams before changing grid
   detachAllStreams();
   gridView.value = view;
+  if (view !== "1x1") {
+    focusedCameraUid.value = null;
+  }
   await nextTick();
   // Re-setup streams for the new grid layout
   try {
@@ -789,8 +797,15 @@ const filteredCameras = computed(() => {
     );
   }
 
-  // Limit cameras based on grid view
   const maxCameras = maxCamerasForGrid.value;
+
+  if (gridView.value === "1x1" && focusedCameraUid.value) {
+    const focused = filtered.find((c) => c.uid === focusedCameraUid.value);
+    if (focused) {
+      return [focused];
+    }
+  }
+
   return filtered.slice(0, maxCameras);
 });
 
@@ -999,22 +1014,22 @@ const onCameraClick = async (camera: Camera) => {
   // Don't trigger if currently dragging
   if (isDragging.value) return;
 
-  // Switch to 1x1 view
-  await setGridView("1x1");
+  const focusChanged = focusedCameraUid.value !== camera.uid;
+  focusedCameraUid.value = camera.uid;
 
-  // Move clicked camera to the first position
-  const newCameras = [...cameras.value];
-  const clickedIndex = newCameras.findIndex((c) => c.uid === camera.uid);
+  if (gridView.value !== "1x1") {
+    await setGridView("1x1");
+    return;
+  }
 
-  if (clickedIndex !== -1 && clickedIndex !== 0) {
-    // Move to first position
-    const [clickedCam] = newCameras.splice(clickedIndex, 1);
-    newCameras.unshift(clickedCam);
-    cameras.value = newCameras;
-
-    // Refresh video streams
+  if (focusChanged) {
     detachAllStreams();
     await nextTick();
+    try {
+      await loadHlsCdn();
+    } catch {
+      /* empty */
+    }
     setupVideoObservers();
   }
 };
@@ -1054,6 +1069,15 @@ onMounted(async () => {
 .sidebar-camera-item:hover,
 .sidebar-camera-item.hover-bg-light:hover {
   background-color: #f5f8fa !important;
+}
+
+.sidebar-camera-item--active {
+  background-color: #eef6ff !important;
+  box-shadow: inset 3px 0 0 #3699ff;
+}
+
+.sidebar-camera-item--active:hover {
+  background-color: #e4f0ff !important;
 }
 
 .sidebar-camera-item.dragging {
