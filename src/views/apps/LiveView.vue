@@ -342,7 +342,7 @@ const searchQuery = ref("");
 const selectedSiteId = ref(""); // Keep for internal use
 // Header filter state (like Camera.vue)
 const selectedSiteFilter = ref<string>("");
-const gridView = ref("3x3");
+const gridView = ref("1x1");
 const isSiteSelectionOpen = ref(false);
 const siteSearchQuery = ref("");
 

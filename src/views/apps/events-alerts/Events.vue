@@ -151,6 +151,19 @@
 
         <!-- Other Filters - End -->
         <div class="d-flex align-items-center w-100 w-xl-auto gap-2">
+          <ItemPerPage
+            :model-value="itemsPerPage"
+            :label="
+              t('appsEventsAlerts.eventsTable.pagination.itemsLabel') ||
+              'Items per page:'
+            "
+            :options="[5, 10, 20, 30, 50]"
+            :show-items-text="false"
+            size="sm"
+            class="me-3"
+            @change="changeItemsPerPage"
+          />
+
           <!--begin::Search-->
           <div
             class="d-flex align-items-center position-relative my-1 flex-grow-1 flex-xl-grow-0"
@@ -203,18 +216,7 @@
       />
 
       <!--begin::Pagination-->
-      <div
-        class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3"
-      >
-        <ItemPerPage
-          :model-value="itemsPerPage"
-          :label="
-            t('appsEventsAlerts.eventsTable.pagination.itemsLabel') ||
-            'Items per page:'
-          "
-          :options="[10, 20, 30, 50]"
-          @change="changeItemsPerPage"
-        />
+      <div class="d-flex justify-content-end mt-4">
         <Pagination
           :page="currentPage"
           :per-page="itemsPerPage"
@@ -1115,19 +1117,9 @@ onMounted(async () => {
       // Load cameras for the selected site
       await fetchCamerasForFilter(initialSiteUid);
 
-      // Determine initial camera: prefer stored value, otherwise first camera in list
-      const storedCamera = localStorage.getItem("lastSelectedCamera");
-      let initialCameraUid = "";
-      if (storedCamera && cameras.value.some((c) => c.uid === storedCamera)) {
-        initialCameraUid = storedCamera;
-      } else if (cameras.value.length > 0) {
-        initialCameraUid = cameras.value[0].uid;
-      }
-
-      selectedCameraFilter.value = initialCameraUid;
-      tempSelectedCameraFilter.value = initialCameraUid;
-      if (initialCameraUid)
-        localStorage.setItem("lastSelectedCamera", initialCameraUid);
+      // Default: Semua Kamera
+      selectedCameraFilter.value = "";
+      tempSelectedCameraFilter.value = "";
 
       // Only fetch events after sites and cameras are loaded and default dates are set
       // Wait a bit for DatePicker components to initialize with default values
