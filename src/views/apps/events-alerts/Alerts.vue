@@ -230,6 +230,7 @@ import ApiService from "@/core/services/ApiService";
 import {
   parsePaginatedResponse,
 } from "@/core/helpers/paginated-response";
+import { mapAlertItem } from "@/core/helpers/operations-mapper";
 
 const { t } = useI18n();
 
@@ -256,7 +257,7 @@ interface Alert {
   status: string;
   comment: string | null;
   image_url: string;
-  image_urls: string[];
+  recording_url: string;
   activities: any[];
 }
 
@@ -278,7 +279,7 @@ interface AlertDetail {
   status: string;
   comment: string | null;
   image_url: string;
-  image_urls: string[];
+  recording_url: string;
   activities: any[];
 }
 
@@ -553,23 +554,7 @@ const fetchAlerts = async () => {
     if (resp && resp.data) {
       const { items, pagination: paginationMeta } = parsePaginatedResponse(resp);
 
-      alerts.value = items.map((item: any) => ({
-        event_id: item.alert_id || item.event_id || `alert-${Date.now()}-${Math.random()}`,
-        camera_uuid: item.camera_uid || item.camera_uuid || "",
-        camera_name: item.camera?.name || item.camera_name || "Unknown Camera",
-        violation_name: item.violation_name || "Unknown Violation",
-        event_start: item.detected_at || item.event_start || "",
-        event_end: item.event_end || "",
-        timestamp: item.detected_at || item.event_start || "",
-        duration_minutes: item.duration_minutes || 0,
-        total_detections: item.total_detections || 1,
-        detected_objects: item.detected_objects || [],
-        status: item.status || "notResolved",
-        image_url: item.image_url || "",
-        image_urls: item.image_urls || [],
-        activities: item.activities || [],
-        comment: item.comment || null,
-      }));
+      alerts.value = items.map((item: any) => mapAlertItem(item));
 
       if (typeof paginationMeta.total_items === "number") {
         pagination.value.total_items = paginationMeta.total_items;
@@ -890,7 +875,7 @@ const viewAlertDetail = (alert: Alert) => {
     status: alert.status,
     comment: alert.comment,
     image_url: alert.image_url,
-    image_urls: alert.image_urls,
+    recording_url: alert.recording_url,
     activities: alert.activities,
   };
   showDetailModal.value = true;

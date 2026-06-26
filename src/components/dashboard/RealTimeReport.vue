@@ -28,6 +28,8 @@ import {
   formatDateTimeGMT8,
   toMomentGMT8,
 } from "@/core/helpers/timezone";
+import { parsePaginatedResponse } from "@/core/helpers/paginated-response";
+import { resolveRecordingUrl } from "@/core/helpers/operations-mapper";
 
 // const { t } = useI18n();
 
@@ -666,6 +668,11 @@ const calculateDurationMinutes = (startIso, endIso) => {
 };
 
 const extractAlertsFromPayload = (payload) => {
+  const { items } = parsePaginatedResponse(payload);
+  if (items.length) {
+    return items;
+  }
+
   if (!payload) {
     return [];
   }
@@ -1267,6 +1274,7 @@ const generateProcessTrackingData = () => {
       status: mappedStatus,
       image_url: primaryImage,
       image_urls: dedupedImages,
+      recording_url: resolveRecordingUrl(item),
       color:
         mappedStatus === "completed"
           ? "#10B981"

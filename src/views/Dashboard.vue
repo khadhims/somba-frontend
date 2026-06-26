@@ -166,7 +166,7 @@
                         >
                           <SwiperSlide
                             v-for="activity in liveActivities"
-                            :key="activity.activity_uid"
+                            :key="normalizeActivityKey(activity.activity_name)"
                           >
                             <div class="swiper-slide-content">
                               <Card5
@@ -620,7 +620,7 @@
                               >
                                 <SwiperSlide
                                   v-for="activity in summaryActivities"
-                                  :key="activity.activity_uid"
+                                  :key="normalizeActivityKey(activity.activity_name)"
                                 >
                                   <div class="swiper-slide-content">
                                     <ActivitySummaryCard
@@ -768,6 +768,8 @@ import {
   getCurrentDateTimeGMT8,
   toMomentGMT8,
 } from "@/core/helpers/timezone";
+import { parsePaginatedResponse } from "@/core/helpers/paginated-response";
+import { mapAlertItem } from "@/core/helpers/operations-mapper";
 
 interface Site {
   uid: string;
@@ -832,6 +834,90 @@ type SummaryActivity = {
 
 const summaryActivities = ref<SummaryActivity[]>([]);
 const loadingSummaryActivities = ref(false);
+
+type LiveActivityItem = {
+  activity_uid: string;
+  activity_name: string;
+  last_activity_timestamp: string | null;
+  currently_active: boolean;
+};
+
+const normalizeActivityKey = (name?: string) =>
+  String(name ?? "")
+    .trim()
+    .toLowerCase();
+
+const toActivityTimestamp = (value?: string | null) =>
+  toMomentGMT8(value)?.valueOf?.() ?? 0;
+
+const dedupeLiveActivities = (
+  items: LiveActivityItem[]
+): LiveActivityItem[] => {
+  const byKey = new Map<string, LiveActivityItem>();
+
+  for (const item of items) {
+    const key = normalizeActivityKey(item.activity_name);
+    if (!key) continue;
+
+    const existing = byKey.get(key);
+    if (!existing) {
+      byKey.set(key, { ...item, activity_uid: key });
+      continue;
+    }
+
+    const existingTs = toActivityTimestamp(existing.last_activity_timestamp);
+    const itemTs = toActivityTimestamp(item.last_activity_timestamp);
+    if (itemTs >= existingTs) {
+      byKey.set(key, { ...item, activity_uid: key });
+    }
+  }
+
+  return Array.from(byKey.values()).sort(
+    (a, b) =>
+      toActivityTimestamp(b.last_activity_timestamp) -
+      toActivityTimestamp(a.last_activity_timestamp)
+  );
+};
+
+const dedupeSummaryActivities = (
+  items: SummaryActivity[]
+): SummaryActivity[] => {
+  const byKey = new Map<string, SummaryActivity>();
+
+  for (const item of items) {
+    const key = normalizeActivityKey(item.activity_name);
+    if (!key) continue;
+
+    const existing = byKey.get(key);
+    if (!existing) {
+      byKey.set(key, { ...item, activity_uid: key });
+      continue;
+    }
+
+    const existingLatest = toActivityTimestamp(existing.latest_active);
+    const itemLatest = toActivityTimestamp(item.latest_active);
+    const existingEarliest = toActivityTimestamp(existing.earliest_active);
+    const itemEarliest = toActivityTimestamp(item.earliest_active);
+
+    byKey.set(key, {
+      activity_uid: key,
+      activity_name:
+        itemLatest >= existingLatest ? item.activity_name : existing.activity_name,
+      earliest_active:
+        itemEarliest > 0 &&
+        (existingEarliest === 0 || itemEarliest < existingEarliest)
+          ? item.earliest_active
+          : existing.earliest_active,
+      latest_active:
+        itemLatest >= existingLatest ? item.latest_active : existing.latest_active,
+    });
+  }
+
+  return Array.from(byKey.values()).sort(
+    (a, b) =>
+      toActivityTimestamp(b.latest_active) - toActivityTimestamp(a.latest_active)
+  );
+};
 
 // Summary carousel state
 // const summaryCarouselContainer = ref(null);
@@ -964,16 +1050,18 @@ const fetchSummaryActivities = async (
     ? data.activities
     : [];
 
-  return activities.map((item: any) => ({
-    activity_uid: String(item?.activity_uid ?? item?.uid ?? ""),
-    activity_name: String(item?.activity_name ?? item?.name ?? "Aktivitas"),
-    earliest_active: item?.earliest_active
-      ? convertToGMT8(item.earliest_active)
-      : null,
-    latest_active: item?.latest_active
-      ? convertToGMT8(item.latest_active)
-      : null,
-  }));
+  return dedupeSummaryActivities(
+    activities.map((item: any) => ({
+      activity_uid: String(item?.activity_uid ?? item?.uid ?? ""),
+      activity_name: String(item?.activity_name ?? item?.name ?? "Aktivitas"),
+      earliest_active: item?.earliest_active
+        ? convertToGMT8(item.earliest_active)
+        : null,
+      latest_active: item?.latest_active
+        ? convertToGMT8(item.latest_active)
+        : null,
+    }))
+  );
 };
 
 const loadSummaryActivities = async () => {
@@ -1300,12 +1388,14 @@ const loadLiveActivities = async () => {
       ? data.results
       : [];
 
-    liveActivities.value = list.map((item: any, index: number) => ({
-      activity_uid: String(item?.activity_uid ?? item?.uid ?? index),
-      activity_name: String(item?.activity_name ?? item?.name ?? "Aktivitas"),
-      last_activity_timestamp: toMomentGMT8(item?.last_activity_timestamp),
-      currently_active: Boolean(item?.currently_active ?? item?.is_active),
-    }));
+    liveActivities.value = dedupeLiveActivities(
+      list.map((item: any, index: number) => ({
+        activity_uid: String(item?.activity_uid ?? item?.uid ?? index),
+        activity_name: String(item?.activity_name ?? item?.name ?? "Aktivitas"),
+        last_activity_timestamp: toMomentGMT8(item?.last_activity_timestamp),
+        currently_active: Boolean(item?.currently_active ?? item?.is_active),
+      }))
+    );
   } catch (err) {
     console.error("loadLiveActivities failed:", err);
     error.value =
@@ -1323,7 +1413,7 @@ const fetchAlerts = async () => {
 
   loadingAlerts.value = true;
   try {
-    const { data } = await ApiService.query(
+    const resp = await ApiService.query(
       `sites/${selectedSite.value}/alerts`,
       {
         params: {
@@ -1336,28 +1426,26 @@ const fetchAlerts = async () => {
       }
     );
 
-    const list = Array.isArray(data)
-      ? data
-      : Array.isArray(data?.data)
-      ? data.data
-      : Array.isArray(data?.results)
-      ? data.results
-      : [];
+    const { items } = parsePaginatedResponse(resp);
 
-    const mapped = list.map((item: any) => ({
-      event_id: item?.event_id || item?.id,
-      alert_type: item?.detected_objects[0].display_name || "Unknown",
-      duration_minutes: item?.duration_minutes || 0,
-      detection_count: item?.detected_objects[0].detection_count || 0,
-      event_start: convertToGMT8(item?.event_start),
-      event_end: convertToGMT8(item?.event_end),
-      status: item?.status || "not_resolved",
-      camera_name: item?.camera_name || "-",
-      image_url: item?.image_url || "",
-      image_urls: item?.image_urls || [],
-      detected_objects: item?.detected_objects || [],
-      comment: item?.comment || "",
-    }));
+    const mapped = items.map((item: any) => {
+      const alert = mapAlertItem(item);
+      return {
+        event_id: alert.event_id,
+        alert_type: item?.detected_objects?.[0]?.display_name || "Unknown",
+        duration_minutes: alert.duration_minutes || 0,
+        detection_count: item?.detected_objects?.[0]?.detection_count || 0,
+        event_start: convertToGMT8(alert.event_start),
+        event_end: convertToGMT8(alert.event_end),
+        status: alert.status || "not_resolved",
+        camera_name: alert.camera_name || "-",
+        image_url: alert.image_url,
+        image_urls: alert.image_urls,
+        recording_url: alert.recording_url,
+        detected_objects: item?.detected_objects || [],
+        comment: alert.comment || "",
+      };
+    });
 
     // Sort newest-first so the table can safely take the first 5
     alerts.value = mapped.sort((a: any, b: any) => {
@@ -1381,7 +1469,7 @@ const handleShowReport = async () => {
 
   loadingReport.value = true;
   try {
-    const { data } = await ApiService.query(
+    const resp = await ApiService.query(
       `sites/${selectedSite.value}/alerts`,
       {
         params: {
@@ -1394,28 +1482,26 @@ const handleShowReport = async () => {
       }
     );
 
-    const list = Array.isArray(data)
-      ? data
-      : Array.isArray(data?.data)
-      ? data.data
-      : Array.isArray(data?.results)
-      ? data.results
-      : [];
+    const { items } = parsePaginatedResponse(resp);
 
-    const mapped = list.map((item: any) => ({
-      event_id: item?.event_id || item?.id,
-      alert_type: item?.detected_objects[0].display_name || "Unknown",
-      duration_minutes: item?.duration_minutes || 0,
-      detection_count: item?.detected_objects[0].detection_count || 0,
-      event_start: convertToGMT8(item?.event_start),
-      event_end: convertToGMT8(item?.event_end),
-      status: item?.status || "not_resolved",
-      camera_name: item?.camera_name || "-",
-      image_url: item?.image_url || "",
-      image_urls: item?.image_urls || [],
-      detected_objects: item?.detected_objects || [],
-      comment: item?.comment || "",
-    }));
+    const mapped = items.map((item: any) => {
+      const alert = mapAlertItem(item);
+      return {
+        event_id: alert.event_id,
+        alert_type: item?.detected_objects?.[0]?.display_name || "Unknown",
+        duration_minutes: alert.duration_minutes || 0,
+        detection_count: item?.detected_objects?.[0]?.detection_count || 0,
+        event_start: convertToGMT8(alert.event_start),
+        event_end: convertToGMT8(alert.event_end),
+        status: alert.status || "not_resolved",
+        camera_name: alert.camera_name || "-",
+        image_url: alert.image_url,
+        image_urls: alert.image_urls,
+        recording_url: alert.recording_url,
+        detected_objects: item?.detected_objects || [],
+        comment: alert.comment || "",
+      };
+    });
 
     // Sort newest-first
     reportAlerts.value = mapped.sort((a: any, b: any) => {

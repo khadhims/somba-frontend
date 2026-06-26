@@ -250,6 +250,40 @@
                     </div>
                   </div>
 
+                  <!-- Recording -->
+                  <div v-if="recordingUrl" class="recording-block">
+                    <h6 class="section-title">
+                      {{
+                        t("appsEventsAlerts.eventsModals.details.recording") ||
+                        "Rekaman"
+                      }}
+                    </h6>
+                    <div class="recording-player rounded border bg-white p-2">
+                      <video
+                        v-if="!videoError"
+                        ref="videoPlayer"
+                        class="w-100 rounded"
+                        controls
+                        preload="metadata"
+                        playsinline
+                        :src="recordingUrl"
+                        @error="onVideoError"
+                      >
+                        Browser tidak mendukung pemutaran video.
+                      </video>
+                      <div
+                        v-else
+                        class="d-flex align-items-center justify-content-center text-muted py-6"
+                      >
+                        {{
+                          t(
+                            "appsEventsAlerts.eventsModals.details.recordingUnavailable"
+                          ) || "Rekaman tidak dapat diputar"
+                        }}
+                      </div>
+                    </div>
+                  </div>
+
                   <!-- Event Timing -->
                   <div v-if="!localEditMode" class="timing row g-3">
                     <div class="col-md-6">
@@ -455,6 +489,28 @@ const images = computed(() => {
   return arr;
 });
 
+const recordingUrl = computed(() => props.alert?.recording_url?.trim() || "");
+const videoPlayer = ref<HTMLVideoElement | null>(null);
+const videoError = ref(false);
+
+watch(
+  () => props.show,
+  (visible) => {
+    if (!visible) {
+      videoError.value = false;
+      if (videoPlayer.value) {
+        videoPlayer.value.pause();
+        videoPlayer.value.removeAttribute("src");
+        videoPlayer.value.load();
+      }
+    }
+  },
+);
+
+watch(recordingUrl, () => {
+  videoError.value = false;
+});
+
 const currentIndex = ref(0);
 const currentImage = computed(() => images.value[currentIndex.value] || "");
 const openLightbox = ref(false);
@@ -481,6 +537,9 @@ const onImageError = (e: Event) => {
 const onThumbError = (e: Event) => {
   const img = e.target as HTMLImageElement;
   img.classList.add("thumb-error");
+};
+const onVideoError = () => {
+  videoError.value = true;
 };
 
 // Edit handling
@@ -738,5 +797,9 @@ const statusLabel = (status: string) => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+.recording-player video {
+  max-height: 360px;
+  background: #000;
 }
 </style>

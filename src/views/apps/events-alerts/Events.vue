@@ -261,6 +261,7 @@ import {
   applyPaginationMeta,
   parsePaginatedResponse,
 } from "@/core/helpers/paginated-response";
+import { mapActivityEventItem } from "@/core/helpers/operations-mapper";
 
 const { t } = useI18n();
 
@@ -530,28 +531,16 @@ const fetchEvents = async () => {
     });
     const { items: results, pagination } = parsePaginatedResponse(resp);
 
-    events.value = results.map((item: any) => {
-      return {
-        severity: "medium", // default severity based on detection activity
-        site_uid: siteUid,
-        camera_uuid: item.camera_uid || item.camera_uuid || "",
-        camera_name: item.camera?.name || item.camera_name || "",
-        event_id: item.event_id || "",
-        event_name:
-          item.activity_type || item.event_name || item.camera?.activity || "",
-        event_start: convertToGMT8(item.event_start),
-        event_end: convertToGMT8(item.event_end),
-        duration_minutes: item.duration_minutes,
-        total_minutes: item.total_minutes,
-        avg_seconds_with_detection: item.avg_seconds_with_detection,
-        // type: 'motion', // default type - adjust if API provides type later
-        status: item.status || "active",
-        image_url: item.image_url || "",
-        image_urls: item.image_urls || [],
-        recording_url: item.recording_url || "",
-        activities: item.activities || [],
-      };
-    });
+    events.value = results.map((item: any) =>
+      mapActivityEventItem(
+        {
+          ...item,
+          event_start: convertToGMT8(item.event_start),
+          event_end: convertToGMT8(item.event_end),
+        },
+        siteUid
+      )
+    );
 
     applyPaginationMeta(pagination, {
       totalItems,
@@ -668,62 +657,6 @@ const fetchCamerasForFilter = async (siteUid: string) => {
   }
 };
 
-// Fetch cameras for a site and cache uuid->name map per site
-// const fetchCameras = async (siteUid: string) => {
-//   if (!siteUid) return;
-// if cache exists for this site, skip
-//   if (
-//     camerasCache.value[siteUid] &&
-//     Object.keys(camerasCache.value[siteUid]).length
-//   )
-//     return;
-//
-//   try {
-//     const resp = await ApiService.get(`sites/${siteUid}/cameras`);
-//     const payload = resp && resp.data ? resp.data : resp;
-//
-//     let cams: any[] = [];
-//     if (Array.isArray(payload?.data)) {
-//       cams = payload.data;
-//     } else if (Array.isArray(payload)) {
-//       cams = payload;
-//     } else if (Array.isArray(payload?.results)) {
-//       cams = payload.results;
-//     }
-//
-//     const map: Record<string, string> = {
-//       /* empty */
-//     };
-//     cams.forEach((c: any) => {
-// Handle both uid (new API) and uuid (legacy) fields
-//       const id = c.uid || c.uuid || c.camera_uuid || c.id;
-//       if (id) {
-//         map[id] = c.name || c.camera_name || c.label || id;
-//       }
-//     });
-//
-//     camerasCache.value[siteUid] = map;
-//   } catch (err) {
-//     console.warn("Failed to load cameras for site", siteUid, err);
-// set empty map to avoid retry storm
-//     camerasCache.value[siteUid] = {
-//       /* empty */
-//     };
-//   }
-// };
-
-// Switch site
-// const switchSite = () => {
-//   const site = sites.value.find((s) => s.uid === selectedSiteId.value);
-//   currentSite.value = site || null;
-//   fetchEvents();
-// };
-
-// Filter events
-// const filterEvents = () => {
-// Filtering is handled in computed property
-// };
-
 // Refresh events
 const refreshEvents = () => {
   debouncedFetchEvents();
@@ -757,12 +690,6 @@ const onTempFilterCameraChange = () => {
     );
   }
 };
-
-// const onFilterNvrChange = () => {
-// For now, NVR changes still immediate (can be converted to temp later if needed)
-//   currentPage.value = 1;
-//   debouncedFetchEvents();
-// };
 
 // Apply all filters at once
 const applyFilters = async () => {
@@ -823,201 +750,14 @@ const resetFilters = () => {
   fetchEvents();
 };
 
-// Reset filters to default values (clear site/camera, reset dates to 1 week range)
-// const resetToDefaults = () => {
-// Reset site and camera filters
-//   tempSelectedSiteFilter.value = "";
-//   tempSelectedCameraFilter.value = "";
-//
-// Reset dates to default range (yesterday to today)
-//   const today = new Date();
-//   const yesterday = new Date(today);
-//   yesterday.setDate(today.getDate() - 1);
-//
-//   const formatDate = (date: Date) => {
-//     const year = date.getFullYear();
-//     const month = String(date.getMonth() + 1).padStart(2, "0");
-//     const day = String(date.getDate()).padStart(2, "0");
-//     return `${year}-${month}-${day}`;
-//   };
-//
-//   const defaultFromDate = formatDate(yesterday);
-//   const defaultToDate = formatDate(today);
-//
-//   tempDateFrom.value = defaultFromDate;
-//   tempDateTo.value = defaultToDate;
-//
-// Update localStorage with new defaults
-//   localStorage.setItem(FROM_DATE_STORAGE_KEY, defaultFromDate);
-//   localStorage.setItem(TO_DATE_STORAGE_KEY, defaultToDate);
-// };
-
-// Helpers for badge styling and translated labels
-// const normalizeKey = (value?: string) =>
-//   (value ?? "").toLowerCase().replace(/[\s_-]/g, "");
-
-// const statusKeyMap: Record<string, string> = {
-//   active: "active",
-//   acknowledged: "acknowledged",
-//   resolved: "resolved",
-//   unresolved: "unresolved",
-//   notresolved: "notResolved",
-//   falsedetection: "falseDetection",
-// };
-
-// const severityKeyMap: Record<string, string> = {
-//   low: "low",
-//   medium: "medium",
-//   high: "high",
-//   critical: "critical",
-// };
-
-// const typeKeyMap: Record<string, string> = {
-//   motion: 'motion',
-//   intrusion: 'intrusion',
-//   system: 'system',
-//   cameraoffline: 'cameraOffline',
-// };
-
-// const getEventTypeBadgeClass = (type: string) => {
-//   switch (normalizeKey(type)) {
-//     case "motion":
-//       return "badge-light-primary";
-//     case "intrusion":
-//       return "badge-light-danger";
-//     case "system":
-//       return "badge-light-info";
-//     case "cameraoffline":
-//       return "badge-light-warning";
-//     default:
-//       return "badge-light-secondary";
-//   }
-// };
-
-// const getSeverityBadgeClass = (severity: string) => {
-//   switch (normalizeKey(severity)) {
-//     case "critical":
-//       return "badge-danger";
-//     case "high":
-//       return "badge-warning";
-//     case "medium":
-//       return "badge-primary";
-//     case "low":
-//       return "badge-success";
-//     default:
-//       return "badge-secondary";
-//   }
-// };
-
-// const getStatusBadgeClass = (status: string) => {
-//   const normalized = normalizeKey(status);
-//   if (normalized === "active" || normalized === "unresolved")
-//     return "badge-light-danger";
-//   if (normalized === "acknowledged") return "badge-light-warning";
-//   if (normalized === "resolved" || normalized === "notresolved")
-//     return "badge-light-success";
-//   if (normalized === "falsedetection") return "badge-light-info";
-//   return "badge-light-secondary";
-// };
-
-// const getStatusLabel = (status: string) => {
-//   const key = statusKeyMap[normalizeKey(status)];
-//   return key ? t(`appsEventsAlerts.eventsTable.status.${key}`) : status;
-// };
-
-// const getSeverityLabel = (severity: string) => {
-//   const key = severityKeyMap[normalizeKey(severity)];
-//   return key ? t(`appsEventsAlerts.eventsTable.severity.${key}`) : severity;
-// };
-
-// const getEventTypeLabel = (type: string) => {
-//   const key = typeKeyMap[normalizeKey(type)];
-//   return key ? t(`appsEventsAlerts.eventsTable.types.${key}`) : type;
-// };
-
 const formatNumber = (value: number, maximumFractionDigits = 1) =>
   new Intl.NumberFormat(undefined, {
     maximumFractionDigits,
     minimumFractionDigits: 0,
   }).format(value);
 
-// const formatMinutesShort = (minutes?: number | null) => {
-//   if (minutes === undefined || minutes === null || Number.isNaN(minutes)) {
-//     return t("appsEventsAlerts.format.notAvailable");
-//   }
-//   return t("appsEventsAlerts.format.minutesShort", {
-//     value: formatNumber(Math.max(0, minutes), 1),
-//   });
-// };
-
-// const formatSecondsShort = (seconds?: number | null) => {
-//   if (seconds === undefined || seconds === null || Number.isNaN(seconds)) {
-//     return t("appsEventsAlerts.format.notAvailable");
-//   }
-//   return t("appsEventsAlerts.format.secondsShort", {
-//     value: formatNumber(Math.max(0, seconds), 1),
-//   });
-// };
-
-// const formatSecondsLong = (seconds?: number | null) => {
-//   if (seconds === undefined || seconds === null || Number.isNaN(seconds)) {
-//     return t("appsEventsAlerts.format.notAvailable");
-//   }
-//   return t("appsEventsAlerts.format.secondsLong", {
-//     value: formatNumber(Math.max(0, seconds), 2),
-//   });
-// };
-
-// const formatDuration = (minutes?: number | null) => {
-//   if (minutes === undefined || minutes === null || Number.isNaN(minutes)) {
-//     return t("appsEventsAlerts.format.notAvailable");
-//   }
-//   if (minutes < 1) {
-//     return formatSecondsLong(minutes * 60);
-//   }
-//   return t("appsEventsAlerts.format.minutesLong", {
-//     value: formatNumber(Math.max(0, minutes), 2),
-//   });
-// };
-
 // Computed properties
 const filteredAndSortedEvents = computed(() => events.value);
-
-// Statistics computed properties
-// const activeAlerts = computed(() => events.value.filter(e => e.status === 'active').length);
-// const criticalAlerts = computed(() => events.value.filter(e => e.severity === 'critical' && e.status === 'active').length);
-// const motionEvents = computed(() => events.value.filter(e => e.type === 'motion').length);
-// const resolvedToday = computed(() => {
-//   const today = new Date().toDateString();
-//   return events.value.filter(e =>
-//     e.status === 'resolved' &&
-//     new Date(e.timestamp).toDateString() === today
-//   ).length;
-// });
-// const totalResolved = computed(() => events.value.filter(e => e.status === 'resolved').length);
-// const avgResponseTime = computed(() => 15); // Mock data
-
-// const criticalAlertsPercentage = computed(() =>
-//   activeAlerts.value > 0 ? Math.round((criticalAlerts.value / activeAlerts.value) * 100) : 0
-// );
-
-// const resolvedTodayPercentage = computed(() =>
-//   totalResolved.value > 0 ? Math.round((resolvedToday.value / totalResolved.value) * 100) : 0
-// );
-
-// const responseTimePercentage = computed(() => 75); // Mock data
-
-// Pagination computed properties
-// const visiblePages = computed(() => {
-//   const pages = [];
-//   const start = Math.max(1, currentPage.value - 2);
-//   const end = Math.min(totalPages.value, currentPage.value + 2);
-//
-//   for (let i = start; i <= end; i++) {
-//     pages.push(i);
-//   }
-//   return pages;
-// });
 
 // Methods
 const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
@@ -1036,59 +776,6 @@ const closeModal = () => {
   showDetailModal.value = false;
   selectedEvent.value = null;
 };
-
-// const formatDateTime = (dateTimeString?: string | null) => {
-//   if (!dateTimeString) return t("appsEventsAlerts.format.notAvailable");
-//   const date = new Date(dateTimeString);
-//   if (Number.isNaN(date.getTime())) {
-//     return dateTimeString;
-//   }
-//   return new Intl.DateTimeFormat(undefined, {
-//     year: "numeric",
-//     month: "long",
-//     day: "numeric",
-//     hour: "2-digit",
-//     minute: "2-digit",
-//     second: "2-digit",
-//     hour12: false,
-//   }).format(date);
-// };
-
-// const handleImageError = (event: any) => {
-//   event.target.src =
-//     "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMzUgNzVIMTY1VjEyNUgxMzVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMjAgMTA1TDE0MCA5MEwxNjAgMTEwTDE4MCA5MEwyMDAgMTEwVjEzNUgxMDBWMTEwTDEyMCAxMDVaIiBmaWxsPSIjQ0NDQ0NDIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE0cHgiPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+Cjwvc3ZnPgo=";
-//   event.target.alt = t("appsEventsAlerts.eventsModals.details.imageFallback");
-// };
-
-// const acknowledgeEvent = async (event: Event) => {
-//   try {
-//     // TODO: API call to acknowledge event
-//     // await ApiService.post(`events/${event.uid}/acknowledge`);
-
-//     // Update local state
-//     const index = events.value.findIndex(e => e.uid === event.event_id);
-//     if (index !== -1) {
-//       events.value[index].status = 'acknowledged';
-//     }
-//   } catch (error) {
-//     console.error("Error acknowledging event:", error);
-//   }
-// };
-
-// const resolveEvent = async (event: Event) => {
-//   try {
-//     // TODO: API call to resolve event
-//     // await ApiService.post(`events/${event.uid}/resolve`);
-
-//     // Update local state
-//     const index = events.value.findIndex(e => e.uid === event.event_id);
-//     if (index !== -1) {
-//       events.value[index].status = 'resolved';
-//     }
-//   } catch (error) {
-//     console.error("Error resolving event:", error);
-//   }
-// };
 
 // Initialize data on component mount
 onMounted(async () => {
