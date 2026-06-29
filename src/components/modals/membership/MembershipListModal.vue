@@ -434,7 +434,10 @@ const fetchMembers = async () => {
           ? response.data
           : [];
 
-      members.value = data;
+      members.value = data.map((item: any) => ({
+        ...item,
+        email: item.email || item.user?.email || "",
+      }));
       console.log("Members loaded:", members.value);
       console.log("First member structure:", members.value[0]);
     } else {

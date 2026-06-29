@@ -9,7 +9,7 @@
       <!--begin::Title-->
       <div class="card-title d-flex flex-column">
         <!--begin::Amount-->
-        <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">0</span>
+        <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ value }}</span>
         <!--end::Amount-->
 
         <!--begin::Subtitle-->
@@ -45,6 +45,7 @@ export default defineComponent({
     bgColor: { type: String, required: false, default: "#080655" },
     bgImage: { type: String, required: false },
     description: { type: String, required: true },
+    value: { type: Number, required: false, default: 0 },
   },
 });
 </script>

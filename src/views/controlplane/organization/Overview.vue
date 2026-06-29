@@ -5,7 +5,7 @@
     <div class="col-xl-3">
       <CardWidget1
         :description="t('controlplane.organization.summary.totalOrganizations')"
-        :value="0"
+        :value="summary.total_organizations"
         bg-color="#1B84FF"
         text-color="white"
       />
@@ -14,7 +14,7 @@
     <div class="col-xl-3">
       <CardWidget1
         :description="t('controlplane.organization.summary.totalTeams')"
-        :value="0"
+        :value="summary.total_teams"
         bg-color="#17C653"
         text-color="white"
       />
@@ -23,7 +23,7 @@
     <div class="col-xl-3">
       <CardWidget1
         :description="t('controlplane.organization.summary.totalUsers')"
-        :value="0"
+        :value="summary.total_users"
         bg-color="#3699FF"
         text-color="white"
       />
@@ -32,7 +32,7 @@
     <div class="col-xl-3">
       <CardWidget1
         :description="t('controlplane.organization.summary.totalCameras')"
-        :value="0"
+        :value="summary.total_cameras"
         bg-color="#FFA800"
         text-color="white"
       />
@@ -656,6 +656,31 @@ interface Organization {
   description?: string;
 }
 
+// Summary stats
+const summary = ref({
+  total_organizations: 0,
+  total_teams: 0,
+  total_users: 0,
+  total_cameras: 0,
+});
+
+const fetchSummary = async () => {
+  try {
+    const resp = await ApiService.get("organizations/summary");
+    if (resp?.data) {
+      const data = resp.data.data ?? resp.data;
+      summary.value = {
+        total_organizations: data.total_organizations ?? 0,
+        total_teams: data.total_teams ?? 0,
+        total_users: data.total_users ?? 0,
+        total_cameras: data.total_cameras ?? 0,
+      };
+    }
+  } catch (e) {
+    console.error("Error fetching organizations summary:", e);
+  }
+};
+
 // Reactive data
 const organizations = ref<Organization[]>([]);
 const loading = ref(false);
@@ -924,38 +949,6 @@ const fetchOrganizations = async (page: number = 1) => {
 //     : 0
 // );
 
-// Mock data for other stats (replace with actual API calls)
-const totalUsers = computed(() =>
-  organizations.value.reduce(
-    (sum) => sum + Math.floor(Math.random() * 50) + 10,
-    0
-  )
-);
-// const activeUsers = computed(() => Math.floor(totalUsers.value * 0.8));
-// const activeUsersPercentage = computed(() =>
-//   totalUsers.value > 0
-//     ? Math.round((activeUsers.value / totalUsers.value) * 100)
-//     : 0
-// );
-
-const totalProjects = computed(() =>
-  organizations.value.reduce(
-    (sum) => sum + Math.floor(Math.random() * 20) + 5,
-    0
-  )
-);
-// const activeProjects = computed(() => Math.floor(totalProjects.value * 0.7));
-// const activeProjectsPercentage = computed(() =>
-//   totalProjects.value > 0
-//     ? Math.round((activeProjects.value / totalProjects.value) * 100)
-//     : 0
-// );
-
-// const totalRevenue = computed(
-//   () => `$${(organizations.value.length * 15000).toLocaleString()}`
-// );
-// const revenueGrowth = computed(() => 75); // Mock percentage
-
 // Search and Sort functionality
 const filteredAndSortedOrganizations = computed(() => {
   let filtered = organizations.value;
@@ -1032,8 +1025,8 @@ const createOrganization = async () => {
   try {
     const resp = await ApiService.post("organizations", newOrganization.value);
     if (resp && resp.data) {
-      // Refresh the organizations list
-      await fetchOrganizations(pagination.value.page);
+      // Refresh the organizations list and summary
+      await Promise.all([fetchOrganizations(pagination.value.page), fetchSummary()]);
 
       // Hide modal
       const modal = document.getElementById("addOrganizationModal");
@@ -1114,8 +1107,8 @@ const confirmDelete = async () => {
   try {
     await ApiService.delete(`organizations/${organizationToDelete.value.uid}`);
 
-    // Refresh the organizations list
-    await fetchOrganizations(pagination.value.page);
+    // Refresh the organizations list and summary
+    await Promise.all([fetchOrganizations(pagination.value.page), fetchSummary()]);
 
     // Hide modal
     const modal = document.getElementById("deleteOrganizationModal");
@@ -1186,5 +1179,6 @@ const changeItemsPerPage = () => {
 // Initialize
 onMounted(() => {
   fetchOrganizations();
+  fetchSummary();
 });
 </script>
