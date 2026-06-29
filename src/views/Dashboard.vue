@@ -777,7 +777,7 @@ interface Site {
 }
 
 // i18n helper
-const { t } = useI18n();
+const { t, te } = useI18n();
 
 // Reactive data untuk live activities dari API
 const liveActivities = ref([]);
@@ -968,7 +968,7 @@ const currentDate = computed(() => {
 const autoUpdateInterval = ref(5);
 
 // Computed properties for alert statistics
-// NOTE: Counts come from `sites/{site_uid}/alerts-summary` (mocked for now).
+// NOTE: Counts come from `sites/{site_uid}/alerts-summary`.
 const totalAlertsToday = computed(() => summaryAlerts.value?.total_today ?? 0);
 const unresolvedAlertsToday = computed(
   () => summaryAlerts.value?.unresolved_today ?? 0
@@ -977,7 +977,7 @@ const resolvedAlertsToday = computed(
   () => summaryAlerts.value?.resolved_today ?? 0
 );
 
-// Local function (requested): endpoint `sites/{site_uid}/alerts-summary` (mock for now)
+// Alert status counts from `sites/{site_uid}/alerts-summary`.
 const fetchSummaryAlerts = async (siteUid: string): Promise<SummaryAlerts> => {
   if (!siteUid) {
     summaryAlerts.value = null;
@@ -987,23 +987,20 @@ const fetchSummaryAlerts = async (siteUid: string): Promise<SummaryAlerts> => {
   const { data } = await ApiService.query(`sites/${siteUid}/alerts-summary`, {
     params: {
       site_uid: siteUid,
-      from_date: new Date().toISOString().split("T")[0],
-      to_date: new Date().toISOString().split("T")[0],
+      from_date: getCurrentDateTimeGMT8("YYYY-MM-DD"),
+      to_date: getCurrentDateTimeGMT8("YYYY-MM-DD"),
     },
     _suppressGlobalLoading: true,
   });
 
   const results = data.data;
-  console.log(results.total_alerts);
-  console.log(results.status_counts.resolved);
-  console.log(results.status_counts.not_resolved);
-  console.log(results.status_counts.false_alarm);
+  const statusCounts = results?.status_counts ?? {};
 
   return {
-    total_today: Number(results.total_alerts ?? 0),
-    unresolved_today: Number(results.status_counts.not_resolved ?? 0),
-    resolved_today: Number(results.status_counts.resolved ?? 0),
-    false_alarm: Number(results.status_counts.false_alarm ?? 0),
+    total_today: Number(results?.total_alerts ?? 0),
+    unresolved_today: Number(statusCounts.not_resolved ?? 0),
+    resolved_today: Number(statusCounts.resolved ?? 0),
+    false_alarm: Number(statusCounts.false_alarm ?? 0),
   };
 };
 
@@ -1037,8 +1034,8 @@ const fetchSummaryActivities = async (
     {
       params: {
         site_uid: siteUid,
-        from_date: new Date().toISOString().split("T")[0],
-        to_date: new Date().toISOString().split("T")[0],
+        from_date: getCurrentDateTimeGMT8("YYYY-MM-DD"),
+        to_date: getCurrentDateTimeGMT8("YYYY-MM-DD"),
       },
       _suppressGlobalLoading: true,
     }
@@ -1364,6 +1361,16 @@ const clearAutoRefresh = () => {
   }
 };
 
+// An activity is considered "currently active" when its latest event fired
+// within this window (activities-summary has no live flag, so we derive it).
+const ACTIVE_RECENCY_MINUTES = 10;
+
+const isRecentlyActive = (latestActive: string | null): boolean => {
+  const ts = toActivityTimestamp(latestActive);
+  if (!ts) return false;
+  return Date.now() - ts <= ACTIVE_RECENCY_MINUTES * 60 * 1000;
+};
+
 const loadLiveActivities = async () => {
   loading.value = true;
   error.value = null;
@@ -1374,26 +1381,18 @@ const loadLiveActivities = async () => {
       return;
     }
 
-    const { data } = await ApiService.get(
-      `sites/${selectedSite.value}/live-activities`,
-      "",
-      { _suppressGlobalLoading: true }
-    );
-
-    const list = Array.isArray(data)
-      ? data
-      : Array.isArray(data?.data)
-      ? data.data
-      : Array.isArray(data?.results)
-      ? data.results
-      : [];
+    // Source the daily-process carousel from activities-summary so EVERY
+    // activity configured on the site's cameras shows up (even ones that have
+    // never fired an event), not just the recently-active ones live-activities
+    // returns.
+    const summary = await fetchSummaryActivities(selectedSite.value);
 
     liveActivities.value = dedupeLiveActivities(
-      list.map((item: any, index: number) => ({
-        activity_uid: String(item?.activity_uid ?? item?.uid ?? index),
-        activity_name: String(item?.activity_name ?? item?.name ?? "Aktivitas"),
-        last_activity_timestamp: toMomentGMT8(item?.last_activity_timestamp),
-        currently_active: Boolean(item?.currently_active ?? item?.is_active),
+      summary.map((item, index) => ({
+        activity_uid: String(item.activity_uid || index),
+        activity_name: String(item.activity_name || "Aktivitas"),
+        last_activity_timestamp: item.latest_active,
+        currently_active: isRecentlyActive(item.latest_active),
       }))
     );
   } catch (err) {
@@ -1419,8 +1418,8 @@ const fetchAlerts = async () => {
         params: {
           page: 1,
           page_size: 5,
-          from_date: new Date().toISOString().split("T")[0],
-          to_date: new Date().toISOString().split("T")[0],
+          from_date: getCurrentDateTimeGMT8("YYYY-MM-DD"),
+          to_date: getCurrentDateTimeGMT8("YYYY-MM-DD"),
         },
         _suppressGlobalLoading: true,
       }
@@ -1432,9 +1431,12 @@ const fetchAlerts = async () => {
       const alert = mapAlertItem(item);
       return {
         event_id: alert.event_id,
-        alert_type: item?.detected_objects?.[0]?.display_name || "Unknown",
+        // Read the SAME top-level fields as the violation-management page
+        // (Alerts.vue / AlertsTable.vue) so the two surfaces stay consistent.
+        alert_type: alert.violation_name,
         duration_minutes: alert.duration_minutes || 0,
-        detection_count: item?.detected_objects?.[0]?.detection_count || 0,
+        detection_count: alert.total_detections,
+        total_detections: alert.total_detections,
         event_start: convertToGMT8(alert.event_start),
         event_end: convertToGMT8(alert.event_end),
         status: alert.status || "not_resolved",
@@ -1475,8 +1477,8 @@ const handleShowReport = async () => {
         params: {
           page: 1,
           page_size: 10,
-          from_date: new Date().toISOString().split("T")[0],
-          to_date: new Date().toISOString().split("T")[0],
+          from_date: getCurrentDateTimeGMT8("YYYY-MM-DD"),
+          to_date: getCurrentDateTimeGMT8("YYYY-MM-DD"),
         },
         _suppressGlobalLoading: true,
       }
@@ -1488,9 +1490,12 @@ const handleShowReport = async () => {
       const alert = mapAlertItem(item);
       return {
         event_id: alert.event_id,
-        alert_type: item?.detected_objects?.[0]?.display_name || "Unknown",
+        // Read the SAME top-level fields as the violation-management page
+        // (Alerts.vue / AlertsTable.vue) so the two surfaces stay consistent.
+        alert_type: alert.violation_name,
         duration_minutes: alert.duration_minutes || 0,
-        detection_count: item?.detected_objects?.[0]?.detection_count || 0,
+        detection_count: alert.total_detections,
+        total_detections: alert.total_detections,
         event_start: convertToGMT8(alert.event_start),
         event_end: convertToGMT8(alert.event_end),
         status: alert.status || "not_resolved",
@@ -1600,15 +1605,18 @@ const getActivityConfig = (activityName) => {
   return config || activityConfig.default;
 };
 
-// Get translated activity name
+// Get translated activity name. Activity names from activities-summary are raw
+// camera.activity strings (e.g. "umum", "memasak") that often have no i18n key,
+// so check existence with te() first to avoid noisy "Not found" warnings and
+// fall back to the raw name.
 const getTranslatedActivityName = (activityName) => {
   const config = activityConfig[activityName];
   if (config && config.key) {
-    return t(`dashboard.activities.${config.key}`);
+    const key = `dashboard.activities.${config.key}`;
+    return te(key) ? t(key) : activityName;
   }
-  // For direct key matches
   const translationKey = `dashboard.activities.${activityName}`;
-  return t(translationKey, activityName); // Fallback to original name if translation not found
+  return te(translationKey) ? t(translationKey) : activityName;
 };
 
 // Helper functions for alerts
@@ -1695,11 +1703,11 @@ onMounted(() => {
   window.addEventListener("resize", updateCardsPerView);
   localStorage.setItem(
     "lastSelectedFromDate",
-    new Date().toISOString().split("T")[0]
+    getCurrentDateTimeGMT8("YYYY-MM-DD")
   );
   localStorage.setItem(
     "lastSelectedToDate",
-    new Date().toISOString().split("T")[0]
+    getCurrentDateTimeGMT8("YYYY-MM-DD")
   );
 });
 

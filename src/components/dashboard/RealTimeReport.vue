@@ -22,11 +22,11 @@ import { ref, onMounted, onUnmounted, nextTick, watch, computed } from "vue";
 import DatePicker from "@/components/DatePicker.vue";
 // import { useI18n } from "vue-i18n";
 import ApiService from "@/core/services/ApiService";
-import mockEventActivity from "@/assets/mockupData/dashboard/event_activity.json";
 import {
   toGMT8ISOString,
   formatDateTimeGMT8,
   toMomentGMT8,
+  getCurrentDateTimeGMT8,
 } from "@/core/helpers/timezone";
 import { parsePaginatedResponse } from "@/core/helpers/paginated-response";
 import { resolveRecordingUrl } from "@/core/helpers/operations-mapper";
@@ -68,6 +68,11 @@ const props = defineProps({
 // Filter state for process tracking chart
 const selectedStatuses = ref(["active", "completed", "scheduled"]);
 
+// Process lanes shown on the chart — sourced from the site's activities-summary
+// endpoint so only the activities that actually exist appear (instead of a
+// hardcoded Persiapan/Masak/... list). Names are the raw camera.activity values.
+const activityLanes = ref([]);
+
 // Date range state (from_date / to_date) - using single picker
 const selectedDate = ref(new Date());
 // const showDatePicker = ref(false);
@@ -95,7 +100,6 @@ let playInterval = null;
 let currentPlayheadPosition = null;
 let playheadPopups = []; // Auto-play popups (temporary)
 let hoverPreview = null; // Hover preview popup (single, small)
-let alertsAutoRefreshInterval = null;
 const hasInitiallyLoaded = ref(false); // Flag to prevent duplicate initial loads
 
 // Modal states
@@ -314,10 +318,18 @@ const enrichAlertsWithActivities = (items) => {
   return items.map((entry) => enrichAlertWithActivities(entry));
 };
 
+// Keyed by normalizeStatusKey() output so both the API's camelCase
+// (notResolved/falseAlarm) and any snake_case variants map correctly. Without
+// this, unresolved alerts fell through to their raw status and got filtered out
+// of the chart by selectedStatuses (["active","completed","scheduled"]).
 const statusMap = {
-  not_resolved: "active",
+  notresolved: "active",
+  inprogress: "active",
+  active: "active",
   resolved: "completed",
-  in_progress: "active",
+  falsealarm: "completed",
+  completed: "completed",
+  scheduled: "scheduled",
 };
 
 const normalizeStatusKey = (value) => {
@@ -412,7 +424,37 @@ const generateCalendarDays = () => {
 // API AND DATA FUNCTIONS
 // ========================
 
-// Fetch alerts for selected site between fromDate and toDate (with mockup fallback)
+// Load the site's configured activities (activities-summary) to use as the
+// chart's process lanes. The names are camera.activity values, matching each
+// alert's camera.activity, so bars land on the correct lane.
+const fetchSiteActivities = async () => {
+  const site =
+    props.siteUid || window.localStorage.getItem("lastSelectedSite");
+  if (!site) {
+    activityLanes.value = [];
+    return;
+  }
+  try {
+    const { data } = await ApiService.query(
+      `sites/${site}/activities-summary`,
+      { params: { site_uid: site }, _suppressGlobalLoading: true }
+    );
+    const list = Array.isArray(data?.data?.activities)
+      ? data.data.activities
+      : Array.isArray(data?.activities)
+      ? data.activities
+      : [];
+    const names = list
+      .map((a) => String(a?.activity_name ?? a?.name ?? "").trim())
+      .filter(Boolean);
+    activityLanes.value = Array.from(new Set(names));
+  } catch (err) {
+    console.error("[RealTimeReport] fetchSiteActivities failed:", err);
+    activityLanes.value = [];
+  }
+};
+
+// Fetch alerts for selected site between fromDate and toDate
 const fetchAlertsDebounceTimer = ref(null);
 
 const fetchAlerts = async () => {
@@ -442,6 +484,9 @@ const executeFetchAlerts = async () => {
       isLoading.value = false;
       return;
     }
+
+    // Refresh the chart's process lanes from activities-summary alongside alerts.
+    await fetchSiteActivities();
 
     const f = fromDate.value;
     const t = toDate.value;
@@ -593,7 +638,8 @@ const executeFetchAlerts = async () => {
     }
 
     if (!aggregatedData.length) {
-      apiData.value = enrichAlertsWithActivities(mockEventActivity);
+      // No data for the selected range: show an honest empty state, never mock.
+      apiData.value = [];
       apiError.value = null;
       return;
     }
@@ -601,38 +647,17 @@ const executeFetchAlerts = async () => {
     apiError.value = null;
     apiData.value = enrichAlertsWithActivities(aggregatedData);
   } catch (err) {
-    // fallback to mockup
-    console.error("API error, response format or anoher thing occurs:", err);
-    apiData.value = enrichAlertsWithActivities(mockEventActivity);
-    apiError.value = null;
+    console.error("Failed to load real-time report alerts:", err);
+    apiData.value = [];
+    apiError.value =
+      err instanceof Error ? err.message : "Gagal memuat data laporan.";
   } finally {
     isLoading.value = false;
   }
 };
 
-const startAlertsAutoRefresh = () => {
-  if (typeof window === "undefined") {
-    return;
-  }
-  if (alertsAutoRefreshInterval) {
-    clearInterval(alertsAutoRefreshInterval);
-  }
-  alertsAutoRefreshInterval = window.setInterval(() => {
-    if (typeof document !== "undefined" && document.hidden) {
-      return;
-    }
-    if (!isLoading.value) {
-      void fetchAlerts();
-    }
-  }, 300000);
-};
-
-const stopAlertsAutoRefresh = () => {
-  if (alertsAutoRefreshInterval) {
-    clearInterval(alertsAutoRefreshInterval);
-    alertsAutoRefreshInterval = null;
-  }
-};
+// Auto-refresh is driven by the parent Dashboard (refreshAll → fetchAlerts via
+// the exposed ref) so there is a single 5-minute cycle, not two competing ones.
 
 const convertToIsoString = (value) => {
   if (value === null || value === undefined) {
@@ -1130,8 +1155,11 @@ const generateProcessTrackingData = () => {
       ? normalizedActivities[0]
       : null;
 
-    // Prefer explicit activities (including camera fallbacks) before detection-based inference
-    const process = primaryActivity ?? getProcessFromDetection(item);
+    // Lane = the alert camera's configured activity (matches activities-summary).
+    // Fall back to explicit activities / detection inference only if absent.
+    const cameraActivity = String(item.camera?.activity ?? "").trim();
+    const process =
+      cameraActivity || primaryActivity || getProcessFromDetection(item);
     //     const processSource = primaryActivity
     //      ? hadApiActivities
     //        ? "activities-api"
@@ -1139,7 +1167,8 @@ const generateProcessTrackingData = () => {
     //      : "detection";
 
     // Get mapped status
-    const mappedStatus = statusMap[item.status] || item.status || "active";
+    const mappedStatus =
+      statusMap[normalizeStatusKey(item.status)] || "active";
 
     let start, end;
     let valid = true;
@@ -1328,7 +1357,6 @@ const handleSelectedDateChange = async (newDateValue) => {
     }
 
     await fetchAlerts();
-    startAlertsAutoRefresh();
     // Chart will be rendered automatically by watcher
   }
 };
@@ -1496,15 +1524,7 @@ const updateChartWithFilter = () => {
           name: item.process,
           start: item.start.getTime(),
           end: item.end.getTime(),
-          y: [
-            "Persiapan",
-            "Masak",
-            "Pemorsian",
-            "Pengiriman",
-            "Ambil Nampan",
-            "Cuci Nampan",
-            "Selesai",
-          ].indexOf(item.process),
+          y: activityLanes.value.indexOf(item.process),
           color: item.color,
           status: item.status,
           visible: true,
@@ -1669,15 +1689,7 @@ const checkDataAtPlayhead = (playheadTime) => {
     });
 
     // Convert back to array and sort by process order (top to bottom on chart)
-    const processList = [
-      "Persiapan",
-      "Masak",
-      "Pemorsian",
-      "Pengiriman",
-      "Ambil Nampan",
-      "Cuci Nampan",
-      "Selesai",
-    ];
+    const processList = activityLanes.value;
     const uniqueDataPoints = Object.values(groupedByProcess).sort(
       (a, b) => processList.indexOf(a.process) - processList.indexOf(b.process)
     );
@@ -2371,7 +2383,8 @@ const loadScript = (src) => {
 
 // Initialize fromDate/toDate defaults (today for both)
 const initializeDefaultDates = () => {
-  //   const today = new Date().toISOString().split("T")[0];
+  // Default to today in the business timezone (GMT+8), not UTC.
+  const todayStr = getCurrentDateTimeGMT8("YYYY-MM-DD");
 
   // Set both fromDate and toDate to today (same value)
   toDate.value = todayStr;
@@ -2410,16 +2423,8 @@ const renderHighchartsGantt = () => {
     selectedStatuses.value.includes(item.status)
   );
 
-  // Map to Highcharts Gantt format
-  const processList = [
-    "Persiapan",
-    "Masak",
-    "Pemorsian",
-    "Pengiriman",
-    "Ambil Nampan",
-    "Cuci Nampan",
-    "Selesai",
-  ];
+  // Map to Highcharts Gantt format. Lanes come from activities-summary.
+  const processList = activityLanes.value;
   const categories = processList;
 
   let sortedChartData = chartData
@@ -3148,11 +3153,13 @@ onMounted(async () => {
   // Load Highcharts first, then fetch data and render
   await loadHighchartsGantt();
 
-  // Try to fetch alerts immediately if site is available
-  //   const initialSite =
-  props.siteUid || window.localStorage.getItem("lastSelectedSite");
-
-  startAlertsAutoRefresh();
+  // Fetch immediately if the site is already available on mount; otherwise the
+  // siteUid watcher handles the first load. The 5-minute refresh cadence is
+  // driven by the parent Dashboard, so there is no interval to start here.
+  if (props.siteUid && fromDate.value && toDate.value) {
+    hasInitiallyLoaded.value = true;
+    await fetchAlerts();
+  }
 });
 
 // persist date changes - single date mode
@@ -3180,7 +3187,6 @@ watch([fromDate, toDate], ([f, t]) => {
 onUnmounted(() => {
   // Clean up any intervals or event listeners
   stopAutoPlay();
-  stopAlertsAutoRefresh();
   hidePlayheadPopups();
   hideHoverPreview();
   closeDetailModal();

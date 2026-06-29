@@ -109,8 +109,10 @@
                   <td>
                     <div class="fw-bold">
                       {{
-                        item.detected_objects[0].display_name ||
-                        item.detected_objects[0].object_type ||
+                        item.alert_type ||
+                        item.violation_name ||
+                        item.detected_objects?.[0]?.display_name ||
+                        item.detected_objects?.[0]?.object_type ||
                         "-"
                       }}
                     </div>
@@ -296,18 +298,47 @@ const statusLabel = (status: string | undefined) => {
   return status || "-";
 };
 
-const downloadPdf = () => {
+// jsPDF.addImage cannot fetch a URL/path synchronously — it needs raw image
+// data (a data URL or an Image element). Preload the logo into a PNG data URL
+// via a canvas so it can be embedded; resolve null if it can't be loaded.
+const loadImageAsDataUrl = (url: string): Promise<string | null> =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(null);
+          return;
+        }
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL("image/png"));
+      } catch {
+        resolve(null);
+      }
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+
+const downloadPdf = async () => {
   isDownloading.value = true;
   try {
     const doc = new jsPDF();
 
-    // 1. Header
-    // Logo (if available, requires converting to base64 or pre-loading)
-    // For simplicity, we skip image loading in jspdf-autotable logic unless we have base64 or addImage works with url
-    // Adjust Logo dimensions to be proportional and tidier
-    // Assuming a roughly square-ish or wide logo, let's keep it contained.
-    // 15x15 or proportional width.
-    doc.addImage("/logo-somba.png", "PNG", 14, 10, 15, 15);
+    // 1. Header — logo (best-effort; a missing logo must not abort the PDF).
+    const logoDataUrl = await loadImageAsDataUrl("/logo-somba.png");
+    if (logoDataUrl) {
+      try {
+        doc.addImage(logoDataUrl, "PNG", 14, 10, 15, 15);
+      } catch (e) {
+        console.warn("Logo gagal disisipkan ke PDF, melanjutkan tanpa logo:", e);
+      }
+    }
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
     doc.text(t("dashboard.report.title"), 105, 20, { align: "center" });
@@ -470,7 +501,11 @@ const downloadPdf = () => {
         // Column 0: Stacked Name & Camera
         if (data.section === "body" && data.column.index === 0) {
           const item = props.alerts[data.row.index];
+          // Use the same top-level violation name as the dashboard table and
+          // the violation-management page (not detected_objects[0]).
           const name =
+            item.alert_type ||
+            item.violation_name ||
             item.detected_objects?.[0]?.display_name ||
             item.detected_objects?.[0]?.object_type ||
             "-";

@@ -256,7 +256,10 @@ import DatePicker from "@/components/DatePicker.vue";
 import ApiService from "@/core/services/ApiService";
 import EventsTable from "@/components/apps/events-alerts/EventsTable.vue";
 import EventDetailModal from "@/components/apps/events-alerts/EventDetailModal.vue";
-import { convertToGMT8 } from "@/core/helpers/timezone";
+import {
+  convertToGMT8,
+  getCurrentDateTimeGMT8,
+} from "@/core/helpers/timezone";
 import {
   applyPaginationMeta,
   parsePaginatedResponse,
@@ -366,21 +369,11 @@ const TO_DATE_STORAGE_KEY = "lastSelectedToDate";
 const LEGACY_FROM_DATE_STORAGE_KEY = "globalFromDate";
 const LEGACY_TO_DATE_STORAGE_KEY = "globalToDate";
 
-// Initialize default dates (1 week ago to today)
+// Initialize default dates (today → today, business timezone GMT+8)
 const initializeDefaultDates = () => {
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-  const defaultFromDate = formatDate(yesterday);
-  const defaultToDate = formatDate(today);
+  const todayStr = getCurrentDateTimeGMT8("YYYY-MM-DD");
+  const defaultFromDate = todayStr;
+  const defaultToDate = todayStr;
 
   let storedFromDate = localStorage.getItem(FROM_DATE_STORAGE_KEY);
   let storedToDate = localStorage.getItem(TO_DATE_STORAGE_KEY);
@@ -730,12 +723,8 @@ const resetFilters = () => {
   tempSelectedSiteFilter.value = selectedSiteFilter.value || "";
   tempSelectedCameraFilter.value = selectedCameraFilter.value || "";
 
-  // Reset dates to Today
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
-  const todayStr = `${year}-${month}-${day}`;
+  // Reset dates to Today (business timezone GMT+8)
+  const todayStr = getCurrentDateTimeGMT8("YYYY-MM-DD");
 
   dateFrom.value = todayStr;
   dateTo.value = todayStr;
