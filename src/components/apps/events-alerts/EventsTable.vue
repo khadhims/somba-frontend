@@ -183,7 +183,8 @@ const normalizeKey = (v?: string) =>
   (v || "").toLowerCase().replace(/[\s_-]/g, "");
 const statusBadge = (status: string) => {
   const k = normalizeKey(status);
-  if (k === "active" || k === "unresolved") return "badge-light-danger";
+  if (k === "active") return "badge-light-primary";
+  if (k === "unresolved") return "badge-light-danger";
   if (k === "acknowledged") return "badge-light-warning";
   if (k === "resolved" || k === "notresolved") return "badge-light-success";
   if (k === "falsedetection") return "badge-light-info";
