@@ -39,7 +39,7 @@
         </div>
         <div class="d-flex flex-column">
           <span class="text-dark fw-bold text-hover-primary fs-6">
-            {{ row.violation_name || "Unknown Violation" }}
+            {{ formatViolationName(row.violation_name) || "Unknown Violation" }}
           </span>
           <span class="text-muted fs-7">{{ row.camera_name }}</span>
         </div>
@@ -93,6 +93,7 @@ defineOptions({
 
 import { useI18n } from "vue-i18n";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import { formatViolationName } from "@/core/helpers/operations-mapper";
 
 defineProps<{
   alerts: any[];

@@ -342,39 +342,17 @@ const TO_DATE_STORAGE_KEY = "lastSelectedToDate";
 const LEGACY_FROM_DATE_STORAGE_KEY = "globalFromDate";
 const LEGACY_TO_DATE_STORAGE_KEY = "globalToDate";
 
-// Initialize default dates (today → today, business timezone GMT+8)
+// Initialize default dates (always today → today, business timezone GMT+8)
 const initializeDefaultDates = () => {
   const todayStr = getCurrentDateTimeGMT8("YYYY-MM-DD");
-  const defaultFromDate = todayStr;
-  const defaultToDate = todayStr;
-
-  let storedFromDate = localStorage.getItem(FROM_DATE_STORAGE_KEY);
-  let storedToDate = localStorage.getItem(TO_DATE_STORAGE_KEY);
-
-  if (!storedFromDate || !storedToDate) {
-    const legacyFrom = localStorage.getItem(LEGACY_FROM_DATE_STORAGE_KEY);
-    const legacyTo = localStorage.getItem(LEGACY_TO_DATE_STORAGE_KEY);
-    if (legacyFrom && legacyTo) {
-      storedFromDate = legacyFrom;
-      storedToDate = legacyTo;
-      localStorage.setItem(FROM_DATE_STORAGE_KEY, legacyFrom);
-      localStorage.setItem(TO_DATE_STORAGE_KEY, legacyTo);
-      localStorage.removeItem(LEGACY_FROM_DATE_STORAGE_KEY);
-      localStorage.removeItem(LEGACY_TO_DATE_STORAGE_KEY);
-    }
-  }
-
-  if (!storedFromDate || !storedToDate) {
-    storedFromDate = defaultFromDate;
-    storedToDate = defaultToDate;
-    localStorage.setItem(FROM_DATE_STORAGE_KEY, storedFromDate);
-    localStorage.setItem(TO_DATE_STORAGE_KEY, storedToDate);
-  }
-
-  dateFrom.value = storedFromDate;
-  dateTo.value = storedToDate;
-  tempDateFrom.value = storedFromDate;
-  tempDateTo.value = storedToDate;
+  localStorage.setItem(FROM_DATE_STORAGE_KEY, todayStr);
+  localStorage.setItem(TO_DATE_STORAGE_KEY, todayStr);
+  localStorage.removeItem(LEGACY_FROM_DATE_STORAGE_KEY);
+  localStorage.removeItem(LEGACY_TO_DATE_STORAGE_KEY);
+  dateFrom.value = todayStr;
+  dateTo.value = todayStr;
+  tempDateFrom.value = todayStr;
+  tempDateTo.value = todayStr;
 };
 
 const debouncedFetchAlerts = () => {

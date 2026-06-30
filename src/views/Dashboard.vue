@@ -285,7 +285,7 @@
                                     <div class="d-flex align-items-center">
                                       <div>
                                         <div class="fw-bold text-dark">
-                                          {{ alert.alert_type }}
+                                          {{ formatViolationName(alert.alert_type) }}
                                         </div>
                                         <div class="text-muted fs-7">
                                           {{ alert.camera_name }}
@@ -373,7 +373,7 @@
                                       </div>
                                       <div>
                                         <div class="fw-bold text-dark fs-6">
-                                          {{ alert.alert_type }}
+                                          {{ formatViolationName(alert.alert_type) }}
                                         </div>
                                         <div class="text-muted fs-8">
                                           {{ alert.camera_name }}
@@ -769,7 +769,7 @@ import {
   toMomentGMT8,
 } from "@/core/helpers/timezone";
 import { parsePaginatedResponse } from "@/core/helpers/paginated-response";
-import { mapAlertItem } from "@/core/helpers/operations-mapper";
+import { mapAlertItem, formatViolationName } from "@/core/helpers/operations-mapper";
 
 interface Site {
   uid: string;

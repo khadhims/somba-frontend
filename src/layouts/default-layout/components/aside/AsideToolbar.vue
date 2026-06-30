@@ -5,7 +5,7 @@
   >
     <!--begin::Symbol-->
     <div class="symbol symbol-50px">
-      <img :src="getAssetPath('media/avatars/300-1.jpg?>')" alt="" />
+      <img :src="getAssetPath('media/avatars/300-1.jpg')" alt="" />
     </div>
     <!--end::Symbol-->
 

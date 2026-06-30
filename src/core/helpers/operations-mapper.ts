@@ -1,3 +1,11 @@
+export function formatViolationName(name: string | null | undefined): string {
+  if (!name) return "";
+  return name
+    .replace(/_+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function pickString(...values: unknown[]): string {
   for (const value of values) {
     if (typeof value === "string" && value.trim()) {
