@@ -18,7 +18,7 @@
         class="d-flex align-items-center"
         style="max-width: 300px; min-width: 250px"
       >
-        <div class="me-3">
+        <div class="me-3 position-relative">
           <img
             v-if="row.image_url"
             :src="row.image_url"
@@ -33,6 +33,16 @@
             style="width: 60px; height: 60px"
           >
             <i class="ki-duotone ki-picture fs-2x text-muted"
+              ><span class="path1"></span><span class="path2"></span
+            ></i>
+          </div>
+          <div
+            v-if="row.recording_url"
+            class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center rounded"
+            style="background: rgba(0,0,0,0.38); pointer-events: none;"
+            :title="t('appsEventsAlerts.eventsModals.details.recording') || 'Rekaman'"
+          >
+            <i class="ki-duotone ki-to-right fs-3 text-white"
               ><span class="path1"></span><span class="path2"></span
             ></i>
           </div>

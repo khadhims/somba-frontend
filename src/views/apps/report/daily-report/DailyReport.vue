@@ -790,7 +790,7 @@ const filterDate = ref(new Date().toISOString().split("T")[0]); // Today's date
 
 // Pagination
 const currentPage = ref(1);
-const itemsPerPage = ref(10);
+const itemsPerPage = ref(5);
 const totalItems = ref(0);
 const totalPages = ref(0);
 

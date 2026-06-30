@@ -240,7 +240,9 @@
 			"commentPlaceholder": "Leave a comment about this event...",
 			"eventIdHint": "Event ID:",
 			"imageFallback": "Image not available",
-			"noData": "Event data not available"
+			"noData": "Event data not available",
+			"recording": "Recording",
+			"recordingUnavailable": "Recording cannot be played"
 		},
 		"edit": {
 			"title": "Edit Event",

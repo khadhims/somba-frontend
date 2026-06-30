@@ -806,7 +806,7 @@ const statusBadgeClass = (
 // Pagination state
 const pagination = ref({
   page: 1,
-  per_page: 10,
+  per_page: 5,
   total_pages: 1,
   total_items: 0,
   next_page: null as number | null,

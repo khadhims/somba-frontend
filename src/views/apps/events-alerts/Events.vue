@@ -354,7 +354,7 @@ const sortOrder = ref<"asc" | "desc">("desc");
 const currentSite = ref<Site | null>(null);
 // Pagination
 const currentPage = ref(1);
-const itemsPerPage = ref(10);
+const itemsPerPage = ref(5);
 const totalItems = ref(0);
 const totalPages = ref(0);
 // Modal state
