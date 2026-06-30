@@ -175,6 +175,22 @@ export const useAuthStore = defineStore("auth", () => {
       });
   }
 
+  function fetchProfile() {
+    return ApiService.get("auth/me")
+      .then((response: any) => {
+        const raw = response?.data ?? response;
+        const data =
+          raw && typeof raw === "object" && raw.data && typeof raw.data === "object"
+            ? raw.data
+            : raw;
+        user.value = data;
+        return data;
+      })
+      .catch((err) => {
+        console.warn("[auth] fetchProfile failed:", err);
+      });
+  }
+
   // New: refresh tokens using refresh_token endpoint
   function refresh() {
     const rToken = JwtService.getRefreshToken();
@@ -214,9 +230,9 @@ export const useAuthStore = defineStore("auth", () => {
       if (parts.length === 3) {
         const payload = JSON.parse(atob(parts[1]));
         if (!payload.exp || payload.exp * 1000 > Date.now()) {
-          // token still valid
+          // token still valid — fetch profile to populate user.value after reload
           isAuthenticated.value = true;
-          return Promise.resolve({ access_token: token });
+          return fetchProfile().then(() => ({ access_token: token }));
         }
       }
     } catch (e) {
@@ -245,5 +261,6 @@ export const useAuthStore = defineStore("auth", () => {
     forgotPassword,
     verifyAuth,
     refresh,
+    fetchProfile,
   };
 });
