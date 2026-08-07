@@ -1,404 +1,265 @@
 <template>
   <!--begin::NVR Management-->
-  <div class="card">
+  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
     <!--begin::Card header-->
-    <div class="card-header border-0 pt-5">
-      <!--begin::Card title-->
-      <div class="card-title">
-        <h3 class="fw-bold m-0">{{ t("controlplane.site.nvr.title") }}</h3>
+    <div class="flex flex-wrap items-center justify-between gap-4 p-6 pb-0">
+      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.site.nvr.title") }}
+      </h3>
+
+      <div class="flex items-center">
+        <label class="mr-3 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300">
+          {{ t("controlplane.site.nvr.filters.siteLabel") }}
+        </label>
+        <select
+          v-model="selectedSiteFilter"
+          @change="onFilterSiteChange"
+          class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+        >
+          <option value="">
+            {{ t("controlplane.site.nvr.filters.sitePlaceholder") }}
+          </option>
+          <option v-for="site in sites" :key="site.uid" :value="site.uid">
+            {{ site.name }}
+          </option>
+        </select>
       </div>
-      <!--end::Card title-->
-
-      <!--begin::Card toolbar-->
-      <div class="card-toolbar">
-        <!-- per-page select moved to pagination area below the table -->
-
-        <div class="me-3 d-flex align-items-center">
-          <label class="form-label me-3 mb-0 fw-semibold">
-            {{ t("controlplane.site.nvr.filters.siteLabel") }}
-          </label>
-          <select
-            v-model="selectedSiteFilter"
-            @change="onFilterSiteChange"
-            class="form-select form-select-solid w-200px"
-          >
-            <option value="">
-              {{ t("controlplane.site.nvr.filters.sitePlaceholder") }}
-            </option>
-            <option v-for="site in sites" :key="site.uid" :value="site.uid">
-              {{ site.name }}
-            </option>
-          </select>
-        </div>
-
-        <!-- search and add button moved below the form to align with pagination/per-page select -->
-      </div>
-      <!--end::Card toolbar-->
     </div>
-    <!--begin::Card header-->
+    <!--end::Card header-->
 
     <!--begin::Card body-->
-    <div class="card-body py-3">
-      <!--begin::Form Modal-->
-      <div v-if="showNvrForm" class="mb-10">
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">
-              {{
-                isEdit
-                  ? t("controlplane.site.nvr.form.titleEdit")
-                  : t("controlplane.site.nvr.form.titleCreate")
-              }}
-            </h3>
-            <div class="card-toolbar">
+    <div class="p-6">
+      <!--begin::Form-->
+      <div
+        v-if="showNvrForm"
+        class="mb-10 rounded-lg border border-gray-200 dark:border-gray-700"
+      >
+        <div class="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700">
+          <h3 class="m-0 text-base font-bold text-gray-900 dark:text-gray-100">
+            {{
+              isEdit
+                ? t("controlplane.site.nvr.form.titleEdit")
+                : t("controlplane.site.nvr.form.titleCreate")
+            }}
+          </h3>
+          <button
+            type="button"
+            @click="closeForm"
+            class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+          >
+            <i class="ki-duotone ki-cross fs-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+          </button>
+        </div>
+        <div class="p-4">
+          <form @submit.prevent="saveNvr">
+            <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {{ t("controlplane.site.nvr.form.fields.site.label") }}
+                </label>
+                <select v-model="nvrForm.siteId" @change="onSiteChange" required :class="formInputClass">
+                  <option value="">
+                    {{ t("controlplane.site.nvr.form.fields.site.placeholder") }}
+                  </option>
+                  <option v-for="site in sites" :key="site.uid" :value="site.uid">
+                    {{ site.name }}
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {{ t("controlplane.site.nvr.form.fields.room.label") }}
+                </label>
+                <select v-model="nvrForm.roomId" :class="formInputClass">
+                  <option value="">
+                    {{ t("controlplane.site.nvr.form.fields.room.placeholder") }}
+                  </option>
+                  <option v-for="room in availableRooms" :key="room.id" :value="room.id">
+                    {{ room.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {{ t("controlplane.site.nvr.form.fields.name.label") }}
+                </label>
+                <input
+                  type="text"
+                  v-model="nvrForm.name"
+                  :placeholder="t('controlplane.site.nvr.form.fields.name.placeholder')"
+                  required
+                  :class="formInputClass"
+                />
+              </div>
+
+              <div>
+                <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {{ t("controlplane.site.nvr.form.fields.endpoint.label") }}
+                </label>
+                <input
+                  type="text"
+                  v-model="nvrForm.public_endpoint_url"
+                  :placeholder="t('controlplane.site.nvr.form.fields.endpoint.placeholder')"
+                  required
+                  :class="formInputClass"
+                />
+              </div>
+            </div>
+
+            <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div>
+                <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {{ t("controlplane.site.nvr.form.fields.type.label") }}
+                </label>
+                <select v-model="nvrForm.recorder_type" required :class="formInputClass">
+                  <option value="NVR">{{ t("controlplane.site.nvr.form.fields.type.options.nvr") }}</option>
+                  <option value="DVR">{{ t("controlplane.site.nvr.form.fields.type.options.dvr") }}</option>
+                  <option value="HYBRID">{{ t("controlplane.site.nvr.form.fields.type.options.hybrid") }}</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {{ t("controlplane.site.nvr.form.fields.brand.label") }}
+                </label>
+                <select v-model="nvrForm.brand" required :class="formInputClass">
+                  <option value="">{{ t("controlplane.site.nvr.form.fields.brand.placeholder") }}</option>
+                  <option value="Hikvision">{{ t("controlplane.site.nvr.form.fields.brand.options.hikvision") }}</option>
+                  <option value="Dahua">{{ t("controlplane.site.nvr.form.fields.brand.options.dahua") }}</option>
+                  <option value="Uniview">{{ t("controlplane.site.nvr.form.fields.brand.options.uniview") }}</option>
+                  <option value="Tiandy">{{ t("controlplane.site.nvr.form.fields.brand.options.tiandy") }}</option>
+                  <option value="Other">{{ t("controlplane.site.nvr.form.fields.brand.options.other") }}</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {{ t("controlplane.site.nvr.form.fields.model.label") }}
+                </label>
+                <input
+                  type="text"
+                  v-model="nvrForm.model"
+                  :placeholder="t('controlplane.site.nvr.form.fields.model.placeholder')"
+                  :class="formInputClass"
+                />
+              </div>
+            </div>
+
+            <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {{ t("controlplane.site.nvr.form.fields.username.label") }}
+                </label>
+                <input
+                  type="text"
+                  v-model="nvrForm.username"
+                  :placeholder="t('controlplane.site.nvr.form.fields.username.placeholder')"
+                  :class="formInputClass"
+                />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {{ t("controlplane.site.nvr.form.fields.password.label") }}
+                </label>
+                <input
+                  type="password"
+                  v-model="nvrForm.password"
+                  :placeholder="t('controlplane.site.nvr.form.fields.password.placeholder')"
+                  :class="formInputClass"
+                />
+              </div>
+            </div>
+
+            <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {{ t("controlplane.site.nvr.form.fields.port.label") }}
+                </label>
+                <input
+                  type="number"
+                  v-model="nvrForm.port"
+                  :placeholder="t('controlplane.site.nvr.form.fields.port.placeholder')"
+                  min="1"
+                  max="65535"
+                  :class="formInputClass"
+                />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {{ t("controlplane.site.nvr.form.fields.channels.label") }}
+                </label>
+                <input
+                  type="number"
+                  v-model="nvrForm.channels"
+                  :placeholder="t('controlplane.site.nvr.form.fields.channels.placeholder')"
+                  min="1"
+                  max="64"
+                  :class="formInputClass"
+                />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {{ t("controlplane.site.nvr.form.fields.status.label") }}
+                </label>
+                <select v-model="nvrForm.is_active" :class="formInputClass">
+                  <option :value="true">{{ t("controlplane.site.nvr.form.fields.status.options.active") }}</option>
+                  <option :value="false">{{ t("controlplane.site.nvr.form.fields.status.options.inactive") }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex justify-center gap-3">
               <button
                 type="button"
-                class="btn btn-sm btn-icon btn-active-light-primary"
                 @click="closeForm"
+                class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
               >
-                <i class="ki-duotone ki-cross fs-2">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
+                {{ t("controlplane.site.nvr.form.actions.cancel") }}
+              </button>
+              <button
+                type="submit"
+                :disabled="isLoading"
+                class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <span v-if="isLoading" class="inline-flex items-center gap-2">
+                  {{ t("controlplane.site.nvr.form.actions.loading") }}
+                  <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                </span>
+                <span v-else>
+                  {{
+                    isEdit
+                      ? t("controlplane.site.nvr.form.actions.update")
+                      : t("controlplane.site.nvr.form.actions.create")
+                  }}
+                </span>
               </button>
             </div>
-          </div>
-          <div class="card-body">
-            <form @submit.prevent="saveNvr" class="form">
-              <!--begin::Row-->
-              <div class="row mb-7">
-                <!--begin::Col-->
-                <div class="col-md-6">
-                  <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.nvr.form.fields.site.label") }}
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Select-->
-                  <select
-                    v-model="nvrForm.siteId"
-                    @change="onSiteChange"
-                    class="form-select form-select-solid"
-                    required
-                  >
-                    <option value="">
-                      {{ t("controlplane.site.nvr.form.fields.site.placeholder") }}
-                    </option>
-                    <option
-                      v-for="site in sites"
-                      :key="site.uid"
-                      :value="site.uid"
-                    >
-                      {{ site.name }}
-                    </option>
-                  </select>
-                  <!--end::Select-->
-                </div>
-                <!--end::Col-->
-
-                <!--begin::Col-->
-                <div class="col-md-6">
-                  <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.nvr.form.fields.room.label") }}
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Select-->
-                  <select
-                    v-model="nvrForm.roomId"
-                    class="form-select form-select-solid"
-                  >
-                    <option value="">
-                      {{ t("controlplane.site.nvr.form.fields.room.placeholder") }}
-                    </option>
-                    <option
-                      v-for="room in availableRooms"
-                      :key="room.id"
-                      :value="room.id"
-                    >
-                      {{ room.name }}
-                    </option>
-                  </select>
-                  <!--end::Select-->
-                </div>
-                <!--end::Col-->
-              </div>
-              <!--end::Row-->
-
-              <!--begin::Row-->
-              <div class="row mb-7">
-                <!--begin::Col-->
-                <div class="col-md-6">
-                  <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.nvr.form.fields.name.label") }}
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <input
-                    type="text"
-                    v-model="nvrForm.name"
-                    class="form-control form-control-solid"
-                    :placeholder="t('controlplane.site.nvr.form.fields.name.placeholder')"
-                    required
-                  />
-                  <!--end::Input-->
-                </div>
-                <!--end::Col-->
-
-                <!--begin::Col-->
-                <div class="col-md-6">
-                  <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.nvr.form.fields.endpoint.label") }}
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <input
-                    type="text"
-                    v-model="nvrForm.public_endpoint_url"
-                    class="form-control form-control-solid"
-                    :placeholder="t('controlplane.site.nvr.form.fields.endpoint.placeholder')"
-                    required
-                  />
-                  <!--end::Input-->
-                </div>
-                <!--end::Col-->
-              </div>
-              <!--end::Row-->
-
-              <!--begin::Row-->
-              <div class="row mb-7">
-                <!--begin::Col-->
-                <div class="col-md-4">
-                  <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.nvr.form.fields.type.label") }}
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Select-->
-                  <select
-                    v-model="nvrForm.recorder_type"
-                    class="form-select form-select-solid"
-                    required
-                  >
-                    <option value="NVR">
-                      {{ t("controlplane.site.nvr.form.fields.type.options.nvr") }}
-                    </option>
-                    <option value="DVR">
-                      {{ t("controlplane.site.nvr.form.fields.type.options.dvr") }}
-                    </option>
-                    <option value="HYBRID">
-                      {{ t("controlplane.site.nvr.form.fields.type.options.hybrid") }}
-                    </option>
-                  </select>
-                  <!--end::Select-->
-                </div>
-                <!--end::Col-->
-
-                <!--begin::Col-->
-                <div class="col-md-4">
-                  <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.nvr.form.fields.brand.label") }}
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Select-->
-                  <select
-                    v-model="nvrForm.brand"
-                    class="form-select form-select-solid"
-                    required
-                  >
-                    <option value="">
-                      {{ t("controlplane.site.nvr.form.fields.brand.placeholder") }}
-                    </option>
-                    <option value="Hikvision">
-                      {{ t("controlplane.site.nvr.form.fields.brand.options.hikvision") }}
-                    </option>
-                    <option value="Dahua">
-                      {{ t("controlplane.site.nvr.form.fields.brand.options.dahua") }}
-                    </option>
-                    <option value="Uniview">
-                      {{ t("controlplane.site.nvr.form.fields.brand.options.uniview") }}
-                    </option>
-                    <option value="Tiandy">
-                      {{ t("controlplane.site.nvr.form.fields.brand.options.tiandy") }}
-                    </option>
-                    <option value="Other">
-                      {{ t("controlplane.site.nvr.form.fields.brand.options.other") }}
-                    </option>
-                  </select>
-                  <!--end::Select-->
-                </div>
-                <!--end::Col-->
-
-                <!--begin::Col-->
-                <div class="col-md-4">
-                  <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.nvr.form.fields.model.label") }}
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <input
-                    type="text"
-                    v-model="nvrForm.model"
-                    class="form-control form-control-solid"
-                    :placeholder="t('controlplane.site.nvr.form.fields.model.placeholder')"
-                  />
-                  <!--end::Input-->
-                </div>
-                <!--end::Col-->
-              </div>
-              <!--end::Row-->
-
-              <!--begin::Row-->
-              <div class="row mb-7">
-                <!--begin::Col-->
-                <div class="col-md-6">
-                  <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.nvr.form.fields.username.label") }}
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <input
-                    type="text"
-                    v-model="nvrForm.username"
-                    class="form-control form-control-solid"
-                    :placeholder="t('controlplane.site.nvr.form.fields.username.placeholder')"
-                  />
-                  <!--end::Input-->
-                </div>
-                <!--end::Col-->
-
-                <!--begin::Col-->
-                <div class="col-md-6">
-                  <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.nvr.form.fields.password.label") }}
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <input
-                    type="password"
-                    v-model="nvrForm.password"
-                    class="form-control form-control-solid"
-                    :placeholder="t('controlplane.site.nvr.form.fields.password.placeholder')"
-                  />
-                  <!--end::Input-->
-                </div>
-                <!--end::Col-->
-              </div>
-              <!--end::Row-->
-
-              
-
-              <!--begin::Row-->
-              <div class="row mb-7">
-                <!--begin::Col-->
-                <div class="col-md-4">
-                  <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.nvr.form.fields.port.label") }}
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <input
-                    type="number"
-                    v-model="nvrForm.port"
-                    class="form-control form-control-solid"
-                    :placeholder="t('controlplane.site.nvr.form.fields.port.placeholder')"
-                    min="1"
-                    max="65535"
-                  />
-                  <!--end::Input-->
-                </div>
-                <!--end::Col-->
-
-                <!--begin::Col-->
-                <div class="col-md-4">
-                  <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.nvr.form.fields.channels.label") }}
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <input
-                    type="number"
-                    v-model="nvrForm.channels"
-                    class="form-control form-control-solid"
-                    :placeholder="t('controlplane.site.nvr.form.fields.channels.placeholder')"
-                    min="1"
-                    max="64"
-                  />
-                  <!--end::Input-->
-                </div>
-                <!--end::Col-->
-
-                <!--begin::Col-->
-                <div class="col-md-4">
-                  <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.nvr.form.fields.status.label") }}
-                  </label>
-                  <!--end::Label-->
-                  <select v-model="nvrForm.is_active" class="form-select form-select-solid">
-                    <option :value="true">
-                      {{ t("controlplane.site.nvr.form.fields.status.options.active") }}
-                    </option>
-                    <option :value="false">
-                      {{ t("controlplane.site.nvr.form.fields.status.options.inactive") }}
-                    </option>
-                  </select>
-                </div>
-                <!--end::Col-->
-              </div>
-              <!--end::Row-->
-
-              <!--begin::Actions-->
-              <div class="text-center">
-                <button
-                  type="button"
-                  class="btn btn-light me-3"
-                  @click="closeForm"
-                >
-                  {{ t("controlplane.site.nvr.form.actions.cancel") }}
-                </button>
-                <button
-                  type="submit"
-                  class="btn btn-primary"
-                  :disabled="isLoading"
-                >
-                  <span v-if="isLoading" class="indicator-progress">
-                    {{ t("controlplane.site.nvr.form.actions.loading") }}
-                    <span
-                      class="spinner-border spinner-border-sm align-middle ms-2"
-                    ></span>
-                  </span>
-                  <span v-else class="indicator-label">
-                    {{
-                      isEdit
-                        ? t("controlplane.site.nvr.form.actions.update")
-                        : t("controlplane.site.nvr.form.actions.create")
-                    }}
-                  </span>
-                </button>
-              </div>
-              <!--end::Actions-->
-            </form>
-          </div>
+          </form>
         </div>
       </div>
-      <!--end::Form Modal-->
+      <!--end::Form-->
 
       <!--begin::Controls (below form, above table) -->
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="d-flex align-items-center">
-          <span class="me-2">
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center">
+          <span class="mr-2 text-sm text-gray-700 dark:text-gray-300">
             {{ t("controlplane.site.nvr.toolbar.itemsLabel") }}
           </span>
-          <select v-model="perPage" @change="onPerPageChange" class="form-select form-select-solid w-75px">
+          <select
+            v-model="perPage"
+            @change="onPerPageChange"
+            class="w-[75px] rounded-md border border-gray-300 bg-white px-2 py-1 text-sm tabular-nums transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          >
             <option :value="1">1</option>
             <option :value="5">5</option>
             <option :value="10">10</option>
@@ -407,29 +268,27 @@
           </select>
         </div>
 
-        <div class="d-flex align-items-center">
-          <div class="me-3 d-flex align-items-center position-relative">
-            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-2">
+        <div class="flex items-center gap-3">
+          <div class="relative flex items-center">
+            <i class="ki-duotone ki-magnifier fs-3 pointer-events-none absolute left-2">
               <span class="path1"></span>
               <span class="path2"></span>
             </i>
             <input
               type="text"
               v-model="searchQuery"
-              class="form-control form-control-solid w-250px ps-12"
               :placeholder="t('controlplane.site.nvr.toolbar.searchPlaceholder')"
+              class="w-[250px] rounded-md border border-gray-300 bg-gray-100 py-2 pr-3 pl-12 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
             />
           </div>
 
-          <div>
-            <button
-              class="btn btn-sm btn-light-primary"
-              @click="showNvrForm = true"
-            >
-              <i class="ki-duotone ki-plus fs-2 me-1"></i>
-              {{ t("controlplane.site.nvr.toolbar.addButton") }}
-            </button>
-          </div>
+          <button
+            @click="showNvrForm = true"
+            class="inline-flex items-center gap-1 rounded-md bg-primary-light px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.98]"
+          >
+            <i class="ki-duotone ki-plus fs-2"></i>
+            {{ t("controlplane.site.nvr.toolbar.addButton") }}
+          </button>
         </div>
       </div>
 
@@ -447,61 +306,58 @@
         :empty-table-text="t('controlplane.site.nvr.table.empty')"
       >
         <template v-slot:name="{ row }">
-          <div class="d-flex align-items-center">
-            <div class="symbol symbol-45px me-5">
-              <span class="symbol-label bg-light-warning text-warning fw-bold">
-                <i class="ki-duotone ki-router fs-2">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </span>
+          <div class="flex items-center">
+            <div
+              class="mr-5 flex h-[45px] w-[45px] items-center justify-center rounded-full bg-warning-light text-warning"
+            >
+              <i class="ki-duotone ki-router fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
             </div>
-            <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">{{
+            <div class="flex flex-col">
+              <span class="font-bold text-gray-900 hover:text-primary dark:text-gray-100">{{
                 row.name
               }}</span>
-              <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-                row.public_endpoint_url
-              }}</span>
+              <span class="text-sm text-gray-500">{{ row.public_endpoint_url }}</span>
             </div>
           </div>
         </template>
 
         <template v-slot:location="{ row }">
           <div>
-            <span class="text-dark fw-bold d-block fs-6">{{
+            <span class="block font-bold text-gray-900 dark:text-gray-100">{{
               getSiteName(row.site_uid)
             }}</span>
-            <span class="text-muted fw-semibold d-block fs-7">{{
-              getRoomName(row.roomId)
-            }}</span>
+            <span class="block text-sm text-gray-500">{{ getRoomName(row.roomId) }}</span>
           </div>
         </template>
 
         <template v-slot:brand="{ row }">
-          <span class="badge badge-light-info fs-7 fw-bold">{{
+          <span class="inline-flex rounded bg-info-light px-2 py-1 text-xs font-semibold text-info">{{
             row.brand
           }}</span>
         </template>
 
         <template v-slot:channels="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{ row.channels }}</span>
+          <span class="block font-bold tabular-nums text-gray-900 dark:text-gray-100">{{ row.channels }}</span>
         </template>
 
         <template v-slot:status="{ row }">
           <span
-            :class="`badge badge-light-${statusBadgeVariant(row.is_active)} fs-7 fw-bold`"
+            class="inline-flex rounded px-2 py-1 text-xs font-semibold"
+            :class="statusBadgeClass(row.is_active)"
           >
             {{ resolveStatusLabel(row.is_active) }}
           </span>
         </template>
 
         <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end flex-shrink-0">
+          <div class="flex justify-end gap-1">
             <router-link
               :to="`/controlplane/site/camera?nvrId=${row.uid}`"
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               :title="t('controlplane.site.nvr.actions.manageCameras')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-primary active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-picture fs-2">
                 <span class="path1"></span>
@@ -509,9 +365,9 @@
               </i>
             </router-link>
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="editNvr(row)"
               :title="t('controlplane.site.nvr.actions.edit')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-primary active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
@@ -519,9 +375,9 @@
               </i>
             </button>
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
               @click="deleteNvr(row.uid)"
               :title="t('controlplane.site.nvr.actions.delete')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-danger active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -537,7 +393,7 @@
       <!--end::Table-->
 
       <!--begin::Pagination-->
-      <div class="d-flex justify-content-end align-items-center mt-4">
+      <div class="mt-4 flex items-center justify-end">
         <Pagination
           :page="currentPage"
           :per-page="perPage"
@@ -561,6 +417,10 @@ import { useI18n } from "vue-i18n";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import Pagination from '@/components/common/Pagination.vue';
 import ApiService from '@/core/services/ApiService';
+
+// Shared Tailwind class for the form fields above.
+const formInputClass =
+  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100";
 
 // Interfaces
 interface Site {
@@ -688,8 +548,8 @@ const tableHeader = computed(() => [
   },
 ]);
 
-const statusBadgeVariant = (isActive?: boolean) =>
-  isActive ? "success" : "danger";
+const statusBadgeClass = (isActive?: boolean) =>
+  isActive ? "bg-success-light text-success" : "bg-danger-light text-danger";
 
 const resolveStatusLabel = (isActive?: boolean) =>
   t(`controlplane.site.nvr.status.${isActive ? "active" : "inactive"}`);

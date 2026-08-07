@@ -1,203 +1,131 @@
 <template>
   <!--begin::Site Settings-->
-  <div class="card">
+  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
     <!--begin::Card header-->
-    <div class="card-header border-0 pt-5">
-      <!--begin::Card title-->
-      <div class="card-title">
-        <h3 class="fw-bold m-0">{{ t("controlplane.site.settings.title") }}</h3>
-      </div>
-      <!--end::Card title-->
+    <div class="p-6 pb-0">
+      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.site.settings.title") }}
+      </h3>
     </div>
-    <!--begin::Card header-->
+    <!--end::Card header-->
 
     <!--begin::Card body-->
-    <div class="card-body py-3">
+    <div class="p-6">
       <!--begin::Form-->
-      <form @submit.prevent="saveSite" class="form">
-        <!--begin::Row-->
-        <div class="row mb-7">
-          <!--begin::Col-->
-          <div class="col-md-6">
-            <!--begin::Label-->
-            <label class="required fw-semibold fs-6 mb-2">
+      <form @submit.prevent="saveSite">
+        <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
               {{ t("controlplane.site.settings.form.fields.name.label") }}
             </label>
-            <!--end::Label-->
-            <!--begin::Input-->
             <input
               type="text"
               v-model="siteForm.name"
-              class="form-control form-control-solid"
               :placeholder="t('controlplane.site.settings.form.fields.name.placeholder')"
               required
+              :class="formInputClass"
             />
-            <!--end::Input-->
           </div>
-          <!--end::Col-->
 
-          <!--begin::Col-->
-          <div class="col-md-6">
-            <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
               {{ t("controlplane.site.settings.form.fields.code.label") }}
             </label>
-            <!--end::Label-->
-            <!--begin::Input-->
             <input
               type="text"
               v-model="siteForm.code"
-              class="form-control form-control-solid"
               :placeholder="t('controlplane.site.settings.form.fields.code.placeholder')"
               readonly
+              :class="[formInputClass, 'cursor-not-allowed opacity-70']"
             />
-            <!--end::Input-->
           </div>
-          <!--end::Col-->
         </div>
-        <!--end::Row-->
 
-        <!--begin::Row-->
-        <div class="row mb-7">
-          <!--begin::Col-->
-          <div class="col-md-12">
-            <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">
-              {{ t("controlplane.site.settings.form.fields.description.label") }}
-            </label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <textarea
-              v-model="siteForm.description"
-              class="form-control form-control-solid"
-              rows="3"
-              :placeholder="t('controlplane.site.settings.form.fields.description.placeholder')"
-            ></textarea>
-            <!--end::Input-->
-          </div>
-          <!--end::Col-->
+        <div class="mb-4">
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+            {{ t("controlplane.site.settings.form.fields.description.label") }}
+          </label>
+          <textarea
+            v-model="siteForm.description"
+            rows="3"
+            :placeholder="t('controlplane.site.settings.form.fields.description.placeholder')"
+            :class="formInputClass"
+          ></textarea>
         </div>
-        <!--end::Row-->
 
-        <!--begin::Row-->
-        <div class="row mb-7">
-          <!--begin::Col-->
-          <div class="col-md-12">
-            <!--begin::Label-->
-            <label class="required fw-semibold fs-6 mb-2">
-              {{ t("controlplane.site.settings.form.fields.address.label") }}
-            </label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <textarea
-              v-model="siteForm.address"
-              class="form-control form-control-solid"
-              rows="3"
-              :placeholder="t('controlplane.site.settings.form.fields.address.placeholder')"
-              required
-            ></textarea>
-            <!--end::Input-->
-          </div>
-          <!--end::Col-->
+        <div class="mb-4">
+          <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+            {{ t("controlplane.site.settings.form.fields.address.label") }}
+          </label>
+          <textarea
+            v-model="siteForm.address"
+            rows="3"
+            :placeholder="t('controlplane.site.settings.form.fields.address.placeholder')"
+            required
+            :class="formInputClass"
+          ></textarea>
         </div>
-        <!--end::Row-->
 
-        <!--begin::Row-->
-        <div class="row mb-7">
-          <!--begin::Col-->
-          <div class="col-md-6">
-            <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">
+        <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
               {{ t("controlplane.site.settings.form.fields.latitude.label") }}
             </label>
-            <!--end::Label-->
-            <!--begin::Input-->
             <input
               type="number"
               v-model="siteForm.latitude"
-              class="form-control form-control-solid"
               :placeholder="t('controlplane.site.settings.form.fields.latitude.placeholder')"
               step="any"
+              :class="formInputClass"
             />
-            <!--end::Input-->
           </div>
-          <!--end::Col-->
 
-          <!--begin::Col-->
-          <div class="col-md-6">
-            <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
               {{ t("controlplane.site.settings.form.fields.longitude.label") }}
             </label>
-            <!--end::Label-->
-            <!--begin::Input-->
             <input
               type="number"
               v-model="siteForm.longitude"
-              class="form-control form-control-solid"
               :placeholder="t('controlplane.site.settings.form.fields.longitude.placeholder')"
               step="any"
+              :class="formInputClass"
             />
-            <!--end::Input-->
           </div>
-          <!--end::Col-->
         </div>
-        <!--end::Row-->
 
-        <!--begin::Row-->
-        <div class="row mb-7">
-          <!--begin::Col-->
-          <div class="col-md-6">
-            <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">
+        <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
               {{ t("controlplane.site.settings.form.fields.contactPerson.label") }}
             </label>
-            <!--end::Label-->
-            <!--begin::Input-->
             <input
               type="text"
               v-model="siteForm.contact_person"
-              class="form-control form-control-solid"
               :placeholder="t('controlplane.site.settings.form.fields.contactPerson.placeholder')"
+              :class="formInputClass"
             />
-            <!--end::Input-->
           </div>
-          <!--end::Col-->
 
-          <!--begin::Col-->
-          <div class="col-md-6">
-            <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
               {{ t("controlplane.site.settings.form.fields.contactPhone.label") }}
             </label>
-            <!--end::Label-->
-            <!--begin::Input-->
             <input
               type="tel"
               v-model="siteForm.contact_phone"
-              class="form-control form-control-solid"
               :placeholder="t('controlplane.site.settings.form.fields.contactPhone.placeholder')"
+              :class="formInputClass"
             />
-            <!--end::Input-->
           </div>
-          <!--end::Col-->
         </div>
-        <!--end::Row-->
 
-        <!--begin::Row-->
-        <div class="row mb-7">
-          <!--begin::Col-->
-          <div class="col-md-6">
-            <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">
+        <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
               {{ t("controlplane.site.settings.form.fields.status.label") }}
             </label>
-            <!--end::Label-->
-            <!--begin::Select-->
-            <select
-              v-model="siteForm.is_active"
-              class="form-select form-select-solid"
-            >
+            <select v-model="siteForm.is_active" :class="formInputClass">
               <option :value="true">
                 {{ t("controlplane.site.settings.form.fields.status.options.active") }}
               </option>
@@ -205,22 +133,13 @@
                 {{ t("controlplane.site.settings.form.fields.status.options.inactive") }}
               </option>
             </select>
-            <!--end::Select-->
           </div>
-          <!--end::Col-->
 
-          <!--begin::Col-->
-          <div class="col-md-6">
-            <!--begin::Label-->
-            <label class="fw-semibold fs-6 mb-2">
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
               {{ t("controlplane.site.settings.form.fields.timezone.label") }}
             </label>
-            <!--end::Label-->
-            <!--begin::Select-->
-            <select
-              v-model="siteForm.timezone"
-              class="form-select form-select-solid"
-            >
+            <select v-model="siteForm.timezone" :class="formInputClass">
               <option value="WIB">
                 {{ t("controlplane.site.settings.form.fields.timezone.options.wib") }}
               </option>
@@ -231,25 +150,28 @@
                 {{ t("controlplane.site.settings.form.fields.timezone.options.wit") }}
               </option>
             </select>
-            <!--end::Select-->
           </div>
-          <!--end::Col-->
         </div>
-        <!--end::Row-->
 
         <!--begin::Actions-->
-        <div class="text-center pt-10">
-          <button type="button" class="btn btn-light me-3" @click="resetForm">
+        <div class="flex justify-center gap-3 pt-10">
+          <button
+            type="button"
+            @click="resetForm"
+            class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+          >
             {{ t("controlplane.site.settings.form.actions.reset") }}
           </button>
-          <button type="submit" class="btn btn-primary" :disabled="isLoading">
-            <span v-if="isLoading" class="indicator-progress">
+          <button
+            type="submit"
+            :disabled="isLoading"
+            class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <span v-if="isLoading" class="inline-flex items-center gap-2">
               {{ t("controlplane.site.settings.form.actions.loading") }}
-              <span
-                class="spinner-border spinner-border-sm align-middle ms-2"
-              ></span>
+              <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
             </span>
-            <span v-else class="indicator-label">
+            <span v-else>
               {{
                 isEdit
                   ? t("controlplane.site.settings.form.actions.update")
@@ -272,6 +194,10 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import ApiService from '@/core/services/ApiService'
+
+// Shared Tailwind class for the form fields above.
+const formInputClass =
+  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100";
 
 // Interface
 interface SiteForm {
