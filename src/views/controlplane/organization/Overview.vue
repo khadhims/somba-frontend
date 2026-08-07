@@ -1,92 +1,79 @@
 <template>
   <!--begin::Organization Overview-->
-  <div class="row g-5 g-xl-8 mb-8">
+  <div class="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
     <!--begin::Summary Cards-->
-    <div class="col-xl-3">
-      <CardWidget1
-        :description="t('controlplane.organization.summary.totalOrganizations')"
-        :value="0"
-        bg-color="#1B84FF"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <CardWidget1
-        :description="t('controlplane.organization.summary.totalTeams')"
-        :value="0"
-        bg-color="#17C653"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <CardWidget1
-        :description="t('controlplane.organization.summary.totalUsers')"
-        :value="0"
-        bg-color="#3699FF"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <CardWidget1
-        :description="t('controlplane.organization.summary.totalCameras')"
-        :value="0"
-        bg-color="#FFA800"
-        text-color="white"
-      />
-    </div>
+    <CardWidget1
+      :description="t('controlplane.organization.summary.totalOrganizations')"
+      :value="0"
+      bg-color="#1B84FF"
+      text-color="white"
+    />
+    <CardWidget1
+      :description="t('controlplane.organization.summary.totalTeams')"
+      :value="0"
+      bg-color="#17C653"
+      text-color="white"
+    />
+    <CardWidget1
+      :description="t('controlplane.organization.summary.totalUsers')"
+      :value="0"
+      bg-color="#3699FF"
+      text-color="white"
+    />
+    <CardWidget1
+      :description="t('controlplane.organization.summary.totalCameras')"
+      :value="0"
+      bg-color="#FFA800"
+      text-color="white"
+    />
   </div>
   <!--end::Summary Cards-->
 
   <!--begin::Error Alert-->
-  <div v-if="error" class="alert alert-danger d-flex align-items-center mb-5">
-    <i class="ki-duotone ki-shield-cross fs-2hx text-danger me-4">
+  <div
+    v-if="error"
+    class="mb-5 flex items-start gap-4 rounded-lg border border-danger-light bg-danger-light p-4"
+  >
+    <i class="ki-duotone ki-shield-cross fs-2hx text-danger">
       <span class="path1"></span>
       <span class="path2"></span>
     </i>
-    <div class="d-flex flex-column">
-      <h5 class="mb-1">{{ t('controlplane.organization.error.title') }}</h5>
+    <div class="flex flex-1 flex-col text-danger">
+      <h5 class="m-0 mb-1 font-semibold">{{ t("controlplane.organization.error.title") }}</h5>
       <span>{{ error }}</span>
     </div>
-    <button 
-      type="button" 
-      class="btn-close ms-auto" 
+    <button
+      type="button"
       @click="error = null"
       aria-label="Close"
-    ></button>
+      class="rounded-md p-1 text-danger/70 transition-colors hover:bg-danger/10 hover:text-danger"
+    >
+      <i class="ki-duotone ki-cross fs-2">
+        <span class="path1"></span>
+        <span class="path2"></span>
+      </i>
+    </button>
   </div>
   <!--end::Error Alert-->
 
-  <!-- Debug Info (hapus setelah debugging selesai) -->
-  <div class="alert alert-info" v-if="false">
-    <strong>Debug Info:</strong><br>
-    Loading: {{ loading }}<br>
-    Organizations count: {{ organizations.length }}<br>
-    Error: {{ error }}<br>
-    Pagination: {{ JSON.stringify(pagination, null, 2) }}
-  </div>
-
   <!--begin::Organizations List-->
-  <div class="card">
+  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
     <!--begin::Card header-->
-    <div class="card-header border-0 pt-5">
-      <!--begin::Card title-->
-      <div class="card-title">
-        <h3 class="fw-bold m-0">{{ t('controlplane.organization.toolbar.title') }}</h3>
-      </div>
-      <!--end::Card title-->
+    <div class="flex flex-wrap items-center justify-between gap-4 p-6 pb-0">
+      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.organization.toolbar.title") }}
+      </h3>
 
-      <!--begin::Card toolbar-->
-      <div class="card-toolbar">
-        <!--begin::Items per page-->
-        <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('controlplane.organization.toolbar.itemsLabel') }}</label>
-          <select 
-            class="form-select form-select-sm w-auto" 
+      <div class="flex flex-wrap items-center gap-4">
+        <!-- Items per page -->
+        <div class="flex items-center">
+          <label class="mr-2 mb-0 text-sm font-semibold text-gray-700 dark:text-gray-300">
+            {{ t("controlplane.organization.toolbar.itemsLabel") }}
+          </label>
+          <select
             v-model.number="pagination.per_page"
             @change="changeItemsPerPage"
+            class="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm tabular-nums transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           >
             <option :value="1">1</option>
             <option :value="5">5</option>
@@ -95,52 +82,56 @@
             <option :value="50">50</option>
           </select>
         </div>
-        <!--end::Items per page-->
 
-        <!--begin::Search-->
-        <div class="d-flex align-items-center position-relative my-1 me-5">
-          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+        <!-- Search -->
+        <div class="relative flex items-center">
+          <i class="ki-duotone ki-magnifier fs-3 pointer-events-none absolute left-4">
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
           <input
             type="text"
             v-model="searchQuery"
-            class="form-control form-control-solid w-250px ps-12"
             :placeholder="t('controlplane.organization.toolbar.searchPlaceholder')"
+            class="w-[250px] rounded-md border border-gray-300 bg-gray-100 py-2 pr-3 pl-12 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           />
         </div>
-        <!--end::Search-->
 
         <button
           v-if="error"
           @click="fetchOrganizations(pagination.page)"
-          class="btn btn-sm btn-light-warning me-2"
           :disabled="loading"
+          class="inline-flex items-center gap-2 rounded-md bg-warning-light px-3 py-2 text-sm font-semibold text-warning transition-colors hover:bg-warning hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+          <span
+            v-if="loading"
+            class="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+          ></span>
           <i v-else class="ki-duotone ki-arrows-circle fs-2">
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
-          {{ loading ? t('controlplane.organization.toolbar.retrying') : t('controlplane.organization.toolbar.retry') }}
+          {{
+            loading
+              ? t("controlplane.organization.toolbar.retrying")
+              : t("controlplane.organization.toolbar.retry")
+          }}
         </button>
 
         <button
           @click="showAddOrganizationModal"
-          class="btn btn-sm btn-light-primary"
           :disabled="loading"
+          class="inline-flex items-center gap-1 rounded-md bg-primary-light px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
-          {{ t('controlplane.organization.toolbar.addButton') }}
+          {{ t("controlplane.organization.toolbar.addButton") }}
         </button>
       </div>
-      <!--end::Card toolbar-->
     </div>
-    <!--begin::Card header-->
+    <!--end::Card header-->
 
     <!--begin::Card body-->
-    <div class="card-body py-3">
+    <div class="p-6">
       <KTDataTable
         :data="filteredAndSortedOrganizations"
         :header="tableHeader"
@@ -157,34 +148,38 @@
         :empty-table-text="emptyTableMessage"
       >
         <template v-slot:name="{ row }">
-          <div class="d-flex align-items-center">
-            <div class="symbol symbol-45px me-5">
-              <span class="symbol-label bg-light-primary text-primary fw-bold">
-                {{ row.name.charAt(0).toUpperCase() }}
-              </span>
+          <div class="flex items-center">
+            <div
+              class="mr-5 flex h-[45px] w-[45px] items-center justify-center rounded-full bg-primary-light font-bold text-primary"
+            >
+              {{ row.name.charAt(0).toUpperCase() }}
             </div>
-            <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">{{
+            <div class="flex flex-col">
+              <span class="font-bold text-gray-900 hover:text-primary dark:text-gray-100">{{
                 row.name
               }}</span>
-              <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-                row.legalName || row.description || t('controlplane.organization.common.unknown')
+              <span class="text-sm text-gray-500">{{
+                row.legalName || row.description || t("controlplane.organization.common.unknown")
               }}</span>
             </div>
           </div>
         </template>
 
         <template v-slot:email="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{ row.email || t('controlplane.organization.common.unknown') }}</span>
+          <span class="block font-bold text-gray-900 dark:text-gray-100">{{
+            row.email || t("controlplane.organization.common.unknown")
+          }}</span>
         </template>
 
         <template v-slot:phone="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{ row.phone || t('controlplane.organization.common.unknown') }}</span>
+          <span class="block font-bold tabular-nums text-gray-900 dark:text-gray-100">{{
+            row.phone || t("controlplane.organization.common.unknown")
+          }}</span>
         </template>
 
         <template v-slot:country="{ row }">
-          <span class="badge badge-light-info fs-7 fw-bold">{{
-            row.country || t('controlplane.organization.common.unknown')
+          <span class="inline-flex rounded bg-info-light px-2 py-1 text-xs font-semibold text-info">{{
+            row.country || t("controlplane.organization.common.unknown")
           }}</span>
         </template>
 
@@ -195,17 +190,17 @@
         </template>
 
         <template v-slot:created_at="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{
+          <span class="block font-bold tabular-nums text-gray-900 dark:text-gray-100">{{
             formatDate(row.created_at)
           }}</span>
         </template>
 
         <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end flex-shrink-0">
+          <div class="flex justify-end gap-1">
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
               @click="showOrganizationMembers(row)"
               :title="t('controlplane.organization.actions.viewMembers')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-success active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-people fs-2">
                 <span class="path1"></span>
@@ -217,8 +212,8 @@
             </button>
             <router-link
               :to="{ name: 'account-overview', query: { orgId: row.uid } }"
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               :title="t('controlplane.organization.actions.manageAccounts')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-primary active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-switch fs-2">
                 <span class="path1"></span>
@@ -226,9 +221,9 @@
               </i>
             </router-link>
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="openEditModal(row)"
               :title="t('controlplane.organization.actions.edit')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-primary active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
@@ -236,9 +231,9 @@
               </i>
             </button>
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
               @click="deleteOrganization(row)"
               :title="t('controlplane.organization.actions.delete')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-danger active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -248,7 +243,7 @@
           </div>
         </template>
       </KTDataTable>
-      
+
       <!--begin::Pagination-->
       <Pagination
         v-if="!loading"
@@ -264,270 +259,261 @@
   </div>
   <!--end::Organizations List-->
 
-  <!-- Add Organization Modal -->
-  <div
-    class="modal fade"
-    id="addOrganizationModal"
-    tabindex="-1"
-    aria-hidden="true"
+  <!-- Add Organization Dialog -->
+  <dialog
+    ref="addOrganizationDialog"
+    class="m-auto w-full max-w-2xl rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    @click.self="addOrganizationDialog?.close()"
   >
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ t('controlplane.organization.modals.add.title') }}</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <form @submit.prevent="createOrganization">
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.name') }}</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  v-model="newOrganization.name"
-                  required
-                />
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.legalName') }}</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  v-model="newOrganization.legalName"
-                />
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.email') }}</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  v-model="newOrganization.email"
-                  required
-                />
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.phone') }}</label>
-                <input
-                  type="tel"
-                  class="form-control"
-                  v-model="newOrganization.phone"
-                />
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.website') }}</label>
-                <input
-                  type="url"
-                  class="form-control"
-                  v-model="newOrganization.website"
-                />
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.country') }}</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  v-model="newOrganization.country"
-                />
-              </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">{{ t('controlplane.organization.form.address') }}</label>
-              <textarea
-                class="form-control"
-                v-model="newOrganization.address"
-                rows="3"
-              ></textarea>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">{{ t('controlplane.organization.form.status') }}</label>
-              <select class="form-select" v-model="newOrganization.status">
-                <option value="active">{{ t('controlplane.organization.form.statusOptions.active') }}</option>
-                <option value="inactive">{{ t('controlplane.organization.form.statusOptions.inactive') }}</option>
-              </select>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-              {{ t('controlplane.organization.common.cancel') }}
-            </button>
-            <button type="submit" class="btn btn-primary" :disabled="creating">
-              <span
-                v-if="creating"
-                class="spinner-border spinner-border-sm me-2"
-              ></span>
-              {{ t('controlplane.organization.modals.add.submit') }}
-            </button>
-          </div>
-        </form>
-      </div>
+    <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
+      <h5 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.organization.modals.add.title") }}
+      </h5>
+      <button
+        type="button"
+        aria-label="Close"
+        @click="addOrganizationDialog?.close()"
+        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+      >
+        <i class="ki-duotone ki-cross fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
     </div>
-  </div>
+    <form @submit.prevent="createOrganization">
+      <div class="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.name")
+          }}</label>
+          <input
+            type="text"
+            v-model="newOrganization.name"
+            required
+            :class="formInputClass"
+          />
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.legalName")
+          }}</label>
+          <input type="text" v-model="newOrganization.legalName" :class="formInputClass" />
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.email")
+          }}</label>
+          <input type="email" v-model="newOrganization.email" required :class="formInputClass" />
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.phone")
+          }}</label>
+          <input type="tel" v-model="newOrganization.phone" :class="formInputClass" />
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.website")
+          }}</label>
+          <input type="url" v-model="newOrganization.website" :class="formInputClass" />
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.country")
+          }}</label>
+          <input type="text" v-model="newOrganization.country" :class="formInputClass" />
+        </div>
+        <div class="sm:col-span-2">
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.address")
+          }}</label>
+          <textarea v-model="newOrganization.address" rows="3" :class="formInputClass" />
+        </div>
+        <div class="sm:col-span-2">
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.status")
+          }}</label>
+          <select v-model="newOrganization.status" :class="formInputClass">
+            <option value="active">{{ t("controlplane.organization.form.statusOptions.active") }}</option>
+            <option value="inactive">{{ t("controlplane.organization.form.statusOptions.inactive") }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 border-t border-gray-200 p-5 dark:border-gray-700">
+        <button
+          type="button"
+          @click="addOrganizationDialog?.close()"
+          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+        >
+          {{ t("controlplane.organization.common.cancel") }}
+        </button>
+        <button
+          type="submit"
+          :disabled="creating"
+          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <span
+            v-if="creating"
+            class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+          ></span>
+          {{ t("controlplane.organization.modals.add.submit") }}
+        </button>
+      </div>
+    </form>
+  </dialog>
 
-  <!-- Edit Organization Modal -->
-  <div
-    class="modal fade"
-    id="editOrganizationModal"
-    tabindex="-1"
-    aria-hidden="true"
+  <!-- Edit Organization Dialog -->
+  <dialog
+    ref="editOrganizationDialog"
+    class="m-auto w-full max-w-2xl rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    @click.self="editOrganizationDialog?.close()"
   >
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ t('controlplane.organization.modals.edit.title') }}</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <form @submit.prevent="updateOrganization">
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.name') }}</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  v-model="editOrganization.name"
-                  required
-                />
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.legalName') }}</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  v-model="editOrganization.legalName"
-                />
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.email') }}</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  v-model="editOrganization.email"
-                  required
-                />
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.phone') }}</label>
-                <input
-                  type="tel"
-                  class="form-control"
-                  v-model="editOrganization.phone"
-                />
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.website') }}</label>
-                <input
-                  type="url"
-                  class="form-control"
-                  v-model="editOrganization.website"
-                />
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">{{ t('controlplane.organization.form.country') }}</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  v-model="editOrganization.country"
-                />
-              </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">{{ t('controlplane.organization.form.address') }}</label>
-              <textarea
-                class="form-control"
-                v-model="editOrganization.address"
-                rows="3"
-              ></textarea>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">{{ t('controlplane.organization.form.status') }}</label>
-              <select class="form-select" v-model="editOrganization.status">
-                <option value="active">{{ t('controlplane.organization.form.statusOptions.active') }}</option>
-                <option value="inactive">{{ t('controlplane.organization.form.statusOptions.inactive') }}</option>
-              </select>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-              {{ t('controlplane.organization.common.cancel') }}
-            </button>
-            <button type="submit" class="btn btn-primary" :disabled="updating">
-              <span
-                v-if="updating"
-                class="spinner-border spinner-border-sm me-2"
-              ></span>
-              {{ t('controlplane.organization.modals.edit.submit') }}
-            </button>
-          </div>
-        </form>
-      </div>
+    <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
+      <h5 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.organization.modals.edit.title") }}
+      </h5>
+      <button
+        type="button"
+        aria-label="Close"
+        @click="editOrganizationDialog?.close()"
+        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+      >
+        <i class="ki-duotone ki-cross fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
     </div>
-  </div>
+    <form @submit.prevent="updateOrganization">
+      <div class="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.name")
+          }}</label>
+          <input type="text" v-model="editOrganization.name" required :class="formInputClass" />
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.legalName")
+          }}</label>
+          <input type="text" v-model="editOrganization.legalName" :class="formInputClass" />
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.email")
+          }}</label>
+          <input type="email" v-model="editOrganization.email" required :class="formInputClass" />
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.phone")
+          }}</label>
+          <input type="tel" v-model="editOrganization.phone" :class="formInputClass" />
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.website")
+          }}</label>
+          <input type="url" v-model="editOrganization.website" :class="formInputClass" />
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.country")
+          }}</label>
+          <input type="text" v-model="editOrganization.country" :class="formInputClass" />
+        </div>
+        <div class="sm:col-span-2">
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.address")
+          }}</label>
+          <textarea v-model="editOrganization.address" rows="3" :class="formInputClass" />
+        </div>
+        <div class="sm:col-span-2">
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+            t("controlplane.organization.form.status")
+          }}</label>
+          <select v-model="editOrganization.status" :class="formInputClass">
+            <option value="active">{{ t("controlplane.organization.form.statusOptions.active") }}</option>
+            <option value="inactive">{{ t("controlplane.organization.form.statusOptions.inactive") }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 border-t border-gray-200 p-5 dark:border-gray-700">
+        <button
+          type="button"
+          @click="editOrganizationDialog?.close()"
+          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+        >
+          {{ t("controlplane.organization.common.cancel") }}
+        </button>
+        <button
+          type="submit"
+          :disabled="updating"
+          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <span
+            v-if="updating"
+            class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+          ></span>
+          {{ t("controlplane.organization.modals.edit.submit") }}
+        </button>
+      </div>
+    </form>
+  </dialog>
 
-  <!-- Delete Confirmation Modal -->
-  <div
-    class="modal fade"
-    id="deleteOrganizationModal"
-    tabindex="-1"
-    aria-hidden="true"
+  <!-- Delete Confirmation Dialog -->
+  <dialog
+    ref="deleteOrganizationDialog"
+    class="m-auto w-full max-w-md rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    @click.self="deleteOrganizationDialog?.close()"
   >
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ t('controlplane.organization.modals.delete.title') }}</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <p>
-            {{ t('controlplane.organization.modals.delete.confirmPrefix') }}
-            <strong>{{ organizationToDelete?.name }}</strong>
-            {{ t('controlplane.organization.modals.delete.confirmSuffix') }}
-          </p>
-          <p class="text-muted">{{ t('controlplane.organization.modals.delete.warning') }}</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-            {{ t('controlplane.organization.common.cancel') }}
-          </button>
-          <button
-            type="button"
-            class="btn btn-danger"
-            @click="confirmDelete"
-            :disabled="deleting"
-          >
-            <span
-              v-if="deleting"
-              class="spinner-border spinner-border-sm me-2"
-            ></span>
-            {{ t('controlplane.organization.modals.delete.submit') }}
-          </button>
-        </div>
-      </div>
+    <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
+      <h5 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.organization.modals.delete.title") }}
+      </h5>
+      <button
+        type="button"
+        aria-label="Close"
+        @click="deleteOrganizationDialog?.close()"
+        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+      >
+        <i class="ki-duotone ki-cross fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
     </div>
-  </div>
+    <div class="p-5 text-gray-700 dark:text-gray-300">
+      <p>
+        {{ t("controlplane.organization.modals.delete.confirmPrefix") }}
+        <strong>{{ organizationToDelete?.name }}</strong>
+        {{ t("controlplane.organization.modals.delete.confirmSuffix") }}
+      </p>
+      <p class="text-gray-500">{{ t("controlplane.organization.modals.delete.warning") }}</p>
+    </div>
+    <div class="flex justify-end gap-2 border-t border-gray-200 p-5 dark:border-gray-700">
+      <button
+        type="button"
+        @click="deleteOrganizationDialog?.close()"
+        class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+      >
+        {{ t("controlplane.organization.common.cancel") }}
+      </button>
+      <button
+        type="button"
+        @click="confirmDelete"
+        :disabled="deleting"
+        class="inline-flex items-center gap-2 rounded-md bg-danger px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-danger-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <span
+          v-if="deleting"
+          class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+        ></span>
+        {{ t("controlplane.organization.modals.delete.submit") }}
+      </button>
+    </div>
+  </dialog>
 
   <!-- Organization Membership Modal -->
   <MembershipListModal
@@ -541,7 +527,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from "vue";
 import Pagination from '@/components/common/Pagination.vue'
-import { Modal } from "bootstrap";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
 import MembershipListModal from "@/components/modals/membership/MembershipListModal.vue";
@@ -596,6 +581,13 @@ const organizationToDelete = ref<Organization | null>(null);
 // Modal references
 const organizationMembershipModalRef = ref();
 const selectedOrganizationUid = ref('');
+const addOrganizationDialog = ref<HTMLDialogElement | null>(null);
+const editOrganizationDialog = ref<HTMLDialogElement | null>(null);
+const deleteOrganizationDialog = ref<HTMLDialogElement | null>(null);
+
+// Shared Tailwind class for text/select/textarea form fields in the modals below.
+const formInputClass =
+  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100";
 
 const { t } = useI18n();
 
@@ -667,16 +659,17 @@ const resolveStatusLabel = (
 const statusBadgeClass = (
   status: Organization["status"] | string | undefined
 ): string => {
+  const base = "inline-flex rounded px-2 py-1 text-xs font-semibold";
   if (status === "active") {
-    return "badge badge-light-success fs-7 fw-bold";
+    return `${base} bg-success-light text-success`;
   }
   if (status === "inactive") {
-    return "badge badge-light-danger fs-7 fw-bold";
+    return `${base} bg-danger-light text-danger`;
   }
   if (status === "pending") {
-    return "badge badge-light-warning fs-7 fw-bold";
+    return `${base} bg-warning-light text-warning`;
   }
-  return "badge badge-light-secondary fs-7 fw-bold";
+  return `${base} bg-gray-100 text-gray-600`;
 };
 
 // Pagination state
@@ -895,12 +888,7 @@ const showAddOrganizationModal = () => {
     country: "",
     status: "active",
   };
-  // Show modal using Bootstrap
-  const modal = document.getElementById("addOrganizationModal");
-  if (modal) {
-    const bsModal = new Modal(modal);
-    bsModal.show();
-  }
+  addOrganizationDialog.value?.showModal();
 };
 
 const createOrganization = async () => {
@@ -912,13 +900,7 @@ const createOrganization = async () => {
     if (resp && resp.data) {
       // Refresh the organizations list
       await fetchOrganizations(pagination.value.page);
-      
-      // Hide modal
-      const modal = document.getElementById("addOrganizationModal");
-      if (modal) {
-        const bsModal = Modal.getInstance(modal);
-        bsModal?.hide();
-      }
+      addOrganizationDialog.value?.close();
     }
   } catch (e: any) {
     error.value =
@@ -932,12 +914,7 @@ const createOrganization = async () => {
 
 const openEditModal = (org: Organization) => {
   editOrganization.value = { ...org };
-  // Show modal
-  const modal = document.getElementById("editOrganizationModal");
-  if (modal) {
-    const bsModal = new Modal(modal);
-    bsModal.show();
-  }
+  editOrganizationDialog.value?.showModal();
 };
 
 const updateOrganization = async () => {
@@ -957,13 +934,7 @@ const updateOrganization = async () => {
     if (resp && resp.data) {
       // Refresh the organizations list
       await fetchOrganizations(pagination.value.page);
-      
-      // Hide modal
-      const modal = document.getElementById("editOrganizationModal");
-      if (modal) {
-        const bsModal = Modal.getInstance(modal);
-        bsModal?.hide();
-      }
+      editOrganizationDialog.value?.close();
     }
   } catch (e: any) {
     error.value =
@@ -977,12 +948,7 @@ const updateOrganization = async () => {
 
 const deleteOrganization = (org: Organization) => {
   organizationToDelete.value = org;
-  // Show delete confirmation modal
-  const modal = document.getElementById("deleteOrganizationModal");
-  if (modal) {
-    const bsModal = new Modal(modal);
-    bsModal.show();
-  }
+  deleteOrganizationDialog.value?.showModal();
 };
 
 const confirmDelete = async () => {
@@ -991,16 +957,10 @@ const confirmDelete = async () => {
   deleting.value = true;
   try {
     await ApiService.delete(`organizations/${organizationToDelete.value.uid}`);
-    
+
     // Refresh the organizations list
     await fetchOrganizations(pagination.value.page);
-    
-    // Hide modal
-    const modal = document.getElementById("deleteOrganizationModal");
-    if (modal) {
-      const bsModal = Modal.getInstance(modal);
-      bsModal?.hide();
-    }
+    deleteOrganizationDialog.value?.close();
     organizationToDelete.value = null;
   } catch (e: any) {
     error.value =

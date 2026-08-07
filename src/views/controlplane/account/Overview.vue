@@ -1,106 +1,103 @@
 <template>
   <!--begin::Account Overview-->
   <!--begin::Organization Switcher-->
-  <div class="card mb-5">
-    <div class="card-body py-4">
-      <div class="row align-items-center">
-        <div class="col-md-6">
-          <h4 class="card-title mb-0">{{ t('controlplane.account.header.title') }}</h4>
-          <p class="text-muted mb-0">
-            <span v-if="loadingOrganizations">{{ t('controlplane.account.header.subtitleLoading') }}</span>
-            <span v-else-if="currentOrganization">{{ t('controlplane.account.header.subtitleWithOrganization', { name: currentOrganization.name }) }}</span>
-            <span v-else-if="organizations.length === 0">{{ t('controlplane.account.header.subtitleNoOrganizations') }}</span>
-            <span v-else>{{ t('controlplane.account.header.subtitleSelect') }}</span>
-          </p>
-        </div>
-        <div class="col-md-6">
-          <div class="d-flex justify-content-end">
-            <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('controlplane.account.filters.organizationLabel') }}:</label>
-              <select
-                v-model="selectedOrganizationId"
-                @change="switchOrganization"
-                class="form-select form-select-solid w-200px"
-                :disabled="loadingOrganizations"
-              >
-                <option value="" disabled>
-                  {{
-                    loadingOrganizations
-                      ? t('controlplane.account.filters.organizationLoading')
-                      : t('controlplane.account.filters.organizationPlaceholder')
-                  }}
-                </option>
-                <option
-                  v-for="org in organizations"
-                  :key="org.uid"
-                  :value="org.uid"
-                >
-                  {{ org.name }}
-                </option>
-              </select>
-              
-              <!-- Loading spinner -->
-              <div v-if="loadingOrganizations" class="ms-2">
-                <div class="spinner-border spinner-border-sm text-primary" role="status">
-                  <span class="visually-hidden">{{ t('controlplane.account.filters.organizationLoading') }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+  <div
+    class="mb-5 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+  >
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h4 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+          {{ t("controlplane.account.header.title") }}
+        </h4>
+        <p class="m-0 text-gray-500">
+          <span v-if="loadingOrganizations">{{ t("controlplane.account.header.subtitleLoading") }}</span>
+          <span v-else-if="currentOrganization">{{
+            t("controlplane.account.header.subtitleWithOrganization", { name: currentOrganization.name })
+          }}</span>
+          <span v-else-if="organizations.length === 0">{{
+            t("controlplane.account.header.subtitleNoOrganizations")
+          }}</span>
+          <span v-else>{{ t("controlplane.account.header.subtitleSelect") }}</span>
+        </p>
+      </div>
+      <div class="flex items-center justify-end">
+        <label class="mr-3 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300">
+          {{ t("controlplane.account.filters.organizationLabel") }}:
+        </label>
+        <select
+          v-model="selectedOrganizationId"
+          @change="switchOrganization"
+          :disabled="loadingOrganizations"
+          class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+        >
+          <option value="" disabled>
+            {{
+              loadingOrganizations
+                ? t("controlplane.account.filters.organizationLoading")
+                : t("controlplane.account.filters.organizationPlaceholder")
+            }}
+          </option>
+          <option v-for="org in organizations" :key="org.uid" :value="org.uid">
+            {{ org.name }}
+          </option>
+        </select>
+        <span
+          v-if="loadingOrganizations"
+          role="status"
+          class="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"
+        >
+          <span class="sr-only">{{ t("controlplane.account.filters.organizationLoading") }}</span>
+        </span>
       </div>
     </div>
   </div>
   <!--end::Organization Switcher-->
 
   <!--begin::Error Alert-->
-  <div v-if="error" class="alert alert-danger d-flex align-items-center mb-5">
-    <i class="ki-duotone ki-shield-cross fs-2hx text-danger me-4">
+  <div
+    v-if="error"
+    class="mb-5 flex items-start gap-4 rounded-lg border border-danger-light bg-danger-light p-4"
+  >
+    <i class="ki-duotone ki-shield-cross fs-2hx text-danger">
       <span class="path1"></span>
       <span class="path2"></span>
     </i>
-    <div class="d-flex flex-column">
-      <h5 class="mb-1">{{ t('controlplane.account.error.title') }}</h5>
+    <div class="flex flex-1 flex-col text-danger">
+      <h5 class="m-0 mb-1 font-semibold">{{ t("controlplane.account.error.title") }}</h5>
       <span>{{ error }}</span>
     </div>
-    <button 
-      type="button" 
-      class="btn-close ms-auto" 
+    <button
+      type="button"
       @click="error = null"
       aria-label="Close"
-    ></button>
+      class="rounded-md p-1 text-danger/70 transition-colors hover:bg-danger/10 hover:text-danger"
+    >
+      <i class="ki-duotone ki-cross fs-2">
+        <span class="path1"></span>
+        <span class="path2"></span>
+      </i>
+    </button>
   </div>
   <!--end::Error Alert-->
 
-  <!-- Debug Info (hapus setelah debugging selesai) -->
-  <div class="alert alert-info" v-if="false">
-    <strong>Debug Info:</strong><br>
-    Loading Organizations: {{ loadingOrganizations }}<br>
-    Organizations count: {{ organizations.length }}<br>
-    Selected Organization ID: {{ selectedOrganizationId }}<br>
-    Current Organization: {{ currentOrganization?.name }}<br>
-    Organizations: {{ JSON.stringify(organizations.map(o => ({uid: o.uid, name: o.name})), null, 2) }}
-  </div>
-
   <!--begin::Accounts List-->
-  <div class="card">
+  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
     <!--begin::Card header-->
-    <div class="card-header border-0 pt-5">
-      <!--begin::Card title-->
-      <div class="card-title">
-        <h3 class="fw-bold m-0">{{ t('controlplane.account.toolbar.title') }}</h3>
-      </div>
-      <!--end::Card title-->
+    <div class="flex flex-wrap items-center justify-between gap-4 p-6 pb-0">
+      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.account.toolbar.title") }}
+      </h3>
 
-      <!--begin::Card toolbar-->
-      <div class="card-toolbar">
-        <!--begin::Items per page-->
-        <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('controlplane.account.toolbar.itemsLabel') }}</label>
-          <select 
-            class="form-select form-select-sm w-auto" 
+      <div class="flex flex-wrap items-center gap-4">
+        <!-- Items per page -->
+        <div class="flex items-center">
+          <label class="mr-2 mb-0 text-sm font-semibold text-gray-700 dark:text-gray-300">
+            {{ t("controlplane.account.toolbar.itemsLabel") }}
+          </label>
+          <select
             v-model.number="pagination.per_page"
             @change="changeItemsPerPage"
+            class="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm tabular-nums transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           >
             <option :value="1">1</option>
             <option :value="5">5</option>
@@ -109,64 +106,65 @@
             <option :value="50">50</option>
           </select>
         </div>
-        <!--end::Items per page-->
 
-        <!--begin::Search-->
-        <div class="d-flex align-items-center position-relative my-1 me-5">
-          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+        <!-- Search -->
+        <div class="relative flex items-center">
+          <i class="ki-duotone ki-magnifier fs-3 pointer-events-none absolute left-4">
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
           <input
             type="text"
             v-model="searchQuery"
-            class="form-control form-control-solid w-250px ps-12"
             :placeholder="t('controlplane.account.toolbar.searchPlaceholder')"
+            class="w-[250px] rounded-md border border-gray-300 bg-gray-100 py-2 pr-3 pl-12 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           />
         </div>
-        <!--end::Search-->
 
         <button
           v-if="error"
           @click="fetchAccounts(pagination.page)"
-          class="btn btn-sm btn-light-warning me-2"
           :disabled="loading"
+          class="inline-flex items-center gap-2 rounded-md bg-warning-light px-3 py-2 text-sm font-semibold text-warning transition-colors hover:bg-warning hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+          <span
+            v-if="loading"
+            class="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+          ></span>
           <i v-else class="ki-duotone ki-arrows-circle fs-2">
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
-          {{ loading ? t('controlplane.account.toolbar.retrying') : t('controlplane.account.toolbar.retry') }}
+          {{ loading ? t("controlplane.account.toolbar.retrying") : t("controlplane.account.toolbar.retry") }}
         </button>
 
         <button
           @click="showAddAccountModal"
-          class="btn btn-sm btn-light-primary"
           :disabled="loading || loadingOrganizations || !selectedOrganizationId"
+          class="inline-flex items-center gap-1 rounded-md bg-primary-light px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
-          {{ t('controlplane.account.toolbar.addButton') }}
+          {{ t("controlplane.account.toolbar.addButton") }}
         </button>
       </div>
-      <!--end::Card toolbar-->
     </div>
     <!--end::Card header-->
 
     <!--begin::Card body-->
-    <div class="card-body py-3">
+    <div class="p-6">
       <!-- Show message when no organization is selected -->
-      <div v-if="!selectedOrganizationId && !loadingOrganizations" class="d-flex flex-column align-items-center justify-content-center py-10">
-        <div class="text-center">
-          <i class="ki-duotone ki-questionnaire-tablet fs-4x text-muted mb-4">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          <h3 class="fw-semibold text-gray-500 mb-2">{{ t('controlplane.account.emptyState.title') }}</h3>
-          <p class="text-muted fs-6">{{ t('controlplane.account.emptyState.description') }}</p>
-        </div>
+      <div
+        v-if="!selectedOrganizationId && !loadingOrganizations"
+        class="flex flex-col items-center justify-center py-10 text-center"
+      >
+        <i class="ki-duotone ki-questionnaire-tablet fs-4x mb-4 text-gray-400">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+        <h3 class="mb-2 font-semibold text-gray-500">{{ t("controlplane.account.emptyState.title") }}</h3>
+        <p class="text-gray-500">{{ t("controlplane.account.emptyState.description") }}</p>
       </div>
-      
+
       <!-- Show table when organization is selected -->
       <KTDataTable
         v-else
@@ -185,39 +183,37 @@
         :empty-table-text="emptyTableMessage"
       >
         <template v-slot:name="{ row }">
-          <div class="d-flex align-items-center">
-            <div class="symbol symbol-45px me-5">
-              <span class="symbol-label bg-light-primary text-primary fw-bold">
-                {{ row.name.charAt(0).toUpperCase() }}
-              </span>
+          <div class="flex items-center">
+            <div
+              class="mr-5 flex h-[45px] w-[45px] items-center justify-center rounded-full bg-primary-light font-bold text-primary"
+            >
+              {{ row.name.charAt(0).toUpperCase() }}
             </div>
-            <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">{{ row.name }}</span>
-            </div>
+            <span class="font-bold text-gray-900 hover:text-primary dark:text-gray-100">{{ row.name }}</span>
           </div>
         </template>
 
         <template v-slot:created_by="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">
-            {{ row.created_by?.username || t('controlplane.account.common.unknown') }}
+          <span class="block font-bold text-gray-900 dark:text-gray-100">
+            {{ row.created_by?.username || t("controlplane.account.common.unknown") }}
           </span>
-          <span class="text-muted fw-semibold text-muted d-block fs-7">
-            {{ row.created_by?.email || '' }}
+          <span class="block text-sm text-gray-500">
+            {{ row.created_by?.email || "" }}
           </span>
         </template>
 
         <template v-slot:created_at="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{
+          <span class="block font-bold tabular-nums text-gray-900 dark:text-gray-100">{{
             formatDate(row.created_at)
           }}</span>
         </template>
 
         <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end flex-shrink-0">
+          <div class="flex justify-end gap-1">
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
               @click="showAccountMembers(row)"
               :title="t('controlplane.account.actions.viewMembers')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-success active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-people fs-2">
                 <span class="path1"></span>
@@ -229,8 +225,8 @@
             </button>
             <router-link
               :to="{ name: 'team-overview', query: { orgId: selectedOrganizationId, accountId: row.uid } }"
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               :title="t('controlplane.account.actions.addTeam')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-primary active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-profile-user fs-2">
                 <span class="path1"></span>
@@ -238,9 +234,9 @@
               </i>
             </router-link>
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="editAccount(row)"
               :title="t('controlplane.account.actions.edit')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-primary active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
@@ -248,9 +244,9 @@
               </i>
             </button>
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
               @click="deleteAccount(row)"
               :title="t('controlplane.account.actions.delete')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-danger active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -260,7 +256,7 @@
           </div>
         </template>
       </KTDataTable>
-      
+
       <!--begin::Pagination-->
       <Pagination
         v-if="!loading"
@@ -271,95 +267,166 @@
         @page-change="goToPage"
       />
       <!--end::Pagination-->
-      
     </div>
     <!--end::Card body-->
   </div>
   <!--end::Accounts List-->
 
-  <!-- Add Account Modal -->
-  <div class="modal fade" id="addAccountModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ t('controlplane.account.modals.add.title') }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <form @submit.prevent="createAccount">
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label class="form-label">{{ t('controlplane.account.modals.add.nameLabel') }}</label>
-                <input type="text" class="form-control" v-model="newAccount.name" required>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ t('controlplane.account.modals.add.cancel') }}</button>
-            <button type="submit" class="btn btn-primary" :disabled="creating">
-              <span v-if="creating" class="spinner-border spinner-border-sm me-2"></span>
-              {{ t('controlplane.account.modals.add.submit') }}
-            </button>
-          </div>
-        </form>
-      </div>
+  <!-- Add Account Dialog -->
+  <dialog
+    ref="addAccountDialog"
+    class="m-auto w-full max-w-lg rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    @click.self="addAccountDialog?.close()"
+  >
+    <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
+      <h5 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.account.modals.add.title") }}
+      </h5>
+      <button
+        type="button"
+        aria-label="Close"
+        @click="addAccountDialog?.close()"
+        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+      >
+        <i class="ki-duotone ki-cross fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
     </div>
-  </div>
+    <form @submit.prevent="createAccount">
+      <div class="p-5">
+        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+          t("controlplane.account.modals.add.nameLabel")
+        }}</label>
+        <input type="text" v-model="newAccount.name" required :class="formInputClass" />
+      </div>
+      <div class="flex justify-end gap-2 border-t border-gray-200 p-5 dark:border-gray-700">
+        <button
+          type="button"
+          @click="addAccountDialog?.close()"
+          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+        >
+          {{ t("controlplane.account.modals.add.cancel") }}
+        </button>
+        <button
+          type="submit"
+          :disabled="creating"
+          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <span
+            v-if="creating"
+            class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+          ></span>
+          {{ t("controlplane.account.modals.add.submit") }}
+        </button>
+      </div>
+    </form>
+  </dialog>
 
-  <!-- Delete Confirmation Modal -->
-  <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ t('controlplane.account.modals.delete.title') }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>
-            {{ t('controlplane.account.modals.delete.confirmPrefix') }}
-            <strong>{{ accountToDelete?.name }}</strong>{{ t('controlplane.account.modals.delete.confirmSuffix') }}
-          </p>
-          <p class="text-muted">{{ t('controlplane.account.modals.delete.warning') }}</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ t('controlplane.account.modals.delete.cancel') }}</button>
-          <button type="button" class="btn btn-danger" @click="confirmDelete" :disabled="deleting">
-            <span v-if="deleting" class="spinner-border spinner-border-sm me-2"></span>
-            {{ t('controlplane.account.modals.delete.submit') }}
-          </button>
-        </div>
-      </div>
+  <!-- Delete Confirmation Dialog -->
+  <dialog
+    ref="deleteAccountDialog"
+    class="m-auto w-full max-w-md rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    @click.self="deleteAccountDialog?.close()"
+  >
+    <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
+      <h5 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.account.modals.delete.title") }}
+      </h5>
+      <button
+        type="button"
+        aria-label="Close"
+        @click="deleteAccountDialog?.close()"
+        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+      >
+        <i class="ki-duotone ki-cross fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
     </div>
-  </div>
+    <div class="p-5 text-gray-700 dark:text-gray-300">
+      <p>
+        {{ t("controlplane.account.modals.delete.confirmPrefix") }}
+        <strong>{{ accountToDelete?.name }}</strong>{{ t("controlplane.account.modals.delete.confirmSuffix") }}
+      </p>
+      <p class="text-gray-500">{{ t("controlplane.account.modals.delete.warning") }}</p>
+    </div>
+    <div class="flex justify-end gap-2 border-t border-gray-200 p-5 dark:border-gray-700">
+      <button
+        type="button"
+        @click="deleteAccountDialog?.close()"
+        class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+      >
+        {{ t("controlplane.account.modals.delete.cancel") }}
+      </button>
+      <button
+        type="button"
+        @click="confirmDelete"
+        :disabled="deleting"
+        class="inline-flex items-center gap-2 rounded-md bg-danger px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-danger-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <span
+          v-if="deleting"
+          class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+        ></span>
+        {{ t("controlplane.account.modals.delete.submit") }}
+      </button>
+    </div>
+  </dialog>
 
-  <!-- Edit Account Modal -->
-  <div class="modal fade" id="editAccountModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ t('controlplane.account.modals.edit.title') }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="accountToEdit = null"></button>
-        </div>
-        <form @submit.prevent="updateAccount" v-if="accountToEdit">
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label class="form-label">{{ t('controlplane.account.modals.edit.nameLabel') }}</label>
-                <input type="text" class="form-control" v-model="accountToEdit.name" required>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal" @click="accountToEdit = null">{{ t('controlplane.account.modals.edit.cancel') }}</button>
-            <button type="submit" class="btn btn-primary" :disabled="editing">
-              <span v-if="editing" class="spinner-border spinner-border-sm me-2"></span>
-              {{ t('controlplane.account.modals.edit.submit') }}
-            </button>
-          </div>
-        </form>
-      </div>
+  <!-- Edit Account Dialog -->
+  <dialog
+    ref="editAccountDialog"
+    class="m-auto w-full max-w-lg rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    @click.self="closeEditAccountDialog"
+  >
+    <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
+      <h5 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.account.modals.edit.title") }}
+      </h5>
+      <button
+        type="button"
+        aria-label="Close"
+        @click="closeEditAccountDialog"
+        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+      >
+        <i class="ki-duotone ki-cross fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
     </div>
-  </div>
+    <form @submit.prevent="updateAccount" v-if="accountToEdit">
+      <div class="p-5">
+        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+          t("controlplane.account.modals.edit.nameLabel")
+        }}</label>
+        <input type="text" v-model="accountToEdit.name" required :class="formInputClass" />
+      </div>
+      <div class="flex justify-end gap-2 border-t border-gray-200 p-5 dark:border-gray-700">
+        <button
+          type="button"
+          @click="closeEditAccountDialog"
+          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+        >
+          {{ t("controlplane.account.modals.edit.cancel") }}
+        </button>
+        <button
+          type="submit"
+          :disabled="editing"
+          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <span
+            v-if="editing"
+            class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+          ></span>
+          {{ t("controlplane.account.modals.edit.submit") }}
+        </button>
+      </div>
+    </form>
+  </dialog>
 
   <!-- Account Membership Modal -->
   <MembershipListModal
@@ -374,8 +441,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { Modal } from 'bootstrap'
-import Widget1 from '@/components/dashboard-default-widgets/Widget1.vue'
 import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
 import ApiService from '@/core/services/ApiService'
 import Pagination from '@/components/common/Pagination.vue'
@@ -450,6 +515,18 @@ const accountToDelete = ref<Account | null>(null)
 // Modal references
 const accountMembershipModalRef = ref()
 const selectedAccountUid = ref('')
+const addAccountDialog = ref<HTMLDialogElement | null>(null)
+const deleteAccountDialog = ref<HTMLDialogElement | null>(null)
+const editAccountDialog = ref<HTMLDialogElement | null>(null)
+
+const closeEditAccountDialog = () => {
+  editAccountDialog.value?.close()
+  accountToEdit.value = null
+}
+
+// Shared Tailwind class for text fields in the modals below.
+const formInputClass =
+  'w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100'
 
 const { t } = useI18n()
 
@@ -676,12 +753,7 @@ const showAddAccountModal = () => {
   newAccount.value = {
     name: '',
   }
-  // Show modal using Bootstrap
-  const modal = document.getElementById('addAccountModal')
-  if (modal) {
-    const bsModal = new Modal(modal)
-    bsModal.show()
-  }
+  addAccountDialog.value?.showModal()
 }
 
 const createAccount = async () => {
@@ -698,13 +770,7 @@ const createAccount = async () => {
     if (resp && resp.data) {
       // Refresh the accounts list
       await fetchAccounts(pagination.value.page)
-      
-      // Hide modal
-      const modal = document.getElementById('addAccountModal')
-      if (modal) {
-        const bsModal = Modal.getInstance(modal)
-        bsModal?.hide()
-      }
+      addAccountDialog.value?.close()
     }
   } catch (e: any) {
     error.value = e?.response?.data?.message || e.message || t('controlplane.account.error.createFailed')
@@ -715,12 +781,7 @@ const createAccount = async () => {
 
 const deleteAccount = (account: Account) => {
   accountToDelete.value = account
-  // Show delete confirmation modal
-  const modal = document.getElementById('deleteAccountModal')
-  if (modal) {
-    const bsModal = new Modal(modal)
-    bsModal.show()
-  }
+  deleteAccountDialog.value?.showModal()
 }
 
 const confirmDelete = async () => {
@@ -729,16 +790,10 @@ const confirmDelete = async () => {
   deleting.value = true
   try {
     await ApiService.delete(`accounts/${accountToDelete.value.uid}`)
-    
+
     // Refresh the accounts list
     await fetchAccounts(pagination.value.page)
-    
-    // Hide modal
-    const modal = document.getElementById('deleteAccountModal')
-    if (modal) {
-      const bsModal = Modal.getInstance(modal)
-      bsModal?.hide()
-    }
+    deleteAccountDialog.value?.close()
     accountToDelete.value = null
   } catch (e: any) {
     error.value = e?.response?.data?.message || e.message || t('controlplane.account.error.deleteFailed')
@@ -749,12 +804,7 @@ const confirmDelete = async () => {
 
 const editAccount = (account: Account) => {
   accountToEdit.value = { ...account } // Create a copy to avoid direct mutation
-  // Show edit modal using Bootstrap
-  const modal = document.getElementById('editAccountModal')
-  if (modal) {
-    const bsModal = new Modal(modal)
-    bsModal.show()
-  }
+  editAccountDialog.value?.showModal()
 }
 
 const updateAccount = async () => {
@@ -768,13 +818,7 @@ const updateAccount = async () => {
     if (resp && resp.data) {
       // Refresh the accounts list
       await fetchAccounts(pagination.value.page)
-      
-      // Hide modal
-      const modal = document.getElementById('editAccountModal')
-      if (modal) {
-        const bsModal = Modal.getInstance(modal)
-        bsModal?.hide()
-      }
+      editAccountDialog.value?.close()
       accountToEdit.value = null
     }
   } catch (e: any) {

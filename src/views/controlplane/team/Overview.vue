@@ -1,81 +1,79 @@
 <template>
   <!--begin::Team Overview-->
   <!--begin::Organization & Account Switcher-->
-  <div class="card mb-5">
-    <div class="card-body py-4">
-      <div class="row align-items-center">
-        <div class="col-md-4">
-          <h4 class="card-title mb-0">{{ t('controlplane.team.header.title') }}</h4>
-          <p class="text-muted mb-0">
-            <span v-if="currentAccount">{{ t('controlplane.team.header.subtitleWithAccount', { name: currentAccount.name }) }}</span>
-            <span v-else>{{ t('controlplane.team.header.subtitleDefault') }}</span>
-          </p>
+  <div
+    class="mb-5 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+  >
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h4 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+          {{ t("controlplane.team.header.title") }}
+        </h4>
+        <p class="m-0 text-gray-500">
+          <span v-if="currentAccount">{{
+            t("controlplane.team.header.subtitleWithAccount", { name: currentAccount.name })
+          }}</span>
+          <span v-else>{{ t("controlplane.team.header.subtitleDefault") }}</span>
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center justify-end gap-4">
+        <div class="flex items-center">
+          <label class="mr-3 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300">
+            {{ t("controlplane.team.filters.organizationLabel") }}:
+          </label>
+          <select
+            v-model="selectedOrganizationId"
+            @change="switchOrganization"
+            :disabled="loadingOrganizations"
+            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          >
+            <option value="" disabled>
+              {{
+                loadingOrganizations
+                  ? t("controlplane.team.filters.organizationLoading")
+                  : t("controlplane.team.filters.organizationPlaceholder")
+              }}
+            </option>
+            <option v-for="org in organizations" :key="org.uid" :value="org.uid">
+              {{ org.name }}
+            </option>
+          </select>
+          <span
+            v-if="loadingOrganizations"
+            role="status"
+            class="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"
+          >
+            <span class="sr-only">{{ t("controlplane.team.filters.organizationLoading") }}</span>
+          </span>
         </div>
-        <div class="col-md-8">
-          <div class="d-flex justify-content-end gap-3">
-            <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('controlplane.team.filters.organizationLabel') }}:</label>
-              <select
-                v-model="selectedOrganizationId"
-                @change="switchOrganization"
-                class="form-select form-select-solid w-200px"
-                :disabled="loadingOrganizations"
-              >
-                <option value="" disabled>
-                  {{
-                    loadingOrganizations
-                      ? t('controlplane.team.filters.organizationLoading')
-                      : t('controlplane.team.filters.organizationPlaceholder')
-                  }}
-                </option>
-                <option
-                  v-for="org in organizations"
-                  :key="org.uid"
-                  :value="org.uid"
-                >
-                  {{ org.name }}
-                </option>
-              </select>
-              
-              <!-- Loading spinner for organizations -->
-              <div v-if="loadingOrganizations" class="ms-2">
-                <div class="spinner-border spinner-border-sm text-primary" role="status">
-                  <span class="visually-hidden">{{ t('controlplane.team.filters.organizationLoading') }}</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('controlplane.team.filters.accountLabel') }}:</label>
-              <select
-                v-model="selectedAccountId"
-                @change="switchAccount"
-                class="form-select form-select-solid w-200px"
-                :disabled="loadingAccounts || !selectedOrganizationId || accounts.length === 0"
-              >
-                <option value="" disabled>
-                  <span v-if="!selectedOrganizationId">{{ t('controlplane.team.filters.accountRequiresOrganization') }}</span>
-                  <span v-else-if="loadingAccounts">{{ t('controlplane.team.filters.accountLoading') }}</span>
-                  <span v-else-if="accounts.length === 0">{{ t('controlplane.team.filters.accountEmpty') }}</span>
-                  <span v-else>{{ t('controlplane.team.filters.accountPlaceholder') }}</span>
-                </option>
-                <option
-                  v-for="account in accounts"
-                  :key="account.uid"
-                  :value="account.uid"
-                >
-                  {{ account.name }}
-                </option>
-              </select>
-              
-              <!-- Loading spinner for accounts -->
-              <div v-if="loadingAccounts" class="ms-2">
-                <div class="spinner-border spinner-border-sm text-primary" role="status">
-                  <span class="visually-hidden">{{ t('controlplane.team.filters.accountLoading') }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+
+        <div class="flex items-center">
+          <label class="mr-3 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300">
+            {{ t("controlplane.team.filters.accountLabel") }}:
+          </label>
+          <select
+            v-model="selectedAccountId"
+            @change="switchAccount"
+            :disabled="loadingAccounts || !selectedOrganizationId || accounts.length === 0"
+            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          >
+            <option value="" disabled>
+              <span v-if="!selectedOrganizationId">{{ t("controlplane.team.filters.accountRequiresOrganization") }}</span>
+              <span v-else-if="loadingAccounts">{{ t("controlplane.team.filters.accountLoading") }}</span>
+              <span v-else-if="accounts.length === 0">{{ t("controlplane.team.filters.accountEmpty") }}</span>
+              <span v-else>{{ t("controlplane.team.filters.accountPlaceholder") }}</span>
+            </option>
+            <option v-for="account in accounts" :key="account.uid" :value="account.uid">
+              {{ account.name }}
+            </option>
+          </select>
+          <span
+            v-if="loadingAccounts"
+            role="status"
+            class="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"
+          >
+            <span class="sr-only">{{ t("controlplane.team.filters.accountLoading") }}</span>
+          </span>
         </div>
       </div>
     </div>
@@ -83,90 +81,51 @@
   <!--end::Organization & Account Switcher-->
 
   <!--begin::Error Alert-->
-  <div v-if="error" class="alert alert-danger d-flex align-items-center mb-5" role="alert">
-    <i class="ki-duotone ki-cross-circle fs-2hx text-danger me-4">
+  <div
+    v-if="error"
+    role="alert"
+    class="mb-5 flex items-start gap-4 rounded-lg border border-danger-light bg-danger-light p-4"
+  >
+    <i class="ki-duotone ki-cross-circle fs-2hx text-danger">
       <span class="path1"></span>
       <span class="path2"></span>
     </i>
-    <div class="d-flex flex-column">
-      <h5 class="mb-1">{{ t('controlplane.team.error.title') }}</h5>
+    <div class="flex flex-1 flex-col text-danger">
+      <h5 class="m-0 mb-1 font-semibold">{{ t("controlplane.team.error.title") }}</h5>
       <span>{{ error }}</span>
     </div>
-    <button 
-      @click="error = null" 
-      type="button" 
-      class="btn-close ms-auto" 
+    <button
+      @click="error = null"
+      type="button"
       aria-label="Close"
-    ></button>
+      class="rounded-md p-1 text-danger/70 transition-colors hover:bg-danger/10 hover:text-danger"
+    >
+      <i class="ki-duotone ki-cross fs-2">
+        <span class="path1"></span>
+        <span class="path2"></span>
+      </i>
+    </button>
   </div>
   <!--end::Error Alert-->
 
-  <!-- <div class="row g-5 g-xl-8 mb-8">
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Total Teams'"
-        :value="totalTeams"
-        :progress-text="`${activeTeams} Active`"
-        :progress-value="activeTeamsPercentage"
-        bg-color="#1B84FF"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Total Members'"
-        :value="totalMembers"
-        :progress-text="`${activeMembers} Active`"
-        :progress-value="activeMembersPercentage"
-        bg-color="#17C653"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Active Projects'"
-        :value="totalProjects"
-        :progress-text="`${activeProjects} Ongoing`"
-        :progress-value="activeProjectsPercentage"
-        bg-color="#3699FF"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Team Performance'"
-        :value="teamPerformance"
-        :progress-text="'This Month'"
-        :progress-value="performanceGrowth"
-        bg-color="#FFA800"
-        text-color="white"
-      />
-    </div>
-  </div> -->
-  <!--end::Summary Cards-->
-
   <!--begin::Teams List-->
-  <div class="card">
+  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
     <!--begin::Card header-->
-    <div class="card-header border-0 pt-5">
-      <!--begin::Card title-->
-      <div class="card-title">
-  <h3 class="fw-bold m-0">{{ t('controlplane.team.toolbar.title') }}</h3>
-      </div>
-      <!--end::Card title-->
+    <div class="flex flex-wrap items-center justify-between gap-4 p-6 pb-0">
+      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.team.toolbar.title") }}
+      </h3>
 
-      <!--begin::Card toolbar-->
-      <div class="card-toolbar">
-        <!--begin::Items per page-->
-        <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('controlplane.team.toolbar.itemsLabel') }}</label>
-          <select 
-            class="form-select form-select-sm w-auto" 
+      <div class="flex flex-wrap items-center gap-4">
+        <!-- Items per page -->
+        <div class="flex items-center">
+          <label class="mr-2 mb-0 text-sm font-semibold text-gray-700 dark:text-gray-300">
+            {{ t("controlplane.team.toolbar.itemsLabel") }}
+          </label>
+          <select
             v-model.number="pagination.per_page"
             @change="changeItemsPerPage"
+            class="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm tabular-nums transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           >
             <option :value="1">1</option>
             <option :value="5">5</option>
@@ -175,38 +134,35 @@
             <option :value="50">50</option>
           </select>
         </div>
-        <!--end::Items per page-->
 
-        <!--begin::Search-->
-        <div class="d-flex align-items-center position-relative my-1 me-5">
-          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+        <!-- Search -->
+        <div class="relative flex items-center">
+          <i class="ki-duotone ki-magnifier fs-3 pointer-events-none absolute left-4">
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
           <input
             type="text"
             v-model="searchQuery"
-            class="form-control form-control-solid w-250px ps-12"
             :placeholder="t('controlplane.team.toolbar.searchPlaceholder')"
+            class="w-[250px] rounded-md border border-gray-300 bg-gray-100 py-2 pr-3 pl-12 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           />
         </div>
-        <!--end::Search-->
 
         <button
           @click="showAddTeamModal"
-          class="btn btn-sm btn-light-primary"
           :disabled="!selectedAccountId"
+          class="inline-flex items-center gap-1 rounded-md bg-primary-light px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
-          {{ t('controlplane.team.toolbar.addButton') }}
+          {{ t("controlplane.team.toolbar.addButton") }}
         </button>
       </div>
-      <!--end::Card toolbar-->
     </div>
     <!--end::Card header-->
 
     <!--begin::Card body-->
-    <div class="card-body py-3">
+    <div class="p-6">
       <KTDataTable
           :data="filteredAndSortedTeams"
           :header="tableHeader"
@@ -223,39 +179,37 @@
           :empty-table-text="emptyTableMessage"
         >
         <template v-slot:name="{ row }">
-          <div class="d-flex align-items-center">
-            <div class="symbol symbol-45px me-5">
-              <span class="symbol-label bg-light-primary text-primary fw-bold">
-                {{ row.name.charAt(0).toUpperCase() }}
-              </span>
+          <div class="flex items-center">
+            <div
+              class="mr-5 flex h-[45px] w-[45px] items-center justify-center rounded-full bg-primary-light font-bold text-primary"
+            >
+              {{ row.name.charAt(0).toUpperCase() }}
             </div>
-            <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">{{ row.name }}</span>
-            </div>
+            <span class="font-bold text-gray-900 hover:text-primary dark:text-gray-100">{{ row.name }}</span>
           </div>
         </template>
 
         <template v-slot:created_by="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">
-            {{ row.created_by?.username || t('controlplane.team.common.unknown') }}
+          <span class="block font-bold text-gray-900 dark:text-gray-100">
+            {{ row.created_by?.username || t("controlplane.team.common.unknown") }}
           </span>
-          <span class="text-muted fw-semibold text-muted d-block fs-7">
-            {{ row.created_by?.email || '' }}
+          <span class="block text-sm text-gray-500">
+            {{ row.created_by?.email || "" }}
           </span>
         </template>
 
         <template v-slot:created_at="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{
+          <span class="block font-bold tabular-nums text-gray-900 dark:text-gray-100">{{
             formatDate(row.created_at)
           }}</span>
         </template>
 
         <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end flex-shrink-0">
+          <div class="flex justify-end gap-1">
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
               @click="showTeamMembers(row)"
               :title="t('controlplane.team.actions.viewMembers')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-success active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-people fs-2">
                 <span class="path1"></span>
@@ -267,8 +221,8 @@
             </button>
             <router-link
               :to="{ name: 'site-overview', query: { account_id: selectedAccountId } }"
-              class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
               :title="t('controlplane.team.actions.addSite')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-success active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-home fs-2">
                 <span class="path1"></span>
@@ -276,9 +230,9 @@
               </i>
             </router-link>
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="editTeam(row)"
               :title="t('controlplane.team.actions.edit')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-primary active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
@@ -286,9 +240,9 @@
               </i>
             </button>
             <button
-              class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
               @click="deleteTeam(row)"
               :title="t('controlplane.team.actions.delete')"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-danger active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -298,7 +252,7 @@
           </div>
         </template>
       </KTDataTable>
-      
+
       <!--begin::Pagination-->
       <Pagination
         v-if="!loading"
@@ -314,89 +268,161 @@
   </div>
   <!--end::Teams List-->
 
-  <!-- Add Team Modal -->
-  <div class="modal fade" id="addTeamModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ t('controlplane.team.modals.add.title') }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <form @submit.prevent="createTeam">
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label class="form-label">{{ t('controlplane.team.modals.add.nameLabel') }}</label>
-                <input type="text" class="form-control" v-model="newTeam.name" required>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ t('controlplane.team.modals.add.cancel') }}</button>
-            <button type="submit" class="btn btn-primary" :disabled="creating">
-              <span v-if="creating" class="spinner-border spinner-border-sm me-2"></span>
-              {{ t('controlplane.team.modals.add.submit') }}
-            </button>
-          </div>
-        </form>
-      </div>
+  <!-- Add Team Dialog -->
+  <dialog
+    ref="addTeamDialog"
+    class="m-auto w-full max-w-lg rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    @click.self="addTeamDialog?.close()"
+  >
+    <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
+      <h5 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.team.modals.add.title") }}
+      </h5>
+      <button
+        type="button"
+        aria-label="Close"
+        @click="addTeamDialog?.close()"
+        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+      >
+        <i class="ki-duotone ki-cross fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
     </div>
-  </div>
+    <form @submit.prevent="createTeam">
+      <div class="p-5">
+        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+          t("controlplane.team.modals.add.nameLabel")
+        }}</label>
+        <input type="text" v-model="newTeam.name" required :class="formInputClass" />
+      </div>
+      <div class="flex justify-end gap-2 border-t border-gray-200 p-5 dark:border-gray-700">
+        <button
+          type="button"
+          @click="addTeamDialog?.close()"
+          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+        >
+          {{ t("controlplane.team.modals.add.cancel") }}
+        </button>
+        <button
+          type="submit"
+          :disabled="creating"
+          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <span
+            v-if="creating"
+            class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+          ></span>
+          {{ t("controlplane.team.modals.add.submit") }}
+        </button>
+      </div>
+    </form>
+  </dialog>
 
-  <!-- Edit Team Modal -->
-  <div class="modal fade" id="editTeamModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ t('controlplane.team.modals.edit.title') }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="teamToEdit = null"></button>
-        </div>
-        <form @submit.prevent="updateTeam" v-if="teamToEdit">
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label class="form-label">{{ t('controlplane.team.modals.edit.nameLabel') }}</label>
-                <input type="text" class="form-control" v-model="teamToEdit.name" required>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal" @click="teamToEdit = null">{{ t('controlplane.team.modals.edit.cancel') }}</button>
-            <button type="submit" class="btn btn-primary" :disabled="editing">
-              <span v-if="editing" class="spinner-border spinner-border-sm me-2"></span>
-              {{ t('controlplane.team.modals.edit.submit') }}
-            </button>
-          </div>
-        </form>
-      </div>
+  <!-- Edit Team Dialog -->
+  <dialog
+    ref="editTeamDialog"
+    class="m-auto w-full max-w-lg rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    @click.self="closeEditTeamDialog"
+  >
+    <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
+      <h5 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.team.modals.edit.title") }}
+      </h5>
+      <button
+        type="button"
+        aria-label="Close"
+        @click="closeEditTeamDialog"
+        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+      >
+        <i class="ki-duotone ki-cross fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
     </div>
-  </div>
+    <form @submit.prevent="updateTeam" v-if="teamToEdit">
+      <div class="p-5">
+        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+          t("controlplane.team.modals.edit.nameLabel")
+        }}</label>
+        <input type="text" v-model="teamToEdit.name" required :class="formInputClass" />
+      </div>
+      <div class="flex justify-end gap-2 border-t border-gray-200 p-5 dark:border-gray-700">
+        <button
+          type="button"
+          @click="closeEditTeamDialog"
+          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+        >
+          {{ t("controlplane.team.modals.edit.cancel") }}
+        </button>
+        <button
+          type="submit"
+          :disabled="editing"
+          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <span
+            v-if="editing"
+            class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+          ></span>
+          {{ t("controlplane.team.modals.edit.submit") }}
+        </button>
+      </div>
+    </form>
+  </dialog>
 
-  <!-- Delete Confirmation Modal -->
-  <div class="modal fade" id="deleteTeamModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ t('controlplane.team.modals.delete.title') }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>
-            {{ t('controlplane.team.modals.delete.confirmPrefix') }}
-            <strong>{{ teamToDelete?.name }}</strong>{{ t('controlplane.team.modals.delete.confirmSuffix') }}
-          </p>
-          <p class="text-muted">{{ t('controlplane.team.modals.delete.warning') }}</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ t('controlplane.team.modals.delete.cancel') }}</button>
-          <button type="button" class="btn btn-danger" @click="confirmDelete" :disabled="deleting">
-            <span v-if="deleting" class="spinner-border spinner-border-sm me-2"></span>
-            {{ t('controlplane.team.modals.delete.submit') }}
-          </button>
-        </div>
-      </div>
+  <!-- Delete Confirmation Dialog -->
+  <dialog
+    ref="deleteTeamDialog"
+    class="m-auto w-full max-w-md rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    @click.self="deleteTeamDialog?.close()"
+  >
+    <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
+      <h5 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.team.modals.delete.title") }}
+      </h5>
+      <button
+        type="button"
+        aria-label="Close"
+        @click="deleteTeamDialog?.close()"
+        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+      >
+        <i class="ki-duotone ki-cross fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
     </div>
-  </div>
+    <div class="p-5 text-gray-700 dark:text-gray-300">
+      <p>
+        {{ t("controlplane.team.modals.delete.confirmPrefix") }}
+        <strong>{{ teamToDelete?.name }}</strong>{{ t("controlplane.team.modals.delete.confirmSuffix") }}
+      </p>
+      <p class="text-gray-500">{{ t("controlplane.team.modals.delete.warning") }}</p>
+    </div>
+    <div class="flex justify-end gap-2 border-t border-gray-200 p-5 dark:border-gray-700">
+      <button
+        type="button"
+        @click="deleteTeamDialog?.close()"
+        class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+      >
+        {{ t("controlplane.team.modals.delete.cancel") }}
+      </button>
+      <button
+        type="button"
+        @click="confirmDelete"
+        :disabled="deleting"
+        class="inline-flex items-center gap-2 rounded-md bg-danger px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-danger-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <span
+          v-if="deleting"
+          class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+        ></span>
+        {{ t("controlplane.team.modals.delete.submit") }}
+      </button>
+    </div>
+  </dialog>
 
   <!-- Team Membership Modal -->
   <MembershipListModal
@@ -411,8 +437,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { Modal } from 'bootstrap'
-import Widget1 from '@/components/dashboard-default-widgets/Widget1.vue'
 import KTDataTable from '@/components/kt-datatable/KTDataTable.vue'
 import ApiService from '@/core/services/ApiService'
 import Pagination from '@/components/common/Pagination.vue'
@@ -504,6 +528,18 @@ const teamToDelete = ref<Team | null>(null)
 // Modal references
 const teamMembershipModalRef = ref()
 const selectedTeamUid = ref('')
+const addTeamDialog = ref<HTMLDialogElement | null>(null)
+const deleteTeamDialog = ref<HTMLDialogElement | null>(null)
+const editTeamDialog = ref<HTMLDialogElement | null>(null)
+
+const closeEditTeamDialog = () => {
+  editTeamDialog.value?.close()
+  teamToEdit.value = null
+}
+
+// Shared Tailwind class for text fields in the modals below.
+const formInputClass =
+  'w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100'
 
 // Table header configuration
 const tableHeader = computed(() => [
@@ -859,12 +895,7 @@ const showAddTeamModal = () => {
   newTeam.value = {
     name: '',
   }
-  // Show modal using Bootstrap
-  const modal = document.getElementById('addTeamModal')
-  if (modal) {
-    const bsModal = new Modal(modal)
-    bsModal.show()
-  }
+  addTeamDialog.value?.showModal()
 }
 
 const createTeam = async () => {
@@ -881,13 +912,7 @@ const createTeam = async () => {
     if (resp && resp.data) {
       // Refresh the teams list
       await fetchTeams(pagination.value.page)
-      
-      // Hide modal
-      const modal = document.getElementById('addTeamModal')
-      if (modal) {
-        const bsModal = Modal.getInstance(modal)
-        bsModal?.hide()
-      }
+      addTeamDialog.value?.close()
     }
   } catch (e: any) {
     error.value = e?.response?.data?.message || e.message || t('controlplane.team.notifications.createFailed')
@@ -898,12 +923,7 @@ const createTeam = async () => {
 
 const deleteTeam = (team: Team) => {
   teamToDelete.value = team
-  // Show delete confirmation modal
-  const modal = document.getElementById('deleteTeamModal')
-  if (modal) {
-    const bsModal = new Modal(modal)
-    bsModal.show()
-  }
+  deleteTeamDialog.value?.showModal()
 }
 
 const confirmDelete = async () => {
@@ -914,12 +934,7 @@ const confirmDelete = async () => {
     await ApiService.delete(`teams/${teamToDelete.value.uid}`)
     // Refresh the teams list
     await fetchTeams(pagination.value.page)
-    // Hide modal
-    const modal = document.getElementById('deleteTeamModal')
-    if (modal) {
-      const bsModal = Modal.getInstance(modal)
-      bsModal?.hide()
-    }
+    deleteTeamDialog.value?.close()
     teamToDelete.value = null
   } catch (e: any) {
     error.value = e?.response?.data?.message || e.message || t('controlplane.team.notifications.deleteFailed')
@@ -935,12 +950,7 @@ const showTeamMembers = (team: Team) => {
 
 const editTeam = (team: Team) => {
   teamToEdit.value = { ...team } // Create a copy to avoid direct mutation
-  // Show edit modal using Bootstrap
-  const modal = document.getElementById('editTeamModal')
-  if (modal) {
-    const bsModal = new Modal(modal)
-    bsModal.show()
-  }
+  editTeamDialog.value?.showModal()
 }
 
 const updateTeam = async () => {
@@ -954,13 +964,7 @@ const updateTeam = async () => {
     if (resp && resp.data) {
       // Refresh the teams list
       await fetchTeams(pagination.value.page)
-      
-      // Hide modal
-      const modal = document.getElementById('editTeamModal')
-      if (modal) {
-        const bsModal = Modal.getInstance(modal)
-        bsModal?.hide()
-      }
+      editTeamDialog.value?.close()
       teamToEdit.value = null
     }
   } catch (e: any) {
