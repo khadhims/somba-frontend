@@ -285,11 +285,7 @@
       >
         <template v-slot:name="{ row }">
           <div class="flex items-center">
-            <div
-              class="mr-5 flex h-[45px] w-[45px] items-center justify-center rounded-full bg-primary-light font-bold text-primary"
-            >
-              {{ row.name.charAt(0).toUpperCase() }}
-            </div>
+            <InitialAvatar :name="row.name" class="mr-5" />
             <span class="font-bold text-gray-900 hover:text-primary dark:text-gray-100">
               {{ row.name }}
             </span>
@@ -313,26 +309,18 @@
 
         <template v-slot:actions="{ row }">
           <div class="flex justify-end gap-1">
-            <button
-              @click="editSite(row)"
-              title="Edit Site"
-              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-primary active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
-            >
+            <RowActionButton @click="editSite(row)" title="Edit Site">
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-            </button>
-            <button
-              @click="deleteSite(row)"
-              title="Delete Site"
-              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-danger active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
-            >
+            </RowActionButton>
+            <RowActionButton @click="deleteSite(row)" title="Delete Site" variant="danger">
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-            </button>
+            </RowActionButton>
           </div>
         </template>
       </KTDataTable>
@@ -518,53 +506,18 @@
   </dialog>
 
   <!-- Delete Confirmation Dialog -->
-  <dialog
+  <ConfirmDialog
     ref="deleteSiteDialog"
-    class="m-auto w-full max-w-md rounded-lg border-0 p-0 shadow-xl backdrop:bg-black/50"
+    title="Delete Site"
+    :loading="deleting"
+    @confirm="confirmDelete"
   >
-    <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
-      <h5 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">Delete Site</h5>
-      <button
-        type="button"
-        aria-label="Close"
-        @click="deleteSiteDialog?.close()"
-        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-      >
-        <i class="ki-duotone ki-cross fs-2">
-          <span class="path1"></span>
-          <span class="path2"></span>
-        </i>
-      </button>
-    </div>
-    <div class="p-5 text-gray-700 dark:text-gray-300">
-      <p>
-        Are you sure you want to delete site
-        <strong>{{ siteToDelete?.name }}</strong>?
-      </p>
-      <p class="text-gray-500">This action cannot be undone.</p>
-    </div>
-    <div class="flex justify-end gap-2 border-t border-gray-200 p-5 dark:border-gray-700">
-      <button
-        type="button"
-        @click="deleteSiteDialog?.close()"
-        class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
-      >
-        Cancel
-      </button>
-      <button
-        type="button"
-        @click="confirmDelete"
-        :disabled="deleting"
-        class="inline-flex items-center gap-2 rounded-md bg-danger px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-danger-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
-      >
-        <span
-          v-if="deleting"
-          class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
-        ></span>
-        Delete
-      </button>
-    </div>
-  </dialog>
+    <p>
+      Are you sure you want to delete site
+      <strong>{{ siteToDelete?.name }}</strong>?
+    </p>
+    <p class="text-gray-500">This action cannot be undone.</p>
+  </ConfirmDialog>
 </template>
 
 <script setup lang="ts">
@@ -573,6 +526,9 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
+import InitialAvatar from "@/components/common/InitialAvatar.vue";
+import RowActionButton from "@/components/common/RowActionButton.vue";
+import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
 
 // Interface definitions
 interface Site {
@@ -669,7 +625,7 @@ const currentTeam = ref<Team | null>(null);
 // Modal (native <dialog>) state
 const addSiteDialog = ref<HTMLDialogElement | null>(null);
 const editSiteDialog = ref<HTMLDialogElement | null>(null);
-const deleteSiteDialog = ref<HTMLDialogElement | null>(null);
+const deleteSiteDialog = ref<InstanceType<typeof ConfirmDialog> | null>(null);
 const creating = ref(false);
 const deleting = ref(false);
 const editing = ref(false);

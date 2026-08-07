@@ -192,11 +192,7 @@
       >
         <template v-slot:name="{ row }">
           <div class="flex items-center">
-            <div
-              class="mr-5 flex h-[45px] w-[45px] items-center justify-center rounded-full bg-info-light font-bold text-info"
-            >
-              {{ row.name.charAt(0).toUpperCase() }}
-            </div>
+            <InitialAvatar :name="row.name" variant="info" class="mr-5" />
             <div class="flex flex-col">
               <span class="font-bold text-gray-900 hover:text-primary dark:text-gray-100">{{
                 row.name
@@ -288,10 +284,8 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import Pagination from '@/components/common/Pagination.vue';
-
-// Shared Tailwind class for the form fields above.
-const formInputClass =
-  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100";
+import InitialAvatar from "@/components/common/InitialAvatar.vue";
+import { formInputClass } from "@/core/helpers/badge";
 
 // Interfaces
 interface Site {
