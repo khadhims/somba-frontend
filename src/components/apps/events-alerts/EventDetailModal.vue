@@ -1,159 +1,267 @@
 <template>
-  <div v-if="show" class="modal fade show" style="display:block; background-color:rgba(0,0,0,0.5);" @click.self="emitClose">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-      <div class="modal-content shadow-lg">
-        <div class="modal-header py-3 px-4 border-0">
-          <h5 class="modal-title d-flex align-items-center gap-2">
-            <i class="ki-duotone ki-eye fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
-            {{ t('appsEventsAlerts.eventsModals.details.title') || 'Detail Event' }}
-          </h5>
-          <button type="button" class="btn btn-sm btn-icon btn-light" @click="emitClose" aria-label="Close">
-            <i class="ki-duotone ki-cross fs-2"><span class="path1"></span><span class="path2"></span></i>
-          </button>
-        </div>
-        <div class="modal-body pt-0 pb-4 px-4">
-          <div v-if="loading" class="text-center py-10">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
+  <dialog
+    ref="dialogEl"
+    class="m-auto w-full max-w-4xl rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/60 dark:bg-gray-900"
+    @click.self="close"
+    @close="emitClose"
+  >
+    <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-700">
+      <h5 class="m-0 flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-gray-100">
+        <i class="ki-duotone ki-eye fs-2 text-primary">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+        {{ t("appsEventsAlerts.eventsModals.details.title") || "Detail Event" }}
+      </h5>
+      <button
+        type="button"
+        aria-label="Close"
+        @click="close"
+        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+      >
+        <i class="ki-duotone ki-cross fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
+    </div>
+
+    <div class="px-4 pb-4">
+      <div v-if="loading" class="flex items-center justify-center py-10">
+        <span
+          role="status"
+          class="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"
+        >
+          <span class="sr-only">Loading...</span>
+        </span>
+      </div>
+
+      <div v-else-if="event" class="min-h-[400px]">
+        <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
+          <!-- Gallery -->
+          <div class="lg:col-span-5">
+            <div class="h-full rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+              <div class="relative mb-3">
+                <transition name="fade">
+                  <img
+                    v-if="currentImage"
+                    :key="currentImage"
+                    :src="currentImage"
+                    alt="Event Image"
+                    class="max-h-[340px] w-full cursor-zoom-in rounded object-cover shadow-sm"
+                    @error="onImageError"
+                    @click="openLightbox = true"
+                  />
+                  <div
+                    v-else
+                    class="flex h-[340px] items-center justify-center rounded bg-gray-100 dark:bg-gray-700"
+                  >
+                    <i class="ki-duotone ki-picture fs-2x text-gray-400">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                  </div>
+                </transition>
+                <button
+                  v-if="images.length > 1"
+                  aria-label="Previous image"
+                  @click="prevImage"
+                  class="absolute top-1/2 left-2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow transition-colors hover:bg-white dark:bg-gray-900/90 dark:text-gray-200"
+                >
+                  <i class="ki-duotone ki-left fs-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                </button>
+                <button
+                  v-if="images.length > 1"
+                  aria-label="Next image"
+                  @click="nextImage"
+                  class="absolute top-1/2 right-2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow transition-colors hover:bg-white dark:bg-gray-900/90 dark:text-gray-200"
+                >
+                  <i class="ki-duotone ki-right fs-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                </button>
+                <div
+                  v-if="images.length > 1"
+                  class="absolute right-2 bottom-2 rounded bg-black/60 px-2 py-1 text-xs font-semibold tabular-nums text-white"
+                >
+                  {{ currentIndex + 1 }}/{{ images.length }}
+                </div>
+              </div>
+
+              <div v-if="images.length > 1" class="flex max-h-20 gap-2 overflow-x-auto pb-1">
+                <button
+                  v-for="(img, idx) in images"
+                  :key="img + idx"
+                  type="button"
+                  @click="goToImage(idx)"
+                  class="relative h-[60px] w-[72px] shrink-0 overflow-hidden rounded-md border-2 transition-colors"
+                  :class="idx === currentIndex ? 'border-primary' : 'border-transparent'"
+                >
+                  <img
+                    :src="img"
+                    alt="thumb"
+                    class="h-full w-full object-cover"
+                    @error="onThumbError"
+                  />
+                </button>
+              </div>
             </div>
           </div>
-          <div v-else-if="event" class="detail-wrapper">
-            <div class="row g-5">
-              <!-- Left Column: Gallery -->
-              <div class="col-lg-5">
-                <div class="gallery card border-0 bg-light p-3 h-100">
-                  <div class="position-relative main-image-wrapper mb-3">
-                    <transition name="fade">
-                      <img
-                        v-if="currentImage"
-                        :key="currentImage"
-                        :src="currentImage"
-                        class="img-fluid rounded w-100 shadow-sm main-image"
-                        alt="Event Image"
-                        @error="onImageError"
-                        @click="openLightbox = true"
-                        style="cursor: zoom-in; max-height:340px; object-fit:cover;"
-                      />
-                      <div v-else class="d-flex align-items-center justify-content-center bg-light rounded" style="height:340px;">
-                        <i class="ki-duotone ki-picture fs-2x text-muted"><span class="path1"></span><span class="path2"></span></i>
-                      </div>
-                    </transition>
-                    <!-- Navigation Arrows -->
-                    <button v-if="images.length > 1" class="btn btn-sm btn-icon btn-light gallery-nav left" @click="prevImage">
-                      <i class="ki-duotone ki-left fs-2"><span class="path1"></span><span class="path2"></span></i>
-                    </button>
-                    <button v-if="images.length > 1" class="btn btn-sm btn-icon btn-light gallery-nav right" @click="nextImage">
-                      <i class="ki-duotone ki-right fs-2"><span class="path1"></span><span class="path2"></span></i>
-                    </button>
-                    <div v-if="images.length > 1" class="image-index badge badge-light fw-semibold position-absolute bottom-0 end-0 m-2">{{ currentIndex + 1 }}/{{ images.length }}</div>
-                  </div>
-                  <!-- Thumbnails -->
-                  <div v-if="images.length > 1" class="thumb-strip d-flex gap-2 overflow-auto pb-1">
-                    <div
-                      v-for="(img, idx) in images"
-                      :key="img + idx"
-                      class="thumb position-relative"
-                      :class="{ active: idx === currentIndex }"
-                      @click="goToImage(idx)"
-                    >
-                      <img :src="img" alt="thumb" @error="onThumbError" />
-                      <span v-if="idx === currentIndex" class="active-indicator"></span>
+
+          <!-- Info -->
+          <div class="lg:col-span-7">
+            <div class="flex flex-col gap-4">
+              <div class="flex flex-wrap items-center gap-3">
+                <span
+                  class="inline-flex rounded px-2 py-1 text-xs font-semibold"
+                  :class="statusBadgeClass(event.status)"
+                  >{{ statusLabel(event.status) }}</span
+                >
+                <div class="text-sm text-gray-500">{{ event.camera_name }}</div>
+                <div class="text-sm tabular-nums text-gray-500">
+                  {{ formatDuration(event.duration_minutes) }}
+                </div>
+              </div>
+
+              <div v-if="event.activities && event.activities.length">
+                <h6 class="section-title mb-3 font-semibold text-gray-900 dark:text-gray-100">
+                  {{ t("appsEventsAlerts.eventsModals.details.activities") || "Aktivitas" }}
+                </h6>
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div
+                    v-for="(activity, i) in event.activities"
+                    :key="i"
+                    class="flex h-full flex-col justify-between rounded-md border border-gray-200 p-3 dark:border-gray-700"
+                  >
+                    <div class="mb-1 text-xs font-semibold text-gray-900 uppercase dark:text-gray-100">
+                      {{ activity.activity_name || "-" }}
+                    </div>
+                    <div class="text-xs text-gray-500">
+                      ID: <span class="font-semibold">{{ activity.activity_uid || "-" }}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Right Column: Info -->
-              <div class="col-lg-7">
-                <div class="d-flex flex-column gap-4">
-                  <!-- Status & Camera -->
-                  <div class="d-flex flex-wrap gap-3 align-items-center">
-                    <div>
-                      <span class="badge" :class="statusBadge(event.status)">{{ statusLabel(event.status) }}</span>
-                    </div>
-                    <div class="text-muted small">{{ event.camera_name }}</div>
-                    <div class="text-muted small">{{ formatDuration(event.duration_minutes) }}</div>
+              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div class="rounded-md border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+                  <div class="mb-1 text-xs text-gray-500">
+                    {{ t("appsEventsAlerts.eventsModals.details.startTime") || "Mulai" }}
                   </div>
-
-                  <!-- Activities -->
-                  <div v-if="event.activities && event.activities.length" class="activities">
-                    <h6 class="section-title">{{ t('appsEventsAlerts.eventsModals.details.activities') || 'Aktivitas' }}</h6>
-                    <div class="row g-3">
-                      <div v-for="(activity, i) in event.activities" :key="i" class="col-md-6">
-                        <div class="activity-card rounded border p-3 h-100 d-flex flex-column justify-content-between">
-                          <div class="fw-semibold text-dark mb-1 text-uppercase small">{{ activity.activity_name || '-' }}</div>
-                          <div class="text-muted small">ID: <span class="fw-semibold">{{ activity.activity_uid || '-' }}</span></div>
-                        </div>
-                      </div>
-                    </div>
+                  <div class="font-semibold tabular-nums text-gray-900 dark:text-gray-100">
+                    {{ formatDateTime(event.event_start) }}
                   </div>
-
-                  <!-- Event Timing -->
-                  <div class="timing row g-3">
-                    <div class="col-md-6">
-                      <div class="timing-item p-3 rounded border bg-white h-100">
-                        <div class="label small text-muted mb-1">{{ t('appsEventsAlerts.eventsModals.details.startTime') || 'Mulai' }}</div>
-                        <div class="value fw-semibold">{{ formatDateTime(event.event_start) }}</div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="timing-item p-3 rounded border bg-white h-100">
-                        <div class="label small text-muted mb-1">{{ t('appsEventsAlerts.eventsModals.details.endTime') || 'Selesai' }}</div>
-                        <div class="value fw-semibold">{{ formatDateTime(event.event_end) }}</div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="timing-item p-3 rounded border bg-white h-100">
-                        <div class="label small text-muted mb-1">{{ t('appsEventsAlerts.eventsModals.details.duration') || 'Durasi' }}</div>
-                        <div class="value fw-semibold">{{ formatDuration(event.duration_minutes) }}</div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="timing-item p-3 rounded border bg-white h-100">
-                        <div class="label small text-muted mb-1">{{ t('appsEventsAlerts.eventsModals.details.avgDetection') || 'Rata-rata Deteksi' }}</div>
-                        <div class="value fw-semibold">{{ formatSeconds(event.avg_seconds_with_detection) }}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Event Name -->
-                  <div class="event-name-block">
-                    <h6 class="section-title">{{ t('appsEventsAlerts.eventsModals.details.eventName') || 'Nama Event' }}</h6>
-                    <div class="p-3 bg-light rounded border">{{ event.event_name || '-' }}</div>
-                  </div>
-
-                  <!-- Images Extra Strip -->
-                  <div v-if="images.length > 1" class="small text-muted">Klik gambar utama untuk perbesaran.</div>
                 </div>
+                <div class="rounded-md border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+                  <div class="mb-1 text-xs text-gray-500">
+                    {{ t("appsEventsAlerts.eventsModals.details.endTime") || "Selesai" }}
+                  </div>
+                  <div class="font-semibold tabular-nums text-gray-900 dark:text-gray-100">
+                    {{ formatDateTime(event.event_end) }}
+                  </div>
+                </div>
+                <div class="rounded-md border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+                  <div class="mb-1 text-xs text-gray-500">
+                    {{ t("appsEventsAlerts.eventsModals.details.duration") || "Durasi" }}
+                  </div>
+                  <div class="font-semibold tabular-nums text-gray-900 dark:text-gray-100">
+                    {{ formatDuration(event.duration_minutes) }}
+                  </div>
+                </div>
+                <div class="rounded-md border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+                  <div class="mb-1 text-xs text-gray-500">
+                    {{ t("appsEventsAlerts.eventsModals.details.avgDetection") || "Rata-rata Deteksi" }}
+                  </div>
+                  <div class="font-semibold tabular-nums text-gray-900 dark:text-gray-100">
+                    {{ formatSeconds(event.avg_seconds_with_detection) }}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h6 class="mb-3 font-semibold text-gray-900 dark:text-gray-100">
+                  {{ t("appsEventsAlerts.eventsModals.details.eventName") || "Nama Event" }}
+                </h6>
+                <div class="rounded-md border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800">
+                  {{ event.event_name || "-" }}
+                </div>
+              </div>
+
+              <div v-if="images.length > 1" class="text-sm text-gray-500">
+                Klik gambar utama untuk perbesaran.
               </div>
             </div>
           </div>
-          <div v-else class="text-center py-10 text-muted">{{ t('appsEventsAlerts.eventsModals.details.noData') || 'Data tidak tersedia' }}</div>
         </div>
-        <div class="modal-footer border-0 pt-0 px-4 pb-4 d-flex justify-content-between">
-          <div>
-            <button type="button" class="btn btn-light" @click="emitClose">{{ t('common.close') || 'Tutup' }}</button>
-          </div>
-        </div>
+      </div>
+
+      <div v-else class="py-10 text-center text-gray-500">
+        {{ t("appsEventsAlerts.eventsModals.details.noData") || "Data tidak tersedia" }}
       </div>
     </div>
 
-    <!-- Lightbox -->
-    <div v-if="openLightbox" class="lightbox" @click.self="openLightbox=false">
-      <div class="lightbox-inner">
-        <img :src="currentImage" alt="Lightbox" class="lightbox-image" @error="onImageError" />
-        <button class="btn btn-sm btn-icon btn-light position-absolute top-0 end-0 m-3" @click="openLightbox=false">
-          <i class="ki-duotone ki-cross fs-2"><span class="path1"></span><span class="path2"></span></i>
-        </button>
-        <button v-if="images.length>1" class="btn btn-icon btn-light position-absolute top-50 start-0 translate-middle-y ms-3" @click="prevImage">
-          <i class="ki-duotone ki-left fs-2"><span class="path1"></span><span class="path2"></span></i>
-        </button>
-        <button v-if="images.length>1" class="btn btn-icon btn-light position-absolute top-50 end-0 translate-middle-y me-3" @click="nextImage">
-          <i class="ki-duotone ki-right fs-2"><span class="path1"></span><span class="path2"></span></i>
-        </button>
-      </div>
+    <div class="flex justify-end border-t border-gray-200 px-4 py-4 dark:border-gray-700">
+      <button
+        type="button"
+        @click="close"
+        class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+      >
+        {{ t("common.close") || "Tutup" }}
+      </button>
     </div>
-  </div>
+  </dialog>
+
+  <!-- Lightbox -->
+  <dialog
+    ref="lightboxEl"
+    class="m-auto max-w-[90vw] rounded-lg border-0 bg-transparent p-0 backdrop:bg-black/85"
+    @click.self="openLightbox = false"
+  >
+    <div class="relative">
+      <img
+        :src="currentImage"
+        alt="Lightbox"
+        class="max-h-[90vh] max-w-full rounded-lg shadow-2xl"
+        @error="onImageError"
+      />
+      <button
+        aria-label="Close"
+        @click="openLightbox = false"
+        class="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-gray-700 hover:bg-white"
+      >
+        <i class="ki-duotone ki-cross fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
+      <button
+        v-if="images.length > 1"
+        aria-label="Previous image"
+        @click="prevImage"
+        class="absolute top-1/2 left-3 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-700 hover:bg-white"
+      >
+        <i class="ki-duotone ki-left fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
+      <button
+        v-if="images.length > 1"
+        aria-label="Next image"
+        @click="nextImage"
+        class="absolute top-1/2 right-3 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-700 hover:bg-white"
+      >
+        <i class="ki-duotone ki-right fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
+    </div>
+  </dialog>
 </template>
 
 <script setup lang="ts">
@@ -161,7 +269,7 @@ import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { formatDateTimeGMT8 } from '@/core/helpers/timezone';
 
-const props = defineProps<{ 
+const props = defineProps<{
   show: boolean;
   event: any | null;
   loading: boolean;
@@ -172,6 +280,20 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+
+const dialogEl = ref<HTMLDialogElement | null>(null);
+const lightboxEl = ref<HTMLDialogElement | null>(null);
+
+watch(
+  () => props.show,
+  (show) => {
+    if (show) dialogEl.value?.showModal();
+    else dialogEl.value?.close();
+  }
+);
+
+const close = () => dialogEl.value?.close();
+const emitClose = () => emit('close');
 
 const images = computed(() => {
   if (!props.event) return [] as string[];
@@ -186,6 +308,11 @@ const images = computed(() => {
 const currentIndex = ref(0);
 const currentImage = computed(() => images.value[currentIndex.value] || '');
 const openLightbox = ref(false);
+
+watch(openLightbox, (open) => {
+  if (open) lightboxEl.value?.showModal();
+  else lightboxEl.value?.close();
+});
 
 watch(images, (val) => {
   if (currentIndex.value >= val.length) currentIndex.value = 0;
@@ -205,10 +332,8 @@ const onImageError = (e: Event) => {
 };
 const onThumbError = (e: Event) => {
   const img = e.target as HTMLImageElement;
-  img.classList.add('thumb-error');
+  img.classList.add('opacity-30');
 };
-
-const emitClose = () => emit('close');
 
 // Formatting & helpers
 const formatDateTime = (value?: string) => {
@@ -229,13 +354,13 @@ const formatDuration = (minutes?: number | null) => {
 };
 
 const normalizeKey = (v?:string) => (v||'').toLowerCase().replace(/[\s_-]/g,'');
-const statusBadge = (status:string) => {
+const statusBadgeClass = (status:string) => {
   const k = normalizeKey(status);
-  if (k==='active' || k==='unresolved') return 'badge-light-danger';
-  if (k==='acknowledged') return 'badge-light-warning';
-  if (k==='resolved' || k==='notresolved') return 'badge-light-success';
-  if (k==='falsedetection') return 'badge-light-info';
-  return 'badge-light-secondary';
+  if (k==='active' || k==='unresolved') return 'bg-danger-light text-danger';
+  if (k==='acknowledged') return 'bg-warning-light text-warning';
+  if (k==='resolved' || k==='notresolved') return 'bg-success-light text-success';
+  if (k==='falsedetection') return 'bg-info-light text-info';
+  return 'bg-gray-100 text-gray-600';
 };
 const statusLabel = (status:string) => {
   const k = normalizeKey(status);
@@ -249,23 +374,6 @@ const statusLabel = (status:string) => {
 </script>
 
 <style scoped>
-.detail-wrapper { min-height: 400px; }
-.section-title { font-weight:600; margin-bottom: .75rem; display:flex; align-items:center; gap:.5rem; }
-.section-title::before { content:''; width:6px; height:18px; background: var(--bs-primary); border-radius:4px; }
-.gallery-nav { position:absolute; top:50%; transform:translateY(-50%); z-index:2; }
-.gallery-nav.left { left:10px; }
-.gallery-nav.right { right:10px; }
-.thumb-strip { max-height:80px; }
-.thumb { width:72px; height:60px; flex:0 0 auto; cursor:pointer; border-radius:6px; overflow:hidden; position:relative; border:2px solid transparent; }
-.thumb img { width:100%; height:100%; object-fit:cover; display:block; }
-.thumb.active { border-color: var(--bs-primary); }
-.active-indicator { position:absolute; inset:0; box-shadow:0 0 0 2px var(--bs-primary) inset; border-radius:4px; }
-.thumb-error { background: var(--bs-light); color: var(--bs-muted); display:flex; align-items:center; justify-content:center; font-size:10px; }
-.lightbox { position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:1050; display:flex; align-items:center; justify-content:center; }
-.lightbox-inner { position:relative; max-width:90%; max-height:90%; }
-.lightbox-image { max-width:100%; max-height:100%; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,.4); }
-.activity-card { background:linear-gradient(135deg,#ffffff,#f8f9fa); transition:.2s; }
-.activity-card:hover { box-shadow:0 4px 14px rgba(0,0,0,.08); transform:translateY(-2px); }
 .fade-enter-active,.fade-leave-active { transition: opacity .3s; }
 .fade-enter-from,.fade-leave-to { opacity:0; }
 </style>

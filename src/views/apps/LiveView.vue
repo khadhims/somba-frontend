@@ -1,209 +1,203 @@
 <template>
   <!-- Live Camera Feed header -->
-  <div class="card mb-4">
-    <div class="card-body d-flex align-items-center justify-content-between">
-      <div>
-        <div class="d-flex align-items-center">
-          <h4 class="card-title mb-0 me-3">{{ t('appsLiveView.header.title') }}</h4>
-        </div>
-      </div>
+  <div
+    class="mb-4 flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+  >
+    <h4 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+      {{ t("appsLiveView.header.title") }}
+    </h4>
 
-      <div class="btn-group" role="group">
-          <button type="button" class="btn btn-sm" :class="{ 'btn-light': true }">
-            <i class="bi-grid-fill"></i>
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm"
-            :class="gridView === '1x1' ? 'btn-primary' : 'btn-light'"
-            @click="setGridView('1x1')"
-            :title="`1x1 (max 1 camera)`"
-          >
-            1x1
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm"
-            :class="gridView === '2x2' ? 'btn-primary' : 'btn-light'"
-            @click="setGridView('2x2')"
-            :title="`2x2 (max 4 cameras)`"
-          >
-            2x2
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm"
-            :class="gridView === '3x3' ? 'btn-primary' : 'btn-light'"
-            @click="setGridView('3x3')"
-            :title="`3x3 (max 9 cameras)`"
-          >
-            3x3
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm"
-            :class="gridView === '4x4' ? 'btn-primary' : 'btn-light'"
-            @click="setGridView('4x4')"
-            :title="`4x4 (max 16 cameras)`"
-          >
-            4x4
-          </button>
-      </div>
+    <div class="inline-flex overflow-hidden rounded-md border border-gray-300 dark:border-gray-700" role="group">
+      <button
+        v-for="view in ['1x1', '2x2', '3x3', '4x4']"
+        :key="view"
+        type="button"
+        @click="setGridView(view)"
+        :title="`${view} (max ${gridViewMaxCameras[view]} cameras)`"
+        class="border-r border-gray-300 px-3 py-1.5 text-sm font-semibold transition-colors last:border-r-0 dark:border-gray-700"
+        :class="
+          gridView === view
+            ? 'bg-primary text-white'
+            : 'bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800'
+        "
+      >
+        {{ view }}
+      </button>
     </div>
   </div>
 
   <!-- Main layout: left = camera grid, right = camera list -->
-  <div class="row g-4">
-    <div class="col-xl-9">
-      <div class="card">
-        <div class="card-body py-3">
-          <!-- Camera count indicator -->
-
-          <div class="row g-3" :class="gridClasses">
-            <div 
-              v-for="(camera, index) in filteredCameras" 
-              :key="camera.uid" 
-              :class="cameraColClass"
-              @dragover="onDragOver($event, index)"
-              @dragleave="onDragLeave"
-              @drop="onDrop($event, index)"
+  <div class="grid grid-cols-1 gap-4 xl:grid-cols-12">
+    <div class="xl:col-span-9">
+      <div class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+        <div class="grid gap-3" :class="gridClasses">
+          <div
+            v-for="(camera, index) in filteredCameras"
+            :key="camera.uid"
+            @dragover="onDragOver($event, index)"
+            @dragleave="onDragLeave"
+            @drop="onDrop($event, index)"
+          >
+            <div
+              class="camera-card overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700"
+              :class="{
+                dragging: isDragging && draggedCamera?.uid === camera.uid,
+                'drag-over': dragOverIndex === index && draggedCamera?.uid !== camera.uid,
+              }"
+              draggable="true"
+              @dragstart="onDragStart($event, camera, index)"
+              @dragend="onDragEnd"
             >
-              <div 
-                class="card camera-card"
-                :class="{
-                  'dragging': isDragging && draggedCamera?.uid === camera.uid,
-                  'drag-over': dragOverIndex === index && draggedCamera?.uid !== camera.uid
-                }"
-                draggable="true"
-                @dragstart="onDragStart($event, camera, index)"
-                @dragend="onDragEnd"
-              >
-                <div class="card-body p-0 position-relative">
-                  <!-- Drag handle overlay -->
-                  <div class="drag-handle position-absolute" style="top: 8px; right: 8px; z-index: 10;">
-                    <i class="ki-duotone ki-menu fs-4 text-white cursor-move drop-shadow">
+              <div class="relative">
+                <!-- Drag handle overlay -->
+                <div class="absolute top-2 right-2 z-10">
+                  <i class="ki-duotone ki-menu fs-4 drop-shadow cursor-move text-white">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                </div>
+
+                <div
+                  class="camera-feed-container relative overflow-hidden rounded bg-black"
+                  :style="{ height: gridView === '1x1' ? '520px' : '200px' }"
+                >
+                  <video
+                    v-if="camera.public_endpoint_url"
+                    :id="`video-${camera.uid}`"
+                    class="camera-video"
+                    playsinline
+                    muted
+                    autoplay
+                    preload="auto"
+                    crossorigin="anonymous"
+                    controls
+                  ></video>
+                  <div v-else class="flex h-full items-center justify-center">
+                    <i class="ki-duotone ki-security-user fs-3x text-gray-600">
                       <span class="path1"></span>
                       <span class="path2"></span>
                     </i>
                   </div>
 
+                  <!-- Info Overlay -->
                   <div
-                    class="camera-feed-container bg-black rounded overflow-hidden"
-                    :style="{ height: gridView === '1x1' ? '520px' : '200px', position: 'relative' }"
+                    class="absolute bottom-0 left-0 w-full p-3"
+                    style="background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent)"
                   >
-                    <video
-                      v-if="camera.public_endpoint_url"
-                      :id="`video-${camera.uid}`"
-                      class="camera-video"
-                      playsinline
-                      muted
-                      autoplay
-                      preload="auto"
-                      crossorigin="anonymous"
-                      controls
-                    ></video>
-                    <div v-else class="d-flex align-items-center justify-content-center h-100">
-                      <i class="ki-duotone ki-security-user fs-3x text-gray-600"><span class="path1"></span><span class="path2"></span></i>
-                    </div>
-
-                    <!-- Info Overlay -->
-                    <div class="position-absolute bottom-0 start-0 w-100 p-3" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
-                      <div class="d-flex justify-content-between align-items-end">
-                        <div>
-                          <div class="text-white fw-bold fs-6">{{ camera.room }}</div>
-                          <div class="d-flex align-items-center text-gray-400 fs-8">
-                            <span class="me-2">{{ camera.name }}</span>
-                            <span v-if="camera.model" class="badge badge-sm badge-light-primary bg-opacity-20 text-white border-0 px-1 py-0" style="font-size: 0.7rem;">{{ camera.model }}</span>
-                          </div>
-                        </div>
-                      </div>
+                    <div class="text-sm font-bold text-white">{{ camera.room }}</div>
+                    <div class="flex items-center text-xs text-gray-400">
+                      <span class="mr-2">{{ camera.name }}</span>
+                      <span
+                        v-if="camera.model"
+                        class="rounded bg-white/20 px-1 py-0 text-[0.7rem] text-white"
+                        >{{ camera.model }}</span
+                      >
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <div v-if="filteredCameras.length === 0" class="text-center py-5">
-            <i class="ki-duotone ki-security-user fs-3x text-gray-400 mb-3"><span class="path1"></span><span class="path2"></span></i>
-              <p class="text-gray-500">{{ t('appsLiveView.grid.empty') }}</p>
-          </div>
+        <div v-if="filteredCameras.length === 0" class="py-5 text-center">
+          <i class="ki-duotone ki-security-user fs-3x mb-3 text-gray-400">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          <p class="text-gray-500">{{ t("appsLiveView.grid.empty") }}</p>
         </div>
       </div>
     </div>
 
-    <div class="col-xl-3">
-      <div class="card h-100">
-        <div class="card-header d-flex justify-content-between align-items-center cursor-pointer" @click="toggleSiteList">
+    <div class="xl:col-span-3">
+      <div class="flex h-full flex-col rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+        <button
+          type="button"
+          @click="toggleSiteList"
+          class="flex cursor-pointer items-center justify-between p-4 text-left"
+        >
           <div class="overflow-hidden">
-            <h3 class="fw-bold m-0 text-truncate">{{ selectedSiteName }}</h3>
-            <div class="small text-muted">({{ totalCameras }} cameras)</div>
+            <h3 class="m-0 truncate text-lg font-bold text-gray-900 dark:text-gray-100">
+              {{ selectedSiteName }}
+            </h3>
+            <div class="text-sm text-gray-500">({{ totalCameras }} cameras)</div>
           </div>
-          <div class="btn btn-sm btn-icon btn-light">
+          <div
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+          >
             <i class="bi" :class="isSiteSelectionOpen ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
           </div>
-        </div>
-        <div class="card-body p-0 overflow-auto" style="max-height: 80vh;">
+        </button>
+        <div class="overflow-auto p-0" style="max-height: 80vh">
           <!-- Site List (Dropdown) -->
           <div v-if="isSiteSelectionOpen">
             <!-- Search Input -->
-            <div class="p-3 border-bottom">
-              <input 
-                type="text" 
+            <div class="border-b border-gray-200 p-3 dark:border-gray-700">
+              <input
+                type="text"
                 v-model="siteSearchQuery"
-                class="form-control form-control-sm"
                 placeholder="Search sites..."
                 @click.stop
+                class="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               />
             </div>
-            <ul class="list-group list-group-flush">
-              <li 
-                v-for="site in filteredSites" 
-                :key="site.uid" 
-                class="list-group-item list-group-item-action cursor-pointer"
-                :class="{ 'active': site.uid === selectedSiteId }"
+            <ul>
+              <li
+                v-for="site in filteredSites"
+                :key="site.uid"
                 @click.stop="selectSite(site)"
+                class="cursor-pointer border-b border-gray-100 px-4 py-3 transition-colors last:border-b-0 dark:border-gray-800"
+                :class="
+                  site.uid === selectedSiteId
+                    ? 'bg-primary-light text-primary'
+                    : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                "
               >
-                <div class="fw-semibold">{{ site.name }}</div>
+                <div class="font-semibold">{{ site.name }}</div>
               </li>
-              <li v-if="filteredSites.length === 0" class="list-group-item text-muted text-center">
+              <li v-if="filteredSites.length === 0" class="px-4 py-3 text-center text-gray-500">
                 No sites found
               </li>
             </ul>
           </div>
 
           <!-- Camera List -->
-          <ul v-else class="list-group list-group-flush">
-            <li 
-              v-for="cam in siteCameras" 
-              :key="cam.uid" 
-              class="list-group-item border-0 py-3 px-4 d-flex justify-content-between align-items-center cursor-grab sidebar-camera-item"
-              :class="{ 'dragging': draggedCamera?.uid === cam.uid }"
+          <ul v-else>
+            <li
+              v-for="cam in siteCameras"
+              :key="cam.uid"
+              class="sidebar-camera-item flex cursor-grab items-center justify-between border-b border-gray-100 px-4 py-3 last:border-b-0 dark:border-gray-800"
+              :class="{ dragging: draggedCamera?.uid === cam.uid }"
               draggable="true"
               @dragstart="onDragStartFromSidebar($event, cam)"
               @dragend="onDragEnd"
               @click="onCameraClick(cam)"
             >
-              <div class="d-flex align-items-center flex-grow-1 overflow-hidden">
+              <div class="flex flex-1 items-center overflow-hidden">
                 <!-- Camera Initial Icon -->
-                <div class="d-flex justify-content-center align-items-center bg-light-primary rounded me-3 flex-shrink-0" style="width: 40px; height: 40px;">
-                  <span class="text-primary fs-3 fw-bold">
-                    {{ (cam.room || cam.name || '?').trim().charAt(0).toUpperCase() }}
+                <div
+                  class="mr-3 flex h-10 w-10 shrink-0 items-center justify-center rounded bg-primary-light"
+                >
+                  <span class="text-lg font-bold text-primary">
+                    {{ (cam.room || cam.name || "?").trim().charAt(0).toUpperCase() }}
                   </span>
                 </div>
 
-                <div class="d-flex flex-column flex-grow-1 overflow-hidden">
-                  <div class="fw-bold text-gray-800 text-truncate fs-6">{{ cam.room }}</div>
-                  <div class="text-muted fs-7 text-truncate">{{ cam.name }}</div>
-                  <div v-if="cam.model" class="d-flex align-items-center mt-1">
-                    <span class="badge badge-light-info fs-8 px-2 py-1">
-                      <i class="bi bi-camera-video me-1"></i>{{ cam.model }}
+                <div class="flex flex-1 flex-col overflow-hidden">
+                  <div class="truncate text-sm font-bold text-gray-800 dark:text-gray-200">
+                    {{ cam.room }}
+                  </div>
+                  <div class="truncate text-xs text-gray-500">{{ cam.name }}</div>
+                  <div v-if="cam.model" class="mt-1 flex items-center">
+                    <span class="inline-flex items-center gap-1 rounded bg-info-light px-2 py-1 text-xs text-info">
+                      <i class="bi bi-camera-video"></i>{{ cam.model }}
                     </span>
                   </div>
                 </div>
               </div>
-              
-              <div class="d-flex align-items-center ms-3 text-gray-400">
+
+              <div class="ml-3 flex items-center text-gray-400">
                 <i class="bi bi-grip-vertical fs-4"></i>
               </div>
             </li>
@@ -211,7 +205,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -659,6 +652,8 @@ watch(selectedSiteId, (nv, ov) => {
   }
 });
 
+const gridViewMaxCameras: Record<string, number> = { '1x1': 1, '2x2': 4, '3x3': 9, '4x4': 16 };
+
 // Grid view management
 const setGridView = async (view: string) => {
   // Clean up existing streams before changing grid
@@ -672,22 +667,21 @@ const setGridView = async (view: string) => {
 };
 
 // Computed properties
+// Tailwind CSS Grid column classes per view. Below the named breakpoint,
+// cameras stack to a single column (matches the previous Bootstrap
+// col-md-6 / col-lg-4 / col-xl-3 responsive fallback).
 const gridClasses = computed(() => {
-  return gridView.value;
-});
-
-const cameraColClass = computed(() => {
   switch (gridView.value) {
     case '1x1':
-      return 'col-12';
+      return 'grid-cols-1';
     case '2x2':
-      return 'col-md-6';
+      return 'grid-cols-1 md:grid-cols-2';
     case '3x3':
-      return 'col-lg-4';
+      return 'grid-cols-1 lg:grid-cols-3';
     case '4x4':
-      return 'col-xl-3';
+      return 'grid-cols-1 xl:grid-cols-4';
     default:
-      return 'col-lg-4';
+      return 'grid-cols-1 lg:grid-cols-3';
   }
 });
 
