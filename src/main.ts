@@ -20,6 +20,9 @@ import "primeicons/primeicons.css";
 import "@/assets/keenicons/duotone/style.css";
 import "@/assets/keenicons/outline/style.css";
 import "@/assets/keenicons/solid/style.css";
+// Imported last so Tailwind utility classes can win over Bootstrap/Element
+// Plus component classes on pages that have been migrated.
+import "@/assets/css/tailwind.css";
 
 /*
 TIP: To get started with clean router change path to @/router/clean.ts.
