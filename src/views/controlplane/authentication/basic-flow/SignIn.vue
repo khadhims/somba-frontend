@@ -78,7 +78,7 @@
 
           <!-- Password Input -->
           <div class="input-group-custom mb-6">
-            <div class="d-flex justify-content-between align-items-center mb-1">
+            <div class="flex items-center justify-between mb-1">
               <label class="custom-label">Password</label>
               <router-link to="/password-reset" class="forgot-link">Forgot?</router-link>
             </div>

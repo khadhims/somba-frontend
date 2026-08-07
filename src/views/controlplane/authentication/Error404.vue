@@ -1,38 +1,37 @@
 <template>
-  <div class="d-flex flex-column flex-center flex-column-fluid">
+  <div class="flex min-h-screen flex-1 flex-col items-center justify-center">
     <!--begin::Content-->
-    <div class="d-flex flex-column flex-center text-center p-10">
+    <div class="flex flex-col items-center p-10 text-center">
       <!--begin::Wrapper-->
-      <div class="card card-flush w-lg-650px py-5">
-        <div class="card-body py-15 py-lg-20">
+      <div class="w-full max-w-2xl rounded-lg bg-white py-5 dark:bg-gray-900">
+        <div class="px-4 py-15 lg:py-20">
           <!--begin::Title-->
-          <h1 class="fw-bolder fs-2hx text-gray-900 mb-4">Oops!</h1>
+          <h1 class="mb-4 text-4xl font-extrabold text-gray-900 dark:text-gray-100">Oops!</h1>
           <!--end::Title-->
           <!--begin::Text-->
-          <div class="fw-semibold fs-6 text-gray-500 mb-7">
-            We can't find that page.
-          </div>
+          <div class="mb-7 font-semibold text-gray-500">We can't find that page.</div>
           <!--end::Text-->
           <!--begin::Illustration-->
           <div class="mb-3">
             <img
               :src="getAssetPath('media/auth/404-error.png')"
-              class="mw-100 mh-300px theme-light-show"
+              class="mx-auto max-h-[300px] max-w-full dark:hidden"
               alt=""
             />
             <img
               :src="getAssetPath('media/auth/404-error-dark.png')"
-              class="mw-100 mh-300px theme-dark-show"
+              class="mx-auto hidden max-h-[300px] max-w-full dark:block"
               alt=""
             />
           </div>
           <!--end::Illustration-->
           <!--begin::Link-->
-          <div class="mb-0">
-            <router-link to="/" class="btn btn-sm btn-primary"
-              >Return Home</router-link
-            >
-          </div>
+          <router-link
+            to="/"
+            class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98]"
+          >
+            Return Home
+          </router-link>
           <!--end::Link-->
         </div>
       </div>
