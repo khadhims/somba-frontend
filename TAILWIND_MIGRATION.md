@@ -1,9 +1,39 @@
 # Tailwind migration
 
-Status: **infra done, one pilot page converted.** The rest of the app
-(283 `.vue` files) still runs on Bootstrap 5 + the custom Metronic SCSS
-theme — converting all of it in one pass wasn't attempted; see "Rollout"
-below for why and how to keep going.
+Status: **infra done, 24 pages + 5 shared components converted** (site
+Overview pilot, LiveView, Events/Alerts + their table/modal components,
+Organization/Account/Team Overview, the site device pages, the two error
+pages). The rest of the app (283 `.vue` files total) still runs on
+Bootstrap 5 + the custom Metronic SCSS theme — converting all of it in one
+pass wasn't attempted; see "Rollout" below for why and how to keep going.
+
+**Deliberately left untouched, with reasons** (don't re-attempt these blind):
+- `views/controlplane/authentication/basic-flow/SignIn.vue` — bespoke,
+  custom-designed login screen (~670 lines of its own scoped CSS: cursor-
+  tracking camera, particles, neon button), not a generic template page.
+  Only the one genuine Bootstrap utility class present was converted.
+- `views/controlplane/authentication/basic-flow/SignUp.vue` — has a live
+  password-strength-meter widget (`data-kt-password-meter` + JS-toggled
+  classes) and Metronic's `fv-plugins-*` form-validation conventions wired
+  to specific class names.
+- `views/controlplane/team/Settings.vue` (2482 lines, the biggest file in
+  the app) — essentially Metronic's stock "Account Settings" demo scaffold:
+  profile-picture upload (`data-kt-image-input`, queried directly by
+  `src/assets/ts/components/_ImageInputComponent.ts`), notification
+  toggles (`data-kt-check`/`data-kt-check-target`), and button loading
+  states (`data-kt-indicator`) are all real JS widgets keyed to exact
+  class/attribute names. Rewriting the markup risks breaking them for a
+  page nobody could visually re-verify in this pass.
+- Camera.vue's Add/Edit modal chrome (`Teleport` + `Transition`, not
+  Bootstrap JS) — the fields inside it were converted, but the modal's
+  scale/fade entrance animation and custom scrollbar styling were left as
+  their own scoped CSS rather than risk reproducing that polish through
+  `<dialog>`'s imperative API unverified.
+
+General rule applied throughout: convert the generic Bootstrap/Metronic
+template classes; leave anything a JS widget queries by exact class or
+`data-kt-*` attribute name alone unless you're prepared to verify it in
+the running app.
 
 ## What's here
 
