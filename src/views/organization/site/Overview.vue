@@ -27,7 +27,7 @@
             v-model="selectedOrganizationId"
             @change="switchOrganization"
             :disabled="loadingOrganizations"
-            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           >
             <option value="" disabled>
               {{
@@ -64,7 +64,7 @@
             :disabled="
               loadingAccounts || !selectedOrganizationId || accounts.length === 0
             "
-            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           >
             <option value="" disabled>
               <span v-if="!selectedOrganizationId">{{
@@ -100,7 +100,7 @@
             v-model="selectedTeamId"
             @change="switchTeam"
             :disabled="loadingTeams || !selectedAccountId || teams.length === 0"
-            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           >
             <option value="" disabled>
               <span v-if="!selectedAccountId">{{ t("selectAccountFirst") }}</span>
@@ -143,7 +143,7 @@
       @click="error = null"
       type="button"
       aria-label="Close"
-      class="text-danger/70 hover:text-danger"
+      class="rounded-md p-1 text-danger/70 transition-colors hover:bg-danger/10 hover:text-danger"
     >
       <i class="ki-duotone ki-cross fs-2">
         <span class="path1"></span>
@@ -158,11 +158,13 @@
     <div
       class="rounded-lg border border-gray-200 bg-white p-6 transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-900"
     >
-      <i class="ki-duotone ki-abstract-39 fs-2x mb-5 text-gray-600">
-        <span class="path1"></span>
-        <span class="path2"></span>
-      </i>
-      <div class="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">
+      <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-light text-primary">
+        <i class="ki-duotone ki-abstract-39 fs-2x">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </div>
+      <div class="mb-2 text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100">
         {{ totalSites }}
       </div>
       <div class="font-semibold text-gray-400">{{ t("totalSites") }}</div>
@@ -171,11 +173,13 @@
     <div
       class="rounded-lg border border-gray-200 bg-white p-6 transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-900"
     >
-      <i class="ki-duotone ki-abstract-35 fs-2x mb-5 text-gray-600">
-        <span class="path1"></span>
-        <span class="path2"></span>
-      </i>
-      <div class="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">
+      <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-success-light text-success">
+        <i class="ki-duotone ki-abstract-35 fs-2x">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </div>
+      <div class="mb-2 text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100">
         {{ activeSites }}
       </div>
       <div class="font-semibold text-gray-400">{{ t("activeSites") }}</div>
@@ -184,11 +188,13 @@
     <div
       class="rounded-lg border border-gray-200 bg-white p-6 transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-900"
     >
-      <i class="ki-duotone ki-abstract-34 fs-2x mb-5 text-gray-600">
-        <span class="path1"></span>
-        <span class="path2"></span>
-      </i>
-      <div class="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">
+      <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-info-light text-info">
+        <i class="ki-duotone ki-abstract-34 fs-2x">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </div>
+      <div class="mb-2 text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100">
         {{ totalVisitors }}
       </div>
       <div class="font-semibold text-gray-400">{{ t("totalVisitors") }}</div>
@@ -197,11 +203,13 @@
     <div
       class="rounded-lg border border-gray-200 bg-white p-6 transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-900"
     >
-      <i class="ki-duotone ki-abstract-41 fs-2x mb-5 text-gray-600">
-        <span class="path1"></span>
-        <span class="path2"></span>
-      </i>
-      <div class="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">
+      <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-warning-light text-warning">
+        <i class="ki-duotone ki-abstract-41 fs-2x">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </div>
+      <div class="mb-2 text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100">
         {{ avgPerformance }}%
       </div>
       <div class="font-semibold text-gray-400">{{ t("avgPerformance") }}</div>
@@ -226,7 +234,7 @@
           <select
             v-model="pagination.per_page"
             @change="changeItemsPerPage"
-            class="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+            class="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm tabular-nums transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           >
             <option value="5">5</option>
             <option value="10">10</option>
@@ -245,14 +253,14 @@
             type="text"
             v-model="searchQuery"
             :placeholder="t('searchSites')"
-            class="w-[250px] rounded-md border border-gray-300 bg-gray-100 py-2 pr-3 pl-12 text-sm text-gray-900 focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+            class="w-[250px] rounded-md border border-gray-300 bg-gray-100 py-2 pr-3 pl-12 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           />
         </div>
 
         <button
           @click="showAddSiteModal"
           :disabled="!selectedTeamId"
-          class="inline-flex items-center gap-1 rounded-md bg-primary-light px-3 py-2 text-sm font-semibold text-primary hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex items-center gap-1 rounded-md bg-primary-light px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
           {{ t("addSite") }}
@@ -308,7 +316,7 @@
             <button
               @click="editSite(row)"
               title="Edit Site"
-              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 hover:text-primary dark:bg-gray-800 dark:text-gray-300"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-primary active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
@@ -318,7 +326,7 @@
             <button
               @click="deleteSite(row)"
               title="Delete Site"
-              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 hover:text-danger dark:bg-gray-800 dark:text-gray-300"
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-danger active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -358,39 +366,42 @@
           </div>
         </div>
 
-        <ul class="flex items-center gap-1">
-          <li>
-            <button
-              @click="goToPage(pagination.page - 1)"
-              :disabled="pagination.page <= 1"
-              class="rounded-md px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-800"
-            >
-              Previous
-            </button>
-          </li>
-          <li v-for="page in visiblePages" :key="page">
-            <button
-              @click="goToPage(page)"
-              class="rounded-md px-3 py-1.5 text-sm"
-              :class="
-                page === pagination.page
-                  ? 'bg-primary text-white'
-                  : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-              "
-            >
-              {{ page }}
-            </button>
-          </li>
-          <li>
-            <button
-              @click="goToPage(pagination.page + 1)"
-              :disabled="pagination.page >= Math.max(1, pagination.total_pages)"
-              class="rounded-md px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-800"
-            >
-              Next
-            </button>
-          </li>
-        </ul>
+        <nav aria-label="Pagination">
+          <ul class="flex items-center gap-1">
+            <li>
+              <button
+                @click="goToPage(pagination.page - 1)"
+                :disabled="pagination.page <= 1"
+                class="rounded-md px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-800"
+              >
+                Previous
+              </button>
+            </li>
+            <li v-for="page in visiblePages" :key="page">
+              <button
+                @click="goToPage(page)"
+                :aria-current="page === pagination.page ? 'page' : undefined"
+                class="rounded-md px-3 py-1.5 text-sm tabular-nums transition-colors"
+                :class="
+                  page === pagination.page
+                    ? 'bg-primary text-white'
+                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
+                "
+              >
+                {{ page }}
+              </button>
+            </li>
+            <li>
+              <button
+                @click="goToPage(pagination.page + 1)"
+                :disabled="pagination.page >= Math.max(1, pagination.total_pages)"
+                class="rounded-md px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-800"
+              >
+                Next
+              </button>
+            </li>
+          </ul>
+        </nav>
       </div>
       <!--end::Pagination-->
     </div>
@@ -409,7 +420,7 @@
         type="button"
         aria-label="Close"
         @click="addSiteDialog?.close()"
-        class="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
       >
         <i class="ki-duotone ki-cross fs-2">
           <span class="path1"></span>
@@ -426,21 +437,21 @@
           type="text"
           v-model="newSite.name"
           required
-          class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
         />
       </div>
       <div class="flex justify-end gap-2 border-t border-gray-200 p-5 dark:border-gray-700">
         <button
           type="button"
           @click="addSiteDialog?.close()"
-          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300"
+          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
         >
           Cancel
         </button>
         <button
           type="submit"
           :disabled="creating"
-          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
         >
           <span
             v-if="creating"
@@ -463,7 +474,7 @@
         type="button"
         aria-label="Close"
         @click="editSiteDialog?.close()"
-        class="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
       >
         <i class="ki-duotone ki-cross fs-2">
           <span class="path1"></span>
@@ -480,21 +491,21 @@
           type="text"
           v-model="siteToEdit.name"
           required
-          class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
         />
       </div>
       <div class="flex justify-end gap-2 border-t border-gray-200 p-5 dark:border-gray-700">
         <button
           type="button"
           @click="editSiteDialog?.close()"
-          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300"
+          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
         >
           Cancel
         </button>
         <button
           type="submit"
           :disabled="editing"
-          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
         >
           <span
             v-if="editing"
@@ -517,7 +528,7 @@
         type="button"
         aria-label="Close"
         @click="deleteSiteDialog?.close()"
-        class="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
       >
         <i class="ki-duotone ki-cross fs-2">
           <span class="path1"></span>
@@ -536,7 +547,7 @@
       <button
         type="button"
         @click="deleteSiteDialog?.close()"
-        class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300"
+        class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
       >
         Cancel
       </button>
@@ -544,7 +555,7 @@
         type="button"
         @click="confirmDelete"
         :disabled="deleting"
-        class="inline-flex items-center gap-2 rounded-md bg-danger px-4 py-2 text-sm font-semibold text-white hover:bg-danger-active disabled:cursor-not-allowed disabled:opacity-60"
+        class="inline-flex items-center gap-2 rounded-md bg-danger px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-danger-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
       >
         <span
           v-if="deleting"
