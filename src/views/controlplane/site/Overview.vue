@@ -1,188 +1,137 @@
 <template>
   <!--begin::Site Overview-->
   <!--begin::Organization, Account & Team Switcher-->
-  <div class="card mb-5">
-    <div class="card-body py-4">
-      <div class="row align-items-center">
-        <div class="col-md-4">
-          <h4 class="card-title mb-0">{{ t('controlplane.site.header.title') }}</h4>
-          <p class="text-muted mb-0">
-            <span v-if="currentTeam">{{ t('controlplane.site.header.subtitleWithTeam', { name: currentTeam.name }) }}</span>
-            <span v-else>{{ t('controlplane.site.header.subtitleDefault') }}</span>
-          </p>
+  <div
+    class="mb-5 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+  >
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h4 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+          {{ t("controlplane.site.header.title") }}
+        </h4>
+        <p class="m-0 text-gray-500">
+          <span v-if="currentTeam">{{
+            t("controlplane.site.header.subtitleWithTeam", { name: currentTeam.name })
+          }}</span>
+          <span v-else>{{ t("controlplane.site.header.subtitleDefault") }}</span>
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-end gap-4">
+        <!-- Organization Dropdown -->
+        <div class="flex items-center">
+          <label class="mr-3 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300">
+            {{ t("controlplane.site.filters.organizationLabel") }}:
+          </label>
+          <select
+            v-model="selectedOrganizationId"
+            @change="switchOrganization"
+            :disabled="loadingOrganizations"
+            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          >
+            <option value="" disabled>
+              {{
+                loadingOrganizations
+                  ? t("controlplane.site.filters.organizationLoading")
+                  : t("controlplane.site.filters.organizationPlaceholder")
+              }}
+            </option>
+            <option v-for="org in organizations" :key="org.uid" :value="org.uid">
+              {{ org.name }}
+            </option>
+          </select>
+          <span
+            v-if="loadingOrganizations"
+            role="status"
+            class="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"
+          >
+            <span class="sr-only">{{ t("controlplane.site.filters.organizationLoading") }}</span>
+          </span>
         </div>
-        <div class="col-md-8">
-          <div class="d-flex justify-content-end gap-3">
-            <!-- Organization Dropdown -->
-            <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('controlplane.site.filters.organizationLabel') }}:</label>
-              <select
-                v-model="selectedOrganizationId"
-                @change="switchOrganization"
-                class="form-select form-select-solid w-200px"
-                :disabled="loadingOrganizations"
-              >
-                <option value="" disabled>
-                  {{
-                    loadingOrganizations
-                      ? t('controlplane.site.filters.organizationLoading')
-                      : t('controlplane.site.filters.organizationPlaceholder')
-                  }}
-                </option>
-                <option
-                  v-for="org in organizations"
-                  :key="org.uid"
-                  :value="org.uid"
-                >
-                  {{ org.name }}
-                </option>
-              </select>
-              
-              <!-- Loading spinner for organizations -->
-              <div v-if="loadingOrganizations" class="ms-2">
-                <div class="spinner-border spinner-border-sm text-primary" role="status">
-                  <span class="visually-hidden">{{ t('controlplane.site.filters.organizationLoading') }}</span>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Account Dropdown -->
-            <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('controlplane.site.filters.accountLabel') }}:</label>
-              <select
-                v-model="selectedAccountId"
-                @change="switchAccount"
-                class="form-select form-select-solid w-200px"
-                :disabled="loadingAccounts || !selectedOrganizationId || accounts.length === 0"
-              >
-                <option value="" disabled>
-                  <span v-if="!selectedOrganizationId">{{ t('controlplane.site.filters.accountRequiresOrganization') }}</span>
-                  <span v-else-if="loadingAccounts">{{ t('controlplane.site.filters.accountLoading') }}</span>
-                  <span v-else-if="accounts.length === 0">{{ t('controlplane.site.filters.accountEmpty') }}</span>
-                  <span v-else>{{ t('controlplane.site.filters.accountPlaceholder') }}</span>
-                </option>
-                <option
-                  v-for="account in accounts"
-                  :key="account.uid"
-                  :value="account.uid"
-                >
-                  {{ account.name }}
-                </option>
-              </select>
-              
-              <!-- Loading spinner for accounts -->
-              <div v-if="loadingAccounts" class="ms-2">
-                <div class="spinner-border spinner-border-sm text-primary" role="status">
-                  <span class="visually-hidden">{{ t('controlplane.site.filters.accountLoading') }}</span>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Team Dropdown -->
-            <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('controlplane.site.filters.teamLabel') }}:</label>
-              <select
-                v-model="selectedTeamIdFilter"
-                @change="switchTeam"
-                class="form-select form-select-solid w-200px"
-                :disabled="loadingTeams || !selectedAccountId || teams.length === 0"
-              >
-                <option value="" disabled>
-                  <span v-if="!selectedAccountId">{{ t('controlplane.site.filters.teamRequiresAccount') }}</span>
-                  <span v-else-if="loadingTeams">{{ t('controlplane.site.filters.teamLoading') }}</span>
-                  <span v-else-if="teams.length === 0">{{ t('controlplane.site.filters.teamEmpty') }}</span>
-                  <span v-else>{{ t('controlplane.site.filters.teamPlaceholder') }}</span>
-                </option>
-                <option
-                  v-for="team in teams"
-                  :key="team.uid"
-                  :value="team.uid"
-                >
-                  {{ team.name }}
-                </option>
-              </select>
-              
-              <!-- Loading spinner for teams -->
-              <div v-if="loadingTeams" class="ms-2">
-                <div class="spinner-border spinner-border-sm text-primary" role="status">
-                  <span class="visually-hidden">{{ t('controlplane.site.filters.teamLoading') }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+
+        <!-- Account Dropdown -->
+        <div class="flex items-center">
+          <label class="mr-3 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300">
+            {{ t("controlplane.site.filters.accountLabel") }}:
+          </label>
+          <select
+            v-model="selectedAccountId"
+            @change="switchAccount"
+            :disabled="loadingAccounts || !selectedOrganizationId || accounts.length === 0"
+            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          >
+            <option value="" disabled>
+              <span v-if="!selectedOrganizationId">{{ t("controlplane.site.filters.accountRequiresOrganization") }}</span>
+              <span v-else-if="loadingAccounts">{{ t("controlplane.site.filters.accountLoading") }}</span>
+              <span v-else-if="accounts.length === 0">{{ t("controlplane.site.filters.accountEmpty") }}</span>
+              <span v-else>{{ t("controlplane.site.filters.accountPlaceholder") }}</span>
+            </option>
+            <option v-for="account in accounts" :key="account.uid" :value="account.uid">
+              {{ account.name }}
+            </option>
+          </select>
+          <span
+            v-if="loadingAccounts"
+            role="status"
+            class="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"
+          >
+            <span class="sr-only">{{ t("controlplane.site.filters.accountLoading") }}</span>
+          </span>
+        </div>
+
+        <!-- Team Dropdown -->
+        <div class="flex items-center">
+          <label class="mr-3 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300">
+            {{ t("controlplane.site.filters.teamLabel") }}:
+          </label>
+          <select
+            v-model="selectedTeamIdFilter"
+            @change="switchTeam"
+            :disabled="loadingTeams || !selectedAccountId || teams.length === 0"
+            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          >
+            <option value="" disabled>
+              <span v-if="!selectedAccountId">{{ t("controlplane.site.filters.teamRequiresAccount") }}</span>
+              <span v-else-if="loadingTeams">{{ t("controlplane.site.filters.teamLoading") }}</span>
+              <span v-else-if="teams.length === 0">{{ t("controlplane.site.filters.teamEmpty") }}</span>
+              <span v-else>{{ t("controlplane.site.filters.teamPlaceholder") }}</span>
+            </option>
+            <option v-for="team in teams" :key="team.uid" :value="team.uid">
+              {{ team.name }}
+            </option>
+          </select>
+          <span
+            v-if="loadingTeams"
+            role="status"
+            class="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"
+          >
+            <span class="sr-only">{{ t("controlplane.site.filters.teamLoading") }}</span>
+          </span>
         </div>
       </div>
     </div>
   </div>
   <!--end::Organization, Account & Team Switcher-->
-<!-- 
-  <div class="row g-5 g-xl-8 mb-8">
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Total Sites'"
-        :value="totalSites"
-        :progress-text="`${activeSites} Active`"
-        :progress-value="activeSitesPercentage"
-        bg-color="#1B84FF"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Total Rooms'"
-        :value="totalRooms"
-        :progress-text="`${roomsWithCameras} with Cameras`"
-        :progress-value="roomsWithCamerasPercentage"
-        bg-color="#17C653"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Total NVRs'"
-        :value="totalNVRs"
-        :progress-text="`${onlineNVRs} Online`"
-        :progress-value="onlineNVRsPercentage"
-        bg-color="#3699FF"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="'Total Cameras'"
-        :value="totalCameras"
-        :progress-text="`${activeCameras} Active`"
-        :progress-value="activeCamerasPercentage"
-        bg-color="#FFA800"
-        text-color="white"
-      />
-    </div>
-  </div> -->
-  <!--end::Summary Cards-->
 
   <!--begin::Sites List-->
-  <div class="card">
+  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
     <!--begin::Card header-->
-    <div class="card-header border-0 pt-5">
-      <!--begin::Card title-->
-      <div class="card-title">
-  <h3 class="fw-bold m-0">{{ t('controlplane.site.toolbar.title') }}</h3>
-      </div>
-      <!--end::Card title-->
+    <div class="flex flex-wrap items-center justify-between gap-4 p-6 pb-0">
+      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.site.toolbar.title") }}
+      </h3>
 
-      <!--begin::Card toolbar-->
-      <div class="card-toolbar">
-        <!--begin::Items per page-->
-        <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('controlplane.site.toolbar.itemsLabel') }}</label>
-          <select 
-            class="form-select form-select-sm w-auto" 
+      <div class="flex flex-wrap items-center gap-4">
+        <!-- Items per page -->
+        <div class="flex items-center">
+          <label class="mr-2 mb-0 text-sm font-semibold text-gray-700 dark:text-gray-300">
+            {{ t("controlplane.site.toolbar.itemsLabel") }}
+          </label>
+          <select
             v-model.number="pagination.per_page"
             @change="changeItemsPerPage"
-            >
+            class="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm tabular-nums transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          >
             <option :value="1">1</option>
             <option :value="5">5</option>
             <option :value="10">10</option>
@@ -190,38 +139,35 @@
             <option :value="50">50</option>
           </select>
         </div>
-        <!--end::Items per page-->
 
-        <!--begin::Search-->
-        <div class="d-flex align-items-center position-relative my-1 me-5">
-          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+        <!-- Search -->
+        <div class="relative flex items-center">
+          <i class="ki-duotone ki-magnifier fs-3 pointer-events-none absolute left-4">
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
           <input
             type="text"
             v-model="searchQuery"
-            class="form-control form-control-solid w-250px ps-12"
             :placeholder="t('controlplane.site.toolbar.searchPlaceholder')"
+            class="w-[250px] rounded-md border border-gray-300 bg-gray-100 py-2 pr-3 pl-12 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           />
         </div>
-        <!--end::Search-->
 
-        <button 
-          @click="showAddSiteModal" 
-          class="btn btn-sm btn-light-primary"
+        <button
+          @click="showAddSiteModal"
           :disabled="!selectedTeamIdFilter"
+          class="inline-flex items-center gap-1 rounded-md bg-primary-light px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
-          {{ t('controlplane.site.toolbar.addButton') }}
+          {{ t("controlplane.site.toolbar.addButton") }}
         </button>
       </div>
-      <!--end::Card toolbar-->
     </div>
-    <!--begin::Card header-->
+    <!--end::Card header-->
 
     <!--begin::Card body-->
-    <div class="card-body py-3">
+    <div class="p-6">
       <KTDataTable
         :data="filteredAndSortedSites"
         :header="tableHeader"
@@ -238,73 +184,57 @@
         :empty-table-text="emptyTableMessage"
       >
         <template v-slot:name="{ row }">
-          <div class="d-flex align-items-center">
-            <div class="symbol symbol-45px me-5">
-              <span class="symbol-label bg-light-primary text-primary fw-bold">
-                {{ row.name.charAt(0).toUpperCase() }}
-              </span>
-            </div>
-            <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">{{
+          <div class="flex items-center">
+            <InitialAvatar :name="row.name" class="mr-5" />
+            <div class="flex flex-col">
+              <span class="font-bold text-gray-900 hover:text-primary dark:text-gray-100">{{
                 row.name
               }}</span>
-              <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-                row.description || t('controlplane.site.common.noDescription')
+              <span class="text-sm text-gray-500">{{
+                row.description || t("controlplane.site.common.noDescription")
               }}</span>
             </div>
           </div>
         </template>
 
         <template v-slot:description="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{
-            row.description || t('controlplane.site.common.noDescription')
+          <span class="block font-bold text-gray-900 dark:text-gray-100">{{
+            row.description || t("controlplane.site.common.noDescription")
           }}</span>
         </template>
 
         <template v-slot:created_by="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">
-            {{ row.created_by?.username || t('controlplane.site.common.unknown') }}
+          <span class="block font-bold text-gray-900 dark:text-gray-100">
+            {{ row.created_by?.username || t("controlplane.site.common.unknown") }}
           </span>
-          <span class="text-muted fw-semibold text-muted d-block fs-7">
-            {{ row.created_by?.email || '' }}
+          <span class="block text-sm text-gray-500">
+            {{ row.created_by?.email || "" }}
           </span>
         </template>
 
         <template v-slot:created_at="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{
+          <span class="block font-bold tabular-nums text-gray-900 dark:text-gray-100">{{
             new Date(row.created_at).toLocaleDateString()
           }}</span>
         </template>
 
         <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end flex-shrink-0">
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              @click="viewSiteDetails(row)"
-              :title="t('controlplane.site.actions.viewDetails')"
-            >
+          <div class="flex justify-end gap-1">
+            <RowActionButton @click="viewSiteDetails(row)" :title="t('controlplane.site.actions.viewDetails')">
               <i class="ki-duotone ki-instagram fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
                 <span class="path3"></span>
                 <span class="path4"></span>
               </i>
-            </button>
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              @click="editSiteDetails(row)"
-              :title="t('controlplane.site.actions.edit')"
-            >
+            </RowActionButton>
+            <RowActionButton @click="editSiteDetails(row)" :title="t('controlplane.site.actions.edit')">
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-            </button>
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
-              @click="deleteSite(row)"
-              :title="t('controlplane.site.actions.delete')"
-            >
+            </RowActionButton>
+            <RowActionButton @click="deleteSite(row)" :title="t('controlplane.site.actions.delete')" variant="danger">
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
@@ -312,11 +242,11 @@
                 <span class="path4"></span>
                 <span class="path5"></span>
               </i>
-            </button>
+            </RowActionButton>
           </div>
         </template>
       </KTDataTable>
-      
+
       <!--begin::Pagination-->
       <Pagination
         v-if="!loading"
@@ -343,12 +273,13 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import AddSiteModal from "@/components/modals/forms/AddSiteModal.vue";
 import EditSiteModal from "@/components/modals/forms/EditSiteModal.vue";
 import ApiService from "@/core/services/ApiService";
 import Pagination from '@/components/common/Pagination.vue'
+import InitialAvatar from "@/components/common/InitialAvatar.vue";
+import RowActionButton from "@/components/common/RowActionButton.vue";
 
 // Interface definitions
 interface Site {
