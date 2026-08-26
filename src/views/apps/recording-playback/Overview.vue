@@ -1,157 +1,144 @@
 <template>
   <!--begin::Recording & Playback Overview-->
-  <div class="card mb-5">
-    <div class="card-body py-4">
-      <div class="row align-items-center">
-        <div class="col-md-4">
-          <h4 class="card-title mb-0">{{ t('appsRecordingPlayback.overview.title') }}</h4>
-          <p class="text-muted mb-0">
-            {{
-              currentSite
-                ? t('appsRecordingPlayback.overview.subtitleSite', { site: currentSite.name })
-                : t('appsRecordingPlayback.overview.subtitleAll')
-            }}
-          </p>
-        </div>
-        <div class="col-md-8">
-          <div class="d-flex justify-content-end gap-3">
-            <div class="d-flex align-items-center" v-if="sites.length > 0">
-              <label class="form-label me-3 mb-0 fw-semibold">{{ t('appsRecordingPlayback.filters.siteLabel') }}</label>
-              <select
-                v-model="selectedSiteId"
-                @change="switchSite"
-                class="form-select form-select-solid w-200px"
-                :disabled="loadingSites"
-              >
-                <option value="">{{ t('appsRecordingPlayback.filters.siteAll') }}</option>
-                <option
-                  v-for="site in sites"
-                  :key="site.uid"
-                  :value="site.uid"
-                >
-                  {{ site.name }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
+  <div class="mb-5 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h4 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+          {{ t("appsRecordingPlayback.overview.title") }}
+        </h4>
+        <p class="m-0 text-gray-500">
+          {{
+            currentSite
+              ? t("appsRecordingPlayback.overview.subtitleSite", { site: currentSite.name })
+              : t("appsRecordingPlayback.overview.subtitleAll")
+          }}
+        </p>
+      </div>
+      <div class="flex items-center" v-if="sites.length > 0">
+        <label class="mr-3 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300">
+          {{ t("appsRecordingPlayback.filters.siteLabel") }}
+        </label>
+        <select
+          v-model="selectedSiteId"
+          @change="switchSite"
+          :disabled="loadingSites"
+          class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+        >
+          <option value="">{{ t("appsRecordingPlayback.filters.siteAll") }}</option>
+          <option v-for="site in sites" :key="site.uid" :value="site.uid">
+            {{ site.name }}
+          </option>
+        </select>
       </div>
     </div>
   </div>
 
-  <div class="row g-5 g-xl-8 mb-8">
+  <div class="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
     <!--begin::Summary Cards-->
-    <div class="col-xl-3">
-      <Widget1
-        :description="t('appsRecordingPlayback.cards.totalStorage.title')"
-        :value="totalStorageValue"
-        :progress-text="totalStorageProgress"
-        :progress-value="storageUsedPercentage"
-        bg-color="#1B84FF"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="t('appsRecordingPlayback.cards.recordingCameras.title')"
-        :value="recordingCamerasValue"
-        :progress-text="recordingCamerasProgress"
-        :progress-value="recordingPercentage"
-        bg-color="#17C653"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="t('appsRecordingPlayback.cards.recordingsToday.title')"
-        :value="recordingsTodayValue"
-        :progress-text="recordingsTodayProgress"
-        :progress-value="recordingsTodayPercentage"
-        bg-color="#3699FF"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="t('appsRecordingPlayback.cards.averageDuration.title')"
-        :value="avgDurationValue"
-        :progress-text="t('appsRecordingPlayback.cards.averageDuration.progress')"
-        :progress-value="100"
-        bg-color="#FFA800"
-        text-color="white"
-      />
-    </div>
+    <Widget1
+      :description="t('appsRecordingPlayback.cards.totalStorage.title')"
+      :value="totalStorageValue"
+      :progress-text="totalStorageProgress"
+      :progress-value="storageUsedPercentage"
+      bg-color="#1B84FF"
+      text-color="white"
+    />
+    <Widget1
+      :description="t('appsRecordingPlayback.cards.recordingCameras.title')"
+      :value="recordingCamerasValue"
+      :progress-text="recordingCamerasProgress"
+      :progress-value="recordingPercentage"
+      bg-color="#17C653"
+      text-color="white"
+    />
+    <Widget1
+      :description="t('appsRecordingPlayback.cards.recordingsToday.title')"
+      :value="recordingsTodayValue"
+      :progress-text="recordingsTodayProgress"
+      :progress-value="recordingsTodayPercentage"
+      bg-color="#3699FF"
+      text-color="white"
+    />
+    <Widget1
+      :description="t('appsRecordingPlayback.cards.averageDuration.title')"
+      :value="avgDurationValue"
+      :progress-text="t('appsRecordingPlayback.cards.averageDuration.progress')"
+      :progress-value="100"
+      bg-color="#FFA800"
+      text-color="white"
+    />
   </div>
   <!--end::Summary Cards-->
 
   <!--begin::Recording Controls-->
-  <div class="card mb-5">
-    <div class="card-header">
-      <div class="card-title">
-        <h3 class="fw-bold">{{ t('appsRecordingPlayback.controls.title') }}</h3>
-      </div>
-      <div class="card-toolbar">
-        <button @click="startAllRecording" class="btn btn-sm btn-success me-2">
+  <div class="mb-5 rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+    <div class="flex flex-wrap items-center justify-between gap-3 p-6 pb-0">
+      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("appsRecordingPlayback.controls.title") }}
+      </h3>
+      <div class="flex gap-2">
+        <button
+          @click="startAllRecording"
+          class="inline-flex items-center gap-1 rounded-md bg-success px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-success-active active:scale-[0.98]"
+        >
           <i class="ki-duotone ki-play fs-2"></i>
-          {{ t('appsRecordingPlayback.controls.startAll') }}
+          {{ t("appsRecordingPlayback.controls.startAll") }}
         </button>
-        <button @click="stopAllRecording" class="btn btn-sm btn-danger">
+        <button
+          @click="stopAllRecording"
+          class="inline-flex items-center gap-1 rounded-md bg-danger px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-danger-active active:scale-[0.98]"
+        >
           <i class="ki-duotone ki-stop fs-2"></i>
-          {{ t('appsRecordingPlayback.controls.stopAll') }}
+          {{ t("appsRecordingPlayback.controls.stopAll") }}
         </button>
       </div>
     </div>
-    <div class="card-body">
-      <div class="row g-3">
+    <div class="p-6">
+      <div class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
         <div
           v-for="camera in cameras"
           :key="camera.uid"
-          class="col-md-6 col-lg-4"
+          class="rounded-lg border border-gray-200 dark:border-gray-700"
         >
-          <div class="card border">
-            <div class="card-body p-4">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="card-title mb-0">{{ camera.name }}</h6>
-                <span
-                  class="badge"
-                  :class="camera.recording ? 'badge-success' : 'badge-secondary'"
-                >
-                  {{
-                    camera.recording
-                      ? t('appsRecordingPlayback.controls.status.recording')
-                      : t('appsRecordingPlayback.controls.status.stopped')
-                  }}
-                </span>
-              </div>
-              <div class="text-muted mb-3">{{ camera.room }}</div>
-              <div class="d-flex gap-2">
-                <button
-                  v-if="!camera.recording"
-                  @click="startRecording(camera)"
-                  class="btn btn-sm btn-success flex-fill"
-                >
-                  <i class="ki-duotone ki-play fs-6"></i>
-                  {{ t('appsRecordingPlayback.controls.buttons.start') }}
-                </button>
-                <button
-                  v-else
-                  @click="stopRecording(camera)"
-                  class="btn btn-sm btn-danger flex-fill"
-                >
-                  <i class="ki-duotone ki-stop fs-6"></i>
-                  {{ t('appsRecordingPlayback.controls.buttons.stop') }}
-                </button>
-                <button
-                  @click="viewLive(camera)"
-                  class="btn btn-sm btn-primary flex-fill"
-                >
-                  <i class="ki-duotone ki-eye fs-6"></i>
-                  {{ t('appsRecordingPlayback.controls.buttons.live') }}
-                </button>
-              </div>
+          <div class="p-4">
+            <div class="mb-3 flex items-center justify-between">
+              <h6 class="m-0 text-gray-900 dark:text-gray-100">{{ camera.name }}</h6>
+              <span
+                class="inline-flex rounded px-2 py-1 text-xs font-semibold text-white"
+                :class="camera.recording ? 'bg-success' : 'bg-gray-500'"
+              >
+                {{
+                  camera.recording
+                    ? t("appsRecordingPlayback.controls.status.recording")
+                    : t("appsRecordingPlayback.controls.status.stopped")
+                }}
+              </span>
+            </div>
+            <div class="mb-3 text-gray-500">{{ camera.room }}</div>
+            <div class="flex gap-2">
+              <button
+                v-if="!camera.recording"
+                @click="startRecording(camera)"
+                class="flex-1 rounded-md bg-success px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-success-active active:scale-[0.98]"
+              >
+                <i class="ki-duotone ki-play fs-6"></i>
+                {{ t("appsRecordingPlayback.controls.buttons.start") }}
+              </button>
+              <button
+                v-else
+                @click="stopRecording(camera)"
+                class="flex-1 rounded-md bg-danger px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-danger-active active:scale-[0.98]"
+              >
+                <i class="ki-duotone ki-stop fs-6"></i>
+                {{ t("appsRecordingPlayback.controls.buttons.stop") }}
+              </button>
+              <button
+                @click="viewLive(camera)"
+                class="flex-1 rounded-md bg-primary px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98]"
+              >
+                <i class="ki-duotone ki-eye fs-6"></i>
+                {{ t("appsRecordingPlayback.controls.buttons.live") }}
+              </button>
             </div>
           </div>
         </div>
@@ -161,71 +148,62 @@
   <!--end::Recording Controls-->
 
   <!--begin::Recordings List-->
-  <div class="card">
+  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
     <!--begin::Card header-->
-    <div class="card-header border-0 pt-5">
-      <!--begin::Card title-->
-      <div class="card-title">
-        <h3 class="fw-bold m-0">{{ t('appsRecordingPlayback.list.title') }}</h3>
-      </div>
-      <!--end::Card title-->
+    <div class="flex flex-wrap items-center justify-between gap-4 p-6 pb-0">
+      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{ t("appsRecordingPlayback.list.title") }}
+      </h3>
 
-      <!--begin::Card toolbar-->
-      <div class="card-toolbar">
+      <div class="flex flex-wrap items-center gap-3">
         <!--begin::Search-->
-        <div class="d-flex align-items-center position-relative my-1 me-5">
-          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+        <div class="relative flex items-center">
+          <i class="ki-duotone ki-magnifier fs-3 pointer-events-none absolute left-4">
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
           <input
             type="text"
             v-model="searchQuery"
-            class="form-control form-control-solid w-250px ps-12"
             :placeholder="t('appsRecordingPlayback.list.searchPlaceholder')"
+            class="w-[250px] rounded-md border border-gray-300 bg-gray-100 py-2 pr-3 pl-12 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           />
         </div>
         <!--end::Search-->
 
         <!--begin::Date Filter-->
-        <div class="me-3">
-          <input
-            type="date"
-            v-model="selectedDate"
-            @change="filterByDate"
-            class="form-control form-control-solid w-150px"
-          />
-        </div>
+        <input
+          type="date"
+          v-model="selectedDate"
+          @change="filterByDate"
+          class="w-[150px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+        />
 
         <!--begin::Camera Filter-->
-        <div class="me-3">
-          <select
-            v-model="selectedCameraFilter"
-            @change="filterByCamera"
-            class="form-select form-select-solid w-150px"
-          >
-            <option value="">{{ t('appsRecordingPlayback.list.cameraFilterAll') }}</option>
-            <option
-              v-for="camera in cameras"
-              :key="camera.uid"
-              :value="camera.uid"
-            >
-              {{ camera.name }}
-            </option>
-          </select>
-        </div>
+        <select
+          v-model="selectedCameraFilter"
+          @change="filterByCamera"
+          class="w-[150px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+        >
+          <option value="">{{ t("appsRecordingPlayback.list.cameraFilterAll") }}</option>
+          <option v-for="camera in cameras" :key="camera.uid" :value="camera.uid">
+            {{ camera.name }}
+          </option>
+        </select>
 
-        <button @click="refreshRecordings" class="btn btn-sm btn-light-primary">
+        <button
+          @click="refreshRecordings"
+          class="inline-flex items-center gap-1 rounded-md bg-primary-light px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.98]"
+        >
           <i class="ki-duotone ki-arrows-circle fs-2"></i>
-          {{ t('appsRecordingPlayback.list.refresh') }}
+          {{ t("appsRecordingPlayback.list.refresh") }}
         </button>
       </div>
-      <!--end::Card toolbar-->
     </div>
-    <!--begin::Card header-->
+    <!--end::Card header-->
 
     <!--begin::Card body-->
-    <div class="card-body py-3">
+    <div class="p-6">
       <KTDataTable
         :data="filteredAndSortedRecordings"
         :header="tableHeader"
@@ -240,47 +218,43 @@
         :empty-table-text="t('appsRecordingPlayback.list.table.empty')"
       >
         <template v-slot:camera="{ row }">
-          <div class="d-flex align-items-center">
-            <div class="symbol symbol-35px me-3">
-              <span class="symbol-label bg-light-primary text-primary fw-bold">
-                <i class="ki-duotone ki-security-user fs-6"></i>
-              </span>
+          <div class="flex items-center">
+            <div class="mr-3 flex h-[35px] w-[35px] items-center justify-center rounded-full bg-primary-light text-primary">
+              <i class="ki-duotone ki-security-user fs-6"></i>
             </div>
-            <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">{{
+            <div class="flex flex-col">
+              <span class="font-bold text-gray-900 hover:text-primary dark:text-gray-100">{{
                 row.camera_name
               }}</span>
-              <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-                row.room
-              }}</span>
+              <span class="text-sm text-gray-500">{{ row.room }}</span>
             </div>
           </div>
         </template>
 
         <template v-slot:start_time="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">{{
+          <span class="block font-bold tabular-nums text-gray-900 dark:text-gray-100">{{
             new Date(row.start_time).toLocaleDateString()
           }}</span>
-          <span class="text-muted fw-semibold text-muted d-block fs-7">{{
+          <span class="block text-sm tabular-nums text-gray-500">{{
             new Date(row.start_time).toLocaleTimeString()
           }}</span>
         </template>
 
         <template v-slot:duration="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">
+          <span class="block font-bold tabular-nums text-gray-900 dark:text-gray-100">
             {{ formatDuration(row.duration_seconds) }}
           </span>
         </template>
 
         <template v-slot:file_size="{ row }">
-          <span class="text-dark fw-bold d-block fs-6">
+          <span class="block font-bold tabular-nums text-gray-900 dark:text-gray-100">
             {{ formatFileSize(row.file_size_bytes) }}
           </span>
         </template>
 
         <template v-slot:type="{ row }">
           <span
-            class="badge"
+            class="inline-flex rounded px-2 py-1 text-xs font-semibold"
             :class="getRecordingTypeBadgeClass(row.type)"
           >
             {{ getRecordingTypeLabel(row.type) }}
@@ -288,28 +262,24 @@
         </template>
 
         <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end flex-shrink-0">
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              @click="playRecording(row)"
-              :title="t('appsRecordingPlayback.list.table.actions.play')"
-            >
+          <div class="flex justify-end gap-1">
+            <RowActionButton @click="playRecording(row)" :title="t('appsRecordingPlayback.list.table.actions.play')">
               <i class="ki-duotone ki-play fs-2"></i>
-            </button>
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
+            </RowActionButton>
+            <RowActionButton
               @click="downloadRecording(row)"
               :title="t('appsRecordingPlayback.list.table.actions.download')"
+              variant="success"
             >
               <i class="ki-duotone ki-download fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-            </button>
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
+            </RowActionButton>
+            <RowActionButton
               @click="deleteRecording(row)"
               :title="t('appsRecordingPlayback.list.table.actions.delete')"
+              variant="danger"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -318,33 +288,33 @@
                 <span class="path4"></span>
                 <span class="path5"></span>
               </i>
-            </button>
+            </RowActionButton>
           </div>
         </template>
       </KTDataTable>
 
       <!--begin::Bulk Actions-->
       <div v-if="selectedRecordings.length > 0" class="mt-5">
-        <div class="card bg-light">
-          <div class="card-body py-3">
-            <div class="d-flex align-items-center justify-content-between">
-              <span class="fw-bold">
-                {{ t('appsRecordingPlayback.list.bulk.selected', { count: selectedRecordings.length }) }}
+        <div class="rounded-lg bg-gray-100 dark:bg-gray-800">
+          <div class="p-3">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-gray-900 dark:text-gray-100">
+                {{ t("appsRecordingPlayback.list.bulk.selected", { count: selectedRecordings.length }) }}
               </span>
-              <div class="d-flex gap-2">
+              <div class="flex gap-2">
                 <button
                   @click="bulkDownload"
-                  class="btn btn-sm btn-success"
+                  class="inline-flex items-center gap-1 rounded-md bg-success px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-success-active active:scale-[0.98]"
                 >
                   <i class="ki-duotone ki-download fs-6"></i>
-                  {{ t('appsRecordingPlayback.list.bulk.download') }}
+                  {{ t("appsRecordingPlayback.list.bulk.download") }}
                 </button>
                 <button
                   @click="bulkDelete"
-                  class="btn btn-sm btn-danger"
+                  class="inline-flex items-center gap-1 rounded-md bg-danger px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-danger-active active:scale-[0.98]"
                 >
                   <i class="ki-duotone ki-trash fs-6"></i>
-                  {{ t('appsRecordingPlayback.list.bulk.delete') }}
+                  {{ t("appsRecordingPlayback.list.bulk.delete") }}
                 </button>
               </div>
             </div>
@@ -364,6 +334,8 @@ import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
 import { useI18n } from "vue-i18n";
+import RowActionButton from "@/components/common/RowActionButton.vue";
+import { badgeVariantClass } from "@/core/helpers/badge";
 
 // Interface definitions
 interface Recording {
@@ -750,13 +722,13 @@ const typeKeyMap: Record<string, string> = {
 const getRecordingTypeBadgeClass = (type: string) => {
   switch (normalizeKey(type)) {
     case 'scheduled':
-      return 'badge-light-primary';
+      return badgeVariantClass('primary');
     case 'motion':
-      return 'badge-light-warning';
+      return badgeVariantClass('warning');
     case 'manual':
-      return 'badge-light-success';
+      return badgeVariantClass('success');
     default:
-      return 'badge-light-secondary';
+      return badgeVariantClass('secondary');
   }
 };
 
