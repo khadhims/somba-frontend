@@ -26,7 +26,7 @@ const props = withDefaults(
     title?: string;
     to?: string | Record<string, unknown>;
     disabled?: boolean;
-    variant?: Extract<BadgeVariant, "primary" | "success" | "danger">;
+    variant?: Extract<BadgeVariant, "primary" | "success" | "danger" | "warning">;
   }>(),
   { variant: "primary" }
 );
@@ -37,6 +37,7 @@ const HOVER_CLASSES: Record<string, string> = {
   primary: "hover:text-primary",
   success: "hover:text-success",
   danger: "hover:text-danger",
+  warning: "hover:text-warning",
 };
 
 const hoverClass = computed(() => HOVER_CLASSES[props.variant]);
