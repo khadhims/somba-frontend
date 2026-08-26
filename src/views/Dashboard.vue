@@ -1,118 +1,96 @@
 <template>
-  <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
+  <div class="app-root flex flex-col" id="kt_app_root">
     <!-- App page -->
-    <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
+    <div class="app-page flex flex-1 flex-col" id="kt_app_page">
       <!-- App main -->
-      <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+      <div class="app-main flex flex-1 flex-col" id="kt_app_main">
         <!-- Content wrapper -->
-        <div class="d-flex flex-column flex-column-fluid">
+        <div class="flex flex-1 flex-col">
           <!-- Content -->
-          <div id="kt_app_content" class="app-content flex-column-fluid">
-            <div
-              id="kt_app_content_container"
-              class="app-container container-xxl"
-            >
+          <div id="kt_app_content" class="app-content flex-1">
+            <div id="kt_app_content_container" class="app-container mx-auto max-w-[1320px]">
               <!-- Main Dashboard Card - Gabungan 3 Section -->
-              <div class="row g-3 g-xl-4 mb-3">
-                <div class="col-12">
-                  <div class="card dashboard-main-card">
-                    <!-- Section 1: Proses Pelaksanaan Harian -->
-                    <div
-                      class="card-header border-0 pt-3 pb-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 dashboard-section-header"
-                    >
-                      <div class="card-title flex-grow-1">
-                        <div class="d-flex flex-column gap-2">
-                          <h3
-                            class="fw-bold text-dark text-white-dark fs-5 mb-0"
-                          >
-                            {{ t("dashboard.sections.dailyProcess.title") }}
-                          </h3>
-                          <div
-                            class="header-meta d-flex flex-wrap align-items-center gap-2"
-                          >
-                            <span class="badge badge-light-primary fs-8">
-                              Data per: {{ currentDate }}
-                            </span>
+              <div class="mb-3">
+                <div class="dashboard-main-card rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+                  <!-- Section 1: Proses Pelaksanaan Harian -->
+                  <div
+                    class="dashboard-section-header flex flex-col items-start justify-between gap-3 border-b-0 p-4 pt-3 pb-3 md:flex-row md:items-center"
+                  >
+                    <div class="flex-1">
+                      <div class="flex flex-col gap-2">
+                        <h3 class="m-0 text-base font-bold text-gray-900 dark:text-gray-100">
+                          {{ t("dashboard.sections.dailyProcess.title") }}
+                        </h3>
+                        <div class="header-meta flex flex-wrap items-center gap-2">
+                          <span class="inline-flex rounded bg-primary-light px-2 py-1 text-xs font-semibold text-primary">
+                            Data per: {{ currentDate }}
+                          </span>
+                          <span class="header-meta-item flex items-center gap-1 text-xs">
                             <span
-                              class="header-meta-item fs-8 d-flex align-items-center gap-1"
+                              class="icon-wrapper cursor-pointer"
+                              @click="handleManualRefresh"
+                              title="Klik untuk refresh manual"
                             >
-                              <span
-                                class="icon-wrapper"
-                                @click="handleManualRefresh"
-                                style="cursor: pointer"
-                                title="Klik untuk refresh manual"
-                              >
-                                <i class="pi pi-sync"></i>
-                              </span>
-                              <span class="meta-text"
-                                >Otomatis update tiap
-                                {{ autoUpdateInterval }} menit</span
-                              >
+                              <i class="pi pi-sync"></i>
                             </span>
-                          </div>
+                            <span class="meta-text"
+                              >Otomatis update tiap
+                              {{ autoUpdateInterval }} menit</span
+                            >
+                          </span>
                         </div>
                       </div>
-                      <div
-                        class="card-toolbar d-flex flex-wrap align-items-center gap-2 w-100 w-md-auto"
-                      >
-                        <!-- Tombol Simpan Laporan -->
-                        <button
-                          class="btn btn-sm btn-primary d-flex align-items-center gap-2"
-                          @click="handleShowReport"
-                          :disabled="loadingReport"
-                        >
-                          <span
-                            v-if="loadingReport"
-                            class="spinner-border spinner-border-sm"
-                          ></span>
-                          <i v-else class="fas fa-file-pdf"></i>
-                          <span class="d-none d-sm-inline">{{
-                            loadingReport
-                              ? t("dashboard.report.loading")
-                              : t("dashboard.report.save")
-                          }}</span>
-                        </button>
-
-                        <div
-                          class="vr mx-2 d-none d-md-block h-20px my-auto bg-gray-300"
-                        ></div>
-
-                        <label
-                          class="fw-semibold fs-7 text-muted mb-0 d-none d-md-block"
-                        >
-                          {{ t("controlplane.site.camera.filters.siteLabel") }}
-                        </label>
-                        <!-- Dropdown Pemilihan Lokasi -->
-                        <select
-                          v-model="selectedSite"
-                          class="form-select form-select-sm w-100 w-md-auto"
-                          style="min-width: 200px"
-                        >
-                          <option value="">
-                            {{
-                              t(
-                                "controlplane.site.camera.form.fields.site.placeholder"
-                              )
-                            }}
-                          </option>
-                          <option
-                            v-for="site in sites"
-                            :key="site.uid"
-                            :value="site.uid"
-                          >
-                            {{ site.name }}
-                          </option>
-                        </select>
-                      </div>
                     </div>
-                    <div
-                      class="card-body position-relative"
-                      style="padding: 1rem 1rem 1.5rem 1rem"
-                    >
+                    <div class="flex w-full flex-wrap items-center gap-2 md:w-auto">
+                      <!-- Tombol Simpan Laporan -->
+                      <button
+                        class="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                        @click="handleShowReport"
+                        :disabled="loadingReport"
+                      >
+                        <span
+                          v-if="loadingReport"
+                          class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                        ></span>
+                        <i v-else class="fas fa-file-pdf"></i>
+                        <span class="hidden sm:inline">{{
+                          loadingReport
+                            ? t("dashboard.report.loading")
+                            : t("dashboard.report.save")
+                        }}</span>
+                      </button>
+
+                      <div class="mx-2 hidden h-5 self-stretch border-l border-gray-300 md:block"></div>
+
+                      <label class="hidden mb-0 text-sm font-semibold text-gray-500 md:block">
+                        {{ t("controlplane.site.camera.filters.siteLabel") }}
+                      </label>
+                      <!-- Dropdown Pemilihan Lokasi -->
+                      <select
+                        v-model="selectedSite"
+                        class="w-full min-w-[200px] rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none md:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                      >
+                        <option value="">
+                          {{
+                            t(
+                              "controlplane.site.camera.form.fields.site.placeholder"
+                            )
+                          }}
+                        </option>
+                        <option
+                          v-for="site in sites"
+                          :key="site.uid"
+                          :value="site.uid"
+                        >
+                          {{ site.name }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                    <div class="relative p-4 pt-4 pb-6">
                       <!-- Loading state: skeleton cards -->
-                      <div v-if="loading" class="row g-3">
+                      <div v-if="loading" class="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-6">
                         <div
-                          class="col-6 col-md-4 col-xl-3"
                           v-for="n in 6"
                           :key="`lac-${n}`"
                         >
@@ -123,16 +101,16 @@
                       <!-- Error state -->
                       <div
                         v-else-if="error"
-                        class="alert alert-warning"
                         role="alert"
+                        class="rounded-lg border border-warning-light bg-warning-light p-4 text-warning"
                       >
-                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
                         {{ t("dashboard.general.errorLoading") }}: {{ error }}
                         <button
-                          class="btn btn-sm btn-outline-primary ms-3"
+                          class="ml-3 rounded-md border border-primary px-2 py-1 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
                           @click="loadLiveActivities"
                         >
-                          <i class="fas fa-refresh me-1"></i
+                          <i class="fas fa-refresh mr-1"></i
                           >{{ t("dashboard.general.retry") }}
                         </button>
                       </div>
@@ -193,14 +171,14 @@
                       </div>
                     </div>
                     <!-- Divider -->
-                    <div class="separator separator-dashed my-0"></div>
+                    <div class="border-t border-dashed border-gray-200 dark:border-gray-700"></div>
 
                     <!-- Section 2: Recent Alerts -->
-                    <div class="card-header border-0 pt-3 pb-2">
-                      <div class="card-title">
-                        <h3 class="fw-bold m-0 d-flex align-items-center gap-2">
+                    <div class="p-4 pt-3 pb-2">
+                      <div>
+                        <h3 class="m-0 flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-gray-100">
                           <i
-                            class="pi pi-exclamation-triangle fs-2 text-danger"
+                            class="pi pi-exclamation-triangle text-2xl text-danger"
                           ></i>
                           {{
                             t("dashboard.alerts.summary.title") ||
@@ -209,42 +187,40 @@
                         </h3>
                       </div>
                     </div>
-                    <div class="card-body py-3">
-                      <div class="row g-4">
+                    <div class="p-4 py-3">
+                      <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
                         <!-- Left Column: Alerts Table -->
-                        <div class="col-lg-8">
+                        <div class="lg:col-span-8">
                           <!-- Desktop View: Table -->
-                          <div class="table-responsive d-none d-md-block">
-                            <table
-                              class="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3"
-                            >
+                          <div class="hidden overflow-x-auto md:block">
+                            <table class="w-full">
                               <thead>
-                                <tr class="fw-bold text-muted">
-                                  <th class="min-w-150px text-center">
+                                <tr class="border-b border-gray-100 font-bold text-gray-500 dark:border-gray-800">
+                                  <th class="min-w-[150px] py-3 text-center">
                                     {{
                                       t("dashboard.alerts.table.violation") ||
                                       "Nama Pelanggaran"
                                     }}
                                   </th>
-                                  <th class="min-w-100px text-center">
+                                  <th class="min-w-[100px] py-3 text-center">
                                     {{
                                       t("dashboard.alerts.table.duration") ||
                                       "Durasi"
                                     }}
                                   </th>
-                                  <th class="min-w-80px text-center">
+                                  <th class="min-w-[80px] py-3 text-center">
                                     {{
                                       t("dashboard.alerts.table.detection") ||
                                       "Deteksi"
                                     }}
                                   </th>
-                                  <th class="min-w-140px text-center">
+                                  <th class="min-w-[140px] py-3 text-center">
                                     {{
                                       t("dashboard.alerts.table.time") ||
                                       "Waktu"
                                     }}
                                   </th>
-                                  <th class="min-w-100px text-center">
+                                  <th class="min-w-[100px] py-3 text-center">
                                     {{
                                       t("dashboard.alerts.table.status") ||
                                       "Status"
@@ -263,9 +239,9 @@
                                 <tr v-else-if="!alerts.length">
                                   <td
                                     colspan="5"
-                                    class="text-center py-8 text-muted"
+                                    class="py-8 text-center text-gray-500"
                                   >
-                                    <i class="pi pi-info-circle fs-2x mb-2"></i>
+                                    <i class="pi pi-info-circle mb-2 text-2xl"></i>
                                     <div>
                                       {{
                                         t("dashboard.alerts.table.empty") ||
@@ -278,43 +254,42 @@
                                   v-else
                                   v-for="alert in recentAlerts"
                                   :key="alert.event_id"
-                                  class="alert-row cursor-pointer"
+                                  class="alert-row cursor-pointer border-b border-gray-100 last:border-b-0 dark:border-gray-800"
                                   @click="openAlertDetail(alert)"
                                 >
-                                  <td>
-                                    <div class="d-flex align-items-center">
+                                  <td class="py-3">
+                                    <div class="flex items-center">
                                       <div>
-                                        <div class="fw-bold text-dark">
+                                        <div class="font-bold text-gray-900 dark:text-gray-100">
                                           {{ alert.alert_type }}
                                         </div>
-                                        <div class="text-muted fs-7">
+                                        <div class="text-sm text-gray-500">
                                           {{ alert.camera_name }}
                                         </div>
                                       </div>
                                     </div>
                                   </td>
-                                  <td class="text-center">
-                                    <span class="text-dark fw-semibold">
+                                  <td class="py-3 text-center">
+                                    <span class="font-semibold text-gray-900 dark:text-gray-100">
                                       {{
                                         formatDuration(alert.duration_minutes)
                                       }}
                                     </span>
                                   </td>
-                                  <td class="text-center">
-                                    <span class="badge badge-light-primary"
+                                  <td class="py-3 text-center">
+                                    <span
+                                      class="inline-flex rounded px-2 py-1 text-xs font-semibold"
+                                      :class="badgeVariantClass('primary')"
                                       >{{ alert.detection_count }}x</span
                                     >
                                   </td>
-                                  <td class="text-center">
-                                    <span class="text-dark">{{
+                                  <td class="py-3 text-center">
+                                    <span class="text-gray-900 dark:text-gray-100">{{
                                       formatDateTime(alert.event_start)
                                     }}</span>
                                   </td>
-                                  <td class="text-center">
-                                    <span
-                                      class="badge"
-                                      :class="statusBadge(alert.status)"
-                                    >
+                                  <td class="py-3 text-center">
+                                    <span :class="statusBadge(alert.status)">
                                       {{ statusLabel(alert.status) }}
                                     </span>
                                   </td>
@@ -324,10 +299,10 @@
                           </div>
 
                           <!-- Mobile View: Cards -->
-                          <div class="d-md-none">
+                          <div class="md:hidden">
                             <div
                               v-if="loadingAlerts"
-                              class="d-flex flex-column gap-3"
+                              class="flex flex-col gap-3"
                             >
                               <SkeletonCard
                                 v-for="n in 3"
@@ -338,9 +313,9 @@
                             </div>
                             <div
                               v-else-if="!alerts.length"
-                              class="text-center py-8 text-muted"
+                              class="py-8 text-center text-gray-500"
                             >
-                              <i class="pi pi-info-circle fs-2x mb-2"></i>
+                              <i class="pi pi-info-circle mb-2 text-2xl"></i>
                               <div>
                                 {{
                                   t("dashboard.alerts.table.empty") ||
@@ -348,85 +323,74 @@
                                 }}
                               </div>
                             </div>
-                            <div v-else class="d-flex flex-column gap-3">
+                            <div v-else class="flex flex-col gap-3">
                               <div
                                 v-for="alert in recentAlerts"
                                 :key="`mobile-${alert.event_id}`"
-                                class="card bg-light border-0 cursor-pointer shadow-sm"
+                                class="cursor-pointer rounded-lg bg-gray-100 shadow-sm dark:bg-gray-800"
                                 @click="openAlertDetail(alert)"
                               >
-                                <div class="card-body p-3">
-                                  <div
-                                    class="d-flex justify-content-between align-items-start mb-2"
-                                  >
-                                    <div
-                                      class="d-flex align-items-center gap-2"
-                                    >
-                                      <div class="symbol symbol-35px">
-                                        <div
-                                          class="symbol-label bg-white text-primary"
-                                        >
-                                          <i
-                                            class="pi pi-exclamation-triangle fs-4"
-                                          ></i>
-                                        </div>
+                                <div class="p-3">
+                                  <div class="mb-2 flex items-start justify-between">
+                                    <div class="flex items-center gap-2">
+                                      <div class="flex h-[35px] w-[35px] items-center justify-center rounded-full bg-white text-primary">
+                                        <i
+                                          class="pi pi-exclamation-triangle text-lg"
+                                        ></i>
                                       </div>
                                       <div>
-                                        <div class="fw-bold text-dark fs-6">
+                                        <div class="text-sm font-bold text-gray-900 dark:text-gray-100">
                                           {{ alert.alert_type }}
                                         </div>
-                                        <div class="text-muted fs-8">
+                                        <div class="text-xs text-gray-500">
                                           {{ alert.camera_name }}
                                         </div>
                                       </div>
                                     </div>
-                                    <span
-                                      class="badge"
-                                      :class="statusBadge(alert.status)"
-                                    >
+                                    <span :class="statusBadge(alert.status)">
                                       {{ statusLabel(alert.status) }}
                                     </span>
                                   </div>
 
                                   <div
-                                    class="separator separator-dashed my-2"
+                                    class="my-2 border-t border-dashed border-gray-300 dark:border-gray-600"
                                   ></div>
 
-                                  <div class="row g-2 fs-7">
-                                    <div class="col-6">
-                                      <div class="text-muted">
+                                  <div class="grid grid-cols-2 gap-2 text-sm">
+                                    <div>
+                                      <div class="text-gray-500">
                                         {{
                                           t(
                                             "dashboard.alerts.table.duration"
                                           ) || "Durasi"
                                         }}
                                       </div>
-                                      <div class="fw-bold text-dark">
+                                      <div class="font-bold text-gray-900 dark:text-gray-100">
                                         {{
                                           formatDuration(alert.duration_minutes)
                                         }}
                                       </div>
                                     </div>
-                                    <div class="col-6">
-                                      <div class="text-muted">
+                                    <div>
+                                      <div class="text-gray-500">
                                         {{
                                           t(
                                             "dashboard.alerts.table.detection"
                                           ) || "Deteksi"
                                         }}
                                       </div>
-                                      <div class="fw-bold text-dark">
+                                      <div class="font-bold text-gray-900 dark:text-gray-100">
                                         {{ alert.detection_count }}x
                                       </div>
                                     </div>
-                                    <div class="col-12 mt-2">
-                                      <div class="text-muted">
+                                    <div class="col-span-2 mt-2">
+                                      <div class="text-gray-500">
                                         {{
                                           t("dashboard.alerts.table.time") ||
                                           "Waktu"
                                         }}
                                       </div>
-                                      <div class="fw-bold text-dark">
+                                      <div class="font-bold text-gray-900 dark:text-gray-100">
                                         {{ formatDateTime(alert.event_start) }}
                                       </div>
                                     </div>
@@ -437,23 +401,21 @@
                           </div>
                         </div>
                         <!-- Right Column: Summary Cards -->
-                        <div class="col-lg-4">
-                          <div class="d-flex flex-column gap-2">
-                            <div class="card bg-light-primary border-0">
-                              <div class="card-body p-3">
-                                <div class="d-flex align-items-center">
+                        <div class="lg:col-span-4">
+                          <div class="flex flex-col gap-2">
+                            <div class="rounded-lg bg-primary-light">
+                              <div class="p-3">
+                                <div class="flex items-center">
                                   <div
-                                    class="symbol symbol-50px flex-shrink-0 me-4"
+                                    class="mr-4 flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-primary"
                                   >
-                                    <div class="symbol-label bg-primary">
-                                      <i
-                                        class="pi pi-exclamation-circle fs-2 text-white"
-                                      ></i>
-                                    </div>
+                                    <i
+                                      class="pi pi-exclamation-circle text-xl text-white"
+                                    ></i>
                                   </div>
-                                  <div class="flex-grow-1 text-end">
+                                  <div class="flex-1 text-right">
                                     <div
-                                      class="text-gray-600 fw-semibold fs-7 mb-1"
+                                      class="mb-1 text-sm font-semibold text-gray-600"
                                     >
                                       {{
                                         t(
@@ -462,17 +424,17 @@
                                       }}
                                     </div>
                                     <div
-                                      class="d-flex align-items-baseline gap-2 justify-content-end"
+                                      class="flex items-baseline justify-end gap-2"
                                     >
                                       <div
-                                        class="fs-2 fw-bolder text-primary"
+                                        class="text-2xl font-extrabold text-primary"
                                         v-if="!loadingSummaryAlerts"
                                       >
                                         {{ totalAlertsToday }}
                                       </div>
                                       <div
                                         v-else
-                                        class="d-flex justify-content-end"
+                                        class="flex justify-end"
                                       >
                                         <SkeletonBlock
                                           :width="60"
@@ -484,21 +446,19 @@
                                 </div>
                               </div>
                             </div>
-                            <div class="card bg-light-danger border-0">
-                              <div class="card-body p-3">
-                                <div class="d-flex align-items-center">
+                            <div class="rounded-lg bg-danger-light">
+                              <div class="p-3">
+                                <div class="flex items-center">
                                   <div
-                                    class="symbol symbol-50px flex-shrink-0 me-4"
+                                    class="mr-4 flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-danger"
                                   >
-                                    <div class="symbol-label bg-danger">
-                                      <i
-                                        class="pi pi-flag-fill fs-2 text-white"
-                                      ></i>
-                                    </div>
+                                    <i
+                                      class="pi pi-flag-fill text-xl text-white"
+                                    ></i>
                                   </div>
-                                  <div class="flex-grow-1 text-end">
+                                  <div class="flex-1 text-right">
                                     <div
-                                      class="text-gray-600 fw-semibold fs-7 mb-1"
+                                      class="mb-1 text-sm font-semibold text-gray-600"
                                     >
                                       {{
                                         t(
@@ -507,14 +467,14 @@
                                       }}
                                     </div>
                                     <div
-                                      class="fs-2 fw-bolder text-danger"
+                                      class="text-2xl font-extrabold text-danger"
                                       v-if="!loadingSummaryAlerts"
                                     >
                                       {{ unresolvedAlertsToday }}
                                     </div>
                                     <div
                                       v-else
-                                      class="d-flex justify-content-end"
+                                      class="flex justify-end"
                                     >
                                       <SkeletonBlock :width="60" :height="22" />
                                     </div>
@@ -522,21 +482,19 @@
                                 </div>
                               </div>
                             </div>
-                            <div class="card bg-light-success border-0">
-                              <div class="card-body p-3">
-                                <div class="d-flex align-items-center">
+                            <div class="rounded-lg bg-success-light">
+                              <div class="p-3">
+                                <div class="flex items-center">
                                   <div
-                                    class="symbol symbol-50px flex-shrink-0 me-4"
+                                    class="mr-4 flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-success"
                                   >
-                                    <div class="symbol-label bg-success">
-                                      <i
-                                        class="pi pi-check-circle fs-2 text-white"
-                                      ></i>
-                                    </div>
+                                    <i
+                                      class="pi pi-check-circle text-xl text-white"
+                                    ></i>
                                   </div>
-                                  <div class="flex-grow-1 text-end">
+                                  <div class="flex-1 text-right">
                                     <div
-                                      class="text-gray-600 fw-semibold fs-7 mb-1"
+                                      class="mb-1 text-sm font-semibold text-gray-600"
                                     >
                                       {{
                                         t(
@@ -545,17 +503,17 @@
                                       }}
                                     </div>
                                     <div
-                                      class="d-flex align-items-baseline gap-2 justify-content-end"
+                                      class="flex items-baseline justify-end gap-2"
                                     >
                                       <div
-                                        class="fs-2 fw-bolder text-success"
+                                        class="text-2xl font-extrabold text-success"
                                         v-if="!loadingSummaryAlerts"
                                       >
                                         {{ resolvedAlertsToday }}
                                       </div>
                                       <div
                                         v-else
-                                        class="d-flex justify-content-end"
+                                        class="flex justify-end"
                                       >
                                         <SkeletonBlock
                                           :width="60"
@@ -571,7 +529,7 @@
 
                           <!-- Activity Summary Carousel -->
                           <div class="mt-3">
-                            <h6 class="fw-bold text-dark mb-3">
+                            <h6 class="mb-3 font-bold text-gray-900 dark:text-gray-100">
                               {{
                                 t("dashboard.activities.summary.title") ||
                                 "Aktivitas"
@@ -581,7 +539,7 @@
                             <!-- Loading State: skeletons -->
                             <div
                               v-if="loadingSummaryActivities"
-                              class="d-flex flex-column gap-2"
+                              class="flex flex-col gap-2"
                             >
                               <SkeletonCard
                                 :lines="2"
@@ -594,10 +552,10 @@
                             <!-- Empty State -->
                             <div
                               v-else-if="!summaryActivities.length"
-                              class="text-center py-3"
+                              class="py-3 text-center"
                             >
-                              <i class="fas fa-inbox fs-4 text-muted mb-2"></i>
-                              <p class="text-muted fs-8 mb-0">
+                              <i class="fas fa-inbox mb-2 text-lg text-gray-500"></i>
+                              <p class="m-0 text-xs text-gray-500">
                                 {{
                                   t("dashboard.activities.summary.empty") ||
                                   "Tidak ada data aktivitas"
@@ -652,36 +610,25 @@
                         </div>
                       </div>
                     </div>
-                    <div class="separator separator-dashed my-0"></div>
+                    <div class="border-t border-dashed border-gray-200 dark:border-gray-700"></div>
                     <!-- Section 3: Real Time Report -->
-                    <div
-                      class="card-header border-0 pt-5 pb-2"
-                      style="margin-top: -1px"
-                    >
-                      <div class="card-title">
-                        <div
-                          class="d-flex align-items-center position-relative my-0"
+                    <div class="flex flex-wrap items-center justify-between gap-2 p-4 pt-5 pb-2 -mt-px">
+                      <div class="relative flex items-center">
+                        <i
+                          class="ki-duotone ki-chart-line absolute left-3 text-lg text-primary"
                         >
-                          <i
-                            class="ki-duotone ki-chart-line fs-4 position-absolute ms-3 text-primary text-white-dark"
-                          >
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <h3
-                            class="fw-bold ms-10 text-dark text-white-dark fs-5 mb-0"
-                          >
-                            {{ t("dashboard.sections.realTimeReport.title") }}
-                          </h3>
-                        </div>
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <h3 class="m-0 ml-10 text-base font-bold text-gray-900 dark:text-gray-100">
+                          {{ t("dashboard.sections.realTimeReport.title") }}
+                        </h3>
                       </div>
-                      <div class="card-toolbar">
-                        <span class="text-muted fs-8">{{
-                          t("dashboard.sections.realTimeReport.subtitle")
-                        }}</span>
-                      </div>
+                      <span class="text-xs text-gray-500">{{
+                        t("dashboard.sections.realTimeReport.subtitle")
+                      }}</span>
                     </div>
-                    <div class="card-body py-3">
+                    <div class="p-4 py-3">
                       <!-- Real Time Report Component -->
                       <RealTimeReport
                         ref="realTimeReportRef"
@@ -704,7 +651,6 @@
           </div>
         </div>
       </div>
-    </div>
   </div>
   <AlertDetailModal
     :show="showAlertModal"
@@ -764,6 +710,7 @@ import {
   getCurrentDateTimeGMT8,
   toMomentGMT8,
 } from "@/core/helpers/timezone";
+import { badgeVariantClass } from "@/core/helpers/badge";
 
 interface Site {
   uid: string;
@@ -1556,10 +1503,11 @@ const formatDuration = (minutes?: number | null) => {
 
 const statusBadge = (status: string) => {
   const k = normalizeKey(status);
-  if (k === "notresolved") return "badge-light-danger";
-  if (k === "resolved") return "badge-light-success";
-  if (k === "falsealarm") return "badge-light-info";
-  return "badge-light-secondary";
+  const base = "inline-flex rounded px-2 py-1 text-xs font-semibold";
+  if (k === "notresolved") return `${base} ${badgeVariantClass("danger")}`;
+  if (k === "resolved") return `${base} ${badgeVariantClass("success")}`;
+  if (k === "falsealarm") return `${base} ${badgeVariantClass("info")}`;
+  return `${base} ${badgeVariantClass("secondary")}`;
 };
 
 const statusLabel = (status: string) => {
