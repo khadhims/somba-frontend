@@ -1,28 +1,24 @@
 <template>
   <!--begin::Events & Alerts Settings-->
-  <div class="card mb-5">
-    <div class="card-body py-4">
-      <div class="row align-items-center">
-        <div class="col-md-4">
-          <h4 class="card-title mb-0">{{ t('appsEventsAlerts.settings.header.title') }}</h4>
-          <p class="text-muted mb-0">
-            {{ t('appsEventsAlerts.settings.header.description') }}
-          </p>
-        </div>
-      </div>
-    </div>
+  <div class="mb-5 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+    <h4 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+      {{ t("appsEventsAlerts.settings.header.title") }}
+    </h4>
+    <p class="m-0 text-gray-500">
+      {{ t("appsEventsAlerts.settings.header.description") }}
+    </p>
   </div>
 
-  <div class="row g-5 g-xl-8">
+  <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
     <!--begin::Event Detection Settings-->
-    <div class="col-xl-6">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <h3 class="fw-bold">{{ t('appsEventsAlerts.settings.eventDetection.title') }}</h3>
-          </div>
+    <div>
+      <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+        <div class="p-6 pb-0">
+          <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+            {{ t("appsEventsAlerts.settings.eventDetection.title") }}
+          </h3>
         </div>
-        <div class="card-body">
+        <div class="p-6">
           <form @submit.prevent="saveEventSettings">
             <!--begin::Motion Detection-->
             <div class="mb-7">
@@ -32,29 +28,30 @@
                   type="checkbox"
                   v-model="eventSettings.motionDetection.enabled"
                 />
-                <span class="form-check-label fw-semibold text-gray-800">
-                  {{ t('appsEventsAlerts.settings.eventDetection.motion.label') }}
+                <span class="form-check-label font-semibold text-gray-800">
+                  {{ t("appsEventsAlerts.settings.eventDetection.motion.label") }}
                 </span>
               </label>
-              <div class="text-muted fs-7">
-                {{ t('appsEventsAlerts.settings.eventDetection.motion.description') }}
+              <div class="text-sm text-gray-500">
+                {{ t("appsEventsAlerts.settings.eventDetection.motion.description") }}
               </div>
-              
+
               <div v-if="eventSettings.motionDetection.enabled" class="mt-4">
                 <div class="mb-4">
-                  <label class="form-label">{{ t('appsEventsAlerts.settings.eventDetection.motion.sensitivity') }}</label>
-                  <select
-                    v-model="eventSettings.motionDetection.sensitivity"
-                    class="form-select form-select-solid"
-                  >
-                    <option value="low">{{ t('appsEventsAlerts.table.severity.low') }}</option>
-                    <option value="medium">{{ t('appsEventsAlerts.table.severity.medium') }}</option>
-                    <option value="high">{{ t('appsEventsAlerts.table.severity.high') }}</option>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {{ t("appsEventsAlerts.settings.eventDetection.motion.sensitivity") }}
+                  </label>
+                  <select v-model="eventSettings.motionDetection.sensitivity" :class="formInputClass">
+                    <option value="low">{{ t("appsEventsAlerts.table.severity.low") }}</option>
+                    <option value="medium">{{ t("appsEventsAlerts.table.severity.medium") }}</option>
+                    <option value="high">{{ t("appsEventsAlerts.table.severity.high") }}</option>
                   </select>
                 </div>
-                
+
                 <div class="mb-4">
-                  <label class="form-label">{{ t('appsEventsAlerts.settings.eventDetection.motion.minArea') }}</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {{ t("appsEventsAlerts.settings.eventDetection.motion.minArea") }}
+                  </label>
                   <input
                     type="range"
                     class="form-range"
@@ -62,7 +59,7 @@
                     max="50"
                     v-model="eventSettings.motionDetection.minArea"
                   />
-                  <div class="text-muted fs-7">{{ eventSettings.motionDetection.minArea }}%</div>
+                  <div class="text-sm text-gray-500">{{ eventSettings.motionDetection.minArea }}%</div>
                 </div>
               </div>
             </div>
@@ -76,32 +73,35 @@
                   type="checkbox"
                   v-model="eventSettings.intrusionDetection.enabled"
                 />
-                <span class="form-check-label fw-semibold text-gray-800">
-                  {{ t('appsEventsAlerts.settings.eventDetection.intrusion.label') }}
+                <span class="form-check-label font-semibold text-gray-800">
+                  {{ t("appsEventsAlerts.settings.eventDetection.intrusion.label") }}
                 </span>
               </label>
-              <div class="text-muted fs-7">
-                {{ t('appsEventsAlerts.settings.eventDetection.intrusion.description') }}
+              <div class="text-sm text-gray-500">
+                {{ t("appsEventsAlerts.settings.eventDetection.intrusion.description") }}
               </div>
 
               <div v-if="eventSettings.intrusionDetection.enabled" class="mt-4">
                 <div class="mb-4">
-                  <label class="form-label">{{ t('appsEventsAlerts.settings.eventDetection.intrusion.zones') }}</label>
-                  <div class="d-flex flex-wrap gap-2">
+                  <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {{ t("appsEventsAlerts.settings.eventDetection.intrusion.zones") }}
+                  </label>
+                  <div class="flex flex-wrap gap-2">
                     <span
                       v-for="zone in eventSettings.intrusionDetection.zones"
                       :key="zone"
-                      class="badge badge-light-primary"
+                      class="inline-flex rounded px-2 py-1 text-xs font-semibold"
+                      :class="badgeVariantClass('primary')"
                     >
                       {{ zone }}
                     </span>
                   </div>
                   <button
                     type="button"
-                    class="btn btn-sm btn-light-primary mt-2"
                     @click="configureZones"
+                    class="mt-2 inline-flex items-center gap-1 rounded-md bg-primary-light px-3 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
                   >
-                    {{ t('appsEventsAlerts.settings.eventDetection.intrusion.configure') }}
+                    {{ t("appsEventsAlerts.settings.eventDetection.intrusion.configure") }}
                   </button>
                 </div>
               </div>
@@ -116,12 +116,12 @@
                   type="checkbox"
                   v-model="eventSettings.systemMonitoring.enabled"
                 />
-                <span class="form-check-label fw-semibold text-gray-800">
-                  {{ t('appsEventsAlerts.settings.eventDetection.system.label') }}
+                <span class="form-check-label font-semibold text-gray-800">
+                  {{ t("appsEventsAlerts.settings.eventDetection.system.label") }}
                 </span>
               </label>
-              <div class="text-muted fs-7">
-                {{ t('appsEventsAlerts.settings.eventDetection.system.description') }}
+              <div class="text-sm text-gray-500">
+                {{ t("appsEventsAlerts.settings.eventDetection.system.description") }}
               </div>
 
               <div v-if="eventSettings.systemMonitoring.enabled" class="mt-4">
@@ -132,10 +132,10 @@
                       type="checkbox"
                       v-model="eventSettings.systemMonitoring.cameraOffline"
                     />
-                    <span class="form-check-label">{{ t('appsEventsAlerts.settings.eventDetection.system.cameraOffline') }}</span>
+                    <span class="form-check-label">{{ t("appsEventsAlerts.settings.eventDetection.system.cameraOffline") }}</span>
                   </label>
                 </div>
-                
+
                 <div class="mb-4">
                   <label class="form-check form-check-custom form-check-solid">
                     <input
@@ -143,7 +143,7 @@
                       type="checkbox"
                       v-model="eventSettings.systemMonitoring.lowDiskSpace"
                     />
-                    <span class="form-check-label">{{ t('appsEventsAlerts.settings.eventDetection.system.lowDiskSpace') }}</span>
+                    <span class="form-check-label">{{ t("appsEventsAlerts.settings.eventDetection.system.lowDiskSpace") }}</span>
                   </label>
                 </div>
 
@@ -154,17 +154,21 @@
                       type="checkbox"
                       v-model="eventSettings.systemMonitoring.networkIssues"
                     />
-                    <span class="form-check-label">{{ t('appsEventsAlerts.settings.eventDetection.system.networkIssues') }}</span>
+                    <span class="form-check-label">{{ t("appsEventsAlerts.settings.eventDetection.system.networkIssues") }}</span>
                   </label>
                 </div>
               </div>
             </div>
             <!--end::System Monitoring-->
 
-            <div class="d-flex justify-content-end">
-              <button type="submit" class="btn btn-primary" :disabled="savingEventSettings">
-                <span v-if="savingEventSettings" class="spinner-border spinner-border-sm me-2"></span>
-                {{ savingEventSettings ? t('appsEventsAlerts.actions.saving') : t('appsEventsAlerts.settings.eventDetection.saveButton') }}
+            <div class="flex justify-end">
+              <button
+                type="submit"
+                :disabled="savingEventSettings"
+                class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <span v-if="savingEventSettings" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                {{ savingEventSettings ? t("appsEventsAlerts.actions.saving") : t("appsEventsAlerts.settings.eventDetection.saveButton") }}
               </button>
             </div>
           </form>
@@ -174,14 +178,14 @@
     <!--end::Event Detection Settings-->
 
     <!--begin::Alert Notifications-->
-    <div class="col-xl-6">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <h3 class="fw-bold">{{ t('appsEventsAlerts.settings.notifications.title') }}</h3>
-          </div>
+    <div>
+      <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+        <div class="p-6 pb-0">
+          <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+            {{ t("appsEventsAlerts.settings.notifications.title") }}
+          </h3>
         </div>
-        <div class="card-body">
+        <div class="p-6">
           <form @submit.prevent="saveNotificationSettings">
             <!--begin::Email Notifications-->
             <div class="mb-7">
@@ -191,35 +195,36 @@
                   type="checkbox"
                   v-model="notificationSettings.email.enabled"
                 />
-                <span class="form-check-label fw-semibold text-gray-800">
-                  {{ t('appsEventsAlerts.settings.notifications.email.label') }}
+                <span class="form-check-label font-semibold text-gray-800">
+                  {{ t("appsEventsAlerts.settings.notifications.email.label") }}
                 </span>
               </label>
-              <div class="text-muted fs-7">
-                {{ t('appsEventsAlerts.settings.notifications.email.description') }}
+              <div class="text-sm text-gray-500">
+                {{ t("appsEventsAlerts.settings.notifications.email.description") }}
               </div>
 
               <div v-if="notificationSettings.email.enabled" class="mt-4">
                 <div class="mb-4">
-                  <label class="form-label">{{ t('appsEventsAlerts.settings.notifications.email.recipients') }}</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {{ t("appsEventsAlerts.settings.notifications.email.recipients") }}
+                  </label>
                   <textarea
                     v-model="emailRecipientsText"
-                    class="form-control form-control-solid"
                     rows="3"
                     :placeholder="t('appsEventsAlerts.settings.notifications.email.placeholder')"
+                    :class="formInputClass"
                   ></textarea>
                 </div>
 
                 <div class="mb-4">
-                  <label class="form-label">{{ t('appsEventsAlerts.settings.notifications.email.threshold') }}</label>
-                  <select
-                    v-model="notificationSettings.email.severityThreshold"
-                    class="form-select form-select-solid"
-                  >
-                    <option value="low">{{ t('appsEventsAlerts.settings.notifications.email.options.low') }}</option>
-                    <option value="medium">{{ t('appsEventsAlerts.settings.notifications.email.options.medium') }}</option>
-                    <option value="high">{{ t('appsEventsAlerts.settings.notifications.email.options.high') }}</option>
-                    <option value="critical">{{ t('appsEventsAlerts.settings.notifications.email.options.critical') }}</option>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {{ t("appsEventsAlerts.settings.notifications.email.threshold") }}
+                  </label>
+                  <select v-model="notificationSettings.email.severityThreshold" :class="formInputClass">
+                    <option value="low">{{ t("appsEventsAlerts.settings.notifications.email.options.low") }}</option>
+                    <option value="medium">{{ t("appsEventsAlerts.settings.notifications.email.options.medium") }}</option>
+                    <option value="high">{{ t("appsEventsAlerts.settings.notifications.email.options.high") }}</option>
+                    <option value="critical">{{ t("appsEventsAlerts.settings.notifications.email.options.critical") }}</option>
                   </select>
                 </div>
               </div>
@@ -234,33 +239,34 @@
                   type="checkbox"
                   v-model="notificationSettings.sms.enabled"
                 />
-                <span class="form-check-label fw-semibold text-gray-800">
-                  {{ t('appsEventsAlerts.settings.notifications.sms.label') }}
+                <span class="form-check-label font-semibold text-gray-800">
+                  {{ t("appsEventsAlerts.settings.notifications.sms.label") }}
                 </span>
               </label>
-              <div class="text-muted fs-7">
-                {{ t('appsEventsAlerts.settings.notifications.sms.description') }}
+              <div class="text-sm text-gray-500">
+                {{ t("appsEventsAlerts.settings.notifications.sms.description") }}
               </div>
 
               <div v-if="notificationSettings.sms.enabled" class="mt-4">
                 <div class="mb-4">
-                  <label class="form-label">{{ t('appsEventsAlerts.settings.notifications.sms.numbers') }}</label>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {{ t("appsEventsAlerts.settings.notifications.sms.numbers") }}
+                  </label>
                   <textarea
                     v-model="phoneNumbersText"
-                    class="form-control form-control-solid"
                     rows="3"
                     :placeholder="t('appsEventsAlerts.settings.notifications.sms.placeholder')"
+                    :class="formInputClass"
                   ></textarea>
                 </div>
 
                 <div class="mb-4">
-                  <label class="form-label">{{ t('appsEventsAlerts.settings.notifications.sms.threshold') }}</label>
-                  <select
-                    v-model="notificationSettings.sms.severityThreshold"
-                    class="form-select form-select-solid"
-                  >
-                    <option value="high">{{ t('appsEventsAlerts.settings.notifications.sms.options.high') }}</option>
-                    <option value="critical">{{ t('appsEventsAlerts.settings.notifications.sms.options.critical') }}</option>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {{ t("appsEventsAlerts.settings.notifications.sms.threshold") }}
+                  </label>
+                  <select v-model="notificationSettings.sms.severityThreshold" :class="formInputClass">
+                    <option value="high">{{ t("appsEventsAlerts.settings.notifications.sms.options.high") }}</option>
+                    <option value="critical">{{ t("appsEventsAlerts.settings.notifications.sms.options.critical") }}</option>
                   </select>
                 </div>
               </div>
@@ -275,25 +281,24 @@
                   type="checkbox"
                   v-model="notificationSettings.push.enabled"
                 />
-                <span class="form-check-label fw-semibold text-gray-800">
-                  {{ t('appsEventsAlerts.settings.notifications.push.label') }}
+                <span class="form-check-label font-semibold text-gray-800">
+                  {{ t("appsEventsAlerts.settings.notifications.push.label") }}
                 </span>
               </label>
-              <div class="text-muted fs-7">
-                {{ t('appsEventsAlerts.settings.notifications.push.description') }}
+              <div class="text-sm text-gray-500">
+                {{ t("appsEventsAlerts.settings.notifications.push.description") }}
               </div>
 
               <div v-if="notificationSettings.push.enabled" class="mt-4">
                 <div class="mb-4">
-                  <label class="form-label">{{ t('appsEventsAlerts.settings.notifications.push.threshold') }}</label>
-                  <select
-                    v-model="notificationSettings.push.severityThreshold"
-                    class="form-select form-select-solid"
-                  >
-                    <option value="low">{{ t('appsEventsAlerts.settings.notifications.email.options.low') }}</option>
-                    <option value="medium">{{ t('appsEventsAlerts.settings.notifications.email.options.medium') }}</option>
-                    <option value="high">{{ t('appsEventsAlerts.settings.notifications.email.options.high') }}</option>
-                    <option value="critical">{{ t('appsEventsAlerts.settings.notifications.email.options.critical') }}</option>
+                  <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {{ t("appsEventsAlerts.settings.notifications.push.threshold") }}
+                  </label>
+                  <select v-model="notificationSettings.push.severityThreshold" :class="formInputClass">
+                    <option value="low">{{ t("appsEventsAlerts.settings.notifications.email.options.low") }}</option>
+                    <option value="medium">{{ t("appsEventsAlerts.settings.notifications.email.options.medium") }}</option>
+                    <option value="high">{{ t("appsEventsAlerts.settings.notifications.email.options.high") }}</option>
+                    <option value="critical">{{ t("appsEventsAlerts.settings.notifications.email.options.critical") }}</option>
                   </select>
                 </div>
 
@@ -304,17 +309,21 @@
                       type="checkbox"
                       v-model="notificationSettings.push.sound"
                     />
-                    <span class="form-check-label">{{ t('appsEventsAlerts.settings.notifications.push.sound') }}</span>
+                    <span class="form-check-label">{{ t("appsEventsAlerts.settings.notifications.push.sound") }}</span>
                   </label>
                 </div>
               </div>
             </div>
             <!--end::Push Notifications-->
 
-            <div class="d-flex justify-content-end">
-              <button type="submit" class="btn btn-primary" :disabled="savingNotificationSettings">
-                <span v-if="savingNotificationSettings" class="spinner-border spinner-border-sm me-2"></span>
-                {{ savingNotificationSettings ? t('appsEventsAlerts.actions.saving') : t('appsEventsAlerts.settings.notifications.saveButton') }}
+            <div class="flex justify-end">
+              <button
+                type="submit"
+                :disabled="savingNotificationSettings"
+                class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <span v-if="savingNotificationSettings" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                {{ savingNotificationSettings ? t("appsEventsAlerts.actions.saving") : t("appsEventsAlerts.settings.notifications.saveButton") }}
               </button>
             </div>
           </form>
@@ -325,56 +334,54 @@
   </div>
 
   <!--begin::Advanced Settings-->
-  <div class="row g-5 mt-5">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <h3 class="fw-bold">{{ t('appsEventsAlerts.settings.advanced.title') }}</h3>
+  <div class="mt-5">
+    <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+      <div class="p-6 pb-0">
+        <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+          {{ t("appsEventsAlerts.settings.advanced.title") }}
+        </h3>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="mb-7">
+            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              {{ t("appsEventsAlerts.settings.advanced.eventRetention.label") }}
+            </label>
+            <input
+              type="number"
+              v-model="advancedSettings.eventRetentionDays"
+              min="1"
+              max="365"
+              :class="formInputClass"
+            />
+            <div class="mt-1 text-sm text-gray-500">{{ t("appsEventsAlerts.settings.advanced.eventRetention.help") }}</div>
+          </div>
+
+          <div class="mb-7">
+            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              {{ t("appsEventsAlerts.settings.advanced.autoResolution.label") }}
+            </label>
+            <input
+              type="number"
+              v-model="advancedSettings.autoResolutionHours"
+              min="1"
+              max="168"
+              :class="formInputClass"
+            />
+            <div class="mt-1 text-sm text-gray-500">{{ t("appsEventsAlerts.settings.advanced.autoResolution.help") }}</div>
           </div>
         </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="mb-7">
-                <label class="form-label">{{ t('appsEventsAlerts.settings.advanced.eventRetention.label') }}</label>
-                <input
-                  type="number"
-                  class="form-control form-control-solid"
-                  v-model="advancedSettings.eventRetentionDays"
-                  min="1"
-                  max="365"
-                />
-                <div class="text-muted fs-7">{{ t('appsEventsAlerts.settings.advanced.eventRetention.help') }}</div>
-              </div>
-            </div>
 
-            <div class="col-md-6">
-              <div class="mb-7">
-                <label class="form-label">{{ t('appsEventsAlerts.settings.advanced.autoResolution.label') }}</label>
-                <input
-                  type="number"
-                  class="form-control form-control-solid"
-                  v-model="advancedSettings.autoResolutionHours"
-                  min="1"
-                  max="168"
-                />
-                <div class="text-muted fs-7">{{ t('appsEventsAlerts.settings.advanced.autoResolution.help') }}</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="d-flex justify-content-end">
-            <button
-              type="button"
-              class="btn btn-primary"
-              @click="saveAdvancedSettings"
-              :disabled="savingAdvancedSettings"
-            >
-              <span v-if="savingAdvancedSettings" class="spinner-border spinner-border-sm me-2"></span>
-              {{ savingAdvancedSettings ? t('appsEventsAlerts.actions.saving') : t('appsEventsAlerts.settings.advanced.saveButton') }}
-            </button>
-          </div>
+        <div class="flex justify-end">
+          <button
+            type="button"
+            @click="saveAdvancedSettings"
+            :disabled="savingAdvancedSettings"
+            class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <span v-if="savingAdvancedSettings" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+            {{ savingAdvancedSettings ? t("appsEventsAlerts.actions.saving") : t("appsEventsAlerts.settings.advanced.saveButton") }}
+          </button>
         </div>
       </div>
     </div>
@@ -386,6 +393,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import ApiService from "@/core/services/ApiService";
+import { formInputClass, badgeVariantClass } from "@/core/helpers/badge";
 
 // Interface definitions
 interface EventSettings {
