@@ -1,36 +1,31 @@
 <template>
   <!--begin::Recording & Playback Settings-->
-  <div class="card mb-5">
-    <div class="card-body py-4">
-      <div class="row align-items-center">
-        <div class="col-md-4">
-          <h4 class="card-title mb-0">{{ t('appsRecordingPlayback.settings.header.title') }}</h4>
-          <p class="text-muted mb-0">
-            {{ t('appsRecordingPlayback.settings.header.description') }}
-          </p>
-        </div>
-      </div>
-    </div>
+  <div class="mb-5 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+    <h4 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+      {{ t("appsRecordingPlayback.settings.header.title") }}
+    </h4>
+    <p class="m-0 text-gray-500">
+      {{ t("appsRecordingPlayback.settings.header.description") }}
+    </p>
   </div>
 
-  <div class="row g-5 g-xl-8">
+  <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
     <!--begin::Recording Settings-->
-    <div class="col-xl-6">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <h3 class="fw-bold">{{ t('appsRecordingPlayback.settings.recording.title') }}</h3>
-          </div>
+    <div>
+      <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+        <div class="p-6 pb-0">
+          <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+            {{ t("appsRecordingPlayback.settings.recording.title") }}
+          </h3>
         </div>
-        <div class="card-body">
+        <div class="p-6">
           <form @submit.prevent="saveRecordingSettings">
             <!--begin::Recording Mode-->
             <div class="mb-7">
-              <label class="form-label">{{ t('appsRecordingPlayback.settings.recording.mode.label') }}</label>
-              <select
-                v-model="recordingSettings.mode"
-                class="form-select form-select-solid"
-              >
+              <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                {{ t("appsRecordingPlayback.settings.recording.mode.label") }}
+              </label>
+              <select v-model="recordingSettings.mode" :class="formInputClass">
                 <option
                   v-for="option in recordingModeOptions"
                   :key="option.value"
@@ -39,17 +34,16 @@
                   {{ t(option.labelKey) }}
                 </option>
               </select>
-              <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.recording.mode.help') }}</div>
+              <div class="mt-1 text-sm text-gray-500">{{ t("appsRecordingPlayback.settings.recording.mode.help") }}</div>
             </div>
             <!--end::Recording Mode-->
 
             <!--begin::Video Quality-->
             <div class="mb-7">
-              <label class="form-label">{{ t('appsRecordingPlayback.settings.recording.quality.label') }}</label>
-              <select
-                v-model="recordingSettings.quality"
-                class="form-select form-select-solid"
-              >
+              <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                {{ t("appsRecordingPlayback.settings.recording.quality.label") }}
+              </label>
+              <select v-model="recordingSettings.quality" :class="formInputClass">
                 <option
                   v-for="option in recordingQualityOptions"
                   :key="option.value"
@@ -58,17 +52,16 @@
                   {{ t(option.labelKey) }}
                 </option>
               </select>
-              <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.recording.quality.help') }}</div>
+              <div class="mt-1 text-sm text-gray-500">{{ t("appsRecordingPlayback.settings.recording.quality.help") }}</div>
             </div>
             <!--end::Video Quality-->
 
             <!--begin::Frame Rate-->
             <div class="mb-7">
-              <label class="form-label">{{ t('appsRecordingPlayback.settings.recording.frameRate.label') }}</label>
-              <select
-                v-model.number="recordingSettings.frameRate"
-                class="form-select form-select-solid"
-              >
+              <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                {{ t("appsRecordingPlayback.settings.recording.frameRate.label") }}
+              </label>
+              <select v-model.number="recordingSettings.frameRate" :class="formInputClass">
                 <option
                   v-for="option in frameRateOptions"
                   :key="option.value"
@@ -77,17 +70,16 @@
                   {{ t(option.labelKey) }}
                 </option>
               </select>
-              <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.recording.frameRate.help') }}</div>
+              <div class="mt-1 text-sm text-gray-500">{{ t("appsRecordingPlayback.settings.recording.frameRate.help") }}</div>
             </div>
             <!--end::Frame Rate-->
 
             <!--begin::Compression-->
             <div class="mb-7">
-              <label class="form-label">{{ t('appsRecordingPlayback.settings.recording.compression.label') }}</label>
-              <select
-                v-model="recordingSettings.compression"
-                class="form-select form-select-solid"
-              >
+              <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                {{ t("appsRecordingPlayback.settings.recording.compression.label") }}
+              </label>
+              <select v-model="recordingSettings.compression" :class="formInputClass">
                 <option
                   v-for="option in compressionOptions"
                   :key="option.value"
@@ -96,48 +88,52 @@
                   {{ t(option.labelKey) }}
                 </option>
               </select>
-              <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.recording.compression.help') }}</div>
+              <div class="mt-1 text-sm text-gray-500">{{ t("appsRecordingPlayback.settings.recording.compression.help") }}</div>
             </div>
             <!--end::Compression-->
 
             <!--begin::Pre/Post Recording-->
-            <div class="row">
-              <div class="col-md-6">
-                <div class="mb-7">
-                  <label class="form-label">{{ t('appsRecordingPlayback.settings.recording.preRecording.label') }}</label>
-                  <input
-                    type="number"
-                    class="form-control form-control-solid"
-                    v-model.number="recordingSettings.preRecordingSeconds"
-                    min="0"
-                    max="60"
-                  />
-                  <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.recording.preRecording.help') }}</div>
-                </div>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div class="mb-7">
+                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {{ t("appsRecordingPlayback.settings.recording.preRecording.label") }}
+                </label>
+                <input
+                  type="number"
+                  v-model.number="recordingSettings.preRecordingSeconds"
+                  min="0"
+                  max="60"
+                  :class="formInputClass"
+                />
+                <div class="mt-1 text-sm text-gray-500">{{ t("appsRecordingPlayback.settings.recording.preRecording.help") }}</div>
               </div>
-              <div class="col-md-6">
-                <div class="mb-7">
-                  <label class="form-label">{{ t('appsRecordingPlayback.settings.recording.postRecording.label') }}</label>
-                  <input
-                    type="number"
-                    class="form-control form-control-solid"
-                    v-model.number="recordingSettings.postRecordingSeconds"
-                    min="0"
-                    max="300"
-                  />
-                  <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.recording.postRecording.help') }}</div>
-                </div>
+              <div class="mb-7">
+                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {{ t("appsRecordingPlayback.settings.recording.postRecording.label") }}
+                </label>
+                <input
+                  type="number"
+                  v-model.number="recordingSettings.postRecordingSeconds"
+                  min="0"
+                  max="300"
+                  :class="formInputClass"
+                />
+                <div class="mt-1 text-sm text-gray-500">{{ t("appsRecordingPlayback.settings.recording.postRecording.help") }}</div>
               </div>
             </div>
             <!--end::Pre/Post Recording-->
 
-            <div class="d-flex justify-content-end">
-              <button type="submit" class="btn btn-primary" :disabled="savingRecordingSettings">
-                <span v-if="savingRecordingSettings" class="spinner-border spinner-border-sm me-2"></span>
+            <div class="flex justify-end">
+              <button
+                type="submit"
+                :disabled="savingRecordingSettings"
+                class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <span v-if="savingRecordingSettings" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                 {{
                   savingRecordingSettings
-                    ? t('appsRecordingPlayback.settings.actions.saving')
-                    : t('appsRecordingPlayback.settings.actions.saveRecording')
+                    ? t("appsRecordingPlayback.settings.actions.saving")
+                    : t("appsRecordingPlayback.settings.actions.saveRecording")
                 }}
               </button>
             </div>
@@ -150,42 +146,43 @@
     <!--begin::Storage Settings-->
     <div class="col-xl-6">
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <h3 class="fw-bold">{{ t('appsRecordingPlayback.settings.storage.title') }}</h3>
-          </div>
+        <div class="p-6 pb-0">
+          <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+            {{ t("appsRecordingPlayback.settings.storage.title") }}
+          </h3>
         </div>
-        <div class="card-body">
+        <div class="p-6">
           <form @submit.prevent="saveStorageSettings">
             <!--begin::Storage Location-->
             <div class="mb-7">
-              <label class="form-label">{{ t('appsRecordingPlayback.settings.storage.location.label') }}</label>
-              <div class="input-group">
+              <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                {{ t("appsRecordingPlayback.settings.storage.location.label") }}
+              </label>
+              <div class="flex">
                 <input
                   type="text"
-                  class="form-control form-control-solid"
                   v-model="storageSettings.location"
                   readonly
+                  class="w-full rounded-l-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
                 />
                 <button
                   type="button"
-                  class="btn btn-outline btn-outline-primary"
                   @click="selectStorageLocation"
+                  class="shrink-0 rounded-r-md border border-l-0 border-primary px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
                 >
-                  {{ t('appsRecordingPlayback.settings.storage.location.browse') }}
+                  {{ t("appsRecordingPlayback.settings.storage.location.browse") }}
                 </button>
               </div>
-              <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.storage.location.help') }}</div>
+              <div class="mt-1 text-sm text-gray-500">{{ t("appsRecordingPlayback.settings.storage.location.help") }}</div>
             </div>
             <!--end::Storage Location-->
 
             <!--begin::Retention Policy-->
             <div class="mb-7">
-              <label class="form-label">{{ t('appsRecordingPlayback.settings.storage.retention.label') }}</label>
-              <select
-                v-model="storageSettings.retentionPolicy"
-                class="form-select form-select-solid"
-              >
+              <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                {{ t("appsRecordingPlayback.settings.storage.retention.label") }}
+              </label>
+              <select v-model="storageSettings.retentionPolicy" :class="formInputClass">
                 <option
                   v-for="option in retentionOptions"
                   :key="option.value"
@@ -194,42 +191,46 @@
                   {{ t(option.labelKey) }}
                 </option>
               </select>
-              <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.storage.retention.help') }}</div>
+              <div class="mt-1 text-sm text-gray-500">{{ t("appsRecordingPlayback.settings.storage.retention.help") }}</div>
             </div>
             <!--end::Retention Policy-->
 
             <!--begin::Storage Limit-->
             <div class="mb-7">
-              <label class="form-label">{{ t('appsRecordingPlayback.settings.storage.limit.label') }}</label>
+              <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                {{ t("appsRecordingPlayback.settings.storage.limit.label") }}
+              </label>
               <input
                 type="number"
-                class="form-control form-control-solid"
                 v-model.number="storageSettings.maxStorageGB"
                 min="100"
                 max="10000"
+                :class="formInputClass"
               />
-              <div class="text-muted fs-7">{{ t('appsRecordingPlayback.settings.storage.limit.help') }}</div>
+              <div class="mt-1 text-sm text-gray-500">{{ t("appsRecordingPlayback.settings.storage.limit.help") }}</div>
             </div>
             <!--end::Storage Limit-->
 
             <!--begin::Current Storage Usage-->
             <div class="mb-7">
-              <label class="form-label">{{ t('appsRecordingPlayback.settings.storage.usage.label') }}</label>
-              <div class="progress" style="height: 20px;">
+              <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                {{ t("appsRecordingPlayback.settings.storage.usage.label") }}
+              </label>
+              <div class="h-5 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                 <div
-                  class="progress-bar"
+                  class="flex h-full items-center justify-center text-xs font-semibold text-white"
                   :style="{ width: storageUsagePercentage + '%' }"
                   :class="getStorageUsageClass()"
                 >
                   {{ storageUsagePercentage }}%
                 </div>
               </div>
-              <div class="d-flex justify-content-between mt-2">
-                <span class="text-muted fs-7">
-                  {{ t('appsRecordingPlayback.settings.storage.usage.used', { value: formatNumber(usedStorageGB) }) }}
+              <div class="mt-2 flex justify-between">
+                <span class="text-sm text-gray-500">
+                  {{ t("appsRecordingPlayback.settings.storage.usage.used", { value: formatNumber(usedStorageGB) }) }}
                 </span>
-                <span class="text-muted fs-7">
-                  {{ t('appsRecordingPlayback.settings.storage.usage.total', { value: formatNumber(storageSettings.maxStorageGB) }) }}
+                <span class="text-sm text-gray-500">
+                  {{ t("appsRecordingPlayback.settings.storage.usage.total", { value: formatNumber(storageSettings.maxStorageGB) }) }}
                 </span>
               </div>
             </div>
@@ -243,21 +244,20 @@
                   type="checkbox"
                   v-model="storageSettings.backup.enabled"
                 />
-                <span class="form-check-label fw-semibold text-gray-800">
-                  {{ t('appsRecordingPlayback.settings.storage.backup.label') }}
+                <span class="form-check-label font-semibold text-gray-800">
+                  {{ t("appsRecordingPlayback.settings.storage.backup.label") }}
                 </span>
               </label>
-              <div class="text-muted fs-7">
-                {{ t('appsRecordingPlayback.settings.storage.backup.help') }}
+              <div class="text-sm text-gray-500">
+                {{ t("appsRecordingPlayback.settings.storage.backup.help") }}
               </div>
 
               <div v-if="storageSettings.backup.enabled" class="mt-4">
                 <div class="mb-4">
-                  <label class="form-label">{{ t('appsRecordingPlayback.settings.storage.backup.provider.label') }}</label>
-                  <select
-                    v-model="storageSettings.backup.provider"
-                    class="form-select form-select-solid"
-                  >
+                  <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {{ t("appsRecordingPlayback.settings.storage.backup.provider.label") }}
+                  </label>
+                  <select v-model="storageSettings.backup.provider" :class="formInputClass">
                     <option
                       v-for="option in backupProviderOptions"
                       :key="option.value"
@@ -269,11 +269,10 @@
                 </div>
 
                 <div class="mb-4">
-                  <label class="form-label">{{ t('appsRecordingPlayback.settings.storage.backup.schedule.label') }}</label>
-                  <select
-                    v-model="storageSettings.backup.schedule"
-                    class="form-select form-select-solid"
-                  >
+                  <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {{ t("appsRecordingPlayback.settings.storage.backup.schedule.label") }}
+                  </label>
+                  <select v-model="storageSettings.backup.schedule" :class="formInputClass">
                     <option
                       v-for="option in backupScheduleOptions"
                       :key="option.value"
@@ -287,13 +286,17 @@
             </div>
             <!--end::Backup Settings-->
 
-            <div class="d-flex justify-content-end">
-              <button type="submit" class="btn btn-primary" :disabled="savingStorageSettings">
-                <span v-if="savingStorageSettings" class="spinner-border spinner-border-sm me-2"></span>
+            <div class="flex justify-end">
+              <button
+                type="submit"
+                :disabled="savingStorageSettings"
+                class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <span v-if="savingStorageSettings" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                 {{
                   savingStorageSettings
-                    ? t('appsRecordingPlayback.settings.actions.saving')
-                    : t('appsRecordingPlayback.settings.actions.saveStorage')
+                    ? t("appsRecordingPlayback.settings.actions.saving")
+                    : t("appsRecordingPlayback.settings.actions.saveStorage")
                 }}
               </button>
             </div>
@@ -305,68 +308,73 @@
   </div>
 
   <!--begin::Recording Schedule-->
-  <div class="row g-5 mt-5" v-if="recordingSettings.mode === 'scheduled' || recordingSettings.mode === 'hybrid'">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <h3 class="fw-bold">{{ t('appsRecordingPlayback.settings.schedule.title') }}</h3>
-          </div>
-          <div class="card-toolbar">
-            <button @click="addSchedule" class="btn btn-sm btn-primary">
-              <i class="ki-duotone ki-plus fs-2"></i>
-              {{ t('appsRecordingPlayback.settings.schedule.actions.add') }}
-            </button>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3">
-              <thead>
-                <tr class="fw-bold text-muted">
-                  <th class="min-w-150px">{{ t('appsRecordingPlayback.settings.schedule.table.camera') }}</th>
-                  <th class="min-w-120px">{{ t('appsRecordingPlayback.settings.schedule.table.days') }}</th>
-                  <th class="min-w-120px">{{ t('appsRecordingPlayback.settings.schedule.table.start') }}</th>
-                  <th class="min-w-120px">{{ t('appsRecordingPlayback.settings.schedule.table.end') }}</th>
-                  <th class="min-w-100px">{{ t('appsRecordingPlayback.settings.schedule.table.status') }}</th>
-                  <th class="min-w-100px text-end">{{ t('appsRecordingPlayback.settings.schedule.table.actions') }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="schedule in recordingSchedules" :key="schedule.id">
-                  <td>
-                    <span class="text-dark fw-bold d-block fs-6">
-                      {{ getCameraName(schedule.camera_uid) }}
-                    </span>
-                  </td>
-                  <td>
-                    <div class="d-flex flex-wrap gap-1">
-                      <span
-                        v-for="day in schedule.days"
-                        :key="day"
-                        class="badge badge-light-primary"
-                      >
-                        {{ getScheduleDayLabel(day) }}
-                      </span>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="text-dark fw-bold">{{ schedule.start_time }}</span>
-                  </td>
-                  <td>
-                    <span class="text-dark fw-bold">{{ schedule.end_time }}</span>
-                  </td>
-                  <td>
+  <div class="mt-5" v-if="recordingSettings.mode === 'scheduled' || recordingSettings.mode === 'hybrid'">
+    <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+      <div class="flex flex-wrap items-center justify-between gap-3 p-6 pb-0">
+        <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+          {{ t("appsRecordingPlayback.settings.schedule.title") }}
+        </h3>
+        <button
+          @click="addSchedule"
+          class="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98]"
+        >
+          <i class="ki-duotone ki-plus fs-2"></i>
+          {{ t("appsRecordingPlayback.settings.schedule.actions.add") }}
+        </button>
+      </div>
+      <div class="p-6">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-gray-100 font-bold text-gray-500 dark:border-gray-800">
+                <th class="min-w-[150px] py-3 text-left">{{ t("appsRecordingPlayback.settings.schedule.table.camera") }}</th>
+                <th class="min-w-[120px] py-3 text-left">{{ t("appsRecordingPlayback.settings.schedule.table.days") }}</th>
+                <th class="min-w-[120px] py-3 text-left">{{ t("appsRecordingPlayback.settings.schedule.table.start") }}</th>
+                <th class="min-w-[120px] py-3 text-left">{{ t("appsRecordingPlayback.settings.schedule.table.end") }}</th>
+                <th class="min-w-[100px] py-3 text-left">{{ t("appsRecordingPlayback.settings.schedule.table.status") }}</th>
+                <th class="min-w-[100px] py-3 text-right">{{ t("appsRecordingPlayback.settings.schedule.table.actions") }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="schedule in recordingSchedules"
+                :key="schedule.id"
+                class="border-b border-gray-100 last:border-b-0 dark:border-gray-800"
+              >
+                <td class="py-3">
+                  <span class="block font-bold text-gray-900 dark:text-gray-100">
+                    {{ getCameraName(schedule.camera_uid) }}
+                  </span>
+                </td>
+                <td class="py-3">
+                  <div class="flex flex-wrap gap-1">
                     <span
-                      class="badge"
-                      :class="schedule.enabled ? 'badge-light-success' : 'badge-light-secondary'"
+                      v-for="day in schedule.days"
+                      :key="day"
+                      class="inline-flex rounded px-2 py-1 text-xs font-semibold"
+                      :class="badgeVariantClass('primary')"
                     >
-                      {{ schedule.enabled ? t('appsRecordingPlayback.settings.schedule.status.active') : t('appsRecordingPlayback.settings.schedule.status.inactive') }}
+                      {{ getScheduleDayLabel(day) }}
                     </span>
-                  </td>
-                  <td class="text-end">
-                    <button
-                      class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
+                  </div>
+                </td>
+                <td class="py-3">
+                  <span class="font-bold text-gray-900 dark:text-gray-100">{{ schedule.start_time }}</span>
+                </td>
+                <td class="py-3">
+                  <span class="font-bold text-gray-900 dark:text-gray-100">{{ schedule.end_time }}</span>
+                </td>
+                <td class="py-3">
+                  <span
+                    class="inline-flex rounded px-2 py-1 text-xs font-semibold"
+                    :class="badgeVariantClass(schedule.enabled ? 'success' : 'secondary')"
+                  >
+                    {{ schedule.enabled ? t("appsRecordingPlayback.settings.schedule.status.active") : t("appsRecordingPlayback.settings.schedule.status.inactive") }}
+                  </span>
+                </td>
+                <td class="py-3 text-right">
+                  <div class="flex justify-end gap-1">
+                    <RowActionButton
                       @click="editSchedule(schedule)"
                       :title="t('appsRecordingPlayback.settings.schedule.actions.edit')"
                     >
@@ -374,11 +382,11 @@
                         <span class="path1"></span>
                         <span class="path2"></span>
                       </i>
-                    </button>
-                    <button
-                      class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
+                    </RowActionButton>
+                    <RowActionButton
                       @click="deleteSchedule(schedule)"
                       :title="t('appsRecordingPlayback.settings.schedule.actions.delete')"
+                      variant="danger"
                     >
                       <i class="ki-duotone ki-trash fs-2">
                         <span class="path1"></span>
@@ -387,24 +395,24 @@
                         <span class="path4"></span>
                         <span class="path5"></span>
                       </i>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                    </RowActionButton>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-          <div v-if="recordingSchedules.length === 0" class="text-center py-5">
-            <i class="ki-duotone ki-calendar-8 fs-3x text-gray-400 mb-3">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-              <span class="path4"></span>
-              <span class="path5"></span>
-              <span class="path6"></span>
-            </i>
-            <p class="text-gray-500">{{ t('appsRecordingPlayback.settings.schedule.table.empty') }}</p>
-          </div>
+        <div v-if="recordingSchedules.length === 0" class="py-5 text-center">
+          <i class="ki-duotone ki-calendar-8 mb-3 text-3xl text-gray-400">
+            <span class="path1"></span>
+            <span class="path2"></span>
+            <span class="path3"></span>
+            <span class="path4"></span>
+            <span class="path5"></span>
+            <span class="path6"></span>
+          </i>
+          <p class="text-gray-500">{{ t("appsRecordingPlayback.settings.schedule.table.empty") }}</p>
         </div>
       </div>
     </div>
@@ -416,6 +424,8 @@
 import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import ApiService from "@/core/services/ApiService";
+import RowActionButton from "@/components/common/RowActionButton.vue";
+import { formInputClass, badgeVariantClass } from "@/core/helpers/badge";
 
 // Interface definitions
 interface RecordingSettings {
