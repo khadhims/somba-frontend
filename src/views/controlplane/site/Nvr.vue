@@ -354,30 +354,25 @@
 
         <template v-slot:actions="{ row }">
           <div class="flex justify-end gap-1">
-            <router-link
+            <RowActionButton
               :to="`/controlplane/site/camera?nvrId=${row.uid}`"
               :title="t('controlplane.site.nvr.actions.manageCameras')"
-              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-primary active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
             >
               <i class="ki-duotone ki-picture fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-            </router-link>
-            <button
-              @click="editNvr(row)"
-              :title="t('controlplane.site.nvr.actions.edit')"
-              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-primary active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
-            >
+            </RowActionButton>
+            <RowActionButton @click="editNvr(row)" :title="t('controlplane.site.nvr.actions.edit')">
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-            </button>
-            <button
+            </RowActionButton>
+            <RowActionButton
               @click="deleteNvr(row.uid)"
               :title="t('controlplane.site.nvr.actions.delete')"
-              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-danger active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
+              variant="danger"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -386,7 +381,7 @@
                 <span class="path4"></span>
                 <span class="path5"></span>
               </i>
-            </button>
+            </RowActionButton>
           </div>
         </template>
       </KTDataTable>
@@ -417,10 +412,8 @@ import { useI18n } from "vue-i18n";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import Pagination from '@/components/common/Pagination.vue';
 import ApiService from '@/core/services/ApiService';
-
-// Shared Tailwind class for the form fields above.
-const formInputClass =
-  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100";
+import RowActionButton from "@/components/common/RowActionButton.vue";
+import { formInputClass, badgeVariantClass } from "@/core/helpers/badge";
 
 // Interfaces
 interface Site {
@@ -549,7 +542,7 @@ const tableHeader = computed(() => [
 ]);
 
 const statusBadgeClass = (isActive?: boolean) =>
-  isActive ? "bg-success-light text-success" : "bg-danger-light text-danger";
+  badgeVariantClass(isActive ? "success" : "danger");
 
 const resolveStatusLabel = (isActive?: boolean) =>
   t(`controlplane.site.nvr.status.${isActive ? "active" : "inactive"}`);

@@ -98,11 +98,7 @@
       >
         <template v-slot:name="{ row }">
           <div class="flex items-center">
-            <div
-              class="mr-5 flex h-[45px] w-[45px] items-center justify-center rounded-full bg-success-light font-bold text-success"
-            >
-              {{ getInitial(row.name) }}
-            </div>
+            <InitialAvatar :name="row.name" variant="success" class="mr-5" />
             <div class="flex flex-col">
               <span class="font-bold text-gray-900 hover:text-primary dark:text-gray-100">{{
                 row.name
@@ -124,12 +120,14 @@
 
         <template v-slot:specs="{ row }">
           <div class="flex flex-col items-start gap-1">
-            <span class="inline-flex rounded bg-info-light px-2 py-1 text-xs font-semibold text-info">{{
+            <span class="inline-flex rounded px-2 py-1 text-xs font-semibold" :class="badgeVariantClass('info')">{{
               row.brand
             }}</span>
-            <span class="inline-flex rounded bg-warning-light px-2 py-1 text-xs font-semibold text-warning">{{
-              row.resolution
-            }}</span>
+            <span
+              class="inline-flex rounded px-2 py-1 text-xs font-semibold"
+              :class="badgeVariantClass('warning')"
+              >{{ row.resolution }}</span
+            >
           </div>
         </template>
 
@@ -156,31 +154,27 @@
 
         <template v-slot:actions="{ row }">
           <div class="flex justify-end gap-1">
-            <button
+            <RowActionButton
               @click="viewCamera(row)"
               :title="t('controlplane.site.camera.actions.view')"
-              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-success active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
+              variant="success"
             >
               <i class="ki-duotone ki-eye fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
                 <span class="path3"></span>
               </i>
-            </button>
-            <button
-              @click="editCamera(row)"
-              :title="t('controlplane.site.camera.actions.edit')"
-              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-primary active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
-            >
+            </RowActionButton>
+            <RowActionButton @click="editCamera(row)" :title="t('controlplane.site.camera.actions.edit')">
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-            </button>
-            <button
+            </RowActionButton>
+            <RowActionButton
               @click="deleteCamera(row)"
               :title="t('controlplane.site.camera.actions.delete')"
-              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors hover:text-danger active:scale-[0.95] dark:bg-gray-800 dark:text-gray-300"
+              variant="danger"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -189,7 +183,7 @@
                 <span class="path4"></span>
                 <span class="path5"></span>
               </i>
-            </button>
+            </RowActionButton>
           </div>
         </template>
       </KTDataTable>
@@ -453,10 +447,9 @@ import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import Pagination from '@/components/common/Pagination.vue';
 import ApiService from '@/core/services/ApiService';
 import CameraPlaybackModal from "@/components/CameraPlaybackModal.vue";
-
-// Shared Tailwind class for the form fields above.
-const formInputClass =
-  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100";
+import InitialAvatar from "@/components/common/InitialAvatar.vue";
+import RowActionButton from "@/components/common/RowActionButton.vue";
+import { formInputClass, badgeVariantClass } from "@/core/helpers/badge";
 
 // Interfaces
 interface Site {
@@ -704,9 +697,7 @@ const normalizeStatusKey = (status?: unknown): "online" | "offline" => {
 };
 
 const statusBadgeClass = (status?: unknown): string =>
-  normalizeStatusKey(status) === "online"
-    ? "bg-success-light text-success"
-    : "bg-danger-light text-danger";
+  badgeVariantClass(normalizeStatusKey(status) === "online" ? "success" : "danger");
 
 const resolveStatusLabel = (status?: unknown): string =>
   t(`controlplane.site.camera.status.${normalizeStatusKey(status)}`);
@@ -727,11 +718,6 @@ const getNvrName = (nvrId: string): string => {
   return nvr ? nvr.name : t("controlplane.site.camera.fallback.unknownNvr");
 };
 
-const getInitial = (name: string): string => {
-  if (!name) return "?";
-  const trimmed = name.trim();
-  return trimmed ? trimmed.charAt(0).toUpperCase() : "?";
-};
 
 const onSiteChange = () => {
   cameraForm.value.roomId = "";

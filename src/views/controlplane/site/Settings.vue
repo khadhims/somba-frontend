@@ -194,10 +194,7 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import ApiService from '@/core/services/ApiService'
-
-// Shared Tailwind class for the form fields above.
-const formInputClass =
-  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100";
+import { formInputClass } from "@/core/helpers/badge";
 
 // Interface
 interface SiteForm {
