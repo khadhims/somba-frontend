@@ -268,6 +268,7 @@
 import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { formatDateTimeGMT8 } from '@/core/helpers/timezone';
+import { badgeVariantClass } from '@/core/helpers/badge';
 
 const props = defineProps<{
   show: boolean;
@@ -356,11 +357,11 @@ const formatDuration = (minutes?: number | null) => {
 const normalizeKey = (v?:string) => (v||'').toLowerCase().replace(/[\s_-]/g,'');
 const statusBadgeClass = (status:string) => {
   const k = normalizeKey(status);
-  if (k==='active' || k==='unresolved') return 'bg-danger-light text-danger';
-  if (k==='acknowledged') return 'bg-warning-light text-warning';
-  if (k==='resolved' || k==='notresolved') return 'bg-success-light text-success';
-  if (k==='falsedetection') return 'bg-info-light text-info';
-  return 'bg-gray-100 text-gray-600';
+  if (k==='active' || k==='unresolved') return badgeVariantClass('danger');
+  if (k==='acknowledged') return badgeVariantClass('warning');
+  if (k==='resolved' || k==='notresolved') return badgeVariantClass('success');
+  if (k==='falsedetection') return badgeVariantClass('info');
+  return badgeVariantClass('secondary');
 };
 const statusLabel = (status:string) => {
   const k = normalizeKey(status);

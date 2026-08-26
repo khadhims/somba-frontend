@@ -350,6 +350,7 @@ import { useI18n } from 'vue-i18n';
 import ApiService from '@/core/services/ApiService';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import { formatDateTimeGMT8 } from '@/core/helpers/timezone';
+import { badgeVariantClass } from '@/core/helpers/badge';
 
 const props = defineProps<{
   show: boolean;
@@ -514,10 +515,10 @@ const formatDuration = (minutes?: number | null) => {
 const normalizeKey = (v?:string) => (v||'').toLowerCase().replace(/[\s_-]/g,'');
 const statusBadgeClass = (status:string) => {
   const k = normalizeKey(status);
-  if (k==='notresolved') return 'bg-danger-light text-danger';
-  if (k==='resolved') return 'bg-success-light text-success';
-  if (k==='falsealarm') return 'bg-info-light text-info';
-  return 'bg-gray-100 text-gray-600';
+  if (k==='notresolved') return badgeVariantClass('danger');
+  if (k==='resolved') return badgeVariantClass('success');
+  if (k==='falsealarm') return badgeVariantClass('info');
+  return badgeVariantClass('secondary');
 };
 const statusLabel = (status:string) => {
   const k = normalizeKey(status);
