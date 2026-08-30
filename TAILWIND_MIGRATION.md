@@ -480,6 +480,87 @@ Found and fixed one real data bug while converting `InviteFriendsModal.vue`:
 an avatar path). Typing the array as `InviteUser[]` makes the typo a type
 error; fixed to the obvious intended field instead of preserving it.
 
+## Phase 7 (delete confirmed-dead files) — a real mistake, caught and fixed
+
+Wrote a proper transitive-reachability script (BFS from `main.ts`/`App.vue`/
+`router/**`, following both `import ... from "@/x"` and dynamic
+`import("@/x")`) instead of re-grepping each file by hand — far more
+reliable than "does anything import this filename," since it also catches
+whole dead *clusters* that only reference each other. First pass found 145
+unreachable files including `Dropdown1.vue`/`Dropdown2.vue` (already
+deleted a moment earlier in this same phase, for what looked like the same
+reason - their only importers appeared to be dead `widgets/**` files).
+
+**The mistake**: deleted `Dropdown1.vue`/`Dropdown2.vue` on the assumption
+that ALL of `components/widgets/**` was dead per the original recon,
+without checking each individual widget file's own liveness first. Several
+specific ones weren't dead: `widgets/feeds/Widget1-6.vue`,
+`widgets/charts/Widget1.vue`, `widgets/lists/Widget5.vue`, and
+`widgets/engage/Widget1.vue` are all rendered by
+`views/controlplane/pages/profile/Overview.vue` - a 6th sibling of the 5
+profile pages converted back in Phase 3 (Activity/Campaigns/Connections/
+Documents/Projects) that never got its own liveness check. Caught by the
+BFS script itself flagging `charts/Widget1.vue`'s sibling files as
+*reachable* (not in the dead list) while `Dropdown1`/`Dropdown2` - which
+those same reachable files import - had already been deleted: a live file
+importing a component that no longer exists.
+
+Fixed by: restoring `Dropdown1.vue`/`Dropdown2.vue` from git history,
+converting all 9 previously-unaudited widget files to Tailwind (`useDropdown`
+for their menu triggers, same as every other shell dropdown), and
+converting `Dropdown1.vue`/`Dropdown2.vue` themselves to match the
+Dropdown3/4 pattern. Along the way found `widgets/engage/Widget1.vue`'s
+"Get Started" button is a second real, previously-missed live trigger for
+`CreateAppModal.vue` (`#kt_modal_create_app`) - Phase 6 had concluded
+CreateAppModal had zero live triggers because its only *other* one
+(`toolbar/Toolbar.vue`) was dead, without checking whether some other file
+also targeted the same modal id. Added `createAppOpen` to
+`stores/drawers.ts` (same cross-component-trigger shape as
+`inviteFriendsOpen`) and wired both ends.
+
+**A second, more systemic bug in the reachability script itself**: the
+import-detection regex only matched `from "x"` and `import("x")`, missing
+bare side-effect-only imports (`import "@/core/plugins/prismjs";` - no
+`from`, no binding). This silently misclassified 2 genuinely-live files as
+dead: `core/plugins/prismjs.ts` (imported by `main.ts`) and
+`assets/ts/layout/index.ts` (imported by `keenthemes.ts`, `stores/theme.ts`,
+`default-layout/config/helper.ts` - all for `ThemeModeComponent`, still
+load-bearing for dark-mode bridging). Caught immediately: `vue-tsc` failed
+with `Cannot find module '@/assets/ts/layout'` right after the deletion
+pass, before anything was committed. Fixed the regex, restored both files,
+then **re-ran the corrected script against the full pre-deletion file list**
+(read via `git show HEAD:<path>` for the 144 files already `rm`'d but not
+yet committed) to re-verify every other deletion in the same batch -
+confirmed all 144 remaining deletions were genuinely unreachable, no third
+mistake hiding in the batch.
+
+**Lesson for next time**: a script-computed dead-file list is only as good
+as its import-parsing regex - verify it against at least one known-tricky
+case (a bare side-effect import, a dynamic import, a barrel re-export)
+before trusting a large batch deletion to it, and re-run the *corrected*
+version against the pre-deletion state rather than assuming a fix to one
+false positive means the rest of the batch was clean.
+
+144 files deleted in this phase (down from the original ~90 estimate
+because Phase 6 also found and deleted 8 shell files early, and this
+phase's own script found a more complete transitive-dead set than the
+original hand-audited recon): `components/widgets/{charts,lists,mixed,
+security,statsistics,tables}/**` (minus the 9 files pulled back into
+`profile/Overview.vue`'s live tree), `components/customers/**`,
+`components/subscriptions/**`, `components/modals/{forms,general,wizards}/**`
+(the remaining ones not converted in Phase 4), `components/dashboard-
+default-widgets/**`, unrouted `views/apps/{chat,customers,subscriptions}/**`,
+all 11 `views/controlplane/modals/**` trigger pages (not in the router),
+`views/controlplane/widgets/**`, `views/organization/site/Overview.vue`
+(a legacy duplicate of the live `views/controlplane/site/Overview.vue`),
+`layouts/DashboardLayout.vue`, `core/services/{Account,Organization,Team}Service.ts`,
+`core/data/{contacts,countries,customers}.ts`, `core/helpers/modal.ts`
+(its last 6 importers were in this same batch), `stores/organization.ts`,
+and a handful of one-off dead files (`components/Notice.vue`,
+`components/menu/MenuComponent.vue`, `components/devs/**`, etc). This
+clears the last blocker for Phase 8's `bootstrap`/`bootstrap-icons`
+removal check.
+
 ## Verifying a converted page
 
 ```bash

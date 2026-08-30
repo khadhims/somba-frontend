@@ -16,6 +16,10 @@ export const useDrawersStore = defineStore("drawers", () => {
   // trigger ("Invite Contacts" in MessengerDrawer's Dropdown4) lives in a
   // different component than InviteFriendsModal (mounted by DefaultLayout).
   const inviteFriendsOpen = ref(false);
+  // Same again: the only live trigger ("Get Started" in
+  // widgets/engage/Widget1.vue, rendered from profile/Overview.vue) lives
+  // in a different component than CreateAppModal (mounted by DefaultLayout).
+  const createAppOpen = ref(false);
 
   const closeAll = () => {
     asideMobileOpen.value = false;
@@ -30,6 +34,7 @@ export const useDrawersStore = defineStore("drawers", () => {
     messengerOpen,
     activityOpen,
     inviteFriendsOpen,
+    createAppOpen,
     closeAll,
   };
 });

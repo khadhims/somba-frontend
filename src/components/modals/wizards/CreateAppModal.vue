@@ -1,7 +1,4 @@
 <template>
-  <!-- ponytail: no live trigger anywhere in the app (its only opener,
-  toolbar/Toolbar.vue, turned out to be dead/unimported code) - mounted
-  by DefaultLayout but never shown, same as before this migration. -->
   <dialog
     ref="modalRef"
     id="kt_modal_create_app"
@@ -39,11 +36,27 @@
 
 <script setup lang="ts">
 import CreateAppWizardStepper from "@/components/wizards/create-app-wizard/CreateAppWizardStepper.vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import { useDrawersStore } from "@/stores/drawers";
 
 const modalRef = ref<HTMLDialogElement | null>(null);
+const drawers = useDrawersStore();
 
 const closeModal = () => {
-  modalRef.value?.close();
+  drawers.createAppOpen = false;
 };
+
+// Its only live trigger ("Get Started" in widgets/engage/Widget1.vue) is a
+// different component than this modal (mounted by DefaultLayout) - same
+// cross-component-open shape as InviteFriendsModal.vue.
+watch(
+  () => drawers.createAppOpen,
+  (open) => {
+    if (open) {
+      modalRef.value?.showModal();
+    } else {
+      modalRef.value?.close();
+    }
+  }
+);
 </script>

@@ -1,35 +1,35 @@
 <template>
   <!--begin::Engage Widget 1-->
-  <div class="card" :class="widgetClasses">
+  <div class="rounded-lg bg-white dark:bg-gray-900" :class="widgetClasses">
     <!--begin::Body-->
-    <div class="card-body pb-0">
+    <div class="p-6 pb-0">
       <!--begin::Wrapper-->
-      <div class="d-flex flex-column justify-content-between h-100">
+      <div class="flex h-full flex-col justify-between">
         <!--begin::Section-->
-        <div class="pt-15 mb-10">
+        <div class="mb-10 pt-16">
           <!--begin::Title-->
-          <h3 class="text-gray-900 text-center fs-1 fw-bold lh-lg">
+          <h3 class="text-center text-3xl font-bold leading-normal text-gray-900 dark:text-gray-100">
             Upgrade to Pro<br />
             For Limitless Features
           </h3>
           <!--end::Title-->
 
           <!--begin::Text-->
-          <div class="text-center text-gray-600 fs-6 fw-semibold pt-4 pb-1">
+          <div class="pb-1 pt-4 text-center text-sm font-semibold text-gray-600">
             They stoping you from amazing poorly about drive.<br />
             Outlines keep you honest.
           </div>
           <!--end::Text-->
 
           <!--begin::Action-->
-          <div class="text-center py-7">
-            <a
-              href="#"
-              class="btn btn-primary fs-6 px-6"
-              data-bs-toggle="modal"
-              data-bs-target="#kt_modal_create_app"
-              >Get Started</a
+          <div class="py-7 text-center">
+            <button
+              type="button"
+              class="rounded-md bg-primary px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active"
+              @click="drawers.createAppOpen = true"
             >
+              Get Started
+            </button>
           </div>
           <!--end::Action-->
         </div>
@@ -37,7 +37,7 @@
 
         <!--begin::Image-->
         <div
-          class="flex-grow-1 bgi-no-repeat bgi-size-contain bgi-position-x-center bgi-position-y-bottom card-rounded-bottom h-200px"
+          class="h-[200px] flex-1 rounded-b-lg bg-contain bg-bottom bg-no-repeat"
           :style="{
             backgroundImage: 'url(' + getIllustrationsPath('8.png') + ')',
           }"
@@ -54,6 +54,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { getIllustrationsPath } from "@/core/helpers/assets";
+import { useDrawersStore } from "@/stores/drawers";
 
 export default defineComponent({
   name: "widget-1",
@@ -61,7 +62,9 @@ export default defineComponent({
     widgetClasses: String,
   },
   setup() {
+    const drawers = useDrawersStore();
     return {
+      drawers,
       getIllustrationsPath,
     };
   },

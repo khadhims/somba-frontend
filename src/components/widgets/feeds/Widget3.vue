@@ -1,41 +1,41 @@
 <template>
   <!--begin::Feeds Widget 3-->
-  <div class="card" :class="widgetClasses">
+  <div class="rounded-lg bg-white dark:bg-gray-900" :class="widgetClasses">
     <!--begin::Body-->
-    <div class="card-body pb-0">
+    <div class="p-6 pb-0">
       <!--begin::Header-->
-      <div class="d-flex align-items-center mb-3">
+      <div class="mb-3 flex items-center">
         <!--begin::User-->
-        <div class="d-flex align-items-center flex-grow-1">
+        <div class="flex flex-1 items-center">
           <!--begin::Avatar-->
-          <div class="symbol symbol-45px me-5">
-            <img :src="getAssetPath('media/avatars/300-21.jpg')" alt="" />
+          <div class="mr-5 h-[45px] w-[45px] shrink-0">
+            <img :src="getAssetPath('media/avatars/300-21.jpg')" alt="" class="h-full w-full rounded-full object-cover" />
           </div>
           <!--end::Avatar-->
 
           <!--begin::Info-->
-          <div class="d-flex flex-column">
-            <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bold"
+          <div class="flex flex-col">
+            <a href="#" class="text-sm font-bold text-gray-800 transition-colors hover:text-primary dark:text-gray-100"
               >Carles Nilson</a
             >
-            <span class="text-gray-500 fw-semibold">Yestarday at 5:06 PM</span>
+            <span class="text-sm font-semibold text-gray-500">Yestarday at 5:06 PM</span>
           </div>
           <!--end::Info-->
         </div>
         <!--end::User-->
 
         <!--begin::Menu-->
-        <div class="my-0">
+        <div class="relative" :ref="(el) => (menuDropdown.containerRef.value = el as HTMLElement | null)">
           <button
             type="button"
-            class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary"
-            data-kt-menu-trigger="click"
-            data-kt-menu-placement="bottom-end"
-            data-kt-menu-flip="top-end"
+            class="flex h-8 w-8 items-center justify-center rounded-md text-primary transition-colors hover:bg-primary-light"
+            @click="menuDropdown.toggle"
           >
             <KTIcon icon-name="category" icon-class="fs-2" />
           </button>
-          <Dropdown2></Dropdown2>
+          <div v-show="menuDropdown.isOpen.value" class="absolute right-0 top-full z-20 mt-2">
+            <Dropdown2 @close="menuDropdown.close"></Dropdown2>
+          </div>
         </div>
         <!--end::Menu-->
       </div>
@@ -44,7 +44,7 @@
       <!--begin::Post-->
       <div class="mb-7">
         <!--begin::Text-->
-        <div class="text-gray-800 mb-5">
+        <div class="mb-5 text-gray-800 dark:text-gray-200">
           Outlines keep you honest. They stop you from indulging in poorly
           thought-out metaphors about driving and keep you focused on the
           overall structure of your post
@@ -52,10 +52,10 @@
         <!--end::Text-->
 
         <!--begin::Toolbar-->
-        <div class="d-flex align-items-center mb-5">
+        <div class="mb-5 flex items-center gap-4">
           <a
             href="#"
-            class="btn btn-sm btn-light btn-color-muted btn-active-light-success px-4 py-2 me-4"
+            class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-500 transition-colors hover:bg-success-light hover:text-success dark:bg-gray-800"
           >
             <KTIcon icon-name="message-text-2" icon-class="fs-3" />
             12
@@ -63,9 +63,9 @@
 
           <a
             href="#"
-            class="btn btn-sm btn-light btn-color-muted btn-active-light-danger px-4 py-2"
+            class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-500 transition-colors hover:bg-danger-light hover:text-danger dark:bg-gray-800"
           >
-            <KTIcon icon-name="heart" icon-class="fs-2" />
+            <KTIcon icon-name="heart" icon-class="fs-3" />
             150
           </a>
         </div>
@@ -74,35 +74,31 @@
       <!--end::Post-->
 
       <!--begin::Replies-->
-      <div class="mb-7 ps-10">
+      <div class="mb-7 pl-10">
         <!--begin::Reply-->
-        <div class="d-flex mb-5">
+        <div class="mb-5 flex">
           <!--begin::Avatar-->
-          <div class="symbol symbol-45px me-5">
-            <img :src="getAssetPath('media/avatars/300-14.jpg')" alt="" />
+          <div class="mr-5 h-[45px] w-[45px] shrink-0">
+            <img :src="getAssetPath('media/avatars/300-14.jpg')" alt="" class="h-full w-full rounded-full object-cover" />
           </div>
           <!--end::Avatar-->
 
           <!--begin::Info-->
-          <div class="d-flex flex-column flex-row-fluid">
+          <div class="flex flex-1 flex-col">
             <!--begin::Info-->
-            <div class="d-flex align-items-center flex-wrap mb-1">
-              <a href="#" class="text-gray-800 text-hover-primary fw-bold me-2"
+            <div class="mb-1 flex flex-wrap items-center">
+              <a href="#" class="mr-2 font-bold text-gray-800 transition-colors hover:text-primary dark:text-gray-200"
                 >Alice Danchik</a
               >
 
-              <span class="text-gray-500 fw-semibold fs-7">1 day</span>
+              <span class="text-xs font-semibold text-gray-500">1 day</span>
 
-              <a
-                href="#"
-                class="ms-auto text-gray-400 text-hover-primary fw-semibold fs-7"
-                >Reply</a
-              >
+              <a href="#" class="ml-auto text-xs font-semibold text-gray-400 transition-colors hover:text-primary">Reply</a>
             </div>
             <!--end::Info-->
 
             <!--begin::Post-->
-            <span class="text-gray-800 fs-7 fw-normal pt-1">
+            <span class="pt-1 text-xs font-normal text-gray-800 dark:text-gray-200">
               Long before you sit dow to put digital pen to paper you need to
               make sure you have to sit down and write.
             </span>
@@ -113,33 +109,29 @@
         <!--end::Reply-->
 
         <!--begin::Reply-->
-        <div class="d-flex">
+        <div class="flex">
           <!--begin::Avatar-->
-          <div class="symbol symbol-45px me-5">
-            <img :src="getAssetPath('media/avatars/300-9.jpg')" alt="" />
+          <div class="mr-5 h-[45px] w-[45px] shrink-0">
+            <img :src="getAssetPath('media/avatars/300-9.jpg')" alt="" class="h-full w-full rounded-full object-cover" />
           </div>
           <!--end::Avatar-->
 
           <!--begin::Info-->
-          <div class="d-flex flex-column flex-row-fluid">
+          <div class="flex flex-1 flex-col">
             <!--begin::Info-->
-            <div class="d-flex align-items-center flex-wrap mb-1">
-              <a href="#" class="text-gray-800 text-hover-primary fw-bold me-2"
+            <div class="mb-1 flex flex-wrap items-center">
+              <a href="#" class="mr-2 font-bold text-gray-800 transition-colors hover:text-primary dark:text-gray-200"
                 >Harris Bold</a
               >
 
-              <span class="text-gray-500 fw-semibold fs-7">2 days</span>
+              <span class="text-xs font-semibold text-gray-500">2 days</span>
 
-              <a
-                href="#"
-                class="ms-auto text-gray-400 text-hover-primary fw-semibold fs-7"
-                >Reply</a
-              >
+              <a href="#" class="ml-auto text-xs font-semibold text-gray-400 transition-colors hover:text-primary">Reply</a>
             </div>
             <!--end::Info-->
 
             <!--begin::Post-->
-            <span class="text-gray-800 fs-7 fw-normal pt-1">
+            <span class="pt-1 text-xs font-normal text-gray-800 dark:text-gray-200">
               Outlines keep you honest. They stop you from indulging in poorly
             </span>
             <!--end::Post-->
@@ -151,25 +143,24 @@
       <!--end::Replies-->
 
       <!--begin::Separator-->
-      <div class="separator mb-4"></div>
+      <div class="mb-4 border-t border-gray-200 dark:border-gray-700"></div>
       <!--end::Separator-->
 
       <!--begin::Reply input-->
-      <form class="position-relative mb-6">
+      <form class="relative mb-6">
         <textarea
-          class="form-control border-0 p-0 pe-10 resize-none min-h-25px"
-          data-kt-autosize="true"
+          class="min-h-[25px] w-full resize-none border-0 bg-transparent p-0 pr-16 text-sm focus:outline-none focus:ring-0 dark:text-gray-100"
           rows="1"
           placeholder="Reply.."
         ></textarea>
 
-        <div class="position-absolute top-0 end-0 me-n5">
-          <span class="btn btn-icon btn-sm btn-active-color-primary pe-0 me-2">
-            <KTIcon icon-name="paper-clip" icon-class="fs-3 mb-3" />
+        <div class="absolute right-0 top-0 flex items-center gap-1">
+          <span class="flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-primary-light hover:text-primary">
+            <KTIcon icon-name="paper-clip" icon-class="fs-3" />
           </span>
 
-          <span class="btn btn-icon btn-sm btn-active-color-primary ps-0">
-            <KTIcon icon-name="geolocation" icon-class="fs-2 mb-3" />
+          <span class="flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-primary-light hover:text-primary">
+            <KTIcon icon-name="geolocation" icon-class="fs-3" />
           </span>
         </div>
       </form>
@@ -184,6 +175,7 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent } from "vue";
 import Dropdown2 from "@/components/dropdown/Dropdown2.vue";
+import { useDropdown } from "@/composables/useDropdown";
 
 export default defineComponent({
   name: "widget-3",
@@ -194,7 +186,9 @@ export default defineComponent({
     Dropdown2,
   },
   setup() {
+    const menuDropdown = useDropdown();
     return {
+      menuDropdown,
       getAssetPath,
     };
   },
