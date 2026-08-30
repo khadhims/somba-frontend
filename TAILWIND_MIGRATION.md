@@ -623,6 +623,54 @@ and a handful of one-off dead files (`components/Notice.vue`,
 clears the last blocker for Phase 8's `bootstrap`/`bootstrap-icons`
 removal check.
 
+## Migration complete
+
+**One more real bug, caught while committing this step**: `.gitignore`'s
+very first line was `/src/assets/css`, excluding the entire directory -
+leftover from before this migration, when that path was a compiled SASS
+output directory (gitignored for the obvious reason). Since Phase 0,
+`src/assets/css/tailwind.css` has been a hand-authored *source* file (the
+actual Tailwind config: theme tokens, the dark-mode bridge, the `fs-*`
+shim), not generated output - but the stale gitignore rule meant it was
+silently excluded from **every single commit across this entire
+migration**. The working tree always had the current content (so `npm run
+dev` never broke), but a fresh `git clone` at any point in this history
+would have been missing the one file `@import`ed by `main.ts` to load
+Tailwind at all. Removed the gitignore rule and force-added the file here;
+did not rewrite earlier history (not worth the disruption on a branch
+that's just going to move forward), but flagging clearly in case anyone
+bisects into an older commit on this branch and gets a blank-styled app.
+
+`src/assets/css/tailwind.css` now imports the full `@import "tailwindcss";`
+(Preflight on) - the one deliberately-deferred, high-blast-radius step from
+every earlier phase. Verified before flipping: no bare `<button>` with zero
+class attribute anywhere live (the one real Preflight-reset risk pattern
+checked for directly - a handful of false-positive matches came from
+`v-if="images.length > 1"`'s own `>` truncating a naive regex, not real
+unstyled buttons), `npm run type-check` clean, dev server loaded ~20 routes
+spanning every shell/auth/wizard/list/detail page category with a clean log
+both before and after the flip.
+
+`somba-web-ui` is now Tailwind end-to-end: zero `bootstrap`/`bootstrap-icons`
+in `package.json`, zero `src/assets/sass/`, zero live Bootstrap/Metronic-JS
+class or `data-bs-*`/`data-kt-*` attribute anywhere reachable from
+`main.ts`/`App.vue`/`router/**` (confirmed via the transitive-reachability
+script from Phase 7, re-run clean after every subsequent change). All 6 KT
+JS controllers and their `assets/ts/components/*` sources are deleted;
+the one thing intentionally kept from the old system is
+`ThemeModeComponent` (dark-mode bridge, still wired through
+`data-bs-theme` on `<html>` -> Tailwind's `dark:` variant - a
+now-unfortunately-named but still load-bearing attribute, not worth
+renaming for its own sake).
+
+**If picking this codebase up again**: the standing verification discipline
+(`vue-tsc --noEmit` + manual tag-balance diff + load through a running
+`vite dev` server, not just compile-check) and the "delete if genuinely
+zero-importer, convert if it renders anywhere" rule from this migration
+apply to any future structural change here just as much as they did
+throughout - both caught real, otherwise-invisible bugs multiple times
+across every phase.
+
 ## Verifying a converted page
 
 ```bash

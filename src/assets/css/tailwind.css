@@ -1,0 +1,102 @@
+/*
+ * Tailwind entry point.
+ *
+ * Full import (includes Preflight, Tailwind's base reset) - Bootstrap is
+ * fully removed from the app as of this commit, so Preflight's reset of
+ * headings/buttons/forms no longer conflicts with anything. See
+ * TAILWIND_MIGRATION.md for the migration history.
+ */
+@import "tailwindcss";
+
+/* Dark mode follows the existing theme store, which sets
+   data-bs-theme="dark" on <html> (see src/stores/theme.ts) — reuse it
+   instead of introducing a second dark-mode mechanism. */
+@custom-variant dark (&:where([data-bs-theme="dark"], [data-bs-theme="dark"] *));
+
+/*
+ * Design tokens, lifted from src/assets/sass/core/components/_variables.scss
+ * so Tailwind utilities (bg-primary, text-success, ...) render the same
+ * brand colors as the existing Bootstrap/Metronic theme instead of
+ * Tailwind's stock palette.
+ */
+@theme {
+  --color-primary: #1b84ff;
+  --color-primary-active: #056ee9;
+  --color-primary-light: #e9f3ff;
+
+  --color-secondary: #f9f9f9;
+  --color-secondary-active: #dbdfe9;
+
+  --color-success: #17c653;
+  --color-success-active: #04b440;
+  --color-success-light: #dfffea;
+
+  --color-info: #7239ea;
+  --color-info-active: #5014d0;
+  --color-info-light: #f8f5ff;
+
+  --color-warning: #f6c000;
+  --color-warning-active: #dead00;
+  --color-warning-light: #fff8dd;
+
+  --color-danger: #f8285a;
+  --color-danger-active: #d81a48;
+  --color-danger-light: #ffeef3;
+
+  --color-dark: #1e2129;
+  --color-dark-active: #111318;
+
+  /* Metronic's gray scale, reused verbatim so text-gray-500 etc. match
+     existing Bootstrap grays instead of Tailwind's own gray-500. */
+  --color-gray-100: #f9f9f9;
+  --color-gray-200: #f1f1f4;
+  --color-gray-300: #dbdfe9;
+  --color-gray-400: #c4cada;
+  --color-gray-500: #99a1b7;
+  --color-gray-600: #78829d;
+  --color-gray-700: #4b5675;
+  --color-gray-800: #252f4a;
+  --color-gray-900: #071437;
+
+  --font-sans: Inter, Helvetica, sans-serif;
+}
+
+/*
+ * Retheme Element Plus to the same tokens above, so its components (tables,
+ * date pickers, dialogs, ...) don't look like a different design system
+ * next to Tailwind-styled markup. Element Plus reads these as CSS vars —
+ * https://element-plus.org/en-US/guide/theming.html — no build step needed.
+ */
+:root {
+  --el-color-primary: var(--color-primary);
+  --el-color-success: var(--color-success);
+  --el-color-warning: var(--color-warning);
+  --el-color-danger: var(--color-danger);
+  --el-color-error: var(--color-danger);
+  --el-color-info: var(--color-info);
+}
+
+/*
+ * `<KTIcon icon-class="fs-N">` sizing shim. Keenicons itself only ships the
+ * icon glyphs, not a font-size scale - every icon-class="fs-N" throughout
+ * the app was relying on Bootstrap/Metronic's own `.fs-*` utilities
+ * (generated from $font-sizes in assets/sass/core/components/_variables.scss,
+ * now deleted). Values below are copied verbatim from that map (13px base)
+ * rather than rewriting every `icon-class="fs-N"` call site - this is a
+ * finite, stable set of literal names, exactly the "shim the handful of
+ * still-referenced legacy classes" case.
+ */
+.fs-1 { font-size: 22.75px !important; }
+.fs-2 { font-size: 19.5px !important; }
+.fs-3 { font-size: 17.55px !important; }
+.fs-4 { font-size: 16.25px !important; }
+.fs-5 { font-size: 14.95px !important; }
+.fs-6 { font-size: 13.95px !important; }
+.fs-7 { font-size: 12.35px !important; }
+.fs-8 { font-size: 11.05px !important; }
+.fs-2x { font-size: 26px !important; }
+.fs-3x { font-size: 39px !important; }
+.fs-4x { font-size: 52px !important; }
+@media (min-width: 992px) {
+  .fs-lg-3x { font-size: 39px !important; }
+}
