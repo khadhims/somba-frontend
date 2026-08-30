@@ -7,7 +7,7 @@
   >
     <template v-if="pageTitle">
       <!--begin::Title-->
-      <h1 class="my-0 flex flex-col justify-center text-lg font-bold text-gray-900 dark:text-gray-100">
+      <h1 class="my-0 flex flex-col justify-center text-xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
         {{ pageTitle }}
       </h1>
       <!--end::Title-->

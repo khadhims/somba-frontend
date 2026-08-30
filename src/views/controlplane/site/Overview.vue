@@ -1003,9 +1003,13 @@ const deleteSite = async (site: Site) => {
 </script>
 
 <style scoped>
-/* Show prohibition cursor on disabled options in the account dropdown */
-.form-select option:disabled {
-  color: var(--bs-gray-500);
+/* Show prohibition cursor on disabled options in the account dropdown.
+   Was targeting the old Bootstrap `.form-select` class and an undefined
+   `--bs-gray-500` var (dead since the Tailwind migration) - the selects
+   here are plain Tailwind-utility elements now, so scope on the bare
+   tag/pseudo instead and use the real Tailwind v4 color token. */
+select option:disabled {
+  color: var(--color-gray-500);
   cursor: not-allowed;
 }
 </style>

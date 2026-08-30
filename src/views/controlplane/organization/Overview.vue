@@ -4,7 +4,7 @@
     <!--begin::Summary Cards-->
     <CardWidget1
       :description="t('controlplane.organization.summary.totalOrganizations')"
-      :value="0"
+      :value="totalOrganizations"
       bg-color="#1B84FF"
       text-color="white"
     />

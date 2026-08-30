@@ -14,7 +14,7 @@
         <!--begin::Info-->
         <div class="mr-2 flex-1">
           <!--begin::Username-->
-          <a href="#" class="text-sm font-semibold text-white transition-colors hover:text-primary"
+          <a href="#" class="text-sm font-semibold text-gray-900 transition-colors hover:text-primary dark:text-gray-100"
             >{{ fullName }}</a
           >
           <!--end::Username-->

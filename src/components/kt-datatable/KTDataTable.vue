@@ -3,7 +3,7 @@
     <div class="overflow-x-auto">
       <table class="w-full text-sm" :class="{ 'pointer-events-none opacity-50': loading }">
         <!-- Table Header -->
-        <thead class="sticky top-0 z-10 bg-gray-100 dark:bg-gray-900">
+        <thead class="sticky top-0 z-10 bg-gray-100 dark:bg-gray-800">
           <tr>
             <th v-if="checkboxEnabled" class="w-[50px] px-6 py-4">
               <div class="flex justify-center">
@@ -28,20 +28,20 @@
                 <div class="flex items-center justify-start gap-2">
                   <span>{{ column.columnName }}</span>
                   <div v-if="column.sortEnabled" class="flex items-center">
-                    <ArrowUp
+                    <KTIcon
                       v-if="currentSort.label === column.columnLabel && currentSort.order === 'asc'"
-                      :size="16"
-                      class="text-primary"
+                      icon-name="arrow-up"
+                      icon-class="fs-6 text-primary"
                     />
-                    <ArrowDown
+                    <KTIcon
                       v-else-if="currentSort.label === column.columnLabel && currentSort.order === 'desc'"
-                      :size="16"
-                      class="text-primary"
+                      icon-name="arrow-down"
+                      icon-class="fs-6 text-primary"
                     />
-                    <ArrowUpDown
+                    <KTIcon
                       v-else
-                      :size="16"
-                      class="opacity-50 transition-opacity group-hover:opacity-80"
+                      icon-name="arrow-up-down"
+                      icon-class="fs-6 text-gray-400 opacity-50 transition-opacity group-hover:opacity-80"
                     />
                   </div>
                 </div>
@@ -51,9 +51,9 @@
         </thead>
 
         <!-- Table Body -->
-        <tbody v-if="dataToDisplay.length !== 0" class="font-semibold text-gray-600 dark:text-gray-300">
+        <tbody v-if="dataToDisplay.length !== 0" class="divide-y divide-gray-100 font-semibold text-gray-600 dark:divide-gray-800 dark:text-gray-300">
           <template v-for="(row, i) in dataToDisplay" :key="i">
-            <tr>
+            <tr class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/60">
               <td v-if="checkboxEnabled" class="px-6 py-4">
                 <div class="flex justify-center">
                   <input
@@ -101,7 +101,6 @@
 <script lang="ts">
 import { computed, defineComponent, ref, watch, onMounted } from "vue";
 import type { Sort } from "@/components/kt-datatable/table-partials/models";
-import { ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-vue-next';
 
 interface TableHeader {
   columnName: string;
@@ -113,11 +112,6 @@ interface TableHeader {
 
 export default defineComponent({
   name: "kt-datatable",
-  components: {
-    ArrowUp,
-    ArrowDown,
-    ArrowUpDown
-  },
   props: {
     header: { type: Array as () => TableHeader[], required: true },
     data: { type: Array as () => any[], required: true },

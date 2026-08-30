@@ -9,7 +9,7 @@
       <!--begin::Title-->
       <div class="flex flex-col">
         <!--begin::Amount-->
-        <span class="mr-2 text-3xl font-bold leading-none tracking-tight text-white">0</span>
+        <span class="mr-2 text-3xl font-bold leading-none tracking-tight text-white">{{ value }}</span>
         <!--end::Amount-->
 
         <!--begin::Subtitle-->
@@ -44,6 +44,7 @@ export default defineComponent({
     bgColor: { type: String, required: false, default: "#080655" },
     bgImage: { type: String, required: false },
     description: { type: String, required: true },
+    value: { type: [String, Number], required: false, default: 0 },
   },
 });
 </script>
