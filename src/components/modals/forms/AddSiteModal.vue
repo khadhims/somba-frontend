@@ -1,125 +1,115 @@
 <template>
-  <div
-    class="modal fade"
+  <dialog
     id="kt_modal_add_site"
     ref="addSiteModalRef"
-    tabindex="-1"
-    aria-hidden="true"
+    class="w-full max-w-[650px] rounded-lg bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    @cancel.prevent
   >
-    <!--begin::Modal dialog-->
-    <div class="modal-dialog modal-dialog-centered mw-650px">
-      <!--begin::Modal content-->
-      <div class="modal-content">
-        <!--begin::Modal header-->
-        <div class="modal-header">
-          <!--begin::Modal title-->
-          <h2 class="fw-bold">{{ t('controlplane.site.modals.add.title') }}</h2>
-          <!--end::Modal title-->
+    <!--begin::Modal header-->
+    <div class="flex items-center justify-between border-b border-gray-200 p-6 dark:border-gray-700">
+      <!--begin::Modal title-->
+      <h2 class="text-lg font-bold">{{ t('controlplane.site.modals.add.title') }}</h2>
+      <!--end::Modal title-->
 
-          <!--begin::Close-->
-          <div
-            data-bs-dismiss="modal"
-            class="btn btn-icon btn-sm btn-active-icon-primary"
-          >
-            <i class="ki-duotone ki-cross fs-1">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-          </div>
-          <!--end::Close-->
-        </div>
-        <!--end::Modal header-->
-
-        <!--begin::Form-->
-        <form @submit.prevent="submitForm">
-          <!--begin::Modal body-->
-          <div class="modal-body py-10 px-lg-17">
-            <!--begin::Scroll-->
-            <div class="scroll-y me-n7 pe-7">
-              <!--begin::Input group-->
-              <div class="fv-row mb-7">
-                <!--begin::Label-->
-                <label class="required fs-6 fw-semibold mb-2">{{ t('controlplane.site.modals.form.name.label') }}</label>
-                <!--end::Label-->
-                <!--begin::Input-->
-                <input
-                  type="text"
-                  class="form-control form-control-solid"
-                  :placeholder="t('controlplane.site.modals.form.name.placeholder')"
-                  v-model="formData.name"
-                  name="name"
-                />
-                <!--end::Input-->
-                <div v-if="errors.name" class="fv-plugins-message-container">
-                  <div class="fv-help-block">
-                    <span role="alert">{{ errors.name }}</span>
-                  </div>
-                </div>
-              </div>
-              <!--end::Input group-->
-
-              <!--begin::Input group-->
-              <div class="fv-row mb-7">
-                <!--begin::Label-->
-                <label class="fs-6 fw-semibold mb-2">{{ t('controlplane.site.modals.form.description.label') }}</label>
-                <!--end::Label-->
-                <!--begin::Input-->
-                <textarea
-                  class="form-control form-control-solid"
-                  rows="3"
-                  :placeholder="t('controlplane.site.modals.form.description.placeholder')"
-                  v-model="formData.description"
-                  name="description"
-                ></textarea>
-                <!--end::Input-->
-              </div>
-              <!--end::Input group-->
-            </div>
-            <!--end::Scroll-->
-          </div>
-          <!--end::Modal body-->
-
-          <!--begin::Modal footer-->
-          <div class="modal-footer flex-center">
-            <!--begin::Button-->
-            <button
-              type="button"
-              class="btn btn-light me-3"
-              data-bs-dismiss="modal"
-            >
-              {{ t('controlplane.site.modals.actions.cancel') }}
-            </button>
-            <!--end::Button-->
-
-            <!--begin::Button-->
-            <button type="submit" class="btn btn-primary" :disabled="loading">
-              <span v-if="!loading" class="indicator-label">{{ t('controlplane.site.modals.add.submit') }}</span>
-              <span v-if="loading" class="indicator-progress">
-                {{ t('controlplane.site.modals.actions.loading') }}
-                <span
-                  class="spinner-border spinner-border-sm align-middle ms-2"
-                ></span>
-              </span>
-            </button>
-            <!--end::Button-->
-          </div>
-          <!--end::Modal footer-->
-        </form>
-        <!--end::Form-->
-      </div>
-      <!--end::Modal content-->
+      <!--begin::Close-->
+      <button
+        type="button"
+        @click="closeModal"
+        class="flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+      >
+        <i class="ki-duotone ki-cross fs-1">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
+      <!--end::Close-->
     </div>
-    <!--end::Modal dialog-->
-  </div>
+    <!--end::Modal header-->
+
+    <!--begin::Form-->
+    <form @submit.prevent="submitForm">
+      <!--begin::Modal body-->
+      <div class="max-h-[70vh] overflow-y-auto p-6 lg:p-10">
+        <!--begin::Input group-->
+        <div class="fv-row mb-7">
+          <!--begin::Label-->
+          <label class="mb-2 block text-sm font-semibold after:content-['*'] after:ml-0.5 after:text-danger">{{ t('controlplane.site.modals.form.name.label') }}</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <input
+            type="text"
+            :class="formInputClass"
+            :placeholder="t('controlplane.site.modals.form.name.placeholder')"
+            v-model="formData.name"
+            name="name"
+          />
+          <!--end::Input-->
+          <div v-if="errors.name" class="fv-plugins-message-container">
+            <div class="fv-help-block">
+              <span role="alert">{{ errors.name }}</span>
+            </div>
+          </div>
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="fv-row mb-7">
+          <!--begin::Label-->
+          <label class="mb-2 block text-sm font-semibold">{{ t('controlplane.site.modals.form.description.label') }}</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <textarea
+            :class="formInputClass"
+            rows="3"
+            :placeholder="t('controlplane.site.modals.form.description.placeholder')"
+            v-model="formData.description"
+            name="description"
+          ></textarea>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+      </div>
+      <!--end::Modal body-->
+
+      <!--begin::Modal footer-->
+      <div class="flex items-center justify-center gap-3 border-t border-gray-200 p-6 dark:border-gray-700">
+        <!--begin::Button-->
+        <button
+          type="button"
+          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          @click="closeModal"
+        >
+          {{ t('controlplane.site.modals.actions.cancel') }}
+        </button>
+        <!--end::Button-->
+
+        <!--begin::Button-->
+        <button
+          type="submit"
+          class="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-70"
+          :disabled="loading"
+        >
+          <span v-if="!loading">{{ t('controlplane.site.modals.add.submit') }}</span>
+          <span v-else class="inline-flex items-center gap-2">
+            {{ t('controlplane.site.modals.actions.loading') }}
+            <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+          </span>
+        </button>
+        <!--end::Button-->
+      </div>
+      <!--end::Modal footer-->
+    </form>
+    <!--end::Form-->
+  </dialog>
 </template>
 
 <script setup lang="ts">
 
 import { ref, reactive } from "vue";
-import { Modal } from "bootstrap";
 import { useRoute } from "vue-router";
 import ApiService from "@/core/services/ApiService";
 import { useI18n } from "vue-i18n";
+import { formInputClass } from "@/core/helpers/badge";
 
 interface SiteFormData {
   name: string;
@@ -140,7 +130,7 @@ const props = defineProps<{
 const route = useRoute();
 
 // Reactive data
-const addSiteModalRef = ref<HTMLElement>();
+const addSiteModalRef = ref<HTMLDialogElement>();
 const loading = ref(false);
 
 const formData = reactive<SiteFormData>({
@@ -155,6 +145,10 @@ const errors = reactive({
 });
 
 const { t } = useI18n();
+
+const closeModal = () => {
+  addSiteModalRef.value?.close();
+};
 
 // Validation
 const validateForm = (): boolean => {
@@ -207,8 +201,7 @@ const submitForm = async () => {
 
     // Reset form and close modal
     resetForm()
-    const modal = Modal.getInstance(addSiteModalRef.value!)
-    modal?.hide()
+    closeModal()
   } catch (error: any) {
     console.error("Error adding site:", error);
     // map validation errors if provided by backend
@@ -245,17 +238,16 @@ const showModal = (teamId?: string) => {
   if (tid) {
     formData.team_uid = tid;
   }
-  // initialize modal with backdrop static and keyboard disabled so click outside / ESC won't close
-  const el = addSiteModalRef.value!;
+  const el = addSiteModalRef.value;
   if (!el) {
     console.warn('[AddSiteModal] addSiteModalRef is not set!');
+    return;
   }
-
-  const modalInstance = (Modal.getInstance(el) as Modal) || new Modal(el, {
-    backdrop: "static",
-    keyboard: false,
-  });
-  modalInstance.show();
+  // Native <dialog> already blocks backdrop-click-to-close by default (no
+  // listener wired for it); @cancel.prevent on the element blocks the
+  // Escape key too - together they replicate the old
+  // `backdrop: "static", keyboard: false` Bootstrap Modal options.
+  el.showModal();
 };
 
 // Expose methods to parent

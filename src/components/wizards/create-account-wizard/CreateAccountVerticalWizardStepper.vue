@@ -1,141 +1,53 @@
 <template>
   <!--begin::Stepper-->
   <div
-    class="stepper stepper-pills stepper-column d-flex flex-column flex-xl-row flex-row-fluid"
+    class="flex flex-col flex-1 xl:flex-row"
     id="kt_create_account_stepper"
-    ref="createAccountStepperRef"
   >
     <!--begin::Aside-->
     <div
-      class="card d-flex justify-content-center justify-content-xl-start flex-row-auto w-100 w-xl-300px w-xxl-400px me-9"
+      class="flex w-full flex-none justify-center rounded-lg bg-white xl:w-[300px] xl:justify-start 2xl:w-[400px] xl:mr-9 dark:bg-gray-900"
     >
       <!--begin::Wrapper-->
-      <div class="card-body px-6 px-lg-10 px-xxl-15 py-20">
+      <div class="px-6 py-20 lg:px-10 2xl:px-15">
         <!--begin::Nav-->
-        <div class="stepper-nav">
-          <!--begin::Step 1-->
-          <div class="stepper-item current" data-kt-stepper-element="nav">
-            <div class="stepper-wrapper">
+        <div>
+          <!--begin::Step-->
+          <div v-for="(step, index) in steps" :key="step.title" class="relative pb-10 last:pb-0">
+            <div class="flex items-center">
               <!--begin::Icon-->
-              <div class="stepper-icon w-40px h-40px">
-                <i class="stepper-check fas fa-check"></i>
-                <span class="stepper-number">1</span>
+              <div
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-bold transition-colors"
+                :class="stepper.stepState(index) === 'current'
+                  ? 'bg-primary text-white'
+                  : stepper.stepState(index) === 'completed'
+                    ? 'bg-success text-white'
+                    : 'bg-gray-100 text-gray-500 dark:bg-gray-800'"
+              >
+                <i v-if="stepper.stepState(index) === 'completed'" class="fas fa-check"></i>
+                <span v-else>{{ index + 1 }}</span>
               </div>
               <!--end::Icon-->
 
               <!--begin::Label-->
-              <div class="stepper-label">
-                <h3 class="stepper-title">Account Type</h3>
-
-                <div class="stepper-desc fw-semibold">
-                  Setup Your Account Details
+              <div class="ml-4">
+                <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100">{{ step.title }}</h3>
+                <div class="text-xs font-semibold text-gray-500">
+                  {{ step.desc }}
                 </div>
               </div>
               <!--end::Label-->
             </div>
 
             <!--begin::Line-->
-            <div class="stepper-line h-40px"></div>
+            <div
+              v-if="index < steps.length - 1"
+              class="absolute left-5 top-10 h-10 w-px -translate-x-1/2 transition-colors"
+              :class="stepper.stepState(index) === 'completed' ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-700'"
+            ></div>
             <!--end::Line-->
           </div>
-          <!--end::Step 1-->
-
-          <!--begin::Step 2-->
-          <div class="stepper-item" data-kt-stepper-element="nav">
-            <div class="stepper-wrapper">
-              <!--begin::Icon-->
-              <div class="stepper-icon w-40px h-40px">
-                <i class="stepper-check fas fa-check"></i>
-                <span class="stepper-number">2</span>
-              </div>
-              <!--end::Icon-->
-
-              <!--begin::Label-->
-              <div class="stepper-label">
-                <h3 class="stepper-title">Account Settings</h3>
-                <div class="stepper-desc fw-semibold">
-                  Setup Your Account Settings
-                </div>
-              </div>
-              <!--end::Label-->
-            </div>
-            <!--begin::Line-->
-            <div class="stepper-line h-40px"></div>
-            <!--end::Line-->
-          </div>
-          <!--end::Step 2-->
-
-          <!--begin::Step 3-->
-          <div class="stepper-item" data-kt-stepper-element="nav">
-            <div class="stepper-wrapper">
-              <!--begin::Icon-->
-              <div class="stepper-icon w-40px h-40px">
-                <i class="stepper-check fas fa-check"></i>
-                <span class="stepper-number">3</span>
-              </div>
-              <!--end::Icon-->
-
-              <!--begin::Label-->
-              <div class="stepper-label">
-                <h3 class="stepper-title">Business Info</h3>
-                <div class="stepper-desc fw-semibold">
-                  Your Business Related Info
-                </div>
-              </div>
-              <!--end::Label-->
-            </div>
-
-            <!--begin::Line-->
-            <div class="stepper-line h-40px"></div>
-            <!--end::Line-->
-          </div>
-          <!--end::Step 3-->
-
-          <!--begin::Step 4-->
-          <div class="stepper-item" data-kt-stepper-element="nav">
-            <div class="stepper-wrapper">
-              <!--begin::Icon-->
-              <div class="stepper-icon w-40px h-40px">
-                <i class="stepper-check fas fa-check"></i>
-                <span class="stepper-number">4</span>
-              </div>
-              <!--end::Icon-->
-
-              <!--begin::Label-->
-              <div class="stepper-label">
-                <h3 class="stepper-title">Billing Details</h3>
-                <div class="stepper-desc fw-semibold">
-                  Set Your Payment Methods
-                </div>
-              </div>
-              <!--end::Label-->
-            </div>
-
-            <!--begin::Line-->
-            <div class="stepper-line h-40px"></div>
-            <!--end::Line-->
-          </div>
-          <!--end::Step 4-->
-
-          <!--begin::Step 5-->
-          <div class="stepper-item" data-kt-stepper-element="nav">
-            <div class="stepper-wrapper">
-              <!--begin::Icon-->
-              <div class="stepper-icon w-40px h-40px">
-                <i class="stepper-check fas fa-check"></i>
-                <span class="stepper-number">5</span>
-              </div>
-              <!--end::Icon-->
-
-              <!--begin::Label-->
-              <div class="stepper-label">
-                <h3 class="stepper-title">Completed</h3>
-                <div class="stepper-desc fw-semibold">Woah, we are here</div>
-              </div>
-              <!--end::Label-->
-            </div>
-          </div>
-          <!--end::Step 5-->
+          <!--end::Step-->
         </div>
         <!--end::Nav-->
       </div>
@@ -144,9 +56,9 @@
     <!--begin::Aside-->
 
     <!--begin::Content-->
-    <div class="card d-flex flex-row-fluid flex-center">
+    <div class="flex flex-1 items-center justify-center rounded-lg bg-white dark:bg-gray-900">
       <CreateAccountWizardForm
-        :stepper-el="createAccountStepperRef"
+        :stepper="stepper"
         :close-hadler="props.closeHadler"
       />
     </div>
@@ -156,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { useStepper } from "@/composables/useStepper";
 import CreateAccountWizardForm from "@/components/wizards/create-account-wizard/CreateAccountWizardForm.vue";
 
 interface Props {
@@ -165,5 +77,13 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const createAccountStepperRef = ref<HTMLElement | null>(null);
+const steps = [
+  { title: "Account Type", desc: "Setup Your Account Details" },
+  { title: "Account Settings", desc: "Setup Your Account Settings" },
+  { title: "Business Info", desc: "Your Business Related Info" },
+  { title: "Billing Details", desc: "Set Your Payment Methods" },
+  { title: "Completed", desc: "Woah, we are here" },
+];
+
+const stepper = useStepper(steps.length);
 </script>

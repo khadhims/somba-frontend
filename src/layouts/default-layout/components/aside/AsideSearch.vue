@@ -1,6 +1,6 @@
 <template>
   <!--begin::Search-->
-  <div class="d-flex align-items-center w-100">
+  <div class="flex w-full items-center">
     <InlineForm />
   </div>
   <!--end::Search-->

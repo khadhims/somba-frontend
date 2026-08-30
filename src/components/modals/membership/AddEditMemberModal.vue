@@ -1,122 +1,131 @@
 <template>
   <!-- Add/Edit Member Modal -->
-  <div class="modal fade" :id="modalId" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h5 class="modal-title">
-            {{
-              isEdit
-                ? t('components.membership.addEdit.title.edit')
-                : t('components.membership.addEdit.title.add', { entity: entityLabel })
-            }}
-          </h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+  <dialog
+    :id="modalId"
+    ref="dialogRef"
+    class="m-auto w-full max-w-lg rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    @click.self="hideModal"
+    @cancel="hideModal"
+  >
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
+      <h5 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        {{
+          isEdit
+            ? t('components.membership.addEdit.title.edit')
+            : t('components.membership.addEdit.title.add', { entity: entityLabel })
+        }}
+      </h5>
+      <button
+        type="button"
+        @click="hideModal"
+        aria-label="Close"
+        class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+      >
+        <i class="ki-duotone ki-cross fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <form @submit.prevent="saveMember">
+      <div class="p-5">
+        <!-- Email Field (Only for Add) -->
+        <div v-if="!isEdit" class="mb-4">
+          <label class="mb-2 block text-sm font-semibold after:content-['*'] after:ml-0.5 after:text-danger">
+            {{ t('components.membership.addEdit.fields.email.label') }}
+          </label>
+          <input
+            type="email"
+            v-model="form.email"
+            :class="formInputClass"
+            :placeholder="t('components.membership.addEdit.fields.email.placeholder')"
+            required
+          />
+          <div class="mt-1 text-sm text-gray-500">
+            {{ t('components.membership.addEdit.fields.email.help', { entity: entityLabelLower }) }}
+          </div>
         </div>
 
-        <!-- Modal Body -->
-        <form @submit.prevent="saveMember">
-          <div class="modal-body">
-            <!-- Email Field (Only for Add) -->
-            <div v-if="!isEdit" class="mb-4">
-              <label class="required fw-semibold fs-6 mb-2">
-                {{ t('components.membership.addEdit.fields.email.label') }}
-              </label>
-              <input
-                type="email"
-                v-model="form.email"
-                class="form-control form-control-solid"
-                :placeholder="t('components.membership.addEdit.fields.email.placeholder')"
-                required
-              />
-              <div class="form-text">
-                {{ t('components.membership.addEdit.fields.email.help', { entity: entityLabelLower }) }}
-              </div>
+        <!-- Current Member Info (Only for Edit) -->
+        <div v-if="isEdit && memberToEdit" class="mb-4 rounded bg-primary-light p-3">
+          <div class="flex items-center">
+            <div class="mr-3 flex h-[35px] w-[35px] shrink-0 items-center justify-center rounded-full bg-primary font-bold text-white">
+              {{ memberToEdit.email?.charAt(0).toUpperCase() || 'U' }}
             </div>
-
-            <!-- Current Member Info (Only for Edit) -->
-            <div v-if="isEdit && memberToEdit" class="mb-4 p-3 bg-light-primary rounded">
-              <div class="d-flex align-items-center">
-                <div class="symbol symbol-35px me-3">
-                  <span class="symbol-label bg-primary text-white fw-bold">
-                    {{ memberToEdit.email?.charAt(0).toUpperCase() || 'U' }}
-                  </span>
-                </div>
-                <div>
-                  <span class="text-dark fw-bold d-block fs-6">
-                    {{ memberToEdit.email || t('components.membership.addEdit.currentMember.unknown') }}
-                  </span>
-                  <span class="text-muted fw-semibold d-block fs-7">
-                    {{ t('components.membership.addEdit.currentMember.currentRole', { role: getRoleLabel(memberToEdit.role) }) }}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Role Field -->
-            <div class="mb-4">
-              <label class="required fw-semibold fs-6 mb-2">
-                {{ t('components.membership.addEdit.fields.role.label') }}
-              </label>
-              <select
-                v-model="form.role"
-                class="form-select form-select-solid"
-                required
-              >
-                <option value="" disabled>
-                  {{ t('components.membership.addEdit.fields.role.placeholder') }}
-                </option>
-                <option
-                  v-for="option in roleOptions"
-                  :key="option.value"
-                  :value="option.value"
-                >
-                  {{ option.label }}
-                </option>
-              </select>
+            <div>
+              <span class="block text-sm font-bold text-gray-900 dark:text-gray-100">
+                {{ memberToEdit.email || t('components.membership.addEdit.currentMember.unknown') }}
+              </span>
+              <span class="block text-xs font-semibold text-gray-500">
+                {{ t('components.membership.addEdit.currentMember.currentRole', { role: getRoleLabel(memberToEdit.role) }) }}
+              </span>
             </div>
           </div>
+        </div>
 
-          <!-- Modal Footer -->
-          <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-              {{ t('components.membership.addEdit.actions.cancel') }}
-            </button>
-            <button
-              type="submit"
-              class="btn btn-primary"
-              :disabled="loading || !form.role || (!isEdit && !form.email)"
+        <!-- Role Field -->
+        <div class="mb-4">
+          <label class="mb-2 block text-sm font-semibold after:content-['*'] after:ml-0.5 after:text-danger">
+            {{ t('components.membership.addEdit.fields.role.label') }}
+          </label>
+          <select
+            v-model="form.role"
+            :class="formInputClass"
+            required
+          >
+            <option value="" disabled>
+              {{ t('components.membership.addEdit.fields.role.placeholder') }}
+            </option>
+            <option
+              v-for="option in roleOptions"
+              :key="option.value"
+              :value="option.value"
             >
-              <span v-if="loading" class="indicator-progress">
-                <span class="spinner-border spinner-border-sm align-middle me-2"></span>
-                {{ t('components.membership.addEdit.actions.loading') }}
-              </span>
-              <span v-else class="indicator-label">
-                {{
-                  isEdit
-                    ? t('components.membership.addEdit.actions.update')
-                    : t('components.membership.addEdit.actions.add')
-                }}
-              </span>
-            </button>
-          </div>
-        </form>
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
       </div>
-    </div>
-  </div>
+
+      <!-- Modal Footer -->
+      <div class="flex justify-end gap-3 border-t border-gray-200 p-5 dark:border-gray-700">
+        <button
+          type="button"
+          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          @click="hideModal"
+        >
+          {{ t('components.membership.addEdit.actions.cancel') }}
+        </button>
+        <button
+          type="submit"
+          class="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-70"
+          :disabled="loading || !form.role || (!isEdit && !form.email)"
+        >
+          <span v-if="loading" class="inline-flex items-center gap-2">
+            <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+            {{ t('components.membership.addEdit.actions.loading') }}
+          </span>
+          <span v-else>
+            {{
+              isEdit
+                ? t('components.membership.addEdit.actions.update')
+                : t('components.membership.addEdit.actions.add')
+            }}
+          </span>
+        </button>
+      </div>
+    </form>
+  </dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed } from "vue";
-import { Modal } from "bootstrap";
 import { useI18n } from "vue-i18n";
 import ApiService from "@/core/services/ApiService";
+import { formInputClass } from "@/core/helpers/badge";
 
 // Props
 interface Props {
@@ -188,8 +197,8 @@ const getRoleLabel = (role?: string) => {
   return translated !== translationKey ? translated : role;
 };
 
-// Modal instance
-let modalInstance: Modal | null = null;
+// Modal element ref
+const dialogRef = ref<HTMLDialogElement>();
 
 // Methods
 const resetForm = () => {
@@ -201,11 +210,11 @@ const resetForm = () => {
 
 const saveMember = async () => {
   loading.value = true;
-  
+
   try {
     let endpoint = '';
     let payload: any = {};
-    
+
     if (isEdit.value && memberToEdit.value) {
       // Edit existing member - PATCH
       if (props.entityType === 'account') {
@@ -215,11 +224,11 @@ const saveMember = async () => {
       } else {
         endpoint = `organizations/${props.entityUid}/memberships/${memberToEdit.value.uid}`;
       }
-      
+
       payload = {
         role: form.role
       };
-      
+
       console.log('PATCH endpoint:', endpoint);
       console.log('PATCH payload:', payload);
       const response = await ApiService.patch(endpoint, payload);
@@ -233,30 +242,30 @@ const saveMember = async () => {
       } else {
         endpoint = `organizations/${props.entityUid}/memberships`;
       }
-      
+
       payload = {
         email: form.email,
         role: form.role
       };
-      
+
       console.log('POST endpoint:', endpoint);
       console.log('POST payload:', payload);
       const response = await ApiService.post(endpoint, payload);
       console.log('New member added:', response);
     }
-    
+
     // Emit success event
     emit('memberSaved', payload);
-    
+
     // Close modal
     hideModal();
-    
+
     // Reset form
     resetForm();
-    
+
   } catch (error: any) {
     console.error('Error saving member:', error);
-    
+
     // Show error message
     let errorMessage = t('components.membership.addEdit.notifications.error');
     if (error.response?.data?.message) {
@@ -264,7 +273,7 @@ const saveMember = async () => {
     } else if (error.message) {
       errorMessage = String(error.message);
     }
-    
+
     alert(errorMessage);
   } finally {
     loading.value = false;
@@ -273,13 +282,9 @@ const saveMember = async () => {
 
 // Public methods
 const showModal = (member?: Member) => {
-  if (!modalInstance) {
-    modalInstance = new Modal(document.getElementById(modalId.value)!);
-  }
-  
   // Reset form first
   resetForm();
-  
+
   if (member) {
     // Edit mode
     isEdit.value = true;
@@ -290,14 +295,12 @@ const showModal = (member?: Member) => {
     isEdit.value = false;
     memberToEdit.value = null;
   }
-  
-  modalInstance.show();
+
+  dialogRef.value?.showModal();
 };
 
 const hideModal = () => {
-  if (modalInstance) {
-    modalInstance.hide();
-  }
+  dialogRef.value?.close();
 };
 
 // Expose methods to parent
@@ -306,29 +309,3 @@ defineExpose({
   hideModal
 });
 </script>
-
-<style scoped>
-.bg-light-primary {
-  background-color: #f1f8ff !important;
-}
-
-.form-text {
-  font-size: 0.875rem;
-  color: #6c757d;
-}
-
-.form-text strong {
-  font-weight: 600;
-}
-
-.indicator-progress {
-  display: flex;
-  align-items: center;
-}
-
-.symbol-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-</style>

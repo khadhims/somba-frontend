@@ -1,38 +1,35 @@
 <template>
   <!--begin::Footer-->
-  <div class="footer py-4 d-flex flex-lg-column" id="kt_footer">
+  <div class="flex py-4 lg:flex-col" id="kt_footer">
     <!--begin::Container-->
     <div
-      class="d-flex flex-column flex-md-row align-items-center justify-content-between"
-      :class="{
-        'container-fluid': footerWidthFluid,
-        'container-xxl': !footerWidthFluid,
-      }"
+      class="flex w-full flex-col items-center justify-between px-4 md:flex-row"
+      :class="footerWidthFluid ? '' : 'mx-auto max-w-[1320px]'"
     >
       <!--begin::Copyright-->
-      <div class="text-gray-900 order-2 order-md-1">
-        <span class="text-muted fw-semibold me-1">2025&copy;</span>
+      <div class="order-2 text-gray-900 dark:text-gray-100 md:order-1">
+        <span class="mr-1 font-semibold text-gray-500">2025&copy;</span>
         <a
           href="https://somba.kresibinar.id/"
           target="_blank"
-          class="text-gray-800 text-hover-primary"
+          class="text-gray-800 transition-colors hover:text-primary dark:text-gray-200"
           >Somba</a
         >
       </div>
       <!--end::Copyright-->
 
       <!--begin::Menu-->
-      <ul class="menu menu-gray-600 menu-hover-primary fw-semibold order-1">
-        <li class="menu-item">
-          <a href="#" target="_blank" class="menu-link px-2">About</a>
+      <ul class="order-1 flex gap-2 font-semibold">
+        <li>
+          <a href="#" target="_blank" class="px-2 text-gray-500 transition-colors hover:text-primary">About</a>
         </li>
 
-        <li class="menu-item">
-          <a href="#" target="_blank" class="menu-link px-2">Support</a>
+        <li>
+          <a href="#" target="_blank" class="px-2 text-gray-500 transition-colors hover:text-primary">Support</a>
         </li>
 
-        <li class="menu-item">
-          <a href="#" target="_blank" class="menu-link px-2">Pricing</a>
+        <li>
+          <a href="#" target="_blank" class="px-2 text-gray-500 transition-colors hover:text-primary">Pricing</a>
         </li>
       </ul>
       <!--end::Menu-->

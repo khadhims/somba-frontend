@@ -1,28 +1,42 @@
 <template>
-  <div class="d-flex flex-stack flex-wrap pt-10">
-    <div class="d-flex align-items-center">
-      <div class="fs-6 fw-semibold text-gray-700 me-5">
+  <div class="flex flex-wrap items-center justify-between gap-4 pt-10">
+    <div class="flex items-center">
+      <div class="mr-5 text-sm font-semibold text-gray-700 dark:text-gray-300">
         Showing {{ startItem }} to {{ endItem }} of {{ totalItems }} entries
       </div>
 
-      <div class="d-flex align-items-center">
-        <span class="fs-6 fw-semibold text-gray-500">
+      <div class="flex items-center">
+        <span class="text-sm font-semibold text-gray-500">
           Page {{ page }} of {{ totalPagesComputed }}
         </span>
       </div>
     </div>
 
-    <ul class="pagination">
-      <li class="page-item" :class="{ disabled: page <= 1 }">
-        <button class="page-link" @click="goToPage(page - 1)" :disabled="page <= 1" title="Previous page">‹</button>
+    <ul class="flex items-center gap-1">
+      <li>
+        <button
+          class="flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-300 dark:hover:bg-gray-800"
+          @click="goToPage(page - 1)"
+          :disabled="page <= 1"
+          title="Previous page"
+        >‹</button>
       </li>
 
-      <li v-for="p in visiblePages" :key="p" class="page-item" :class="{ active: p === page }">
-        <button class="page-link" @click="goToPage(p)">{{ p }}</button>
+      <li v-for="p in visiblePages" :key="p">
+        <button
+          class="flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-medium transition-colors"
+          :class="p === page ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'"
+          @click="goToPage(p)"
+        >{{ p }}</button>
       </li>
 
-      <li class="page-item" :class="{ disabled: page >= totalPagesComputed }">
-        <button class="page-link" @click="goToPage(page + 1)" :disabled="page >= totalPagesComputed" title="Next page">›</button>
+      <li>
+        <button
+          class="flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-300 dark:hover:bg-gray-800"
+          @click="goToPage(page + 1)"
+          :disabled="page >= totalPagesComputed"
+          title="Next page"
+        >›</button>
       </li>
     </ul>
   </div>
@@ -88,6 +102,3 @@ function goToPage(p: number) {
 }
 </script>
 
-<style scoped>
-.pagination { margin: 0; }
-</style>

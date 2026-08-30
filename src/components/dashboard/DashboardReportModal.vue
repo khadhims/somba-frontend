@@ -107,14 +107,14 @@
               <tbody>
                 <tr v-for="(item, index) in pageAlerts" :key="index">
                   <td>
-                    <div class="fw-bold">
+                    <div class="font-bold">
                       {{
                         item.detected_objects[0].display_name ||
                         item.detected_objects[0].object_type ||
                         "-"
                       }}
                     </div>
-                    <small class="text-muted">{{
+                    <small class="text-gray-500">{{
                       item.camera_name || "-"
                     }}</small>
                   </td>
@@ -134,8 +134,8 @@
                         statusBadge(item.status),
                         'py-2',
                         'px-3',
-                        'fw-bold',
-                        'fs-7',
+                        'font-bold',
+                        'text-xs',
                       ]"
                     >
                       {{ statusLabel(item.status) }}

@@ -155,24 +155,24 @@
               </label>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="monitoringSettings.deviceMonitoring.cameraOfflineAlert"
                   />
-                  <span class="form-check-label">{{ t("appsMonitoringCenter.settings.monitoring.deviceMonitoring.cameraOfflineAlert") }}</span>
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.monitoring.deviceMonitoring.cameraOfflineAlert") }}</span>
                 </label>
               </div>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="monitoringSettings.deviceMonitoring.nvrHealthCheck"
                   />
-                  <span class="form-check-label">{{ t("appsMonitoringCenter.settings.monitoring.deviceMonitoring.nvrHealthCheck") }}</span>
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.monitoring.deviceMonitoring.nvrHealthCheck") }}</span>
                 </label>
               </div>
 
@@ -257,57 +257,57 @@
               </label>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="dashboardSettings.widgets.systemHealth"
                   />
-                  <span class="form-check-label">{{ t("appsMonitoringCenter.settings.dashboard.widgets.systemHealth") }}</span>
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.dashboard.widgets.systemHealth") }}</span>
                 </label>
               </div>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="dashboardSettings.widgets.performanceCharts"
                   />
-                  <span class="form-check-label">{{ t("appsMonitoringCenter.settings.dashboard.widgets.performanceCharts") }}</span>
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.dashboard.widgets.performanceCharts") }}</span>
                 </label>
               </div>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="dashboardSettings.widgets.deviceStatus"
                   />
-                  <span class="form-check-label">{{ t("appsMonitoringCenter.settings.dashboard.widgets.deviceStatus") }}</span>
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.dashboard.widgets.deviceStatus") }}</span>
                 </label>
               </div>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="dashboardSettings.widgets.alertSummary"
                   />
-                  <span class="form-check-label">{{ t("appsMonitoringCenter.settings.dashboard.widgets.alertSummary") }}</span>
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.dashboard.widgets.alertSummary") }}</span>
                 </label>
               </div>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="dashboardSettings.widgets.recentActivities"
                   />
-                  <span class="form-check-label">{{ t("appsMonitoringCenter.settings.dashboard.widgets.recentActivities") }}</span>
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.dashboard.widgets.recentActivities") }}</span>
                 </label>
               </div>
             </div>
@@ -343,24 +343,24 @@
               </div>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="dashboardSettings.chartSettings.showGridLines"
                   />
-                  <span class="form-check-label">{{ t("appsMonitoringCenter.settings.dashboard.chartSettings.showGridLines") }}</span>
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.dashboard.chartSettings.showGridLines") }}</span>
                 </label>
               </div>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="dashboardSettings.chartSettings.animateOnLoad"
                   />
-                  <span class="form-check-label">{{ t("appsMonitoringCenter.settings.dashboard.chartSettings.animateOnLoad") }}</span>
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.dashboard.chartSettings.animateOnLoad") }}</span>
                 </label>
               </div>
             </div>
@@ -398,16 +398,9 @@
             <h5 class="mb-4 text-gray-900 dark:text-gray-100">{{ t("appsMonitoringCenter.settings.reporting.automated.title") }}</h5>
 
             <div class="mb-7">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  v-model="reportingSettings.automated.enabled"
-                />
-                <span class="form-check-label font-semibold text-gray-800">
-                  {{ t("appsMonitoringCenter.settings.reporting.automated.enabled") }}
-                </span>
-              </label>
+              <ToggleSwitch v-model="reportingSettings.automated.enabled">
+                {{ t("appsMonitoringCenter.settings.reporting.automated.enabled") }}
+              </ToggleSwitch>
               <div class="mt-1 text-sm text-gray-500">
                 {{ t("appsMonitoringCenter.settings.reporting.automated.enabledHelp") }}
               </div>
@@ -430,29 +423,29 @@
                   {{ t("appsMonitoringCenter.settings.reporting.automated.reportTypes.label") }}
                 </label>
                 <div class="flex flex-col gap-2">
-                  <label class="form-check form-check-custom form-check-solid">
+                  <label class="flex items-center gap-2">
                     <input
-                      class="form-check-input"
                       type="checkbox"
+                      class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                       v-model="reportingSettings.automated.includeSystemHealth"
                     />
-                    <span class="form-check-label">{{ t("appsMonitoringCenter.settings.reporting.automated.reportTypes.systemHealth") }}</span>
+                    <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.reporting.automated.reportTypes.systemHealth") }}</span>
                   </label>
-                  <label class="form-check form-check-custom form-check-solid">
+                  <label class="flex items-center gap-2">
                     <input
-                      class="form-check-input"
                       type="checkbox"
+                      class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                       v-model="reportingSettings.automated.includeAlertSummary"
                     />
-                    <span class="form-check-label">{{ t("appsMonitoringCenter.settings.reporting.automated.reportTypes.alertSummary") }}</span>
+                    <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.reporting.automated.reportTypes.alertSummary") }}</span>
                   </label>
-                  <label class="form-check form-check-custom form-check-solid">
+                  <label class="flex items-center gap-2">
                     <input
-                      class="form-check-input"
                       type="checkbox"
+                      class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                       v-model="reportingSettings.automated.includeDeviceStatus"
                     />
-                    <span class="form-check-label">{{ t("appsMonitoringCenter.settings.reporting.automated.reportTypes.deviceStatus") }}</span>
+                    <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.reporting.automated.reportTypes.deviceStatus") }}</span>
                   </label>
                 </div>
               </div>
@@ -520,29 +513,29 @@
                 {{ t("appsMonitoringCenter.settings.reporting.manual.includeData.label") }}
               </label>
               <div class="flex flex-col gap-2">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="exportSettings.includePerformanceData"
                   />
-                  <span class="form-check-label">{{ t("appsMonitoringCenter.settings.reporting.manual.includeData.performanceMetrics") }}</span>
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.reporting.manual.includeData.performanceMetrics") }}</span>
                 </label>
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="exportSettings.includeAlertData"
                   />
-                  <span class="form-check-label">{{ t("appsMonitoringCenter.settings.reporting.manual.includeData.alertHistory") }}</span>
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.reporting.manual.includeData.alertHistory") }}</span>
                 </label>
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="exportSettings.includeDeviceData"
                   />
-                  <span class="form-check-label">{{ t("appsMonitoringCenter.settings.reporting.manual.includeData.deviceLogs") }}</span>
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsMonitoringCenter.settings.reporting.manual.includeData.deviceLogs") }}</span>
                 </label>
               </div>
             </div>
@@ -599,6 +592,7 @@ import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import ApiService from "@/core/services/ApiService";
 import { formInputClass } from "@/core/helpers/badge";
+import ToggleSwitch from "@/components/common/ToggleSwitch.vue";
 
 const { t } = useI18n();
 

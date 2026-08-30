@@ -34,3 +34,12 @@ const VARIANT_CLASSES: Record<BadgeVariant, string> = {
 export function badgeVariantClass(variant: BadgeVariant): string {
   return VARIANT_CLASSES[variant];
 }
+
+// SweetAlert2 is used throughout with `buttonsStyling: false`, which means
+// its confirm/cancel buttons render unstyled unless a `customClass` is
+// supplied - originally always `"btn fw-semibold btn-light-{variant}"`
+// (14+ call sites). Swal renders these into its own DOM tree outside Vue,
+// so they can't use `:class`/badgeVariantClass() - plain strings only.
+export const swalConfirmButtonClass = "rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active";
+export const swalDangerButtonClass = "rounded-md bg-danger px-4 py-2 text-sm font-semibold text-white transition-colors hover:opacity-90";
+export const swalCancelButtonClass = "rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700";

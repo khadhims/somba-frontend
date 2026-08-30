@@ -238,16 +238,9 @@
 
             <!--begin::Backup Settings-->
             <div class="mb-7">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  v-model="storageSettings.backup.enabled"
-                />
-                <span class="form-check-label font-semibold text-gray-800">
-                  {{ t("appsRecordingPlayback.settings.storage.backup.label") }}
-                </span>
-              </label>
+              <ToggleSwitch v-model="storageSettings.backup.enabled">
+                {{ t("appsRecordingPlayback.settings.storage.backup.label") }}
+              </ToggleSwitch>
               <div class="text-sm text-gray-500">
                 {{ t("appsRecordingPlayback.settings.storage.backup.help") }}
               </div>
@@ -426,6 +419,7 @@ import { useI18n } from "vue-i18n";
 import ApiService from "@/core/services/ApiService";
 import RowActionButton from "@/components/common/RowActionButton.vue";
 import { formInputClass, badgeVariantClass } from "@/core/helpers/badge";
+import ToggleSwitch from "@/components/common/ToggleSwitch.vue";
 
 // Interface definitions
 interface RecordingSettings {

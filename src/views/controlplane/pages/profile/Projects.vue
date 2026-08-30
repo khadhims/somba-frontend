@@ -1,23 +1,21 @@
 <template>
   <!--begin::Toolbar-->
-  <div class="d-flex flex-wrap flex-stack my-5">
+  <div class="flex flex-wrap items-center justify-between my-5">
     <!--begin::Heading-->
-    <h2 class="fs-2 fw-semibold my-2">
+    <h2 class="my-2 text-2xl font-semibold">
       Projects
-      <span class="fs-6 text-gray-500 ms-1">by Status</span>
+      <span class="ml-1 text-sm text-gray-500">by Status</span>
     </h2>
     <!--end::Heading-->
 
     <!--begin::Controls-->
-    <div class="d-flex flex-wrap my-1">
+    <div class="my-1 flex flex-wrap">
       <!--begin::Select wrapper-->
       <div class="m-0">
         <!--begin::Select-->
         <select
           name="status"
-          data-control="select2"
-          data-hide-search="true"
-          class="form-select form-select-white form-select-sm fw-bold w-125px"
+          :class="[formInputClass, 'w-[125px] py-1 text-xs font-bold']"
         >
           <option value="Active" selected>Active</option>
           <option value="Approved">In Progress</option>
@@ -33,9 +31,9 @@
   <!--end::Toolbar-->
 
   <!--begin::Row-->
-  <div class="row g-6 g-xl-9">
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 xl:gap-9">
     <!--begin::Col-->
-    <div class="col-md-6 col-xl-4">
+    <div>
       <KTCard
         :progress="50"
         title="Fitnes App"
@@ -46,10 +44,10 @@
     <!--end::Col-->
 
     <!--begin::Col-->
-    <div class="col-md-6 col-xl-4">
+    <div>
       <KTCard
         status="Pending"
-        status-data-badge-color="badge-light"
+        status-variant="secondary"
         :progress="30"
         :icon="getAssetPath('media/svg/brand-logos/disqus.svg')"
         title="Leaf CRM"
@@ -61,10 +59,10 @@
     <!--end::Col-->
 
     <!--begin::Col-->
-    <div class="col-md-6 col-xl-4">
+    <div>
       <KTCard
         status="Completed"
-        status-data-badge-color="badge-light-success"
+        status-variant="success"
         :progress="100"
         :icon="getAssetPath('media/svg/brand-logos/figma-1.svg')"
         title="Atica Banking"
@@ -76,11 +74,11 @@
     <!--end::Col-->
 
     <!--begin::Col-->
-    <div class="col-md-6 col-xl-4">
+    <div>
       <KTCard
         status="Pending"
         :progress="60"
-        status-data-badge-color="badge-light"
+        status-variant="secondary"
         :icon="getAssetPath('media/svg/brand-logos/sentry-3.svg')"
         title="Finance Dispatch"
         budget="$36,400.00"
@@ -90,7 +88,7 @@
     <!--end::Col-->
 
     <!--begin::Col-->
-    <div class="col-md-6 col-xl-4">
+    <div>
       <KTCard
         status="In Progress"
         :progress="40"
@@ -104,7 +102,7 @@
     <!--end::Col-->
 
     <!--begin::Col-->
-    <div class="col-md-6 col-xl-4">
+    <div>
       <KTCard
         status="In Progress"
         :progress="70"
@@ -118,7 +116,7 @@
     <!--end::Col-->
 
     <!--begin::Col-->
-    <div class="col-md-6 col-xl-4">
+    <div>
       <KTCard
         status="In Progress"
         :progress="30"
@@ -132,11 +130,11 @@
     <!--end::Col-->
 
     <!--begin::Col-->
-    <div class="col-md-6 col-xl-4">
+    <div>
       <KTCard
         status="Overdue"
         :progress="10"
-        status-data-badge-color="badge-light-danger"
+        status-variant="danger"
         :icon="getAssetPath('media/svg/brand-logos/treva.svg')"
         title="Aviasales App"
         date="May 10, 2021"
@@ -147,11 +145,11 @@
     <!--end::Col-->
 
     <!--begin::Col-->
-    <div class="col-md-6 col-xl-4">
+    <div>
       <KTCard
         status="Completed"
         :progress="100"
-        status-data-badge-color="badge-light-success"
+        status-variant="success"
         :icon="getAssetPath('media/svg/brand-logos/kanba.svg')"
         title="Oppo CRM"
         date="May 10, 2021"
@@ -162,43 +160,25 @@
     <!--end::Row-->
 
     <!--begin::Pagination-->
-    <div class="d-flex flex-stack flex-wrap pt-10">
-      <div class="fs-6 fw-semibold text-gray-700">
+    <div class="col-span-full flex flex-wrap items-center justify-between pt-10">
+      <div class="text-sm font-semibold text-gray-700 dark:text-gray-300">
         Showing 1 to 10 of 50 entries
       </div>
 
       <!--begin::Pages-->
-      <ul class="pagination">
-        <li class="page-item previous">
-          <a href="#" class="page-link"><i class="previous"></i></a>
+      <ul class="flex items-center gap-1">
+        <li>
+          <a href="#" class="flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">‹</a>
         </li>
-
-        <li class="page-item active">
-          <a href="#" class="page-link">1</a>
+        <li v-for="p in 6" :key="p">
+          <a
+            href="#"
+            class="flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-medium transition-colors"
+            :class="p === 1 ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'"
+          >{{ p }}</a>
         </li>
-
-        <li class="page-item">
-          <a href="#" class="page-link">2</a>
-        </li>
-
-        <li class="page-item">
-          <a href="#" class="page-link">3</a>
-        </li>
-
-        <li class="page-item">
-          <a href="#" class="page-link">4</a>
-        </li>
-
-        <li class="page-item">
-          <a href="#" class="page-link">5</a>
-        </li>
-
-        <li class="page-item">
-          <a href="#" class="page-link">6</a>
-        </li>
-
-        <li class="page-item next">
-          <a href="#" class="page-link"><i class="next"></i></a>
+        <li>
+          <a href="#" class="flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">›</a>
         </li>
       </ul>
       <!--end::Pages-->
@@ -211,6 +191,7 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent } from "vue";
 import KTCard from "@/components/cards/Card1.vue";
+import { formInputClass } from "@/core/helpers/badge";
 
 export default defineComponent({
   name: "profile-projects",
@@ -285,6 +266,7 @@ export default defineComponent({
       users8,
       users9,
       getAssetPath,
+      formInputClass,
     };
   },
 });

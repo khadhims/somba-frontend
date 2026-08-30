@@ -1,9 +1,9 @@
 <template>
   <!--begin::Col-->
   <div
-    class="flex-shrink-0"
+    class="shrink-0"
     :class="
-      monitorValue !== undefined && monitorValue !== null ? 'flex-fill' : ''
+      monitorValue !== undefined && monitorValue !== null ? 'flex-1' : ''
     "
     :style="
       monitorValue !== undefined && monitorValue !== null
@@ -12,14 +12,9 @@
     "
   >
     <!--begin::Card-->
-    <div
-      class="card h-100 position-relative"
-      :title="title"
-      data-bs-toggle="tooltip"
-      data-bs-placement="top"
-    >
+    <div class="card5-root relative h-full rounded-lg bg-white dark:bg-gray-900" :title="title">
       <!-- Status dot indicator di pojok kanan atas (hanya tampil jika hideStatus = false) -->
-      <div v-if="!hideStatus" class="position-absolute top-0 end-0 m-2">
+      <div v-if="!hideStatus" class="absolute right-0 top-0 m-2">
         <div
           class="status-dot"
           :class="currentlyActive ? 'status-active' : 'status-inactive'"
@@ -28,36 +23,32 @@
               ? 'Status: Aktif - Proses sedang berjalan'
               : 'Status: Tidak Aktif - Proses telah selesai atau belum dimulai'
           "
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
         ></div>
       </div>
 
       <!--begin::Card body-->
       <div
-        class="card-body d-flex flex-center flex-column p-4"
+        class="flex flex-col items-center justify-center p-4"
         style="min-width: 140px"
       >
         <!--begin::Icon-->
         <div class="mb-3">
           <div
-            class="symbol symbol-50px symbol-circle"
+            class="icon-wrap flex h-[50px] w-[50px] items-center justify-center overflow-hidden rounded-full"
             :style="{ backgroundColor: bgColor || '#2196f3', border: 'none' }"
           >
-            <span class="symbol-label">
-              <i
-                :class="[icon || 'fas fa-clipboard-list']"
-                class="card-icon"
-                style="font-size: 20px"
-              ></i>
-            </span>
+            <i
+              :class="[icon || 'fas fa-clipboard-list']"
+              class="card-icon"
+              style="font-size: 20px"
+            ></i>
           </div>
         </div>
         <!--end::Icon-->
 
         <!--begin::Title-->
         <div class="text-center mb-2">
-          <h4 class="fs-6 fw-bold text-gray-800 mb-0">{{ displayLabel }}</h4>
+          <h4 class="mb-0 text-sm font-bold text-gray-800 dark:text-gray-100">{{ displayLabel }}</h4>
         </div>
         <!--end::Title-->
 
@@ -66,14 +57,14 @@
           <!-- Jika monitoring mode, tampilkan nilai besar -->
           <div
             v-if="monitorValue !== undefined && monitorValue !== null"
-            class="fs-3 fw-bold text-primary mb-0"
+            class="mb-0 text-2xl font-bold text-primary"
           >
             {{ displayBody }}
           </div>
           <!-- Jika aktivitas mode, tampilkan format biasa -->
-          <div v-else class="fs-8 text-muted mb-0">{{ displayBody }}</div>
+          <div v-else class="mb-0 text-xs text-gray-500">{{ displayBody }}</div>
 
-          <div class="fs-9 text-muted">{{ displayDescription }}</div>
+          <div class="text-[10px] text-gray-500">{{ displayDescription }}</div>
         </div>
         <!--end::Status-->
       </div>
@@ -170,13 +161,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.card {
+.card5-root {
   border: 1px solid #e4e6ef;
-  position: relative;
   z-index: 1;
 }
 
-.symbol {
+.icon-wrap {
   transition: all 0.2s ease-in-out;
 }
 
@@ -223,13 +213,11 @@ export default defineComponent({
 }
 
 /* Dark theme icon colors */
-[data-bs-theme="dark"] .card-icon,
-.dark .card-icon,
-.app-dark .card-icon {
+:global([data-bs-theme="dark"]) .card-icon {
   color: #ffffff !important; /* White color for dark theme */
 }
 
-.symbol.symbol-circle {
+.icon-wrap {
   border: none !important;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;

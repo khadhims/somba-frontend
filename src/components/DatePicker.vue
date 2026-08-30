@@ -1,8 +1,8 @@
 <template>
   <div class="date-picker-container">
-    <label v-if="label" class="form-label">{{ label }}</label>
-    <div class="input-group">
-      <span class="input-group-text">
+    <label v-if="label" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ label }}</label>
+    <div class="flex h-[31px]">
+      <span class="flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-100 px-2 text-sm dark:border-gray-700 dark:bg-gray-800">
         <i class="ki-duotone ki-calendar-2 fs-4">
           <span class="path1"></span>
           <span class="path2"></span>
@@ -16,7 +16,7 @@
         ref="dateInput"
         v-model="localValue"
         type="date"
-        :class="inputClasses + ' w-90px'"
+        :class="inputClasses + ' w-[90px]'"
         :placeholder="placeholder"
         :disabled="disabled"
         :readonly="readonly"
@@ -28,10 +28,10 @@
         @blur="handleBlur"
       />
     </div>
-    <div v-if="errorMessage" class="invalid-feedback d-block">
+    <div v-if="errorMessage" class="mt-1 block text-sm text-danger">
       {{ errorMessage }}
     </div>
-    <div v-if="helpText" class="form-text">
+    <div v-if="helpText" class="mt-1 text-sm text-gray-500">
       {{ helpText }}
     </div>
   </div>
@@ -101,16 +101,15 @@ onMounted(async () => {
 })
 
 // Computed classes
+// Note: `size`/`variant` props are kept for API compat with existing call
+// sites, but the original CSS forced every size to the same compact 28px
+// height via `!important`, so there was never a real visual difference to
+// preserve here.
 const inputClasses = computed(() => {
-  const classes = ['form-control']
-  
-  if (props.size === 'sm') classes.push('form-control-sm')
-  if (props.size === 'lg') classes.push('form-control-lg')
-  
-  if (props.variant === 'outline') classes.push('form-control-outline')
-  
-  if (props.errorMessage) classes.push('is-invalid')
-  
+  const classes = [
+    'h-[28px] rounded-r-md border border-gray-300 px-2 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100',
+  ]
+  if (props.errorMessage) classes.push('border-danger focus:border-danger focus:ring-danger/30')
   return classes.join(' ')
 })
 
@@ -164,60 +163,5 @@ defineExpose({
 <style scoped>
 .date-picker-container {
   position: relative;
-}
-
-/* Compact DatePicker - sama tinggi dengan btn btn-sm */
-.input-group {
-  height: 31px;
-}
-
-.input-group-text {
-  background-color: var(--bs-gray-100);
-  border-color: var(--bs-border-color);
-  padding: 0.25rem 0.5rem;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  font-size: 0.875rem;
-}
-
-.form-control {
-  height: 28px !important;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-  line-height: 1.5;
-}
-
-.form-control-sm {
-  height: 28px !important;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-}
-
-.date-clear-btn {
-  height: 28px;
-  width: 28px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--bs-border-color);
-  border-left: 0;
-  background-color: var(--bs-gray-100);
-  flex: 0 0 auto;
-}
-
-.form-control:focus {
-  border-color: var(--bs-primary);
-  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
-}
-
-.form-control.is-invalid {
-  border-color: var(--bs-danger);
-}
-
-.form-control.is-invalid:focus {
-  border-color: var(--bs-danger);
-  box-shadow: 0 0 0 0.25rem rgba(var(--bs-danger-rgb), 0.25);
 }
 </style>

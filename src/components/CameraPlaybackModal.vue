@@ -17,7 +17,10 @@
               <p class="camera-subtitle">{{ camera?.name }}</p>
             </div>
             <button class="btn-close-modal" @click="closeModal">
-              <i class="bi bi-x-lg"></i>
+              <i class="ki-duotone ki-cross fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
             </button>
           </div>
 
@@ -35,18 +38,31 @@
               
               <!-- Loading Spinner -->
               <div v-if="isLoading" class="video-loading">
-                <div class="spinner-border text-light" role="status">
-                  <span class="visually-hidden">Loading...</span>
-                </div>
+                <div
+                  class="h-10 w-10 animate-spin rounded-full border-4 border-white/30 border-t-white"
+                  role="status"
+                  aria-label="Loading"
+                ></div>
                 <p class="text-white mt-3">Loading stream...</p>
               </div>
 
               <!-- Error State -->
               <div v-if="hasError" class="video-error">
-                <i class="bi bi-exclamation-triangle fs-1 text-warning mb-3"></i>
+                <i class="ki-duotone ki-information fs-1 text-warning mb-3">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                </i>
                 <p class="text-white">Failed to load camera stream</p>
-                <button class="btn btn-sm btn-light mt-2" @click="retryStream">
-                  <i class="bi bi-arrow-clockwise me-2"></i>Retry
+                <button
+                  class="mt-2 inline-flex items-center gap-1 rounded-md bg-white/10 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+                  @click="retryStream"
+                >
+                  <i class="ki-duotone ki-arrows-circle me-1">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Retry
                 </button>
               </div>
             </div>
@@ -54,15 +70,19 @@
 
           <!-- Modal Footer -->
           <div class="camera-modal-footer">
-            <div class="d-flex align-items-center gap-3">
-              <span v-if="camera?.model" class="badge badge-light-info">
-                <i class="bi bi-camera-video me-1"></i>{{ camera.model }}
+            <div class="flex items-center gap-3">
+              <span v-if="camera?.model" class="inline-flex rounded px-2 py-1 text-xs font-semibold bg-info-light text-info">
+                {{ camera.model }}
               </span>
-              <span class="text-muted fs-7">
-                <i class="bi bi-broadcast me-1"></i>Live Stream
+              <span class="flex items-center gap-1.5 text-sm text-gray-400">
+                <span class="h-2 w-2 animate-pulse rounded-full bg-danger"></span>
+                Live Stream
               </span>
             </div>
-            <button class="btn btn-sm btn-secondary" @click="closeModal">
+            <button
+              class="rounded-md bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20"
+              @click="closeModal"
+            >
               Close
             </button>
           </div>

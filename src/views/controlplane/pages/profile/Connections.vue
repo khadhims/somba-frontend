@@ -1,21 +1,19 @@
 <template>
   <!--begin::Followers toolbar-->
-  <div class="d-flex flex-wrap flex-stack mb-6">
+  <div class="flex flex-wrap items-center justify-between mb-6">
     <!--begin::Title-->
-    <h3 class="fw-bold my-2">
+    <h3 class="my-2 font-bold">
       My Connections
-      <span class="fs-6 text-gray-500 fw-semobold ms-1">(29)</span>
+      <span class="ml-1 text-sm font-semibold text-gray-500">(29)</span>
     </h3>
     <!--end::Title-->
 
     <!--begin::Controls-->
-    <div class="d-flex my-2">
+    <div class="my-2 flex">
       <!--begin::Select-->
       <select
         name="status"
-        data-control="select2"
-        data-hide-search="true"
-        class="form-select form-select-white form-select-sm w-125px"
+        :class="[formInputClass, 'w-[125px] py-1 text-xs']"
       >
         <option value="Active" selected>Active</option>
         <option value="Approved">In Progress</option>
@@ -29,7 +27,7 @@
   <!--end::Followers toolbar-->
 
   <!--begin::Row-->
-  <div class="row g-6 mb-6 g-xl-9 mb-xl-9">
+  <div class="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 2xl:grid-cols-3 xl:mb-9 xl:gap-9">
     <!--begin::Followers-->
     <Card3
       name="Patric Watson"
@@ -163,6 +161,7 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent } from "vue";
 import Card3 from "@/components/cards/Card3.vue";
+import { formInputClass } from "@/core/helpers/badge";
 
 export default defineComponent({
   name: "profile-connections",
@@ -172,6 +171,7 @@ export default defineComponent({
   setup() {
     return {
       getAssetPath,
+      formInputClass,
     };
   },
 });

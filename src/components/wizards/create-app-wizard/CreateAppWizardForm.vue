@@ -1,20 +1,19 @@
 <template>
   <!--begin::Form-->
-  <form class="form" id="kt_create_app_form" @submit="handleStep">
-    <CreateAppStep1></CreateAppStep1>
-    <CreateAppStep2></CreateAppStep2>
-    <CreateAppStep3></CreateAppStep3>
-    <CreateAppStep4></CreateAppStep4>
-    <CreateAppStep5></CreateAppStep5>
+  <form id="kt_create_app_form" @submit="handleStep">
+    <CreateAppStep1 :active="stepper.currentStepIndex.value === 0"></CreateAppStep1>
+    <CreateAppStep2 :active="stepper.currentStepIndex.value === 1"></CreateAppStep2>
+    <CreateAppStep3 :active="stepper.currentStepIndex.value === 2"></CreateAppStep3>
+    <CreateAppStep4 :active="stepper.currentStepIndex.value === 3"></CreateAppStep4>
+    <CreateAppStep5 :active="stepper.currentStepIndex.value === 4"></CreateAppStep5>
 
     <!--begin::Actions-->
-    <div class="d-flex flex-stack pt-10">
+    <div class="flex items-center justify-between pt-10">
       <!--begin::Wrapper-->
-      <div class="me-2">
+      <div class="mr-2">
         <button
           type="button"
-          class="btn btn-lg btn-light-primary me-3"
-          data-kt-stepper-action="previous"
+          class="mr-3 inline-flex items-center gap-1 rounded-md bg-primary-light px-6 py-3 text-base font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
           @click="previousStep()"
         >
           <KTIcon icon-name="arrow-left" icon-class="fs-3 me-1" />
@@ -27,23 +26,15 @@
       <div>
         <button
           type="submit"
-          class="btn btn-lg btn-primary"
-          v-if="currentStepIndex === totalSteps - 1"
+          class="inline-flex items-center gap-1 rounded-md bg-primary px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-primary-active"
+          v-if="stepper.isLastStep.value"
           @click="formSubmit()"
         >
-          <span class="indicator-label">
-            Submit
-            <KTIcon icon-name="arrow-right" icon-class="fs-3 ms-2 me-0" />
-          </span>
-          <span class="indicator-progress">
-            Please wait...
-            <span
-              class="spinner-border spinner-border-sm align-middle ms-2"
-            ></span>
-          </span>
+          Submit
+          <KTIcon icon-name="arrow-right" icon-class="fs-3 ms-2 me-0" />
         </button>
 
-        <button v-else type="submit" class="btn btn-lg btn-primary">
+        <button v-else type="submit" class="inline-flex items-center gap-1 rounded-md bg-primary px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-primary-active">
           Continue
           <KTIcon icon-name="arrow-right" icon-class="fs-3 ms-1 me-0" />
         </button>
@@ -56,12 +47,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { useForm } from "vee-validate";
 import * as Yup from "yup";
-import { StepperComponent } from "@/assets/ts/components";
 import type {
   ICreateApp,
   IStep1,
@@ -69,6 +59,8 @@ import type {
   IStep3,
   IStep4,
 } from "@/components/wizards/create-app-wizard/types";
+import type { Stepper } from "@/composables/useStepper";
+import { swalConfirmButtonClass } from "@/core/helpers/badge";
 import CreateAppStep1 from "@/components/wizards/create-app-wizard/steps/CreateAppStep1.vue";
 import CreateAppStep2 from "@/components/wizards/create-app-wizard/steps/CreateAppStep2.vue";
 import CreateAppStep3 from "@/components/wizards/create-app-wizard/steps/CreateAppStep3.vue";
@@ -76,22 +68,11 @@ import CreateAppStep4 from "@/components/wizards/create-app-wizard/steps/CreateA
 import CreateAppStep5 from "@/components/wizards/create-app-wizard/steps/CreateAppStep5.vue";
 
 interface Props {
-  stepperEl: HTMLElement | null;
+  stepper: Stepper;
   closeHadler?: () => void;
 }
 
 const props = defineProps<Props>();
-
-const currentStepIndex = ref(0);
-const stepperObj = ref<StepperComponent | null>(null);
-
-onMounted(() => {
-  nextTick(() => {
-    if (props.stepperEl) {
-      stepperObj.value = StepperComponent.createInsance(props.stepperEl);
-    }
-  });
-});
 
 const formData = ref<ICreateApp>({
   appName: "",
@@ -132,15 +113,7 @@ const createAppSchema = [
 
 // extracts the individual step schema
 const currentSchema = computed(() => {
-  return createAppSchema[currentStepIndex.value];
-});
-
-const totalSteps = computed(() => {
-  if (stepperObj.value) {
-    return stepperObj.value.totalStepsNumber;
-  } else {
-    return 1;
-  }
+  return createAppSchema[props.stepper.currentStepIndex.value];
 });
 
 const { resetForm, handleSubmit } = useForm<IStep1 | IStep2 | IStep3 | IStep4>({
@@ -149,13 +122,7 @@ const { resetForm, handleSubmit } = useForm<IStep1 | IStep2 | IStep3 | IStep4>({
 });
 
 const previousStep = () => {
-  currentStepIndex.value--;
-
-  if (!stepperObj.value) {
-    return;
-  }
-
-  stepperObj.value.goPrev();
+  props.stepper.goPrev();
 };
 
 const handleStep = handleSubmit((values) => {
@@ -172,13 +139,7 @@ const handleStep = handleSubmit((values) => {
     },
   });
 
-  currentStepIndex.value++;
-
-  if (!stepperObj.value) {
-    return;
-  }
-
-  stepperObj.value.goNext();
+  props.stepper.goNext();
 });
 
 const formSubmit = () => {
@@ -189,11 +150,10 @@ const formSubmit = () => {
     confirmButtonText: "Ok, got it!",
     heightAuto: false,
     customClass: {
-      confirmButton: "btn fw-semibold btn-light-primary",
+      confirmButton: swalConfirmButtonClass,
     },
   }).then(() => {
-    stepperObj.value?.goFirst();
-    currentStepIndex.value = 0;
+    props.stepper.goFirst();
 
     resetForm({
       values: {

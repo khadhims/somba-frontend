@@ -1,19 +1,19 @@
 <template>
   <div
-    class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end"
+    class="rounded-lg bg-right bg-contain bg-no-repeat"
     :class="className"
     :style="{ backgroundColor: bgColor, backgroundImage: `url('${bgImage}')` }"
   >
     <!--begin::Header-->
-    <div class="card-header pt-5">
+    <div class="px-6 pt-5">
       <!--begin::Title-->
-      <div class="card-title d-flex flex-column">
+      <div class="flex flex-col">
         <!--begin::Amount-->
-        <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">0</span>
+        <span class="mr-2 text-3xl font-bold leading-none tracking-tight text-white">0</span>
         <!--end::Amount-->
 
         <!--begin::Subtitle-->
-        <span class="text-white opacity-50 pt-1 fw-semibold fs-6">{{
+        <span class="pt-1 text-sm font-semibold text-white/50">{{
           description
         }}</span>
         <!--end::Subtitle-->
@@ -23,9 +23,9 @@
     <!--end::Header-->
 
     <!--begin::Card body-->
-    <div class="card-body d-flex align-items-end pt-0">
+    <div class="flex items-end px-6 pb-6 pt-0">
       <!--begin::Progress-->
-      <div class="d-flex align-items-center flex-column mt-3 w-100">
+      <div class="mt-3 flex w-full flex-col items-center">
       </div>
       <!--end::Progress-->
     </div>

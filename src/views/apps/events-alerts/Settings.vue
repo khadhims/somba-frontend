@@ -22,16 +22,9 @@
           <form @submit.prevent="saveEventSettings">
             <!--begin::Motion Detection-->
             <div class="mb-7">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  v-model="eventSettings.motionDetection.enabled"
-                />
-                <span class="form-check-label font-semibold text-gray-800">
-                  {{ t("appsEventsAlerts.settings.eventDetection.motion.label") }}
-                </span>
-              </label>
+              <ToggleSwitch v-model="eventSettings.motionDetection.enabled">
+                {{ t("appsEventsAlerts.settings.eventDetection.motion.label") }}
+              </ToggleSwitch>
               <div class="text-sm text-gray-500">
                 {{ t("appsEventsAlerts.settings.eventDetection.motion.description") }}
               </div>
@@ -54,7 +47,7 @@
                   </label>
                   <input
                     type="range"
-                    class="form-range"
+                    class="h-2 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-primary dark:bg-gray-700"
                     min="1"
                     max="50"
                     v-model="eventSettings.motionDetection.minArea"
@@ -67,16 +60,9 @@
 
             <!--begin::Intrusion Detection-->
             <div class="mb-7">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  v-model="eventSettings.intrusionDetection.enabled"
-                />
-                <span class="form-check-label font-semibold text-gray-800">
-                  {{ t("appsEventsAlerts.settings.eventDetection.intrusion.label") }}
-                </span>
-              </label>
+              <ToggleSwitch v-model="eventSettings.intrusionDetection.enabled">
+                {{ t("appsEventsAlerts.settings.eventDetection.intrusion.label") }}
+              </ToggleSwitch>
               <div class="text-sm text-gray-500">
                 {{ t("appsEventsAlerts.settings.eventDetection.intrusion.description") }}
               </div>
@@ -110,51 +96,44 @@
 
             <!--begin::System Monitoring-->
             <div class="mb-7">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  v-model="eventSettings.systemMonitoring.enabled"
-                />
-                <span class="form-check-label font-semibold text-gray-800">
-                  {{ t("appsEventsAlerts.settings.eventDetection.system.label") }}
-                </span>
-              </label>
+              <ToggleSwitch v-model="eventSettings.systemMonitoring.enabled">
+                {{ t("appsEventsAlerts.settings.eventDetection.system.label") }}
+              </ToggleSwitch>
               <div class="text-sm text-gray-500">
                 {{ t("appsEventsAlerts.settings.eventDetection.system.description") }}
               </div>
 
               <div v-if="eventSettings.systemMonitoring.enabled" class="mt-4">
                 <div class="mb-4">
-                  <label class="form-check form-check-custom form-check-solid">
+                  <label class="flex items-center gap-2">
                     <input
-                      class="form-check-input"
                       type="checkbox"
+                      class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                       v-model="eventSettings.systemMonitoring.cameraOffline"
                     />
-                    <span class="form-check-label">{{ t("appsEventsAlerts.settings.eventDetection.system.cameraOffline") }}</span>
+                    <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsEventsAlerts.settings.eventDetection.system.cameraOffline") }}</span>
                   </label>
                 </div>
 
                 <div class="mb-4">
-                  <label class="form-check form-check-custom form-check-solid">
+                  <label class="flex items-center gap-2">
                     <input
-                      class="form-check-input"
                       type="checkbox"
+                      class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                       v-model="eventSettings.systemMonitoring.lowDiskSpace"
                     />
-                    <span class="form-check-label">{{ t("appsEventsAlerts.settings.eventDetection.system.lowDiskSpace") }}</span>
+                    <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsEventsAlerts.settings.eventDetection.system.lowDiskSpace") }}</span>
                   </label>
                 </div>
 
                 <div class="mb-4">
-                  <label class="form-check form-check-custom form-check-solid">
+                  <label class="flex items-center gap-2">
                     <input
-                      class="form-check-input"
                       type="checkbox"
+                      class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                       v-model="eventSettings.systemMonitoring.networkIssues"
                     />
-                    <span class="form-check-label">{{ t("appsEventsAlerts.settings.eventDetection.system.networkIssues") }}</span>
+                    <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsEventsAlerts.settings.eventDetection.system.networkIssues") }}</span>
                   </label>
                 </div>
               </div>
@@ -189,16 +168,9 @@
           <form @submit.prevent="saveNotificationSettings">
             <!--begin::Email Notifications-->
             <div class="mb-7">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  v-model="notificationSettings.email.enabled"
-                />
-                <span class="form-check-label font-semibold text-gray-800">
-                  {{ t("appsEventsAlerts.settings.notifications.email.label") }}
-                </span>
-              </label>
+              <ToggleSwitch v-model="notificationSettings.email.enabled">
+                {{ t("appsEventsAlerts.settings.notifications.email.label") }}
+              </ToggleSwitch>
               <div class="text-sm text-gray-500">
                 {{ t("appsEventsAlerts.settings.notifications.email.description") }}
               </div>
@@ -233,16 +205,9 @@
 
             <!--begin::SMS Notifications-->
             <div class="mb-7">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  v-model="notificationSettings.sms.enabled"
-                />
-                <span class="form-check-label font-semibold text-gray-800">
-                  {{ t("appsEventsAlerts.settings.notifications.sms.label") }}
-                </span>
-              </label>
+              <ToggleSwitch v-model="notificationSettings.sms.enabled">
+                {{ t("appsEventsAlerts.settings.notifications.sms.label") }}
+              </ToggleSwitch>
               <div class="text-sm text-gray-500">
                 {{ t("appsEventsAlerts.settings.notifications.sms.description") }}
               </div>
@@ -275,16 +240,9 @@
 
             <!--begin::Push Notifications-->
             <div class="mb-7">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  v-model="notificationSettings.push.enabled"
-                />
-                <span class="form-check-label font-semibold text-gray-800">
-                  {{ t("appsEventsAlerts.settings.notifications.push.label") }}
-                </span>
-              </label>
+              <ToggleSwitch v-model="notificationSettings.push.enabled">
+                {{ t("appsEventsAlerts.settings.notifications.push.label") }}
+              </ToggleSwitch>
               <div class="text-sm text-gray-500">
                 {{ t("appsEventsAlerts.settings.notifications.push.description") }}
               </div>
@@ -303,13 +261,13 @@
                 </div>
 
                 <div class="mb-4">
-                  <label class="form-check form-check-custom form-check-solid">
+                  <label class="flex items-center gap-2">
                     <input
-                      class="form-check-input"
                       type="checkbox"
+                      class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                       v-model="notificationSettings.push.sound"
                     />
-                    <span class="form-check-label">{{ t("appsEventsAlerts.settings.notifications.push.sound") }}</span>
+                    <span class="text-sm text-gray-800 dark:text-gray-300">{{ t("appsEventsAlerts.settings.notifications.push.sound") }}</span>
                   </label>
                 </div>
               </div>
@@ -394,6 +352,7 @@ import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import ApiService from "@/core/services/ApiService";
 import { formInputClass, badgeVariantClass } from "@/core/helpers/badge";
+import ToggleSwitch from "@/components/common/ToggleSwitch.vue";
 
 // Interface definitions
 interface EventSettings {

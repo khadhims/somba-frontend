@@ -1,145 +1,57 @@
 <template>
   <!--begin::Stepper-->
   <div
-    class="stepper stepper-pills stepper-column d-flex flex-column flex-xl-row flex-row-fluid"
+    class="flex flex-col flex-1 xl:flex-row"
     id="kt_modal_create_app_stepper"
-    ref="createAppStepperRef"
   >
     <!--begin::Aside-->
-    <div
-      class="d-flex justify-content-center justify-content-xl-start flex-row-auto w-100 w-xl-300px"
-    >
+    <div class="flex w-full flex-none justify-center xl:w-[300px] xl:justify-start">
       <!--begin::Nav-->
-      <div class="stepper-nav ps-lg-10">
-        <!--begin::Step 1-->
-        <div class="stepper-item current" data-kt-stepper-element="nav">
-          <div class="stepper-wrapper">
+      <div class="lg:pl-10">
+        <!--begin::Step-->
+        <div v-for="(step, index) in steps" :key="step.title" class="relative pb-10 last:pb-0">
+          <div class="flex items-center">
             <!--begin::Icon-->
-            <div class="stepper-icon w-40px h-40px">
-              <i class="stepper-check fas fa-check"></i>
-              <span class="stepper-number">1</span>
+            <div
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-bold transition-colors"
+              :class="stepper.stepState(index) === 'current'
+                ? 'bg-primary text-white'
+                : stepper.stepState(index) === 'completed'
+                  ? 'bg-success text-white'
+                  : 'bg-gray-100 text-gray-500 dark:bg-gray-800'"
+            >
+              <i v-if="stepper.stepState(index) === 'completed'" class="fas fa-check"></i>
+              <span v-else>{{ index + 1 }}</span>
             </div>
             <!--end::Icon-->
 
             <!--begin::Label-->
-            <div class="stepper-label">
-              <h3 class="stepper-title">Details</h3>
-
-              <div class="stepper-desc">Name your App</div>
+            <div class="ml-4">
+              <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100">{{ step.title }}</h3>
+              <div class="text-xs text-gray-500">{{ step.desc }}</div>
             </div>
             <!--end::Label-->
           </div>
 
           <!--begin::Line-->
-          <div class="stepper-line h-40px"></div>
+          <div
+            v-if="index < steps.length - 1"
+            class="absolute left-5 top-10 h-10 w-px -translate-x-1/2 transition-colors"
+            :class="stepper.stepState(index) === 'completed' ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-700'"
+          ></div>
           <!--end::Line-->
         </div>
-        <!--end::Step 1-->
-
-        <!--begin::Step 2-->
-        <div class="stepper-item" data-kt-stepper-element="nav">
-          <div class="stepper-wrapper">
-            <!--begin::Icon-->
-            <div class="stepper-icon w-40px h-40px">
-              <i class="stepper-check fas fa-check"></i>
-              <span class="stepper-number">2</span>
-            </div>
-            <!--begin::Icon-->
-
-            <!--begin::Label-->
-            <div class="stepper-label">
-              <h3 class="stepper-title">Frameworks</h3>
-
-              <div class="stepper-desc">Define your app framework</div>
-            </div>
-            <!--begin::Label-->
-          </div>
-
-          <!--begin::Line-->
-          <div class="stepper-line h-40px"></div>
-          <!--end::Line-->
-        </div>
-        <!--end::Step 2-->
-
-        <!--begin::Step 3-->
-        <div class="stepper-item" data-kt-stepper-element="nav">
-          <div class="stepper-wrapper">
-            <!--begin::Icon-->
-            <div class="stepper-icon w-40px h-40px">
-              <i class="stepper-check fas fa-check"></i>
-              <span class="stepper-number">3</span>
-            </div>
-            <!--end::Icon-->
-
-            <!--begin::Label-->
-            <div class="stepper-label">
-              <h3 class="stepper-title">Database</h3>
-
-              <div class="stepper-desc">Select the app database type</div>
-            </div>
-            <!--end::Label-->
-          </div>
-          <!--begin::Line-->
-          <div class="stepper-line h-40px"></div>
-          <!--end::Line-->
-        </div>
-        <!--end::Step 3-->
-
-        <!--begin::Step 4-->
-        <div class="stepper-item" data-kt-stepper-element="nav">
-          <div class="stepper-wrapper">
-            <!--begin::Icon-->
-            <div class="stepper-icon w-40px h-40px">
-              <i class="stepper-check fas fa-check"></i>
-              <span class="stepper-number">4</span>
-            </div>
-            <!--end::Icon-->
-
-            <!--begin::Label-->
-            <div class="stepper-label">
-              <h3 class="stepper-title">Billing</h3>
-
-              <div class="stepper-desc">Provide payment details</div>
-            </div>
-            <!--end::Label-->
-          </div>
-
-          <!--begin::Line-->
-          <div class="stepper-line h-40px"></div>
-          <!--end::Line-->
-        </div>
-        <!--end::Step 4-->
-
-        <!--begin::Step 5-->
-        <div class="stepper-item" data-kt-stepper-element="nav">
-          <div class="stepper-wrapper">
-            <!--begin::Icon-->
-            <div class="stepper-icon w-40px h-40px">
-              <i class="stepper-check fas fa-check"></i>
-              <span class="stepper-number">5</span>
-            </div>
-            <!--end::Icon-->
-
-            <!--begin::Label-->
-            <div class="stepper-label">
-              <h3 class="stepper-title">Release</h3>
-
-              <div class="stepper-desc">Review and Submit</div>
-            </div>
-            <!--end::Label-->
-          </div>
-        </div>
-        <!--end::Step 5-->
+        <!--end::Step-->
       </div>
       <!--end::Nav-->
     </div>
     <!--begin::Aside-->
 
     <!--begin::Content-->
-    <div class="flex-row-fluid py-lg-5 px-lg-15">
+    <div class="flex-1 py-5 lg:px-15">
       <!--begin::Form-->
       <CreateAppModalForm
-        :stepperEl="createAppStepperRef"
+        :stepper="stepper"
         :close-hadler="props.closeHadler"
       />
       <!--end::Form-->
@@ -150,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { useStepper } from "@/composables/useStepper";
 import CreateAppModalForm from "@/components/wizards/create-app-wizard/CreateAppWizardForm.vue";
 
 interface Props {
@@ -159,5 +71,13 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const createAppStepperRef = ref<HTMLElement | null>(null);
+const steps = [
+  { title: "Details", desc: "Name your App" },
+  { title: "Frameworks", desc: "Define your app framework" },
+  { title: "Database", desc: "Select the app database type" },
+  { title: "Billing", desc: "Provide payment details" },
+  { title: "Release", desc: "Review and Submit" },
+];
+
+const stepper = useStepper(steps.length);
 </script>

@@ -1,6 +1,6 @@
 <template>
-  <div class="items-per-page-container d-flex align-items-center">
-    <span v-if="label" class="form-label me-3 mb-0">{{ label }}</span>
+  <div class="flex items-center whitespace-nowrap">
+    <span v-if="label" class="mr-3 text-sm font-medium text-gray-700 dark:text-gray-300">{{ label }}</span>
     <select
       :id="id"
       v-model="localValue"
@@ -8,15 +8,15 @@
       :disabled="disabled"
       @change="handleChange"
     >
-      <option 
-        v-for="option in availableOptions" 
-        :key="option.value" 
+      <option
+        v-for="option in availableOptions"
+        :key="option.value"
         :value="option.value"
       >
         {{ option.label }}
       </option>
     </select>
-    <span v-if="showItemsText" class="text-muted ms-2">
+    <span v-if="showItemsText" class="ml-2 text-sm text-gray-500">
       {{ itemsText }}
     </span>
   </div>
@@ -24,6 +24,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { formInputClass } from '@/core/helpers/badge'
 
 interface Option {
   value: number
@@ -75,13 +76,9 @@ const availableOptions = computed(() => {
 })
 
 const selectClasses = computed(() => {
-  const classes = ['form-select']
-  
-  if (props.size === 'sm') classes.push('form-select-sm')
-  if (props.size === 'lg') classes.push('form-select-lg')
-  
-  if (props.variant === 'outline') classes.push('form-select-outline')
-  
+  const classes = [formInputClass, 'w-auto']
+  if (props.size === 'sm') classes.push('py-1 text-xs')
+  if (props.size === 'lg') classes.push('py-3 text-base')
   return classes.join(' ')
 })
 
@@ -108,34 +105,7 @@ if (!props.options.includes(props.modelValue) && !props.customOptions?.some(opt 
 </script>
 
 <style scoped>
-.items-per-page-container {
-  white-space: nowrap;
-}
-
-.form-select {
-  width: auto;
+select {
   min-width: 80px;
-}
-
-.form-select-sm {
-  min-width: 70px;
-}
-
-.form-select-lg {
-  min-width: 90px;
-}
-
-.form-label {
-  font-weight: 500;
-  color: var(--bs-gray-700);
-}
-
-.text-muted {
-  font-size: 0.875rem;
-}
-
-.form-select:focus {
-  border-color: var(--bs-primary);
-  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
 }
 </style>

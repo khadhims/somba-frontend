@@ -1,9 +1,9 @@
 <template>
   <!--begin::Wrapper-->
-  <div class="w-lg-500px p-10">
+  <div class="lg:w-[500px] p-10">
     <!--begin::Form-->
     <VForm
-      class="form w-100 fv-plugins-bootstrap5 fv-plugins-framework"
+      class="password-reset-form w-full"
       @submit="onSubmitForgotPassword"
       id="kt_login_password_reset_form"
       :validation-schema="forgotPassword"
@@ -15,7 +15,7 @@
         <!--end::Title-->
 
         <!--begin::Link-->
-        <div class="fw-semibold fs-4" style="color: rgba(255,255,255,0.75)">
+        <div class="text-lg font-semibold" style="color: rgba(255,255,255,0.75)">
           Enter your email to reset your password.
         </div>
         <!--end::Link-->
@@ -24,9 +24,9 @@
 
       <!--begin::Input group-->
       <div class="fv-row mb-10">
-        <label class="form-label fw-bold text-white fs-6">Email</label>
+        <label class="mb-2 block text-sm font-bold text-white">Email</label>
         <Field
-          class="form-control custom-input"
+          class="custom-input w-full"
           type="email"
           placeholder=""
           name="email"
@@ -41,23 +41,23 @@
       <!--end::Input group-->
 
       <!--begin::Actions-->
-      <div class="d-flex flex-wrap justify-content-center pb-lg-0">
+      <div class="flex flex-wrap justify-center lg:pb-0">
         <button
           type="submit"
-          ref="submitButton"
           id="kt_password_reset_submit"
-          class="btn btn-neon btn-lg me-4"
+          class="btn-neon mr-4 inline-flex items-center gap-2 rounded-[12px] px-5 py-3.5 text-base disabled:cursor-not-allowed disabled:opacity-70"
+          :disabled="isSubmitting"
         >
-          <span class="indicator-label"> Submit </span>
-          <span class="indicator-progress">
+          <span v-if="!isSubmitting">Submit</span>
+          <span v-else class="inline-flex items-center gap-2">
             Please wait...
-            <span
-              class="spinner-border spinner-border-sm align-middle ms-2"
-            ></span>
+            <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
           </span>
         </button>
 
-        <router-link to="/sign-up" class="btn btn-lg btn-light-primary fw-bold"
+        <router-link
+          to="/sign-up"
+          class="rounded-md bg-primary-light px-6 py-3 text-base font-bold text-primary transition-colors hover:bg-primary hover:text-white"
           >Cancel</router-link
         >
       </div>
@@ -74,6 +74,7 @@ import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import { useAuthStore } from "@/stores/auth";
 import * as Yup from "yup";
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import { swalConfirmButtonClass, swalDangerButtonClass } from "@/core/helpers/badge";
 
 export default defineComponent({
   name: "password-reset",
@@ -85,7 +86,7 @@ export default defineComponent({
   setup() {
     const store = useAuthStore();
 
-    const submitButton = ref<HTMLButtonElement | null>(null);
+    const isSubmitting = ref(false);
 
     //Create form validation object
     const forgotPassword = Yup.object().shape({
@@ -96,10 +97,7 @@ export default defineComponent({
     const onSubmitForgotPassword = async (values: any) => {
       values = values as string;
 
-      // eslint-disable-next-line
-      submitButton.value!.disabled = true;
-      // Activate loading indicator
-      submitButton.value?.setAttribute("data-kt-indicator", "on");
+      isSubmitting.value = true;
 
       // dummy delay
       // Send login request
@@ -115,7 +113,7 @@ export default defineComponent({
           confirmButtonText: "Ok, got it!",
           heightAuto: false,
           customClass: {
-            confirmButton: "btn fw-semibold btn-light-primary",
+            confirmButton: swalConfirmButtonClass,
           },
         });
       } else {
@@ -126,20 +124,18 @@ export default defineComponent({
           confirmButtonText: "Try again!",
           heightAuto: false,
           customClass: {
-            confirmButton: "btn fw-semibold btn-light-danger",
+            confirmButton: swalDangerButtonClass,
           },
         });
       }
 
-      submitButton.value?.removeAttribute("data-kt-indicator");
-      // eslint-disable-next-line
-        submitButton.value!.disabled = false;
+      isSubmitting.value = false;
     };
 
     return {
       onSubmitForgotPassword,
       forgotPassword,
-      submitButton,
+      isSubmitting,
     };
   },
 });
@@ -191,8 +187,4 @@ export default defineComponent({
 
 .form-entrance { opacity: 0; transform: translateY(8px); animation: fadeSlideIn 0.9s ease-out forwards; }
 @keyframes fadeSlideIn { to { opacity: 1; transform: translateY(0); } }
-
-/* Ensure links and helper text are readable */
-.text-gray-500, .fw-semibold { color: rgba(255,255,255,0.75) !important; }
-
 </style>

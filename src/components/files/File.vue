@@ -1,21 +1,19 @@
 <template>
-  <div class="col-12 col-sm-12 col-xl">
+  <div>
     <!--begin::Card-->
-    <div class="card h-100">
+    <div class="h-full rounded-lg bg-white dark:bg-gray-900">
       <!--begin::Card body-->
-      <div
-        class="card-body d-flex justify-content-center text-center flex-column p-8"
-      >
+      <div class="flex flex-col items-center justify-center p-8 text-center">
         <!--begin::Name-->
-        <a href="#" class="text-gray-800 text-hover-primary d-flex flex-column">
+        <a href="#" class="flex flex-col text-gray-800 transition-colors hover:text-primary dark:text-gray-100">
           <!--begin::Image-->
-          <div class="symbol symbol-60px mb-6">
+          <div class="mx-auto mb-6 flex h-[60px] w-[60px] items-center justify-center">
             <img :src="`media/svg/files/${fileType}.svg`" alt="" />
           </div>
           <!--end::Image-->
 
           <!--begin::Title-->
-          <div class="fs-5 fw-bold mb-2">
+          <div class="mb-2 text-base font-bold">
             {{ fileTitle }}
           </div>
           <!--end::Title-->
@@ -23,7 +21,7 @@
         <!--end::Name-->
 
         <!--begin::Description-->
-        <div class="fs-7 fw-semibold text-gray-400 mt-auto">
+        <div class="mt-auto text-xs font-semibold text-gray-400">
           {{ createdAt }}
         </div>
         <!--end::Description-->

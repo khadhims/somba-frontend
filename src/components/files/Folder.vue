@@ -1,15 +1,13 @@
 <template>
-  <div class="col-12 col-sm-12 col-xl">
+  <div>
     <!--begin::Card-->
-    <div class="card h-100">
+    <div class="h-full rounded-lg bg-white dark:bg-gray-900">
       <!--begin::Card body-->
-      <div
-        class="card-body d-flex justify-content-center text-center flex-column p-8"
-      >
+      <div class="flex flex-col items-center justify-center p-8 text-center">
         <!--begin::Name-->
-        <a href="#" class="text-gray-800 text-hover-primary d-flex flex-column">
+        <a href="#" class="flex flex-col text-gray-800 transition-colors hover:text-primary dark:text-gray-100">
           <!--begin::Image-->
-          <div class="symbol symbol-75px mb-6">
+          <div class="mx-auto mb-6 flex h-[75px] w-[75px] items-center justify-center">
             <img
               :src="getAssetPath('media/svg/files/folder-document.svg')"
               alt=""
@@ -18,13 +16,13 @@
           <!--end::Image-->
 
           <!--begin::Title-->
-          <div class="fs-5 fw-bold mb-2">Finance</div>
+          <div class="mb-2 text-base font-bold">Finance</div>
           <!--end::Title-->
         </a>
         <!--end::Name-->
 
         <!--begin::Description-->
-        <div class="fs-7 fw-semibold text-gray-400 mt-auto">7 files</div>
+        <div class="mt-auto text-xs font-semibold text-gray-400">7 files</div>
         <!--end::Description-->
       </div>
       <!--end::Card body-->

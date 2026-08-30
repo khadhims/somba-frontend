@@ -1,9 +1,9 @@
 <template>
   <!--begin::Wrapper-->
-  <div class="w-lg-500px p-10" ref="signupWrapper">
+  <div class="lg:w-[500px] p-10" ref="signupWrapper">
     <!--begin::Form-->
     <VForm
-      class="form w-100 fv-plugins-bootstrap5 fv-plugins-framework"
+      class="signup-form w-full"
       novalidate
       @submit="onSubmitRegister"
       id="kt_login_signup_form"
@@ -16,10 +16,10 @@
         <!--end::Title-->
 
         <!--begin::Link-->
-        <div class="fw-semibold fs-4" style="color: rgba(255,255,255,0.75)">
+        <div class="text-lg font-semibold" style="color: rgba(255,255,255,0.75)">
           Already have an account?
 
-          <router-link to="/sign-in" class="link-primary fw-bold">
+          <router-link to="/sign-in" class="text-primary font-bold hover:underline">
             Sign in here
           </router-link>
         </div>
@@ -28,31 +28,31 @@
       <!--end::Heading-->
 
       <!--begin::Action-->
-      <button type="button" class="btn btn-light-primary fw-bold w-100 mb-10">
+      <button type="button" class="mb-10 inline-flex w-full items-center justify-center gap-2 rounded-[12px] bg-primary-light px-5 py-3.5 text-base font-bold text-primary transition-colors hover:bg-primary hover:text-white">
         <img
           alt="Logo"
           :src="getAssetPath('media/svg/brand-logos/google-icon.svg')"
-          class="h-20px me-3"
+          class="h-5 mr-3"
         />
         Sign in with Google
       </button>
       <!--end::Action-->
 
       <!--begin::Separator-->
-      <div class="d-flex align-items-center mb-10">
-        <div class="border-bottom border-gray-300 mw-50 w-100"></div>
-        <span class="fw-semobold text-gray-500 fs-7 mx-2">OR</span>
-        <div class="border-bottom border-gray-300 mw-50 w-100"></div>
+      <div class="flex items-center mb-10">
+        <div class="h-px flex-1 bg-white/10"></div>
+        <span class="mx-2 text-xs font-semibold text-white/70">OR</span>
+        <div class="h-px flex-1 bg-white/10"></div>
       </div>
       <!--end::Separator-->
 
       <!--begin::Input group-->
-      <div class="row fv-row mb-7">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 fv-row mb-7">
         <!--begin::Col-->
-        <div class="col-xl-6">
-          <label class="form-label fw-bold text-white fs-6">First Name</label>
+        <div>
+          <label class="mb-2 block text-sm font-bold text-white">First Name</label>
           <Field
-            class="form-control form-control-lg custom-input"
+            class="custom-input w-full"
             type="text"
             placeholder=""
             name="first_name"
@@ -67,10 +67,10 @@
         <!--end::Col-->
 
         <!--begin::Col-->
-        <div class="col-xl-6">
-          <label class="form-label fw-bold text-white fs-6">Last Name</label>
+        <div>
+          <label class="mb-2 block text-sm font-bold text-white">Last Name</label>
           <Field
-            class="form-control form-control-lg custom-input"
+            class="custom-input w-full"
             type="text"
             placeholder=""
             name="last_name"
@@ -88,9 +88,9 @@
 
       <!--begin::Input group-->
       <div class="fv-row mb-7">
-        <label class="form-label fw-bold text-white fs-6">Email</label>
+        <label class="mb-2 block text-sm font-bold text-white">Email</label>
         <Field
-          class="form-control form-control-lg custom-input"
+          class="custom-input w-full"
           type="email"
           placeholder=""
           name="email"
@@ -108,21 +108,22 @@
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="mb-10 fv-row" data-kt-password-meter="true">
+      <div class="mb-10 fv-row">
         <!--begin::Wrapper-->
         <div class="mb-1">
           <!--begin::Label-->
-          <label class="form-label fw-bold text-white fs-6">Password</label>
+          <label class="mb-2 block text-sm font-bold text-white">Password</label>
           <!--end::Label-->
 
           <!--begin::Input wrapper-->
-          <div class="position-relative mb-3">
+          <div class="relative mb-3">
             <Field
-              class="form-control form-control-lg custom-input"
+              class="custom-input w-full"
               type="password"
               placeholder=""
               name="password"
               autocomplete="off"
+              @input="handlePasswordInput"
             />
             <div class="fv-plugins-message-container">
               <div class="fv-help-block">
@@ -132,28 +133,19 @@
           </div>
           <!--end::Input wrapper-->
           <!--begin::Meter-->
-          <div
-            class="d-flex align-items-center mb-3"
-            data-kt-password-meter-control="highlight"
-          >
+          <div class="flex items-center gap-2 mb-3">
             <div
-              class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"
-            ></div>
-            <div
-              class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"
-            ></div>
-            <div
-              class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"
-            ></div>
-            <div
-              class="flex-grow-1 bg-secondary bg-active-success rounded h-5px"
+              v-for="bar in 4"
+              :key="bar"
+              class="h-[5px] flex-1 rounded transition-colors"
+              :class="bar <= activePasswordBars ? 'bg-success' : 'bg-white/15'"
             ></div>
           </div>
           <!--end::Meter-->
         </div>
         <!--end::Wrapper-->
         <!--begin::Hint-->
-        <div class="text-muted">
+        <div class="text-white/70">
           Use 8 or more characters with a mix of letters, numbers & symbols.
         </div>
         <!--end::Hint-->
@@ -162,9 +154,9 @@
 
       <!--begin::Input group-->
       <div class="fv-row mb-5">
-        <label class="form-label fw-bold text-white fs-6">Confirm Password</label>
+        <label class="mb-2 block text-sm font-bold text-white">Confirm Password</label>
         <Field
-          class="form-control form-control-lg custom-input"
+          class="custom-input w-full"
           type="password"
           placeholder=""
           name="password_confirmation"
@@ -180,16 +172,16 @@
 
       <!--begin::Input group-->
       <div class="fv-row mb-10">
-        <label class="form-check form-check-custom form-check-solid">
+        <label class="flex cursor-pointer items-start gap-2">
           <Field
-            class="form-check-input"
+            class="mt-0.5 h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
             type="checkbox"
             name="toc"
             value="1"
           />
-          <span class="form-check-label fw-semibold text-white fs-6">
+          <span class="text-sm font-semibold text-white">
             I Agree &
-            <a href="#" class="ms-1 link-primary">Terms and conditions</a>.
+            <a href="#" class="ml-1 text-primary hover:underline">Terms and conditions</a>.
           </span>
         </label>
       </div>
@@ -199,16 +191,14 @@
       <div class="text-center">
         <button
           id="kt_sign_up_submit"
-          ref="submitButton"
           type="submit"
-          class="btn btn-neon btn-lg w-100"
+          class="btn-neon inline-flex w-full items-center justify-center gap-2 rounded-[12px] px-5 py-3.5 text-base disabled:cursor-not-allowed disabled:opacity-70"
+          :disabled="isSubmitting"
         >
-          <span class="indicator-label"> Submit </span>
-          <span class="indicator-progress">
+          <span v-if="!isSubmitting">Submit</span>
+          <span v-else class="inline-flex items-center gap-2">
             Please wait...
-            <span
-              class="spinner-border spinner-border-sm align-middle ms-2"
-            ></span>
+            <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
           </span>
         </button>
       </div>
@@ -221,13 +211,13 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, nextTick, onMounted, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import * as Yup from "yup";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useRouter } from "vue-router";
-import { PasswordMeterComponent } from "@/assets/ts/components";
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import { swalDangerButtonClass } from "@/core/helpers/badge";
 
 export default defineComponent({
   name: "sign-up",
@@ -241,8 +231,7 @@ export default defineComponent({
     const router = useRouter();
 
     const serverError = ref("");
-
-    const submitButton = ref<HTMLButtonElement | null>(null);
+    const isSubmitting = ref(false);
 
     const registration = Yup.object().shape({
       first_name: Yup.string().required().label("Name"),
@@ -255,11 +244,25 @@ export default defineComponent({
         .label("Password Confirmation"),
     });
 
-    onMounted(() => {
-      nextTick(() => {
-        PasswordMeterComponent.bootstrap();
-      });
-    });
+    // Replaces PasswordMeterComponent (src/assets/ts/components/_PasswordMeterComponent.ts):
+    // same 5 criteria (length>=8, lowercase, uppercase, digit, special char),
+    // 20 points each, 4 highlight bars. The original computed a per-bar
+    // threshold (`checkScore * index * (checkSteps/total) <= score`) which,
+    // with all 5 checks always enabled, reduces to a flat
+    // "bars active = criteria met - 1" - reproduced directly rather than
+    // porting the general-case threshold math for a case that never varies.
+    const passwordScore = ref(0);
+    const handlePasswordInput = (event: Event) => {
+      const val = (event.target as HTMLInputElement).value;
+      let count = 0;
+      if (val.length >= 8) count++;
+      if (/[a-z]/.test(val)) count++;
+      if (/[A-Z]/.test(val)) count++;
+      if (/[0-9]/.test(val)) count++;
+      if (/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/g.test(val)) count++;
+      passwordScore.value = count;
+    };
+    const activePasswordBars = computed(() => Math.max(0, Math.min(4, passwordScore.value - 1)));
 
     const signupWrapper = ref<HTMLElement | null>(null);
 
@@ -271,11 +274,7 @@ export default defineComponent({
       // keep auth cleared
       store.logout();
 
-      // eslint-disable-next-line
-      submitButton.value!.disabled = true;
-
-      // Activate indicator
-      submitButton.value?.setAttribute("data-kt-indicator", "on");
+      isSubmitting.value = true;
 
       try {
         // Send signup request
@@ -321,23 +320,23 @@ export default defineComponent({
           confirmButtonText: "Try again!",
           heightAuto: false,
           customClass: {
-            confirmButton: "btn fw-semibold btn-light-danger",
+            confirmButton: swalDangerButtonClass,
           },
         });
       }
 
-      submitButton.value?.removeAttribute("data-kt-indicator");
-      // eslint-disable-next-line
-      submitButton.value!.disabled = false;
+      isSubmitting.value = false;
     };
 
     return {
       registration,
       onSubmitRegister,
-      submitButton,
+      isSubmitting,
       getAssetPath,
       serverError,
       signupWrapper,
+      activePasswordBars,
+      handlePasswordInput,
     };
   },
 });
@@ -420,12 +419,5 @@ export default defineComponent({
 /* Entrance animation for the heading/form groups */
 .form-entrance { opacity: 0; transform: translateY(8px); animation: fadeSlideIn 0.9s ease-out forwards; }
 @keyframes fadeSlideIn { to { opacity: 1; transform: translateY(0); } }
-
-/* Improve checkbox label contrast */
-.form-check-label { color: #cbd5e1 !important; }
-
-/* Ensure separators and helpers are visible */
-.d-flex .border-bottom { border-color: rgba(255,255,255,0.06) !important; }
-.fw-semobold, .text-muted { color: rgba(255,255,255,0.68) !important; }
 
 </style>

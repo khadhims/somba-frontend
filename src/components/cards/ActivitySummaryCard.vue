@@ -1,22 +1,20 @@
 <template>
   <div class="activity-summary-card-wrapper">
-    <div class="card h-100 activity-summary-card">
-      <div class="card-body p-4">
+    <div class="activity-summary-card h-full rounded-lg bg-white dark:bg-gray-900">
+      <div class="p-4">
         <!-- Icon and Title -->
-        <div class="d-flex align-items-center mb-3">
-          <div 
-            class="symbol symbol-45px me-3"
+        <div class="flex items-center mb-3">
+          <div
+            class="mr-3 flex h-[45px] w-[45px] items-center justify-center rounded-full"
             :style="{ backgroundColor: bgColor || '#2196f3' }"
           >
-            <span class="symbol-label">
-              <i 
-                :class="icon || 'fas fa-tasks'" 
-                class="fs-2 activity-icon"
-              ></i>
-            </span>
+            <i
+              :class="icon || 'fas fa-tasks'"
+              class="fs-2 activity-icon"
+            ></i>
           </div>
-          <div class="flex-grow-1">
-            <h5 class="fw-bold text-dark mb-0 fs-6">{{ activityName }}</h5>
+          <div class="flex-1">
+            <h5 class="mb-0 text-sm font-bold text-gray-900 dark:text-gray-100">{{ activityName }}</h5>
           </div>
         </div>
 
@@ -24,9 +22,9 @@
         <div class="activity-times">
           <!-- Earliest Active -->
           <div class="time-row mb-2">
-            <div class="d-flex align-items-center justify-content-between">
-              <span class="text-muted fs-8">{{ t('dashboard.activities.summary.earliestActive') || 'Pertama Aktif' }}</span>
-              <span class="fw-semibold text-dark fs-8">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-gray-500">{{ t('dashboard.activities.summary.earliestActive') || 'Pertama Aktif' }}</span>
+              <span class="text-xs font-semibold text-gray-900 dark:text-gray-100">
                 {{ earliestActiveFormatted }}
               </span>
             </div>
@@ -34,9 +32,9 @@
 
           <!-- Latest Active -->
           <div class="time-row">
-            <div class="d-flex align-items-center justify-content-between">
-              <span class="text-muted fs-8">{{ t('dashboard.activities.summary.latestActive') || 'Terakhir Aktif' }}</span>
-              <span class="fw-semibold text-dark fs-8">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-gray-500">{{ t('dashboard.activities.summary.latestActive') || 'Terakhir Aktif' }}</span>
+              <span class="text-xs font-semibold text-gray-900 dark:text-gray-100">
                 {{ latestActiveFormatted }}
               </span>
             </div>
@@ -84,18 +82,12 @@ const latestActiveFormatted = computed(() => {
   border: 1px solid #e4e6ef;
 }
 
-.symbol {
-  border: none !important;
-}
-
 .activity-icon {
   color: #1a1a1a !important;
   opacity: 1 !important;
 }
 
-[data-bs-theme="dark"] .activity-icon,
-.dark .activity-icon,
-.app-dark .activity-icon {
+:global([data-bs-theme="dark"]) .activity-icon {
   color: #ffffff !important;
 }
 

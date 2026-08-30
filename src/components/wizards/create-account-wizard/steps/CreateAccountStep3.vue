@@ -1,18 +1,18 @@
 <template>
   <!--begin::Step 3-->
-  <div data-kt-stepper-element="content">
+  <div v-show="active">
     <!--begin::Wrapper-->
-    <div class="w-100">
+    <div class="w-full">
       <!--begin::Heading-->
-      <div class="pb-10 pb-lg-12">
+      <div class="pb-10 lg:pb-12">
         <!--begin::Title-->
-        <h2 class="fw-bold text-gray-900">Business Details</h2>
+        <h2 class="font-bold text-gray-900 dark:text-gray-100">Business Details</h2>
         <!--end::Title-->
 
         <!--begin::Notice-->
-        <div class="text-gray-500 fw-semibold fs-6">
+        <div class="text-sm font-semibold text-gray-500">
           If you need more info, please check out
-          <a href="#" class="link-primary fw-bold">Help Page</a>.
+          <a href="#" class="font-bold text-primary hover:underline">Help Page</a>.
         </div>
         <!--end::Notice-->
       </div>
@@ -21,13 +21,13 @@
       <!--begin::Input group-->
       <div class="fv-row mb-10">
         <!--begin::Label-->
-        <label class="form-label required">Business Name</label>
+        <label class="mb-2 block text-sm font-medium after:content-['*'] after:ml-0.5 after:text-danger">Business Name</label>
         <!--end::Label-->
 
         <!--begin::Input-->
         <Field
           name="businessName"
-          class="form-control form-control-lg form-control-solid"
+          :class="formInputClass"
           value="Keenthemes Inc."
         />
         <ErrorMessage
@@ -41,23 +41,15 @@
       <!--begin::Input group-->
       <div class="fv-row mb-10">
         <!--begin::Label-->
-        <label class="d-flex align-items-center form-label">
-          <span class="required">Shortened Descriptor</span>
-
-          <i
-            class="fas fa-exclamation-circle ms-2 fs-7"
-            data-bs-toggle="popover"
-            data-bs-trigger="hover"
-            data-bs-html="true"
-          >
-          </i>
+        <label class="mb-2 flex items-center text-sm font-medium">
+          <span class="after:content-['*'] after:ml-0.5 after:text-danger">Shortened Descriptor</span>
         </label>
         <!--end::Label-->
 
         <!--begin::Input-->
         <Field
           name="businessDescriptor"
-          class="form-control form-control-lg form-control-solid"
+          :class="formInputClass"
           value="KEENTHEMES"
         />
         <!--end::Input-->
@@ -67,7 +59,7 @@
         ></ErrorMessage>
 
         <!--begin::Hint-->
-        <div class="form-text">
+        <div class="mt-1 text-sm text-gray-500">
           Customers will see this shortened version of your statement descriptor
         </div>
         <!--end::Hint-->
@@ -77,17 +69,13 @@
       <!--begin::Input group-->
       <div class="fv-row mb-10">
         <!--begin::Label-->
-        <label class="form-label required">Corporation Type</label>
+        <label class="mb-2 block text-sm font-medium after:content-['*'] after:ml-0.5 after:text-danger">Corporation Type</label>
         <!--end::Label-->
 
         <!--begin::Input-->
         <Field
           name="businessType"
-          class="form-select form-select-lg form-select-solid"
-          data-control="select2"
-          data-placeholder="Select..."
-          data-allow-clear="true"
-          data-hide-search="true"
+          :class="formInputClass"
           as="select"
         >
           <option></option>
@@ -109,14 +97,14 @@
       <!--begin::Input group-->
       <div class="fv-row mb-10">
         <!--end::Label-->
-        <label class="form-label">Business Description</label>
+        <label class="mb-2 block text-sm font-medium">Business Description</label>
         <!--end::Label-->
 
         <!--begin::Input-->
         <Field
           type="text"
           name="businessDescription"
-          class="form-control form-control-lg form-control-solid"
+          :class="formInputClass"
           rows="3"
         ></Field>
         <!--end::Input-->
@@ -126,7 +114,7 @@
       <!--begin::Input group-->
       <div class="fv-row mb-0">
         <!--begin::Label-->
-        <label class="fs-6 fw-semibold form-label required"
+        <label class="text-sm font-medium after:content-['*'] after:ml-0.5 after:text-danger"
           >Contact Email</label
         >
         <!--end::Label-->
@@ -134,7 +122,7 @@
         <!--begin::Input-->
         <Field
           name="businessEmail"
-          class="form-control form-control-lg form-control-solid"
+          :class="formInputClass"
           value="corp@support.com"
         />
         <!--end::Input-->
@@ -152,4 +140,7 @@
 
 <script setup lang="ts">
 import { ErrorMessage, Field } from "vee-validate";
+import { formInputClass } from "@/core/helpers/badge";
+
+defineProps<{ active: boolean }>();
 </script>

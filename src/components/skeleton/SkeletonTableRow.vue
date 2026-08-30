@@ -1,7 +1,7 @@
 <template>
   <tr>
     <td v-for="i in columns" :key="`col-${i}`" class="text-center py-4">
-      <div class="d-flex align-items-center justify-content-center gap-2">
+      <div class="flex items-center justify-center gap-2">
         <SkeletonBlock :width="blockWidth(i)" :height="14" />
       </div>
     </td>

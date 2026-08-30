@@ -1,17 +1,16 @@
 <template>
   <!--begin::Step 4-->
-  <div data-kt-stepper-element="content">
-    <div class="w-100">
+  <div v-show="active">
+    <div class="w-full">
       <!--begin::Input group-->
-      <div class="d-flex flex-column mb-7 fv-row">
+      <div class="mb-7 flex flex-col fv-row">
         <!--begin::Label-->
         <label
-          class="d-flex align-items-center fs-6 fw-semibold form-label mb-2"
+          class="mb-2 flex items-center text-sm font-medium"
         >
-          <span class="required">Name On Card</span>
+          <span class="after:content-['*'] after:ml-0.5 after:text-danger">Name On Card</span>
           <i
             class="fas fa-exclamation-circle ms-2 fs-7"
-            v-tooltip
             title="Specify a card holder's name"
           ></i>
         </label>
@@ -19,7 +18,7 @@
 
         <Field
           type="text"
-          class="form-control form-control-solid"
+          :class="formInputClass"
           placeholder=""
           name="nameOnCard"
         />
@@ -31,19 +30,19 @@
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="d-flex flex-column mb-7 fv-row">
+      <div class="mb-7 flex flex-col fv-row">
         <!--begin::Label-->
-        <label class="required fs-6 fw-semibold form-label mb-2"
+        <label class="mb-2 text-sm font-medium after:content-['*'] after:ml-0.5 after:text-danger"
           >Card Number</label
         >
         <!--end::Label-->
 
         <!--begin::Input wrapper-->
-        <div class="position-relative">
+        <div class="relative">
           <!--begin::Input-->
           <Field
             type="text"
-            class="form-control form-control-solid"
+            :class="formInputClass"
             placeholder="Enter card number"
             name="cardNumber"
           />
@@ -54,21 +53,21 @@
           <!--end::Input-->
 
           <!--begin::Card logos-->
-          <div class="position-absolute translate-middle-y top-50 end-0 me-5">
+          <div class="absolute right-0 top-1/2 mr-5 flex -translate-y-1/2 items-center gap-1">
             <img
               :src="getAssetPath('media/svg/card-logos/visa.svg')"
               alt=""
-              class="h-25px"
+              class="h-[25px]"
             />
             <img
               :src="getAssetPath('media/svg/card-logos/mastercard.svg')"
               alt=""
-              class="h-25px"
+              class="h-[25px]"
             />
             <img
               :src="getAssetPath('media/svg/card-logos/american-express.svg')"
               alt=""
-              class="h-25px"
+              class="h-[25px]"
             />
           </div>
           <!--end::Card logos-->
@@ -78,22 +77,22 @@
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="row mb-10">
+      <div class="grid grid-cols-1 gap-4 mb-10 md:grid-cols-12">
         <!--begin::Col-->
-        <div class="col-md-8 fv-row">
+        <div class="md:col-span-8 fv-row">
           <!--begin::Label-->
-          <label class="required fs-6 fw-semibold form-label mb-2"
+          <label class="mb-2 block text-sm font-medium after:content-['*'] after:ml-0.5 after:text-danger"
             >Expiration Date</label
           >
           <!--end::Label-->
 
           <!--begin::Row-->
-          <div class="row fv-row">
+          <div class="grid grid-cols-2 gap-4 fv-row">
             <!--begin::Col-->
-            <div class="col-6">
+            <div>
               <Field
                 name="cardExpiryMonth"
-                class="form-select form-select-solid select2-hidden-accessible"
+                :class="formInputClass"
                 placeholder="Month"
                 as="select"
               >
@@ -112,10 +111,10 @@
             <!--end::Col-->
 
             <!--begin::Col-->
-            <div class="col-6">
+            <div>
               <Field
                 name="cardExpiryYear"
-                class="form-select form-select-solid select2-hidden-accessible"
+                :class="formInputClass"
                 placeholder="Year"
                 as="select"
               >
@@ -138,26 +137,25 @@
         <!--end::Col-->
 
         <!--begin::Col-->
-        <div class="col-md-4 fv-row">
+        <div class="md:col-span-4 fv-row">
           <!--begin::Label-->
           <label
-            class="d-flex align-items-center fs-6 fw-semibold form-label mb-2"
+            class="mb-2 flex items-center text-sm font-medium"
           >
-            <span class="required">CVV</span>
+            <span class="after:content-['*'] after:ml-0.5 after:text-danger">CVV</span>
             <i
               class="fas fa-exclamation-circle ms-2 fs-7"
-              v-tooltip
               title="Enter a card CVV code"
             ></i>
           </label>
           <!--end::Label-->
 
           <!--begin::Input wrapper-->
-          <div class="position-relative">
+          <div class="relative">
             <!--begin::Input-->
             <Field
               type="text"
-              class="form-control form-control-solid"
+              :class="formInputClass"
               minlength="3"
               maxlength="4"
               placeholder="CVV"
@@ -170,7 +168,7 @@
             <!--end::Input-->
 
             <!--begin::CVV icon-->
-            <div class="position-absolute translate-middle-y top-50 end-0 me-3">
+            <div class="absolute right-0 top-1/2 mr-3 -translate-y-1/2">
               <KTIcon icon-name="credit-cart" icon-class="fs-2hx" />
             </div>
             <!--end::CVV icon-->
@@ -182,29 +180,28 @@
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="d-flex flex-stack">
+      <div class="flex items-center justify-between">
         <!--begin::Label-->
-        <div class="me-5">
-          <label class="fs-6 fw-semibold form-label"
+        <div class="mr-5">
+          <label class="text-sm font-medium"
             >Save Card for further billing?</label
           >
-          <div class="fs-7 fw-semibold text-gray-500">
+          <div class="text-xs font-semibold text-gray-500">
             If you need more info, please check budget planning
           </div>
         </div>
         <!--end::Label-->
 
         <!--begin::Switch-->
-        <label
-          class="form-check form-switch form-check-custom form-check-solid"
-        >
+        <label class="inline-flex cursor-pointer items-center">
           <Field
             type="checkbox"
-            class="form-check-input"
+            class="peer sr-only"
             name="saveCard"
             value="1"
           />
-          <span class="form-check-label fw-semibold text-gray-500">
+          <span class="relative h-6 w-11 shrink-0 rounded-full bg-gray-300 transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-5 dark:bg-gray-600"></span>
+          <span class="ml-3 text-sm font-semibold text-gray-500">
             Save Card
           </span>
         </label>
@@ -219,4 +216,7 @@
 <script setup lang="ts">
 import { ErrorMessage, Field } from "vee-validate";
 import { getAssetPath } from "@/core/helpers/assets";
+import { formInputClass } from "@/core/helpers/badge";
+
+defineProps<{ active: boolean }>();
 </script>

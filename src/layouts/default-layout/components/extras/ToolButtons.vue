@@ -1,38 +1,30 @@
 <template>
   <div
-    class="engage-toolbar d-flex position-fixed px-5 fw-bold zindex-2 top-50 end-0 transform-90 mt-20 gap-2"
+    class="fixed right-0 top-1/2 z-20 mt-20 flex -rotate-90 gap-2 px-5 font-bold"
   >
     <!--begin::Help drawer toggle-->
     <button
       id="kt_help_toggle"
-      class="engage-help-toggle btn btn-flex h-35px bg-body btn-color-gray-700 btn-active-color-gray-900 shadow-sm px-5 rounded-top-0"
+      class="flex h-[35px] items-center rounded-t-none bg-white px-5 text-gray-700 shadow-sm transition-colors hover:text-gray-900 dark:bg-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
       title="Learn & Get Inspired"
-      data-bs-toggle="tooltip"
-      data-bs-placement="left"
-      data-bs-dismiss="click"
-      data-bs-trigger="hover"
+      @click="drawers.helpOpen = true"
     >
       Help
     </button>
     <!--end::Help drawer toggle-->
-
-    <!--begin::Purchase link-->
-    <!-- <a
-      href="https://1.envato.market/EA4JP"
-      target="_blank"
-      class="engage-purchase-link btn btn-flex h-35px bg-body btn-color-gray-700 btn-active-color-gray-900 px-5 shadow-sm rounded-top-0"
-    >
-      Buy Now
-    </a> -->
-    <!--end::Purchase link-->
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { useDrawersStore } from "@/stores/drawers";
 
 export default defineComponent({
   name: "kt-toolbar-buttons",
   components: {},
+  setup() {
+    const drawers = useDrawersStore();
+    return { drawers };
+  },
 });
 </script>

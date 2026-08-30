@@ -1,17 +1,17 @@
 <template>
   <!--begin::Documents toolbar-->
-  <div class="d-flex flex-wrap flex-stack mb-6">
+  <div class="flex flex-wrap items-center justify-between mb-6">
     <!--begin::Title-->
-    <h3 class="fw-bold my-2">
+    <h3 class="my-2 font-bold">
       My Documents
-      <span class="fs-6 text-gray-500 fw-semobold ms-1">100+ resources</span>
+      <span class="ml-1 text-sm font-semibold text-gray-500">100+ resources</span>
     </h3>
     <!--end::Title-->
 
     <!--begin::Controls-->
-    <div class="d-flex my-2">
+    <div class="my-2 flex">
       <!--begin::Search-->
-      <div class="d-flex align-items-center position-relative me-4">
+      <div class="relative mr-4 flex items-center">
         <KTIcon
           icon-name="magnifier"
           icon-class="fs-3 position-absolute ms-3"
@@ -19,7 +19,7 @@
         <input
           type="text"
           id="kt_filter_search"
-          class="form-control form-control-white form-control-sm w-150px ps-9"
+          :class="[formInputClass, 'w-[150px] pl-9 py-1 text-xs']"
           placeholder="Search"
         />
       </div>
@@ -27,8 +27,7 @@
 
       <a
         href="#"
-        class="btn btn-primary btn-sm"
-        data-bs-toggle="tooltip"
+        class="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-primary-active"
         title="Coming soon"
       >
         File Manager
@@ -38,19 +37,15 @@
   </div>
   <!--end::Documents toolbar-->
 
-  <div class="row g-6 g-xl-9 mb-6 mb-xl-9">
+  <div class="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:mb-9 xl:grid-cols-5 xl:gap-9">
     <KTFolder folder-name="Finance" files="7"></KTFolder>
 
     <KTFolder folder-name="Customers" files="3"></KTFolder>
 
     <KTFolder folder-name="CRM Project" files="25"></KTFolder>
-
-    <div class="col d-none d-xl-block"></div>
-
-    <div class="col d-none d-xl-block"></div>
   </div>
 
-  <div class="row g-6 g-xl-9 mb-6 mb-xl-9">
+  <div class="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:mb-9 xl:grid-cols-5 xl:gap-9">
     <KTFile
       file-title="Project Reqs.."
       file-type="pdf"
@@ -82,7 +77,7 @@
     ></KTFile>
   </div>
 
-  <div class="row g-6 g-xl-9 mb-6 mb-xl-9">
+  <div class="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:mb-9 xl:grid-cols-5 xl:gap-9">
     <KTFile
       file-title="UTAIR CRM API Co.."
       file-type="xml"
@@ -94,12 +89,6 @@
       file-type="tif"
       created-at="3 weeks ago"
     ></KTFile>
-
-    <div class="col d-none d-xl-block"></div>
-
-    <div class="col d-none d-xl-block"></div>
-
-    <div class="col d-none d-xl-block"></div>
   </div>
 </template>
 
@@ -108,6 +97,7 @@ import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent } from "vue";
 import KTFolder from "@/components/files/Folder.vue";
 import KTFile from "@/components/files/File.vue";
+import { formInputClass } from "@/core/helpers/badge";
 
 export default defineComponent({
   name: "profile-documents",
@@ -118,6 +108,7 @@ export default defineComponent({
   setup() {
     return {
       getAssetPath,
+      formInputClass,
     };
   },
 });

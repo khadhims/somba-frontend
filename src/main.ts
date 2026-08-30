@@ -1,6 +1,5 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-import { Tooltip } from "bootstrap";
 import App from "./App.vue";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -77,10 +76,6 @@ initKtIcon(app);
 initVeeValidate();
 
 app.use(i18n);
-
-app.directive("tooltip", (el) => {
-  new Tooltip(el);
-});
 
 // Do not mount app until we have attempted initial auth verification.
 // Mounting earlier could render protected pages before we know auth state.
