@@ -12,7 +12,7 @@
         >
           <!-- Search Input -->
           <div class="search-header">
-            <i class="bi bi-search text-gray-500 fs-4 me-3"></i>
+            <i class="fas fa-magnifying-glass mr-3 text-lg text-gray-500"></i>
             <input
               ref="searchInput"
               v-model="searchQuery"
@@ -32,7 +32,7 @@
             <!-- Cameras -->
             <div v-if="filteredCameras.length > 0" class="result-section">
               <div class="result-section-title">
-                <i class="bi bi-camera-video me-2"></i>Cameras
+                <i class="fas fa-video mr-2"></i>Cameras
               </div>
               <div
                 v-for="(camera, index) in filteredCameras"
@@ -42,21 +42,21 @@
                 @click="navigateToCamera(camera)"
                 @mouseenter="selectedIndex = getCameraIndex(index)"
               >
-                <div class="result-icon bg-light-primary">
-                  <i class="bi bi-camera-video text-primary"></i>
+                <div class="result-icon bg-primary-light">
+                  <i class="fas fa-video text-primary"></i>
                 </div>
                 <div class="result-content">
                   <div class="result-title">{{ camera.name }}</div>
                   <div class="result-subtitle">{{ camera.site_name }} - {{ camera.room }}</div>
                 </div>
-                <i class="bi bi-arrow-return-left text-gray-400"></i>
+                <i class="fas fa-turn-down text-gray-400"></i>
               </div>
             </div>
 
             <!-- Sites -->
             <div v-if="filteredSites.length > 0" class="result-section">
               <div class="result-section-title">
-                <i class="bi bi-geo-alt me-2"></i>Sites
+                <i class="fas fa-location-dot mr-2"></i>Sites
               </div>
               <div
                 v-for="(site, index) in filteredSites"
@@ -66,21 +66,21 @@
                 @click="navigateToSite(site)"
                 @mouseenter="selectedIndex = getSiteIndex(index)"
               >
-                <div class="result-icon bg-light-success">
-                  <i class="bi bi-geo-alt text-success"></i>
+                <div class="result-icon bg-success-light">
+                  <i class="fas fa-location-dot text-success"></i>
                 </div>
                 <div class="result-content">
                   <div class="result-title">{{ site.name }}</div>
                   <div class="result-subtitle">Site</div>
                 </div>
-                <i class="bi bi-arrow-return-left text-gray-400"></i>
+                <i class="fas fa-turn-down text-gray-400"></i>
               </div>
             </div>
 
             <!-- Quick Actions -->
             <div v-if="filteredActions.length > 0" class="result-section">
               <div class="result-section-title">
-                <i class="bi bi-lightning me-2"></i>Quick Actions
+                <i class="fas fa-bolt mr-2"></i>Quick Actions
               </div>
               <div
                 v-for="(action, index) in filteredActions"
@@ -97,15 +97,15 @@
                   <div class="result-title">{{ action.title }}</div>
                   <div class="result-subtitle">{{ action.description }}</div>
                 </div>
-                <i class="bi bi-arrow-return-left text-gray-400"></i>
+                <i class="fas fa-turn-down text-gray-400"></i>
               </div>
             </div>
 
             <!-- No Results -->
             <div v-if="totalResults === 0" class="no-results">
-              <i class="bi bi-search fs-1 text-gray-400 mb-3"></i>
-              <div class="text-gray-600 fw-bold">No results found</div>
-              <div class="text-gray-500 fs-7">Try searching for something else</div>
+              <i class="fas fa-magnifying-glass mb-3 text-4xl text-gray-400"></i>
+              <div class="font-bold text-gray-600">No results found</div>
+              <div class="text-xs text-gray-500">Try searching for something else</div>
             </div>
           </div>
 
@@ -113,7 +113,7 @@
           <div class="search-results" v-else>
             <div class="result-section">
               <div class="result-section-title">
-                <i class="bi bi-clock-history me-2"></i>Quick Links
+                <i class="fas fa-clock-rotate-left mr-2"></i>Quick Links
               </div>
               <div
                 v-for="(link, index) in quickLinks"
@@ -130,7 +130,7 @@
                   <div class="result-title">{{ link.title }}</div>
                   <div class="result-subtitle">{{ link.description }}</div>
                 </div>
-                <i class="bi bi-arrow-return-left text-gray-400"></i>
+                <i class="fas fa-turn-down text-gray-400"></i>
               </div>
             </div>
           </div>
@@ -178,36 +178,36 @@ const quickLinks = [
     id: 'live-view',
     title: 'Live Camera Feed',
     description: 'View all cameras in real-time',
-    icon: 'bi bi-camera-video',
+    icon: 'fas fa-video',
     iconColor: 'text-primary',
-    iconBg: 'bg-light-primary',
+    iconBg: 'bg-primary-light',
     path: '/apps/live-view'
   },
   {
     id: 'events',
     title: 'Events & Alerts',
     description: 'View recent events and alerts',
-    icon: 'bi bi-bell',
+    icon: 'fas fa-bell',
     iconColor: 'text-warning',
-    iconBg: 'bg-light-warning',
+    iconBg: 'bg-warning-light',
     path: '/apps/events-alerts/events'
   },
   {
     id: 'cameras',
     title: 'Camera Management',
     description: 'Manage all cameras',
-    icon: 'bi bi-gear',
+    icon: 'fas fa-gear',
     iconColor: 'text-info',
-    iconBg: 'bg-light-info',
+    iconBg: 'bg-info-light',
     path: '/controlplane/site/camera'
   },
   {
     id: 'sites',
     title: 'Site Management',
     description: 'Manage sites and locations',
-    icon: 'bi bi-geo-alt',
+    icon: 'fas fa-location-dot',
     iconColor: 'text-success',
-    iconBg: 'bg-light-success',
+    iconBg: 'bg-success-light',
     path: '/controlplane/site/site'
   }
 ];
@@ -217,9 +217,9 @@ const actions = [
     id: 'add-camera',
     title: 'Add New Camera',
     description: 'Register a new camera',
-    icon: 'bi bi-plus-circle',
+    icon: 'fas fa-plus-circle',
     iconColor: 'text-primary',
-    iconBg: 'bg-light-primary',
+    iconBg: 'bg-primary-light',
     action: () => {
       // Navigate to camera management page with query param to open modal
       router.push({ name: 'site-camera', query: { addCamera: '1' } });
@@ -229,9 +229,9 @@ const actions = [
     id: 'view-alerts',
     title: 'View Active Alerts',
     description: 'See all active alerts',
-    icon: 'bi bi-exclamation-triangle',
+    icon: 'fas fa-triangle-exclamation',
     iconColor: 'text-danger',
-    iconBg: 'bg-light-danger',
+    iconBg: 'bg-danger-light',
     action: () => router.push('/apps/events-alerts/alerts')
   }
 ];

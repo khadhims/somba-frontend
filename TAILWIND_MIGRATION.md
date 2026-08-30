@@ -541,6 +541,68 @@ before trusting a large batch deletion to it, and re-run the *corrected*
 version against the pre-deletion state rather than assuming a fix to one
 false positive means the rest of the batch was clean.
 
+## Phase 8 (final cleanup)
+
+Before touching `bootstrap`/`bootstrap-icons`/sass at all, ran one more
+full-codebase grep sweep (not just the shell) for Bootstrap/Metronic-only
+class names, since Phase 6/7 had already caught two "I thought this was
+fully converted" gaps. Found and fixed:
+
+- `GlobalSearch.vue` (self-built, custom scoped CSS - never matched the
+  earlier sweeps because it doesn't use Bootstrap *structural* classes,
+  just a handful of `bi bi-*` icons and `bg-light-primary`-style color
+  utilities) - swapped all 14 icons to Font Awesome (already installed,
+  already used elsewhere) and the color utilities to the established
+  `bg-{variant}-light` tokens.
+- `LiveView.vue`, `SignIn.vue` - a handful of leftover `bi bi-*` icons
+  (`fab fa-google`/`fab fa-apple`/`fab fa-facebook` for the 3 social-login
+  ones, needed FA's *brands* subset specifically).
+- `views/LayoutBuilder.vue` (653 lines, live-routed, never converted -
+  previously "deliberately deferred" per an older note) + its dependency
+  `components/highlighters/CodeHighlighter.vue`. The latter's `.highlight`/
+  `.highlight-copy`/`.highlight-code` class names are load-bearing for
+  `useCopyClipboard()`'s querySelector-based ClipboardJS wiring, not just
+  styling - kept those three class names as markers, replaced only their
+  visual CSS with Tailwind (`group`/`group-hover:` for the hover-reveal
+  copy button).
+- `SignIn.vue`'s submit button: unlike every other button-spinner case
+  found earlier in this migration (SignUp.vue, team/Settings.vue,
+  PasswordReset.vue), this one's `data-kt-indicator` toggle is genuinely
+  live (`onSubmitLogin` sets/removes it around the real login call) -
+  ported to a `submitting` ref + `v-if`/`v-else` instead of assuming it
+  was dead like the others. Also found a leftover `.form-control` class
+  doubled up with the page's own fully-`!important`-overridden
+  `.custom-input` (redundant, dropped) and a SweetAlert2 `customClass`
+  still using the raw `"btn fw-semibold btn-light-danger"` string instead
+  of `swalDangerButtonClass`.
+
+**The `fs-N` icon-sizing discovery**: `<KTIcon icon-class="fs-N">` (and
+raw `<i class="... fs-N">`) is used *everywhere* across the app - Keenicons
+itself only ships glyphs, no size scale, so every one of these was quietly
+depending on Bootstrap/Metronic's own `.fs-1`-`.fs-8`/`.fs-2x`-`.fs-4x`
+utilities (generated from a `$font-sizes` Sass map). Rewriting every call
+site was out of scope for what it'd buy; instead added an 11-line shim to
+`tailwind.css` with the literal px values copied from
+`_variables.scss`'s `$font-sizes` map (13px base) before deleting it -
+same "shim the finite, stable, still-referenced legacy class set" call as
+the dark-mode bridge already documented above.
+
+With those fixed, removed `bootstrap`/`bootstrap-icons`/`sass` from
+`package.json`, deleted `src/assets/sass/` and the now-fully-dead
+`src/assets/ts/components/` (13 files - `MenuComponent`, `_ToggleComponent`,
+`_StickyComponent`, `_ScrollComponent`/`_ScrollTopComponent`,
+`_DrawerComponent`, `_SwapperComponent`, plus `_CookieComponent`/
+`_FeedbackComponent`/`_ImageInputComponent`/`_PasswordMeterComponent`/
+`_StepperComponent`/`SearchComponent`, all long since replaced by Vue
+equivalents or confirmed never-wired), simplified `core/plugins/keenthemes.ts`
+to just `ThemeModeComponent.init()` (still load-bearing for the dark-mode
+bridge) + `initKtIcon`, dropped the SCSS preprocessor config from
+`vite.config.ts`, and stripped `App.vue`'s `<style lang="scss">` down to
+its one real rule (`#app { display: contents }`). `npm install` after
+the `package.json` edit to actually drop the packages;
+`npm run type-check` clean, dev server loads every touched route with a
+clean log both before and after.
+
 144 files deleted in this phase (down from the original ~90 estimate
 because Phase 6 also found and deleted 8 shell files early, and this
 phase's own script found a more complete transitive-dead set than the

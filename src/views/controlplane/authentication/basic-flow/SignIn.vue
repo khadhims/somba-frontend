@@ -59,10 +59,10 @@
           <div class="input-group-custom mb-6">
             <label class="custom-label">Email Address</label>
             <div class="input-wrapper">
-              <i class="bi bi-envelope input-icon"></i>
+              <i class="fas fa-envelope input-icon"></i>
               <Field
                 tabindex="1"
-                class="form-control custom-input"
+                class="custom-input"
                 type="text"
                 name="username"
                 autocomplete="off"
@@ -83,10 +83,10 @@
               <router-link to="/password-reset" class="forgot-link">Forgot?</router-link>
             </div>
             <div class="input-wrapper">
-              <i class="bi bi-lock input-icon"></i>
+              <i class="fas fa-lock input-icon"></i>
               <Field
                 tabindex="2"
-                class="form-control custom-input"
+                class="custom-input"
                 type="password"
                 name="password"
                 autocomplete="off"
@@ -106,12 +106,13 @@
             type="submit"
             ref="submitButton"
             id="kt_sign_in_submit"
-            class="btn btn-neon w-100 mb-6"
+            class="btn-neon mb-6 w-full"
+            :disabled="submitting"
           >
-            <span class="indicator-label">SIGN IN</span>
-            <span class="indicator-progress">
+            <span v-if="!submitting">SIGN IN</span>
+            <span v-else class="inline-flex items-center justify-center gap-2">
               AUTHENTICATING...
-              <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+              <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
             </span>
           </button>
 
@@ -119,9 +120,9 @@
           <div class="social-login text-center">
             <div class="divider"><span>OR CONNECT WITH</span></div>
             <div class="social-icons">
-              <a href="#" class="social-icon google"><i class="bi bi-google"></i></a>
-              <a href="#" class="social-icon apple"><i class="bi bi-apple"></i></a>
-              <a href="#" class="social-icon facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="social-icon google"><i class="fab fa-google"></i></a>
+              <a href="#" class="social-icon apple"><i class="fab fa-apple"></i></a>
+              <a href="#" class="social-icon facebook"><i class="fab fa-facebook"></i></a>
             </div>
           </div>
 
@@ -142,6 +143,7 @@ import { useAuthStore, type User } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import * as Yup from "yup";
+import { swalDangerButtonClass } from "@/core/helpers/badge";
 
 export default defineComponent({
   name: "sign-in",
@@ -154,6 +156,7 @@ export default defineComponent({
     const store = useAuthStore();
     const router = useRouter();
     const submitButton = ref<HTMLButtonElement | null>(null);
+    const submitting = ref(false);
     const cardRef = ref<HTMLElement | null>(null);
     const cameraHeadRef = ref<HTMLElement | null>(null);
     const containerRef = ref<HTMLElement | null>(null);
@@ -205,10 +208,7 @@ export default defineComponent({
       values = values as User;
       store.logout();
 
-      if (submitButton.value) {
-        submitButton.value!.disabled = true;
-        submitButton.value.setAttribute("data-kt-indicator", "on");
-      }
+      submitting.value = true;
 
       try {
         await store.login(values);
@@ -250,15 +250,14 @@ export default defineComponent({
             confirmButtonText: "Retry",
             heightAuto: false,
             customClass: {
-              confirmButton: "btn fw-semibold btn-light-danger",
+              confirmButton: swalDangerButtonClass,
             },
           }).then(() => {
             store.errors = {};
           });
         }
 
-        submitButton.value?.removeAttribute("data-kt-indicator");
-        submitButton.value!.disabled = false;
+        submitting.value = false;
       }
     };
 
@@ -266,6 +265,7 @@ export default defineComponent({
       onSubmitLogin,
       login,
       submitButton,
+      submitting,
       handleMouseMove,
       cardRef,
       cameraHeadRef

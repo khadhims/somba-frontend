@@ -2,7 +2,6 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
 
-import "bootstrap-icons/font/bootstrap-icons.css";
 import "apexcharts/dist/apexcharts.css";
 import "quill/dist/quill.snow.css";
 import "animate.css";

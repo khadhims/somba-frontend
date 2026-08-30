@@ -64,11 +64,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
-@import "assets/sass/element-ui.dark";
-@import "assets/sass/plugins";
-@import "assets/sass/style";
-
+<style>
 #app {
   display: contents;
 }

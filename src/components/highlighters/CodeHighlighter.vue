@@ -1,18 +1,16 @@
 <template>
   <div class="py-5">
-    <div class="highlight">
+    <div class="group relative rounded-md bg-gray-900 p-6">
       <button
-        class="highlight-copy btn"
-        data-bs-toggle="tooltip"
-        title=""
-        data-bs-original-title="Copy code"
+        class="highlight-copy absolute right-7 top-6 hidden rounded px-4 py-1 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700 hover:text-white group-hover:flex"
+        title="Copy code"
       >
         copy
       </button>
-      <div class="highlight-code">
+      <div class="highlight-code overflow-auto">
         <pre
           :class="`language-${lang}`"
-          :style="{ height: getHeightInPixesls }"
+          :style="{ height: getHeightInPixesls, background: 'transparent', margin: 0, padding: 0 }"
         ><code :class="`language-${lang}`">
           <slot></slot>
         </code></pre>

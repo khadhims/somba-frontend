@@ -191,14 +191,14 @@
                   <div class="truncate text-xs text-gray-500">{{ cam.name }}</div>
                   <div v-if="cam.model" class="mt-1 flex items-center">
                     <span class="inline-flex items-center gap-1 rounded bg-info-light px-2 py-1 text-xs text-info">
-                      <i class="bi bi-camera-video"></i>{{ cam.model }}
+                      <i class="fas fa-video"></i>{{ cam.model }}
                     </span>
                   </div>
                 </div>
               </div>
 
               <div class="ml-3 flex items-center text-gray-400">
-                <i class="bi bi-grip-vertical fs-4"></i>
+                <i class="fas fa-grip-vertical text-lg"></i>
               </div>
             </li>
           </ul>

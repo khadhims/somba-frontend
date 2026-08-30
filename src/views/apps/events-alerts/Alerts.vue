@@ -881,8 +881,8 @@ const handleImageError = (event: Event) => {
   const parent = target.parentElement;
   if (parent) {
     parent.innerHTML = `
-      <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-        <i class="ki-duotone ki-picture fs-2x text-muted">
+      <div class="flex items-center justify-center rounded bg-gray-100" style="width: 60px; height: 60px;">
+        <i class="ki-duotone ki-picture fs-2x text-gray-400">
           <span class="path1"></span>
           <span class="path2"></span>
         </i>
