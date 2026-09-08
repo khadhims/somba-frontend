@@ -57,10 +57,10 @@
   <!--end::Error Alert-->
 
   <!--begin::Organizations List-->
-  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+  <div :class="cardClass">
     <!--begin::Card header-->
     <div class="flex flex-wrap items-center justify-between gap-4 p-6 pb-0">
-      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+      <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
         {{ t("controlplane.organization.toolbar.title") }}
       </h3>
 
@@ -121,7 +121,8 @@
         <button
           @click="showAddOrganizationModal"
           :disabled="loading"
-          class="inline-flex items-center gap-1 rounded-md bg-primary-light px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex items-center gap-1 disabled:cursor-not-allowed disabled:opacity-60"
+          :class="lightButtonClass"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
           {{ t("controlplane.organization.toolbar.addButton") }}
@@ -253,7 +254,7 @@
   <!-- Add Organization Dialog -->
   <dialog
     ref="addOrganizationDialog"
-    class="m-auto w-full max-w-2xl rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    class="m-auto w-full max-w-2xl rounded-xl border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
     @click.self="addOrganizationDialog?.close()"
   >
     <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
@@ -335,14 +336,14 @@
         <button
           type="button"
           @click="addOrganizationDialog?.close()"
-          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+          :class="secondaryButtonClass"
         >
           {{ t("controlplane.organization.common.cancel") }}
         </button>
         <button
           type="submit"
           :disabled="creating"
-          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex items-center gap-2" :class="primaryButtonClass"
         >
           <span
             v-if="creating"
@@ -357,7 +358,7 @@
   <!-- Edit Organization Dialog -->
   <dialog
     ref="editOrganizationDialog"
-    class="m-auto w-full max-w-2xl rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    class="m-auto w-full max-w-2xl rounded-xl border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
     @click.self="editOrganizationDialog?.close()"
   >
     <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
@@ -434,14 +435,14 @@
         <button
           type="button"
           @click="editOrganizationDialog?.close()"
-          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+          :class="secondaryButtonClass"
         >
           {{ t("controlplane.organization.common.cancel") }}
         </button>
         <button
           type="submit"
           :disabled="updating"
-          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex items-center gap-2" :class="primaryButtonClass"
         >
           <span
             v-if="updating"
@@ -489,7 +490,7 @@ import CardWidget1 from "@/components/dashboard-default-widgets/CardWidget1.vue"
 import InitialAvatar from "@/components/common/InitialAvatar.vue";
 import RowActionButton from "@/components/common/RowActionButton.vue";
 import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
-import { formInputClass, badgeVariantClass } from "@/core/helpers/badge";
+import { formInputClass, badgeVariantClass, cardClass, primaryButtonClass, secondaryButtonClass, lightButtonClass } from "@/core/helpers/badge";
 import { useI18n } from "vue-i18n";
 
 // Interface definitions

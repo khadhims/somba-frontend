@@ -1,7 +1,7 @@
 <template>
   <dialog
     ref="dialogEl"
-    class="m-auto w-full max-w-4xl rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/60 dark:bg-gray-900"
+    class="m-auto w-full max-w-4xl rounded-xl border-0 bg-white p-0 shadow-xl backdrop:bg-black/60 dark:bg-gray-900"
     @click.self="close"
     @close="emitClose"
   >

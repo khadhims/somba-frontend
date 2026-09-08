@@ -263,7 +263,7 @@
   <!-- Add Team Dialog -->
   <dialog
     ref="addTeamDialog"
-    class="m-auto w-full max-w-lg rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    class="m-auto w-full max-w-lg rounded-xl border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
     @click.self="addTeamDialog?.close()"
   >
     <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
@@ -315,7 +315,7 @@
   <!-- Edit Team Dialog -->
   <dialog
     ref="editTeamDialog"
-    class="m-auto w-full max-w-lg rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    class="m-auto w-full max-w-lg rounded-xl border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
     @click.self="closeEditTeamDialog"
   >
     <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">

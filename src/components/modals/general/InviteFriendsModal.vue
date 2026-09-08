@@ -2,7 +2,7 @@
   <!--begin::Modal - Invite Friends-->
   <dialog
     ref="dialogRef"
-    class="w-full max-w-[650px] rounded-md bg-white p-0 text-gray-800 backdrop:bg-black/50 dark:bg-gray-900 dark:text-gray-100"
+    class="w-full max-w-[650px] rounded-xl bg-white p-0 text-gray-800 backdrop:bg-black/50 dark:bg-gray-900 dark:text-gray-100"
     @click.self="close"
     @cancel="close"
   >

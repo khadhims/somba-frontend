@@ -311,7 +311,7 @@
   <!--begin::Add/Edit Report Dialog-->
   <dialog
     ref="reportDialog"
-    class="m-auto w-full max-w-2xl rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    class="m-auto w-full max-w-2xl rounded-xl border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
     @click.self="closeModal"
   >
     <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
@@ -409,7 +409,7 @@
   <!--begin::View Report Dialog-->
   <dialog
     ref="viewReportDialog"
-    class="m-auto w-full max-w-2xl rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    class="m-auto w-full max-w-2xl rounded-xl border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
     @click.self="closeViewModal"
   >
     <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
@@ -483,7 +483,7 @@
   <!--begin::Target Settings Dialog-->
   <dialog
     ref="targetSettingsDialog"
-    class="m-auto w-full max-w-lg rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    class="m-auto w-full max-w-lg rounded-xl border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
     @click.self="closeTargetModal"
   >
     <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">

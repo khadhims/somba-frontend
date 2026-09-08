@@ -2,7 +2,7 @@
   <dialog
     ref="modalRef"
     id="kt_modal_create_app"
-    class="w-full max-w-[900px] rounded-md bg-white p-0 text-gray-800 backdrop:bg-black/50 dark:bg-gray-900 dark:text-gray-100"
+    class="w-full max-w-[900px] rounded-xl bg-white p-0 text-gray-800 backdrop:bg-black/50 dark:bg-gray-900 dark:text-gray-100"
     @click.self="closeModal"
     @cancel="closeModal"
   >

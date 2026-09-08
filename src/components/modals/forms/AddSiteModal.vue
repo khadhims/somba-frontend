@@ -2,7 +2,7 @@
   <dialog
     id="kt_modal_add_site"
     ref="addSiteModalRef"
-    class="w-full max-w-[650px] rounded-lg bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    class="w-full max-w-[650px] rounded-xl bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
     @cancel.prevent
   >
     <!--begin::Modal header-->

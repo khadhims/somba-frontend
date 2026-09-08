@@ -1,9 +1,9 @@
 <template>
   <!--begin::Room Management-->
-  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+  <div :class="cardClass">
     <!--begin::Card header-->
     <div class="p-6 pb-0">
-      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+      <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
         {{ t("controlplane.site.room.title") }}
       </h3>
     </div>
@@ -39,7 +39,7 @@
           <form @submit.prevent="saveRoom">
             <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
                   {{ t("controlplane.site.room.form.fields.site.label") }}
                 </label>
                 <select v-model="roomForm.siteId" required :class="formInputClass">
@@ -53,7 +53,7 @@
               </div>
 
               <div>
-                <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
                   {{ t("controlplane.site.room.form.fields.name.label") }}
                 </label>
                 <input
@@ -107,14 +107,15 @@
               <button
                 type="button"
                 @click="closeForm"
-                class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+                :class="secondaryButtonClass"
               >
                 {{ t("controlplane.site.room.form.actions.cancel") }}
               </button>
               <button
                 type="submit"
                 :disabled="isLoading"
-                class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                class="inline-flex items-center gap-2"
+                :class="primaryButtonClass"
               >
                 <span v-if="isLoading" class="inline-flex items-center gap-2">
                   {{ t("controlplane.site.room.form.actions.loading") }}
@@ -169,7 +170,8 @@
 
           <button
             @click="showRoomForm = true"
-            class="inline-flex items-center gap-1 rounded-md bg-primary-light px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.98]"
+            class="inline-flex items-center gap-1"
+            :class="lightButtonClass"
           >
             <i class="ki-duotone ki-plus fs-2"></i>
             {{ t("controlplane.site.room.toolbar.addButton") }}
@@ -281,7 +283,7 @@ import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import Pagination from '@/components/common/Pagination.vue';
 import InitialAvatar from "@/components/common/InitialAvatar.vue";
 import RowActionButton from "@/components/common/RowActionButton.vue";
-import { formInputClass } from "@/core/helpers/badge";
+import { formInputClass, cardClass, primaryButtonClass, secondaryButtonClass, lightButtonClass } from "@/core/helpers/badge";
 
 // Interfaces
 interface Site {

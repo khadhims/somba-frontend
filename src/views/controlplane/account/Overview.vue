@@ -266,7 +266,7 @@
   <!-- Add Account Dialog -->
   <dialog
     ref="addAccountDialog"
-    class="m-auto w-full max-w-lg rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    class="m-auto w-full max-w-lg rounded-xl border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
     @click.self="addAccountDialog?.close()"
   >
     <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">
@@ -334,7 +334,7 @@
   <!-- Edit Account Dialog -->
   <dialog
     ref="editAccountDialog"
-    class="m-auto w-full max-w-lg rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    class="m-auto w-full max-w-lg rounded-xl border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
     @click.self="closeEditAccountDialog"
   >
     <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-700">

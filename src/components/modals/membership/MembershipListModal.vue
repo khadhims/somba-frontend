@@ -3,7 +3,7 @@
   <dialog
     :id="modalId"
     ref="dialogRef"
-    class="m-auto w-full max-w-[1140px] rounded-lg border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
+    class="m-auto w-full max-w-[1140px] rounded-xl border-0 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:bg-gray-900"
     @click.self="hideModal"
     @cancel="hideModal"
   >
