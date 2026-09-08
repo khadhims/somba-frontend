@@ -1,6 +1,6 @@
 <template>
   <!--begin::Basic info-->
-  <div class="rounded-lg bg-white mb-5 xl:mb-10 dark:bg-gray-900">
+  <div class="mb-5 xl:mb-10" :class="cardClass">
     <!--begin::Card header-->
     <div
       class="flex items-center justify-between p-6 cursor-pointer"
@@ -11,7 +11,7 @@
     >
       <!--begin::Card title-->
       <div class="m-0">
-        <h3 class="m-0 font-bold">Profile Details</h3>
+        <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">Profile Details</h3>
       </div>
       <!--end::Card title-->
     </div>
@@ -28,7 +28,7 @@
         :validation-schema="profileDetailsValidator"
       >
         <!--begin::Card body-->
-        <div class="border-t border-gray-200 p-9 dark:border-gray-700">
+        <div class="border-t border-gray-200 p-6 dark:border-gray-700">
           <!--begin::Input group-->
           <div class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6">
             <!--begin::Label-->
@@ -1179,10 +1179,10 @@
         <!--end::Card body-->
 
         <!--begin::Actions-->
-        <div class="flex justify-end py-6 px-9">
+        <div class="flex justify-end py-6 px-6">
           <button
             type="reset"
-            class="mr-2 rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-primary-light hover:text-primary dark:bg-gray-800 dark:text-gray-300"
+            class="mr-2" :class="secondaryButtonClass"
           >
             Discard
           </button>
@@ -1191,7 +1191,7 @@
             type="submit"
             id="kt_account_profile_details_submit"
             :disabled="isSubmitting1"
-            class="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-70"
+            :class="primaryButtonClass"
           >
           <span v-if="!isSubmitting1">Save Changes</span>
           <span v-else class="inline-flex items-center gap-2">
@@ -1209,7 +1209,7 @@
   <!--end::Basic info-->
 
   <!--begin::Sign-in Method-->
-  <div class="rounded-lg bg-white mb-5 xl:mb-10 dark:bg-gray-900">
+  <div class="mb-5 xl:mb-10" :class="cardClass">
     <!--begin::Card header-->
     <div
       class="flex items-center justify-between p-6 cursor-pointer"
@@ -1219,7 +1219,7 @@
       aria-controls="kt_account_signin_method"
     >
       <div class="m-0">
-        <h3 class="m-0 font-extrabold">Sign-in Method</h3>
+        <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">Sign-in Method</h3>
       </div>
     </div>
     <!--end::Card header-->
@@ -1227,7 +1227,7 @@
     <!--begin::Content-->
     <div id="kt_account_signin_method" v-show="signinMethodOpen">
       <!--begin::Card body-->
-      <div class="border-t border-gray-200 p-9 dark:border-gray-700">
+      <div class="border-t border-gray-200 p-6 dark:border-gray-700">
         <!--begin::Email Address-->
         <div class="flex flex-wrap items-center mb-8">
           <div id="kt_signin_email" :class="{ 'hidden': emailFormDisplay }">
@@ -1469,7 +1469,7 @@
   <!--end::Sign-in Method-->
 
   <!--begin::Connected Accounts-->
-  <div class="rounded-lg bg-white mb-5 xl:mb-10 dark:bg-gray-900">
+  <div class="mb-5 xl:mb-10" :class="cardClass">
     <!--begin::Card header-->
     <div
       class="flex items-center justify-between p-6 cursor-pointer"
@@ -1479,7 +1479,7 @@
       aria-controls="kt_account_connected_accounts"
     >
       <div class="m-0">
-        <h3 class="m-0 font-bold">Connected Accounts</h3>
+        <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">Connected Accounts</h3>
       </div>
     </div>
     <!--end::Card header-->
@@ -1487,7 +1487,7 @@
     <!--begin::Content-->
     <div id="kt_account_connected_accounts" v-show="connectedAccountsOpen">
       <!--begin::Card body-->
-      <div class="border-t border-gray-200 p-9 dark:border-gray-700">
+      <div class="border-t border-gray-200 p-6 dark:border-gray-700">
         <div
           class="flex rounded border border-dashed border-primary bg-primary-light mb-9 p-6"
         >
@@ -1609,12 +1609,12 @@
       <!--end::Card body-->
 
       <!--begin::Card footer-->
-      <div class="flex justify-end py-6 px-9">
-        <button class="mr-2 rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-primary-light hover:text-primary dark:bg-gray-800 dark:text-gray-300">
+      <div class="flex justify-end py-6 px-6">
+        <button class="mr-2" :class="secondaryButtonClass">
           Discard
         </button>
         <button
-          class="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-70"
+          :class="primaryButtonClass"
           @click="saveChanges2()"
           :disabled="isSubmitting2"
         >
@@ -1632,7 +1632,7 @@
   <!--end::Connected Accounts-->
 
   <!--begin::Notifications-->
-  <div class="rounded-lg bg-white mb-5 xl:mb-10 dark:bg-gray-900">
+  <div class="mb-5 xl:mb-10" :class="cardClass">
     <!--begin::Card header-->
     <div
       class="flex items-center justify-between p-6 cursor-pointer"
@@ -1642,7 +1642,7 @@
       aria-controls="kt_account_email_preferences"
     >
       <div class="m-0">
-        <h3 class="m-0 font-bold">Email Preferences</h3>
+        <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">Email Preferences</h3>
       </div>
     </div>
     <!--begin::Card header-->
@@ -1652,7 +1652,7 @@
       <!--begin::Form-->
       <form class="form" @submit.prevent="saveChanges3()">
         <!--begin::Card body-->
-        <div class="border-t border-gray-200 px-9 py-9 dark:border-gray-700">
+        <div class="border-t border-gray-200 px-6 py-6 dark:border-gray-700">
           <!--begin::Option-->
           <label
             class="flex items-start cursor-pointer"
@@ -1853,8 +1853,8 @@
         <!--end::Card body-->
 
         <!--begin::Card footer-->
-        <div class="flex justify-end py-6 px-9">
-          <button class="mr-2 rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-primary-light hover:text-primary dark:bg-gray-800 dark:text-gray-300">
+        <div class="flex justify-end py-6 px-6">
+          <button class="mr-2" :class="secondaryButtonClass">
             Discard
           </button>
           <button
@@ -1878,7 +1878,7 @@
   <!--end::Notifications-->
 
   <!--begin::Notifications-->
-  <div class="rounded-lg bg-white mb-5 xl:mb-10 dark:bg-gray-900">
+  <div class="mb-5 xl:mb-10" :class="cardClass">
     <!--begin::Card header-->
     <div
       class="flex items-center justify-between p-6 cursor-pointer"
@@ -1888,7 +1888,7 @@
       aria-controls="kt_account_notifications"
     >
       <div class="m-0">
-        <h3 class="m-0 font-bold">Notifications</h3>
+        <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">Notifications</h3>
       </div>
     </div>
     <!--begin::Card header-->
@@ -1898,7 +1898,7 @@
       <!--begin::Form-->
       <form class="form" @submit.prevent="saveChanges4()">
         <!--begin::Card body-->
-        <div class="border-t border-gray-200 px-9 pt-3 pb-4 dark:border-gray-700">
+        <div class="border-t border-gray-200 px-6 pt-3 pb-4 dark:border-gray-700">
           <!--begin::Table-->
           <div class="overflow-x-auto">
             <table
@@ -2086,8 +2086,8 @@
         <!--end::Card body-->
 
         <!--begin::Card footer-->
-        <div class="flex justify-end py-6 px-9">
-          <button class="mr-2 rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-primary-light hover:text-primary dark:bg-gray-800 dark:text-gray-300">
+        <div class="flex justify-end py-6 px-6">
+          <button class="mr-2" :class="secondaryButtonClass">
             Discard
           </button>
           <button
@@ -2111,7 +2111,7 @@
   <!--end::Notifications-->
 
   <!--begin::Deactivate Account-->
-  <div class="rounded-lg bg-white mb-5 xl:mb-10 dark:bg-gray-900">
+  <div class="mb-5 xl:mb-10" :class="cardClass">
     <!--begin::Card header-->
     <div
       class="flex items-center justify-between p-6 cursor-pointer"
@@ -2121,7 +2121,7 @@
       aria-controls="kt_account_deactivate"
     >
       <div class="m-0">
-        <h3 class="m-0 font-extrabold">Deactivate Account</h3>
+        <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">Deactivate Account</h3>
       </div>
     </div>
     <!--end::Card header-->
@@ -2135,7 +2135,7 @@
         @submit.prevent="deactivateAccount()"
       >
         <!--begin::Card body-->
-        <div class="border-t border-gray-200 p-9 dark:border-gray-700">
+        <div class="border-t border-gray-200 p-6 dark:border-gray-700">
           <div
             class="flex rounded border border-dashed border-warning bg-warning-light mb-9 p-6"
           >
@@ -2185,7 +2185,7 @@
         <!--end::Card body-->
 
         <!--begin::Card footer-->
-        <div class="flex justify-end py-6 px-9">
+        <div class="flex justify-end py-6 px-6">
           <button
             id="kt_account_deactivate_account_submit"
             type="submit"
@@ -2214,7 +2214,7 @@ import { defineComponent, ref } from "vue";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import * as Yup from "yup";
-import { formInputClass, swalConfirmButtonClass } from "@/core/helpers/badge";
+import { formInputClass, swalConfirmButtonClass, cardClass, primaryButtonClass, secondaryButtonClass } from "@/core/helpers/badge";
 
 interface ProfileDetails {
   avatar: string;
@@ -2416,6 +2416,9 @@ export default defineComponent({
       updatePassword,
       getAssetPath,
       formInputClass,
+      cardClass,
+      primaryButtonClass,
+      secondaryButtonClass,
       profileDetailsOpen,
       signinMethodOpen,
       connectedAccountsOpen,
