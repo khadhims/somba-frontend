@@ -1,5 +1,5 @@
 <template>
-  <div id="kt_header" class="flex items-stretch bg-white dark:bg-gray-900">
+  <div id="kt_header" class="flex items-stretch border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
     <div class="flex items-center px-4">
       <!--begin::Logo-->
       <router-link to="/dashboard">

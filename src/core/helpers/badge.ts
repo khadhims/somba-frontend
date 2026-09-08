@@ -43,9 +43,13 @@ export function badgeVariantClass(variant: BadgeVariant): string {
 // for inputs/badges above, just extended to cards and buttons.
 
 /** Card shell used for every page section/panel: `rounded-lg` -> `rounded-xl`
- *  and a real `shadow-sm` replace the old flat `border`-only look. */
+ *  and a real `shadow-sm` replace the old flat `border`-only look. One
+ *  elevation cue, not both (border + shadow together reads as a "ghost
+ *  card"): shadow against the light backdrop in light mode, since shadows
+ *  go muddy/invisible on dark backgrounds - dark mode elevates via the
+ *  card's lighter surface tone against the darker page backdrop instead. */
 export const cardClass =
-  "rounded-xl border border-gray-200/60 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900";
+  "rounded-xl bg-white shadow-sm dark:bg-gray-900 dark:shadow-none";
 
 /** Solid primary action (Submit, Save, ...). */
 export const primaryButtonClass =

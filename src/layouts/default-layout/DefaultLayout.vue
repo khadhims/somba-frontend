@@ -13,12 +13,12 @@
       <KTHeader />
 
       <!-- begin:: Content -->
-      <div id="kt_content" class="flex flex-1 flex-col">
+      <div id="kt_content" class="flex flex-1 flex-col bg-gray-100 dark:bg-gray-950">
         <!-- begin:: Content Body -->
         <div class="flex flex-1 flex-col">
           <div
             id="kt_content_container"
-            class="w-full px-4"
+            class="w-full px-4 py-6"
             :class="contentWidthFluid ? '' : 'mx-auto max-w-[1320px]'"
           >
             <router-view />

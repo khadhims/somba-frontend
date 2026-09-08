@@ -1,6 +1,6 @@
 <template>
   <!--begin::Menu 1-->
-  <div class="w-[250px] rounded-md bg-white shadow-lg dark:bg-gray-900 md:w-[300px]">
+  <div class="w-[250px] rounded-lg bg-white shadow-lg dark:bg-gray-900 md:w-[300px]">
     <!--begin::Header-->
     <div class="px-7 py-5">
       <div class="text-base font-bold text-gray-900 dark:text-gray-100">Filter Options</div>

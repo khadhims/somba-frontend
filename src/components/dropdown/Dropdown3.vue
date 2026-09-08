@@ -1,7 +1,7 @@
 <template>
   <!--begin::Menu-->
   <div
-    class="w-[250px] rounded-md bg-white py-4 text-sm font-semibold text-gray-800 shadow-lg dark:bg-gray-900 dark:text-gray-100"
+    class="w-[250px] rounded-lg bg-white py-4 text-sm font-semibold text-gray-800 shadow-lg dark:bg-gray-900 dark:text-gray-100"
   >
     <!--begin::Menu item-->
     <div class="px-5 pb-2 text-xs uppercase text-gray-400">Payments</div>
@@ -45,7 +45,7 @@
 
       <!--begin::Menu sub-->
       <div
-        class="invisible absolute left-full top-0 z-10 w-[175px] rounded-md bg-white py-4 opacity-0 shadow-lg transition-opacity group-hover:visible group-hover:opacity-100 dark:bg-gray-900"
+        class="invisible absolute left-full top-0 z-10 w-[175px] rounded-lg bg-white py-4 opacity-0 shadow-lg transition-opacity group-hover:visible group-hover:opacity-100 dark:bg-gray-900"
       >
         <a
           href="#"

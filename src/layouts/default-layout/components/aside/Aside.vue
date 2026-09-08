@@ -10,7 +10,7 @@
   <!--begin::Aside-->
   <div
     id="kt_aside"
-    class="fixed inset-y-0 left-0 z-30 flex w-[200px] -translate-x-full flex-col bg-white transition-transform duration-300 dark:bg-gray-900 lg:relative lg:z-auto lg:translate-x-0"
+    class="fixed inset-y-0 left-0 z-30 flex w-[200px] -translate-x-full flex-col border-r border-gray-200 bg-white transition-transform duration-300 dark:border-gray-800 dark:bg-gray-900 lg:relative lg:z-auto lg:translate-x-0"
     :class="{
       'translate-x-0': drawers.asideMobileOpen,
       'lg:w-[70px]': asideMinimized,

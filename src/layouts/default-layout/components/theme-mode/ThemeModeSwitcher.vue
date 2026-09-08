@@ -1,7 +1,7 @@
 <template>
   <!--begin::Menu-->
   <div
-    class="w-[175px] rounded-md bg-white py-4 text-sm font-semibold text-gray-700 shadow-lg dark:bg-gray-900 dark:text-gray-300"
+    class="w-[175px] rounded-lg bg-white py-4 text-sm font-semibold text-gray-700 shadow-lg dark:bg-gray-900 dark:text-gray-300"
   >
     <!--begin::Menu item-->
     <router-link

@@ -11,7 +11,7 @@
             <div id="kt_app_content_container" class="app-container mx-auto max-w-[1320px]">
               <!-- Main Dashboard Card - Gabungan 3 Section -->
               <div class="mb-3">
-                <div class="dashboard-main-card rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+                <div class="rounded-xl bg-white shadow-sm dark:bg-gray-900 dark:shadow-none">
                   <!-- Section 1: Proses Pelaksanaan Harian -->
                   <div
                     class="dashboard-section-header flex flex-col items-start justify-between gap-3 border-b-0 p-4 pt-3 pb-3 md:flex-row md:items-center"
@@ -21,19 +21,19 @@
                         <h3 class="m-0 text-base font-bold text-gray-900 dark:text-gray-100">
                           {{ t("dashboard.sections.dailyProcess.title") }}
                         </h3>
-                        <div class="header-meta flex flex-wrap items-center gap-2">
+                        <div class="flex flex-wrap items-center gap-2">
                           <span class="inline-flex rounded bg-primary-light px-2 py-1 text-xs font-semibold text-primary">
                             Data per: {{ currentDate }}
                           </span>
-                          <span class="header-meta-item flex items-center gap-1 text-xs">
+                          <span class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                             <span
-                              class="icon-wrapper cursor-pointer"
+                              class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-primary-light text-primary transition-all hover:scale-105 hover:bg-primary/20 active:scale-95 dark:bg-primary/20"
                               @click="handleManualRefresh"
                               title="Klik untuk refresh manual"
                             >
-                              <i class="pi pi-sync"></i>
+                              <KTIcon icon-name="arrows-circle" icon-class="fs-6" />
                             </span>
-                            <span class="meta-text"
+                            <span
                               >Otomatis update tiap
                               {{ autoUpdateInterval }} menit</span
                             >
@@ -176,10 +176,8 @@
                     <!-- Section 2: Recent Alerts -->
                     <div class="p-4 pt-3 pb-2">
                       <div>
-                        <h3 class="m-0 flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-gray-100">
-                          <i
-                            class="pi pi-exclamation-triangle text-2xl text-danger"
-                          ></i>
+                        <h3 class="m-0 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                          <KTIcon icon-name="triangle" icon-class="fs-2x text-danger" />
                           {{
                             t("dashboard.alerts.summary.title") ||
                             "Pelanggaran Terbaru"
@@ -241,7 +239,7 @@
                                     colspan="5"
                                     class="py-8 text-center text-gray-500"
                                   >
-                                    <i class="pi pi-info-circle mb-2 text-2xl"></i>
+                                    <KTIcon icon-name="information" icon-class="fs-2x mb-2 text-gray-400" />
                                     <div>
                                       {{
                                         t("dashboard.alerts.table.empty") ||
@@ -315,7 +313,7 @@
                               v-else-if="!alerts.length"
                               class="py-8 text-center text-gray-500"
                             >
-                              <i class="pi pi-info-circle mb-2 text-2xl"></i>
+                              <KTIcon icon-name="information" icon-class="fs-2x mb-2 text-gray-400" />
                               <div>
                                 {{
                                   t("dashboard.alerts.table.empty") ||
@@ -334,9 +332,7 @@
                                   <div class="mb-2 flex items-start justify-between">
                                     <div class="flex items-center gap-2">
                                       <div class="flex h-[35px] w-[35px] items-center justify-center rounded-full bg-white text-primary">
-                                        <i
-                                          class="pi pi-exclamation-triangle text-lg"
-                                        ></i>
+                                        <KTIcon icon-name="triangle" icon-class="fs-4" />
                                       </div>
                                       <div>
                                         <div class="text-sm font-bold text-gray-900 dark:text-gray-100">
@@ -409,9 +405,7 @@
                                   <div
                                     class="mr-4 flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-primary"
                                   >
-                                    <i
-                                      class="pi pi-exclamation-circle text-xl text-white"
-                                    ></i>
+                                    <KTIcon icon-name="information-5" icon-class="fs-3 text-white" />
                                   </div>
                                   <div class="flex-1 text-right">
                                     <div
@@ -452,9 +446,7 @@
                                   <div
                                     class="mr-4 flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-danger"
                                   >
-                                    <i
-                                      class="pi pi-flag-fill text-xl text-white"
-                                    ></i>
+                                    <KTIcon icon-name="flag" icon-class="fs-3 text-white" />
                                   </div>
                                   <div class="flex-1 text-right">
                                     <div
@@ -488,9 +480,7 @@
                                   <div
                                     class="mr-4 flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-success"
                                   >
-                                    <i
-                                      class="pi pi-check-circle text-xl text-white"
-                                    ></i>
+                                    <KTIcon icon-name="check-circle" icon-class="fs-3 text-white" />
                                   </div>
                                   <div class="flex-1 text-right">
                                     <div
@@ -1590,811 +1580,97 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* Global rendering improvements */
-* {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-/* Optimize SVG and icon rendering */
-svg,
-img {
-  shape-rendering: geometricPrecision;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
-
-i,
-.ki-duotone,
-.fas,
-.far,
-.fab {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-.card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-  will-change: transform;
-  position: relative;
-  z-index: 1;
-}
-
-.card:hover {
-  transform: translateY(-4px) translateZ(0);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-  z-index: 10;
-}
-
-.symbol {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-  position: relative;
-  z-index: 1;
-}
-
-.card:hover .symbol {
-  transform: scale(1.08) translateZ(0);
-}
-
-/* Prevent hover effects on touch devices */
-@media (hover: none) {
-  .card:hover {
-    transform: translateZ(0);
-    box-shadow: none;
-  }
-
-  .card:hover .symbol {
-    transform: scale(1) translateZ(0);
-  }
-}
-
-.dashboard-section-header {
-  background: transparent;
-}
-
-.dashboard-section-header .header-meta {
-  gap: 0.75rem;
-}
-
-.dashboard-section-header .header-meta-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #64748b;
-}
-
-.dashboard-section-header .header-meta-item .icon-wrapper {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 999px;
-  background: rgba(59, 130, 246, 0.12);
-  transition: all 0.2s ease;
-}
-
-.dashboard-section-header .header-meta-item .icon-wrapper:hover {
-  background: rgba(59, 130, 246, 0.2);
-  transform: scale(1.05);
-}
-
-.dashboard-section-header .header-meta-item .icon-wrapper:active {
-  transform: scale(0.95);
-}
-
-.dashboard-section-header .header-meta-item .icon-wrapper i {
-  color: #3b82f6;
-}
-
-.dashboard-section-header .header-meta-item .meta-text {
-  line-height: 1.4;
-}
-
-[data-bs-theme="dark"] .dashboard-section-header .header-meta-item,
-.dark .dashboard-section-header .header-meta-item,
-.app-dark .dashboard-section-header .header-meta-item {
-  color: #cbd5f5;
-}
-
-[data-bs-theme="dark"]
-  .dashboard-section-header
-  .header-meta-item
-  .icon-wrapper,
-.dark .dashboard-section-header .header-meta-item .icon-wrapper,
-.app-dark .dashboard-section-header .header-meta-item .icon-wrapper {
-  background: rgba(59, 130, 246, 0.2);
-}
-
-[data-bs-theme="dark"]
-  .dashboard-section-header
-  .header-meta-item
-  .icon-wrapper
-  i,
-.dark .dashboard-section-header .header-meta-item .icon-wrapper i,
-.app-dark .dashboard-section-header .header-meta-item .icon-wrapper i {
-  color: #60a5fa;
-}
-
-.dashboard-section-header .card-toolbar {
-  justify-content: flex-end;
-}
-
-.dashboard-section-header .card-toolbar label {
-  min-width: max-content;
-}
-
-/* Site Selection Dropdown */
-.form-select-sm {
-  padding: 0.375rem 2rem 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  border-radius: 0.375rem;
-  border: 1px solid #e4e6ef;
-  background-color: #f9fafb;
-  transition: all 0.2s ease;
-}
-
-.form-select-sm:hover {
-  border-color: #3b82f6;
-  background-color: #ffffff;
-}
-
-.form-select-sm:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
-  background-color: #ffffff;
-}
-
-[data-bs-theme="dark"] .form-select-sm,
-.dark .form-select-sm,
-.app-dark .form-select-sm {
-  background-color: #1e293b;
-  border-color: #3f4254;
-  color: #ffffff;
-}
-
-[data-bs-theme="dark"] .form-select-sm:hover,
-.dark .form-select-sm:hover,
-.app-dark .form-select-sm:hover {
-  background-color: #2d3748;
-  border-color: #3b82f6;
-}
-
-/* Badge styling */
-.badge-light-primary {
-  background-color: #eff6ff;
-  color: #3b82f6;
-  padding: 0.35rem 0.65rem;
-  font-weight: 500;
-}
-
-[data-bs-theme="dark"] .badge-light-primary,
-.dark .badge-light-primary,
-.app-dark .badge-light-primary {
-  background-color: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
-}
-
-/* Carousel Styles */
-.activities-carousel-wrapper {
-  position: relative;
-  padding: 0.5rem;
-  margin: -0.5rem;
-  overflow: hidden;
-}
-
-.activities-carousel {
-  overflow: hidden;
-  cursor: grab;
-  user-select: none;
-  padding: 0.5rem 0;
-  position: relative;
-}
-
-.activities-carousel:active {
-  cursor: grabbing;
-}
-
-.activities-carousel-track {
-  display: flex;
-  gap: 20px;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
-}
-
-.carousel-item-wrapper {
-  flex: 0 0 calc(25% - 15px);
-  min-width: 0;
-  position: relative;
-  z-index: 1;
-}
-
-/* Pagination Dots */
-.carousel-pagination {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 1rem;
-}
-
-.pagination-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #cbd5e1;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 0;
-}
-
-.pagination-dot:hover {
-  background: #94a3b8;
-  transform: scale(1.2);
-}
-
-.pagination-dot.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  width: 18px;
-  border-radius: 3px;
-}
-
-/* Daily Process Card Enhancement */
-.daily-process-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-  border: 1px solid rgba(102, 126, 234, 0.1);
-}
-
-[data-bs-theme="dark"] .daily-process-card,
-.dark .daily-process-card,
-.app-dark .daily-process-card {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  border: 1px solid rgba(102, 126, 234, 0.2);
-}
-
-/* Dashboard Main Card - Gabungan 3 Section */
-.dashboard-main-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-  border: 1px solid rgba(102, 126, 234, 0.1);
-}
-
-[data-bs-theme="dark"] .dashboard-main-card,
-.dark .dashboard-main-card,
-.app-dark .dashboard-main-card {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  border: 1px solid rgba(102, 126, 234, 0.2);
-}
-
-/* Separator styling */
-.separator.separator-dashed {
-  border-top: 1px dashed #e4e6ef;
-  transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-[data-bs-theme="dark"] .separator.separator-dashed,
-.dark .separator.separator-dashed,
-.app-dark .separator.separator-dashed {
-  border-top: 1px dashed #3f4254;
-}
-
-/* Responsive Carousel */
-/* Extra large screens - 7 cards */
-@media (min-width: 1400px) {
-  .carousel-item-wrapper {
-    flex: 0 0 calc((100% - 120px) / 7);
-  }
-}
-
-/* Large screens - 5 cards */
-@media (max-width: 1399px) and (min-width: 1200px) {
-  .carousel-item-wrapper {
-    flex: 0 0 calc(20% - 16px);
-  }
-}
-
-/* Medium-large screens - 4 cards */
-@media (max-width: 1199px) and (min-width: 993px) {
-  .carousel-item-wrapper {
-    flex: 0 0 calc(25% - 15px);
-  }
-
-  .activities-carousel-wrapper {
-    padding: 0 0.5rem;
-  }
-}
-
-/* Medium screens - 3 cards */
-@media (max-width: 992px) and (min-width: 577px) {
-  .carousel-item-wrapper {
-    flex: 0 0 calc(33.333% - 13.333px);
-  }
-
-  .activities-carousel-wrapper {
-    padding: 0 0.5rem;
-  }
-}
-
-/* Small screens - 1 card */
-@media (max-width: 576px) {
-  .carousel-item-wrapper {
-    flex: 0 0 100%;
-  }
-
-  .activities-carousel-wrapper {
-    padding: 0 0.5rem;
-    margin: 0;
-  }
-
-  .activities-carousel-track {
-    gap: 10px;
-  }
-
-  .dashboard-section-header {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 1rem;
-  }
-
-  .dashboard-section-header .card-toolbar {
-    width: 100%;
-    justify-content: space-between;
-    margin-top: 1rem;
-  }
-
-  .dashboard-section-header .header-meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .dashboard-section-header .header-meta-item {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .card-body {
-    padding: 1rem;
-  }
-
-  .row {
-    margin: 0;
-  }
-
-  .col-6 {
-    padding: 0.25rem;
-  }
-
-  /* Stack columns vertically on mobile */
-  .row > [class*="col-"] {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-}
-
-/* Responsive grid adjustments */
-@media (max-width: 1400px) {
-  .col-xxl-4 {
-    flex: 0 0 auto;
-    width: 33.33333333%;
-  }
-}
-
-@media (max-width: 1200px) {
-  .col-xl-2 {
-    flex: 0 0 auto;
-    width: 20%;
-  }
-}
-
-@media (max-width: 992px) {
-  .col-lg-2 {
-    flex: 0 0 auto;
-    width: 20%;
-  }
-  .col-lg-3 {
-    flex: 0 0 auto;
-    width: 25%;
-  }
-}
-
-@media (max-width: 768px) {
-  .col-md-4 {
-    flex: 0 0 auto;
-    width: 50%;
-  }
-}
-
-@media (max-width: 576px) {
-  .col-6 {
-    flex: 0 0 auto;
-    width: 100%;
-  }
-
-  .app-page {
-    padding: 0.5rem;
-  }
-
-  .container-fluid {
-    padding: 0.5rem;
-  }
-
-  /* Improve button spacing on mobile */
-  .btn-group {
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  /* Better form controls */
-  .form-select-sm {
-    font-size: 0.875rem;
-    padding: 0.5rem;
-  }
-
-  /* Optimize text sizes */
-  .fs-1 {
-    font-size: 1.75rem !important;
-  }
-
-  .fs-2 {
-    font-size: 1.5rem !important;
-  }
-
-  /* Better touch targets */
-  .btn {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  .pagination-dot {
-    width: 12px;
-    height: 12px;
-    margin: 0 2px;
-  }
-
-  .pagination-dot.active {
-    width: 24px;
-  }
-}
-
-/* Tablet optimization */
-@media (max-width: 768px) and (min-width: 577px) {
-  .carousel-item-wrapper {
-    flex: 0 0 calc(50% - 10px);
-  }
-
-  .activities-carousel-track {
-    gap: 15px;
-  }
-
-  .dashboard-section-header {
-    padding: 1.25rem;
-  }
-
-  .card {
-    margin-bottom: 1rem;
-  }
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Loading animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.card {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-/* Dark theme support */
-[data-bs-theme="dark"] .text-white-dark,
-.dark .text-white-dark,
-.app-dark .text-white-dark {
-  color: #ffffff !important;
-}
-
-/* Ensure icons are bright in dark theme */
-[data-bs-theme="dark"] .text-primary,
-.dark .text-primary,
-.app-dark .text-primary {
-  color: #3b82f6 !important;
-}
-
-[data-bs-theme="dark"] .text-info,
-.dark .text-info,
-.app-dark .text-info {
-  color: #06b6d4 !important;
-}
-
-[data-bs-theme="dark"] .text-warning,
-.dark .text-warning,
-.app-dark .text-warning {
-  color: #f59e0b !important;
-}
-
-[data-bs-theme="dark"] .text-success,
-.dark .text-success,
-.app-dark .text-success {
-  color: #10b981 !important;
-}
-
-[data-bs-theme="dark"] .text-danger,
-.dark .text-danger,
-.app-dark .text-danger {
-  color: #ef4444 !important;
-}
-
-/* Alerts Section Styles */
-.alert-row {
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.alert-row:hover {
-  background-color: rgba(59, 130, 246, 0.05);
-  transform: translateY(-1px);
-}
-
-[data-bs-theme="dark"] .alert-row:hover,
-.dark .alert-row:hover,
-.app-dark .alert-row:hover {
-  background-color: rgba(59, 130, 246, 0.1);
-}
-
+/*
+ * This block used to be ~800 lines: a pre-Swiper hand-rolled carousel
+ * system nothing in the template uses anymore, Bootstrap-grid remnants
+ * (.col-xxl-4, .row, .container-fluid, ...) matching zero live classes,
+ * a `[data-bs-theme="dark"], .dark, .app-dark` triple-selector on every
+ * dark-mode rule where only the first ever matches anything, and - the
+ * one genuine bug - a `.text-primary { color: #3b82f6 !important }`
+ * override that made this page's dark-mode blue not match the rest of
+ * the app's real --color-primary token. Rewritten down to only the rules
+ * that target classes actually present in this template, using the
+ * app's real design tokens via CSS var() instead of hardcoded hex, and a
+ * single [data-bs-theme="dark"] selector (the only one that ever
+ * matched). Also dropped the .dashboard-main-card gradient/border, which
+ * was overriding the plain bg-white every other card in the app uses -
+ * this page's main card was inconsistent with the rest of the app.
+ */
+
+/* Alert table rows: vertical-centering isn't a Tailwind per-cell prop
+   worth adding to 5 <td>s - hover/cursor are handled by Tailwind classes
+   directly on the <tr>. */
 .alert-row td {
   vertical-align: middle;
 }
 
-.alert-row .symbol img {
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-/* Summary Cards Animation */
-.card.bg-light-primary,
-.card.bg-light-danger,
-.card.bg-light-success {
-  transition: all 0.3s ease;
-}
-
-.card.bg-light-primary:hover,
-.card.bg-light-danger:hover,
-.card.bg-light-success:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-}
-
-/* Badge styles for dark mode */
-[data-bs-theme="dark"] .badge-light-danger,
-.dark .badge-light-danger,
-.app-dark .badge-light-danger {
-  background-color: rgba(239, 68, 68, 0.2);
-  color: #f87171;
-}
-
-[data-bs-theme="dark"] .badge-light-success,
-.dark .badge-light-success,
-.app-dark .badge-light-success {
-  background-color: rgba(16, 185, 129, 0.2);
-  color: #34d399;
-}
-
-[data-bs-theme="dark"] .badge-light-info,
-.dark .badge-light-info,
-.app-dark .badge-light-info {
-  background-color: rgba(6, 182, 212, 0.2);
-  color: #22d3ee;
-}
-
-/* Responsive table on mobile */
-@media (max-width: 992px) {
-  .table-responsive {
-    font-size: 0.875rem;
-  }
-
-  .min-w-150px {
-    min-width: 120px !important;
-  }
-
-  .min-w-100px {
-    min-width: 80px !important;
-  }
-
-  .min-w-80px {
-    min-width: 60px !important;
-  }
-
-  .min-w-140px {
-    min-width: 100px !important;
-  }
-}
-
-@media (max-width: 576px) {
-  .alert-row .symbol {
-    width: 35px !important;
-    height: 35px !important;
-  }
-
-  .alert-row .fs-7 {
-    font-size: 0.75rem !important;
-  }
-
-  .card.bg-light-primary .card-body,
-  .card.bg-light-danger .card-body,
-  .card.bg-light-success .card-body {
-    padding: 1rem !important;
-  }
-
-  .symbol-50px {
-    width: 40px !important;
-    height: 40px !important;
-  }
-
-  .fs-2x {
-    font-size: 1.5rem !important;
-  }
-}
-
-/* Force Center daily process on mobile */
-@media (max-width: 768px) {
-  .activities-carousel-track.justify-content-center .carousel-item-wrapper {
-    margin: 0 auto;
-    flex: 0 0 85% !important; /* Ensure consistent width */
-  }
-
-  /* If justified center is active (single item), ensure track takes full width and*/
-  .activities-carousel-track.justify-content-center {
-    width: 100% !important;
-  }
-}
-
-.text-center {
-  text-align: center;
-}
-
-.items-center {
-  align-items: center;
-}
-
-/* Activity Summary Swiper Carousel Styling */
+/* Swiper carousels (live-activity + activity-summary): padding-bottom
+   reserves room for the pagination dots, and bullet colors are pulled
+   from the app's real tokens instead of hardcoded hex. */
+.activities-carousel-wrapper,
 .activities-summary-carousel-wrapper {
   position: relative;
   width: 100%;
 }
 
+.live-activity-swiper,
 .activity-swiper {
-  width: 100%;
-  padding-bottom: 35px !important;
-}
-
-.activity-swiper .swiper-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.activity-swiper .swiper-slide-content {
-  width: 100%;
-  padding: 0 5px;
-  box-sizing: border-box;
-}
-
-.activity-swiper .swiper-pagination {
-  bottom: 0 !important;
-}
-
-.activity-swiper .swiper-pagination-bullet {
-  background: #3f4254;
-  opacity: 0.4;
-}
-
-.activity-swiper .swiper-pagination-bullet-active {
-  background: #009ef7;
-  opacity: 1;
-}
-
-.activity-summary-card {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid #e4e6ef;
-  width: 100%;
-}
-
-.activity-summary-card .card-body {
-  padding: 1rem !important;
-}
-
-/* Live Activity Swiper Carousel Styling */
-.activities-carousel-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.live-activity-swiper {
   width: 100%;
   padding-bottom: 35px !important;
 }
 
 .live-activity-swiper .swiper-slide {
   display: flex;
-  justify-content: center;
   align-items: stretch;
+  justify-content: center;
   height: auto;
 }
 
-.live-activity-swiper .swiper-slide-content {
-  width: 100%;
-  height: 100%;
+.activity-swiper .swiper-slide {
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.live-activity-swiper .swiper-pagination {
+.live-activity-swiper .swiper-slide-content {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.activity-swiper .swiper-slide-content {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 5px;
+}
+
+.live-activity-swiper .swiper-pagination,
+.activity-swiper .swiper-pagination {
   bottom: 0 !important;
 }
 
-.live-activity-swiper .swiper-pagination-bullet {
-  background: #3f4254;
-  opacity: 0.4;
+.live-activity-swiper .swiper-pagination-bullet,
+.activity-swiper .swiper-pagination-bullet {
+  background: var(--color-gray-400);
+  opacity: 0.5;
 }
 
-.live-activity-swiper .swiper-pagination-bullet-active {
-  background: #009ef7;
+.live-activity-swiper .swiper-pagination-bullet-active,
+.activity-swiper .swiper-pagination-bullet-active {
+  background: var(--color-primary);
   opacity: 1;
 }
 
-/* Mobile centering fix */
 @media (max-width: 639px) {
   .live-activity-swiper .swiper-slide {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
   }
 
   .live-activity-swiper .swiper-slide-content {
-    max-width: 200px;
     width: 100%;
+    max-width: 200px;
   }
 }
 </style>

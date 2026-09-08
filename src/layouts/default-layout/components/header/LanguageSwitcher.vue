@@ -11,7 +11,7 @@
     </button>
 
     <div v-show="dropdown.isOpen.value" class="absolute right-0 top-full z-20 mt-2">
-      <div class="w-[175px] rounded-md bg-white py-4 text-sm font-semibold text-gray-800 shadow-lg dark:bg-gray-900 dark:text-gray-100">
+      <div class="w-[175px] rounded-lg bg-white py-4 text-sm font-semibold text-gray-800 shadow-lg dark:bg-gray-900 dark:text-gray-100">
         <a
           href="#"
           class="flex items-center gap-2 px-5 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"

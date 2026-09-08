@@ -16,7 +16,7 @@
           <template v-if="menuItem.heading">
             <router-link
               v-if="menuItem.route"
-              class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold text-gray-800 transition-colors hover:bg-primary-light hover:text-primary dark:text-gray-200"
+              class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold text-gray-800 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800/60"
               active-class="!bg-primary-light !text-primary"
               :to="menuItem.route"
             >
@@ -38,7 +38,7 @@
           <div v-if="menuItem.sectionTitle && menuItem.route">
             <button
               type="button"
-              class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm font-semibold text-gray-800 transition-colors hover:bg-primary-light hover:text-primary dark:text-gray-200"
+              class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm font-semibold text-gray-800 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800/60"
               @click="toggle(menuItem.route)"
             >
               <span v-if="menuItem.keenthemesIcon || menuItem.bootstrapIcon" class="text-gray-500">
@@ -64,7 +64,7 @@
               <template v-for="(item2, k) in menuItem.sub" :key="k">
                 <router-link
                   v-if="item2.heading && item2.route"
-                  class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-primary-light hover:text-primary dark:text-gray-400"
+                  class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800/60"
                   active-class="!bg-primary-light !text-primary"
                   :to="item2.route"
                 >
@@ -74,7 +74,7 @@
                 <div v-if="item2.sectionTitle && item2.route">
                   <button
                     type="button"
-                    class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-gray-600 transition-colors hover:bg-primary-light hover:text-primary dark:text-gray-400"
+                    class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800/60"
                     @click="toggle(item2.route)"
                   >
                     <span class="h-1 w-1 rounded-full bg-current"></span>
@@ -89,7 +89,7 @@
                     <template v-for="(item3, k) in item2.sub" :key="k">
                       <router-link
                         v-if="item3.heading && item3.route"
-                        class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-primary-light hover:text-primary dark:text-gray-400"
+                        class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800/60"
                         active-class="!bg-primary-light !text-primary"
                         :to="item3.route"
                       >

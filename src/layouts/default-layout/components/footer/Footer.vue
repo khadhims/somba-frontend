@@ -1,6 +1,6 @@
 <template>
   <!--begin::Footer-->
-  <div class="flex py-4 lg:flex-col" id="kt_footer">
+  <div class="flex border-t border-gray-200 py-4 dark:border-gray-800 lg:flex-col" id="kt_footer">
     <!--begin::Container-->
     <div
       class="flex w-full flex-col items-center justify-between px-4 md:flex-row"

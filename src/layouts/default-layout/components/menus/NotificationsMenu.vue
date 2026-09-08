@@ -1,7 +1,7 @@
 <template>
   <!--begin::Menu-->
   <div
-    class="w-[350px] rounded-md bg-white text-gray-800 shadow-lg lg:w-[375px] dark:bg-gray-900 dark:text-gray-100"
+    class="w-[350px] rounded-lg bg-white text-gray-800 shadow-lg lg:w-[375px] dark:bg-gray-900 dark:text-gray-100"
   >
     <!--begin::Heading-->
     <div
