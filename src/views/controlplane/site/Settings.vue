@@ -1,9 +1,9 @@
 <template>
   <!--begin::Site Settings-->
-  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+  <div :class="cardClass">
     <!--begin::Card header-->
     <div class="p-6 pb-0">
-      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+      <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
         {{ t("controlplane.site.settings.title") }}
       </h3>
     </div>
@@ -15,7 +15,7 @@
       <form @submit.prevent="saveSite">
         <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+            <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
               {{ t("controlplane.site.settings.form.fields.name.label") }}
             </label>
             <input
@@ -54,7 +54,7 @@
         </div>
 
         <div class="mb-4">
-          <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+          <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
             {{ t("controlplane.site.settings.form.fields.address.label") }}
           </label>
           <textarea
@@ -158,14 +158,14 @@
           <button
             type="button"
             @click="resetForm"
-            class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+            :class="secondaryButtonClass"
           >
             {{ t("controlplane.site.settings.form.actions.reset") }}
           </button>
           <button
             type="submit"
             :disabled="isLoading"
-            class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+            class="inline-flex items-center gap-2" :class="primaryButtonClass"
           >
             <span v-if="isLoading" class="inline-flex items-center gap-2">
               {{ t("controlplane.site.settings.form.actions.loading") }}
@@ -194,7 +194,7 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import ApiService from '@/core/services/ApiService'
-import { formInputClass } from "@/core/helpers/badge";
+import { formInputClass, cardClass, primaryButtonClass, secondaryButtonClass } from "@/core/helpers/badge";
 
 // Interface
 interface SiteForm {

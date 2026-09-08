@@ -2,11 +2,12 @@
   <!--begin::Site Overview-->
   <!--begin::Organization, Account & Team Switcher-->
   <div
-    class="mb-5 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+    class="mb-5 p-4"
+    :class="cardClass"
   >
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
-        <h4 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        <h4 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
           {{ t("controlplane.site.header.title") }}
         </h4>
         <p class="m-0 text-gray-500">
@@ -114,10 +115,10 @@
   <!--end::Organization, Account & Team Switcher-->
 
   <!--begin::Sites List-->
-  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+  <div :class="cardClass">
     <!--begin::Card header-->
     <div class="flex flex-wrap items-center justify-between gap-4 p-6 pb-0">
-      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+      <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
         {{ t("controlplane.site.toolbar.title") }}
       </h3>
 
@@ -157,7 +158,8 @@
         <button
           @click="showAddSiteModal"
           :disabled="!selectedTeamIdFilter"
-          class="inline-flex items-center gap-1 rounded-md bg-primary-light px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex items-center gap-1 disabled:cursor-not-allowed disabled:opacity-60"
+          :class="lightButtonClass"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
           {{ t("controlplane.site.toolbar.addButton") }}
@@ -280,6 +282,7 @@ import ApiService from "@/core/services/ApiService";
 import Pagination from '@/components/common/Pagination.vue'
 import InitialAvatar from "@/components/common/InitialAvatar.vue";
 import RowActionButton from "@/components/common/RowActionButton.vue";
+import { cardClass, lightButtonClass } from "@/core/helpers/badge";
 
 // Interface definitions
 interface Site {

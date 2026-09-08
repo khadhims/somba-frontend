@@ -1,11 +1,12 @@
 <template>
   <!--begin::Camera Filters-->
   <div
-    class="mb-5 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+    class="mb-5 p-4"
+    :class="cardClass"
   >
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
-        <h4 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        <h4 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
           {{ t("controlplane.site.camera.header.title") }}
         </h4>
         <p class="m-0 text-gray-500">
@@ -30,10 +31,10 @@
   </div>
 
   <!--begin::Camera List-->
-  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+  <div :class="cardClass">
     <!--begin::Card header-->
     <div class="flex flex-wrap items-center justify-between gap-4 p-6 pb-0">
-      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+      <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
         {{ t("controlplane.site.camera.title") }}
       </h3>
 
@@ -72,7 +73,8 @@
 
         <button
           @click.prevent="showCameraForm = true"
-          class="inline-flex items-center gap-1 rounded-md bg-primary-light px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.98]"
+          class="inline-flex items-center gap-1"
+          :class="lightButtonClass"
         >
           <i class="ki-duotone ki-plus fs-2"></i>
           {{ t("controlplane.site.camera.toolbar.addButton") }}
@@ -233,7 +235,7 @@
             <button
               type="button"
               @click="closeForm"
-              class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+              class="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
             >
               <i class="ki-duotone ki-cross fs-2">
                 <span class="path1"></span>
@@ -247,7 +249,7 @@
             <form @submit.prevent="saveCamera">
               <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
                     {{ t("controlplane.site.camera.form.fields.site.label") }}
                   </label>
                   <select v-model="cameraForm.siteId" @change="onSiteChange" required :class="formInputClass">
@@ -277,7 +279,7 @@
 
               <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
                     {{ t("controlplane.site.camera.form.fields.name.label") }}
                   </label>
                   <input
@@ -290,7 +292,7 @@
                 </div>
 
                 <div>
-                  <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
                     {{ t("controlplane.site.camera.form.fields.ipAddress.label") }}
                   </label>
                   <input
@@ -322,7 +324,7 @@
                 </div>
 
                 <div>
-                  <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
                     {{ t("controlplane.site.camera.form.fields.model.label") }}
                   </label>
                   <input
@@ -408,14 +410,14 @@
                 <button
                   type="button"
                   @click="closeForm"
-                  class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+                  :class="secondaryButtonClass"
                 >
                   {{ t("controlplane.site.camera.form.actions.cancel") }}
                 </button>
                 <button
                   type="submit"
                   :disabled="isLoading"
-                  class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                  class="inline-flex items-center gap-2" :class="primaryButtonClass"
                 >
                   <span v-if="isLoading" class="inline-flex items-center gap-2">
                     {{ t("controlplane.site.camera.form.actions.loading") }}
@@ -449,7 +451,7 @@ import ApiService from '@/core/services/ApiService';
 import CameraPlaybackModal from "@/components/CameraPlaybackModal.vue";
 import InitialAvatar from "@/components/common/InitialAvatar.vue";
 import RowActionButton from "@/components/common/RowActionButton.vue";
-import { formInputClass, badgeVariantClass } from "@/core/helpers/badge";
+import { formInputClass, badgeVariantClass, cardClass, primaryButtonClass, secondaryButtonClass, lightButtonClass } from "@/core/helpers/badge";
 
 // Interfaces
 interface Site {
@@ -1260,7 +1262,7 @@ watch(() => route.query.addCamera, (val) => {
 .camera-form-modal-container {
   width: 100%;
   max-width: 900px;
-  background: white;
+  background: var(--color-white);
   border-radius: 12px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   overflow: hidden;
@@ -1270,27 +1272,44 @@ watch(() => route.query.addCamera, (val) => {
   margin: auto;
 }
 
+[data-bs-theme="dark"] .camera-form-modal-container {
+  background: var(--color-gray-900);
+}
+
 .camera-form-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-bottom: 1px solid var(--color-gray-200);
+  background: var(--color-gray-100);
+}
+
+[data-bs-theme="dark"] .camera-form-modal-header {
+  border-bottom-color: var(--color-gray-800);
+  background: var(--color-gray-900);
 }
 
 .camera-form-modal-title {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-gray-900);
+}
+
+[data-bs-theme="dark"] .camera-form-modal-title {
+  color: var(--color-gray-100);
 }
 
 .camera-form-modal-body {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
-  background: white;
+  background: var(--color-white);
+}
+
+[data-bs-theme="dark"] .camera-form-modal-body {
+  background: var(--color-gray-900);
 }
 
 /* Modal Animations */
@@ -1329,11 +1348,15 @@ watch(() => route.query.addCamera, (val) => {
 }
 
 .camera-form-modal-body::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: var(--color-gray-300);
   border-radius: 3px;
 }
 
 .camera-form-modal-body::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: var(--color-gray-400);
+}
+
+[data-bs-theme="dark"] .camera-form-modal-body::-webkit-scrollbar-thumb {
+  background: var(--color-gray-700);
 }
 </style>

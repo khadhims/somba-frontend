@@ -1,9 +1,9 @@
 <template>
   <!--begin::NVR Management-->
-  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+  <div :class="cardClass">
     <!--begin::Card header-->
     <div class="flex flex-wrap items-center justify-between gap-4 p-6 pb-0">
-      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+      <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
         {{ t("controlplane.site.nvr.title") }}
       </h3>
 
@@ -57,7 +57,7 @@
           <form @submit.prevent="saveNvr">
             <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
                   {{ t("controlplane.site.nvr.form.fields.site.label") }}
                 </label>
                 <select v-model="nvrForm.siteId" @change="onSiteChange" required :class="formInputClass">
@@ -87,7 +87,7 @@
 
             <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
                   {{ t("controlplane.site.nvr.form.fields.name.label") }}
                 </label>
                 <input
@@ -100,7 +100,7 @@
               </div>
 
               <div>
-                <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
                   {{ t("controlplane.site.nvr.form.fields.endpoint.label") }}
                 </label>
                 <input
@@ -115,7 +115,7 @@
 
             <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
               <div>
-                <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
                   {{ t("controlplane.site.nvr.form.fields.type.label") }}
                 </label>
                 <select v-model="nvrForm.recorder_type" required :class="formInputClass">
@@ -126,7 +126,7 @@
               </div>
 
               <div>
-                <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
                   {{ t("controlplane.site.nvr.form.fields.brand.label") }}
                 </label>
                 <select v-model="nvrForm.brand" required :class="formInputClass">
@@ -222,14 +222,14 @@
               <button
                 type="button"
                 @click="closeForm"
-                class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+                :class="secondaryButtonClass"
               >
                 {{ t("controlplane.site.nvr.form.actions.cancel") }}
               </button>
               <button
                 type="submit"
                 :disabled="isLoading"
-                class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                class="inline-flex items-center gap-2" :class="primaryButtonClass"
               >
                 <span v-if="isLoading" class="inline-flex items-center gap-2">
                   {{ t("controlplane.site.nvr.form.actions.loading") }}
@@ -284,7 +284,7 @@
 
           <button
             @click="showNvrForm = true"
-            class="inline-flex items-center gap-1 rounded-md bg-primary-light px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.98]"
+            :class="lightButtonClass" class="inline-flex items-center gap-1"
           >
             <i class="ki-duotone ki-plus fs-2"></i>
             {{ t("controlplane.site.nvr.toolbar.addButton") }}
@@ -413,7 +413,7 @@ import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import Pagination from '@/components/common/Pagination.vue';
 import ApiService from '@/core/services/ApiService';
 import RowActionButton from "@/components/common/RowActionButton.vue";
-import { formInputClass, badgeVariantClass } from "@/core/helpers/badge";
+import { formInputClass, badgeVariantClass, cardClass, primaryButtonClass, secondaryButtonClass, lightButtonClass } from "@/core/helpers/badge";
 
 // Interfaces
 interface Site {
