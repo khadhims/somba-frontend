@@ -374,8 +374,8 @@ export default defineComponent({
 <style scoped>
 /* Reuse SignIn visual styles for inputs and button */
 .custom-input {
-  background: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid #334155 !important;
+  background: rgba(30, 33, 41, 0.6) !important;
+  border: 1px solid var(--color-gray-700) !important;
   color: white !important;
   border-radius: 12px !important;
   padding: 12px 14px !important;
@@ -383,14 +383,14 @@ export default defineComponent({
   transition: all 0.25s ease !important;
 }
 .custom-input:focus {
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 6px rgba(59,130,246,0.08) !important;
-  background: rgba(15, 23, 42, 0.9) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 6px rgba(27, 132, 255, 0.08) !important;
+  background: rgba(30, 33, 41, 0.9) !important;
 }
 
 /* Neon button matching SignIn */
 .btn-neon {
-  background: linear-gradient(90deg, #2563eb, #4f46e5);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-info));
   color: white;
   border: none;
   border-radius: 12px;
@@ -401,9 +401,9 @@ export default defineComponent({
   position: relative;
   overflow: hidden;
   transition: all 0.3s;
-  box-shadow: 0 6px 22px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 6px 22px rgba(27, 132, 255, 0.35);
 }
-.btn-neon:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(37,99,235,0.5); }
+.btn-neon:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(27, 132, 255, 0.5); }
 .btn-neon::after {
   content: '';
   position: absolute;
