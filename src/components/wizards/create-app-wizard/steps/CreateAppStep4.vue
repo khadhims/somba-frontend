@@ -9,10 +9,11 @@
           class="mb-2 flex items-center text-sm font-medium"
         >
           <span class="after:content-['*'] after:ml-0.5 after:text-danger">Name On Card</span>
-          <i
-            class="fas fa-exclamation-circle ms-2 fs-7"
+          <KTIcon
+            icon-name="information"
+            icon-class="ms-2 fs-7"
             title="Specify a card holder's name"
-          ></i>
+          />
         </label>
         <!--end::Label-->
 
@@ -143,10 +144,11 @@
             class="mb-2 flex items-center text-sm font-medium"
           >
             <span class="after:content-['*'] after:ml-0.5 after:text-danger">CVV</span>
-            <i
-              class="fas fa-exclamation-circle ms-2 fs-7"
+            <KTIcon
+              icon-name="information"
+              icon-class="ms-2 fs-7"
               title="Enter a card CVV code"
-            ></i>
+            />
           </label>
           <!--end::Label-->
 

@@ -23,10 +23,11 @@
         <!--begin::Label-->
         <label class="mb-3 flex items-center text-sm font-medium">
           Specify Team Size
-          <i
-            class="fas fa-exclamation-circle ms-2 fs-7"
+          <KTIcon
+            icon-name="information"
+            icon-class="ms-2 fs-7"
             title="Provide your team size to help us setup your billing"
-          ></i>
+          />
         </label>
         <!--end::Label-->
 
@@ -148,10 +149,11 @@
         <!--begin::Label-->
         <label class="mb-5 flex items-center text-sm font-medium">
           Select Account Plan
-          <i
-            class="fas fa-exclamation-circle ms-2 fs-7"
+          <KTIcon
+            icon-name="information"
+            icon-class="ms-2 fs-7"
             title="Monthly billing will be based on your account plan"
-          ></i>
+          />
         </label>
         <!--end::Label-->
 

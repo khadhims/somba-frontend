@@ -8,10 +8,11 @@
         <!--begin::Title-->
         <h2 class="flex items-center font-bold text-gray-900 dark:text-gray-100">
           Choose Account Type
-          <i
-            class="fas fa-exclamation-circle ms-2 fs-7"
+          <KTIcon
+            icon-name="information"
+            icon-class="ms-2 fs-7"
             title="Billing is issued based on your selected account type"
-          ></i>
+          />
         </h2>
         <!--end::Title-->
 

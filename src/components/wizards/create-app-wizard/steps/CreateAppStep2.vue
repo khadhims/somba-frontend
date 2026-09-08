@@ -7,10 +7,11 @@
         <!--begin::Label-->
         <label class="mb-4 flex items-center text-base font-semibold">
           <span class="after:content-['*'] after:ml-0.5 after:text-danger">Select Framework</span>
-          <i
-            class="fas fa-exclamation-circle ms-2 fs-7"
+          <KTIcon
+            icon-name="information"
+            icon-class="ms-2 fs-7"
             title="Specify your apps framework"
-          ></i>
+          />
         </label>
         <!--end::Label-->
 

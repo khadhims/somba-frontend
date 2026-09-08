@@ -29,10 +29,11 @@
         <label class="mb-4 flex items-center text-base font-semibold">
           <span class="after:content-['*'] after:ml-0.5 after:text-danger">Select Database Engine</span>
 
-          <i
-            class="fas fa-exclamation-circle ms-2 fs-7"
+          <KTIcon
+            icon-name="information"
+            icon-class="ms-2 fs-7"
             title="Select your app database engine"
-          ></i>
+          />
         </label>
         <!--end::Label-->
 
@@ -42,7 +43,7 @@
           <span class="mr-2 flex items-center">
             <!--begin::Icon-->
             <span class="mr-6 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-success-light">
-              <i class="fas fa-database text-success fs-2x"></i>
+              <KTIcon icon-name="data" icon-class="text-success fs-2x" />
             </span>
             <!--end::Icon-->
 
