@@ -20,7 +20,7 @@
                   ? 'bg-success text-white'
                   : 'bg-gray-100 text-gray-500 dark:bg-gray-800'"
             >
-              <i v-if="stepper.stepState(index) === 'completed'" class="fas fa-check"></i>
+              <KTIcon v-if="stepper.stepState(index) === 'completed'" icon-name="check" icon-class="fs-4" />
               <span v-else>{{ index + 1 }}</span>
             </div>
             <!--end::Icon-->

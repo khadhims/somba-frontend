@@ -18,7 +18,8 @@
       <div class="mr-2">
         <button
           type="button"
-          class="mr-3 inline-flex items-center gap-1 rounded-md bg-primary-light px-6 py-3 text-base font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
+          class="mr-3 inline-flex items-center gap-1"
+          :class="lightButtonClass"
           @click="previousStep"
         >
           <KTIcon icon-name="arrow-left" icon-class="fs-4 me-1" />
@@ -31,7 +32,8 @@
       <div>
         <button
           type="button"
-          class="mr-3 inline-flex items-center gap-1 rounded-md bg-primary px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-primary-active"
+          class="mr-3 inline-flex items-center gap-1"
+          :class="primaryButtonClass"
           v-if="stepper.isLastStep.value"
           @click="formSubmit()"
         >
@@ -39,7 +41,7 @@
           <KTIcon icon-name="arrow-right" icon-class="fs-3 ms-2 me-0" />
         </button>
 
-        <button v-else type="submit" class="inline-flex items-center gap-1 rounded-md bg-primary px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-primary-active">
+        <button v-else type="submit" class="inline-flex items-center gap-1" :class="primaryButtonClass">
           Continue
           <KTIcon icon-name="arrow-right" icon-class="fs-4 ms-2 me-0" />
         </button>
@@ -68,7 +70,7 @@ import type {
   ICreateAccount,
 } from "@/components/wizards/create-account-wizard/types";
 import type { Stepper } from "@/composables/useStepper";
-import { swalConfirmButtonClass } from "@/core/helpers/badge";
+import { swalConfirmButtonClass, primaryButtonClass, lightButtonClass } from "@/core/helpers/badge";
 import CreateAccountStep1 from "@/components/wizards/create-account-wizard/steps/CreateAccountStep1.vue";
 import CreateAccountStep2 from "@/components/wizards/create-account-wizard/steps/CreateAccountStep2.vue";
 import CreateAccountStep3 from "@/components/wizards/create-account-wizard/steps/CreateAccountStep3.vue";

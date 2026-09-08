@@ -13,7 +13,8 @@
       <div class="mr-2">
         <button
           type="button"
-          class="mr-3 inline-flex items-center gap-1 rounded-md bg-primary-light px-6 py-3 text-base font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
+          class="mr-3 inline-flex items-center gap-1"
+          :class="lightButtonClass"
           @click="previousStep()"
         >
           <KTIcon icon-name="arrow-left" icon-class="fs-3 me-1" />
@@ -26,7 +27,8 @@
       <div>
         <button
           type="submit"
-          class="inline-flex items-center gap-1 rounded-md bg-primary px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-primary-active"
+          class="inline-flex items-center gap-1"
+          :class="primaryButtonClass"
           v-if="stepper.isLastStep.value"
           @click="formSubmit()"
         >
@@ -34,7 +36,7 @@
           <KTIcon icon-name="arrow-right" icon-class="fs-3 ms-2 me-0" />
         </button>
 
-        <button v-else type="submit" class="inline-flex items-center gap-1 rounded-md bg-primary px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-primary-active">
+        <button v-else type="submit" class="inline-flex items-center gap-1" :class="primaryButtonClass">
           Continue
           <KTIcon icon-name="arrow-right" icon-class="fs-3 ms-1 me-0" />
         </button>
@@ -60,7 +62,7 @@ import type {
   IStep4,
 } from "@/components/wizards/create-app-wizard/types";
 import type { Stepper } from "@/composables/useStepper";
-import { swalConfirmButtonClass } from "@/core/helpers/badge";
+import { swalConfirmButtonClass, primaryButtonClass, lightButtonClass } from "@/core/helpers/badge";
 import CreateAppStep1 from "@/components/wizards/create-app-wizard/steps/CreateAppStep1.vue";
 import CreateAppStep2 from "@/components/wizards/create-app-wizard/steps/CreateAppStep2.vue";
 import CreateAppStep3 from "@/components/wizards/create-app-wizard/steps/CreateAppStep3.vue";

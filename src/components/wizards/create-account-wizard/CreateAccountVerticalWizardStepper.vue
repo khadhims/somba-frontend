@@ -6,7 +6,7 @@
   >
     <!--begin::Aside-->
     <div
-      class="flex w-full flex-none justify-center rounded-lg bg-white xl:w-[300px] xl:justify-start 2xl:w-[400px] xl:mr-9 dark:bg-gray-900"
+      class="flex w-full flex-none justify-center rounded-xl bg-white xl:w-[300px] xl:justify-start 2xl:w-[400px] xl:mr-9 dark:bg-gray-900"
     >
       <!--begin::Wrapper-->
       <div class="px-6 py-20 lg:px-10 2xl:px-15">
@@ -24,7 +24,7 @@
                     ? 'bg-success text-white'
                     : 'bg-gray-100 text-gray-500 dark:bg-gray-800'"
               >
-                <i v-if="stepper.stepState(index) === 'completed'" class="fas fa-check"></i>
+                <KTIcon v-if="stepper.stepState(index) === 'completed'" icon-name="check" icon-class="fs-4" />
                 <span v-else>{{ index + 1 }}</span>
               </div>
               <!--end::Icon-->
@@ -56,7 +56,7 @@
     <!--begin::Aside-->
 
     <!--begin::Content-->
-    <div class="flex flex-1 items-center justify-center rounded-lg bg-white dark:bg-gray-900">
+    <div class="flex flex-1 items-center justify-center rounded-xl bg-white dark:bg-gray-900">
       <CreateAccountWizardForm
         :stepper="stepper"
         :close-hadler="props.closeHadler"
