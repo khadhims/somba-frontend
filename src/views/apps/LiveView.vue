@@ -1,9 +1,9 @@
 <template>
   <!-- Live Camera Feed header -->
   <div
-    class="mb-4 flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+    class="mb-4 flex items-center justify-between p-4" :class="cardClass"
   >
-    <h4 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+    <h4 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
       {{ t("appsLiveView.header.title") }}
     </h4>
 
@@ -29,7 +29,7 @@
   <!-- Main layout: left = camera grid, right = camera list -->
   <div class="grid grid-cols-1 gap-4 xl:grid-cols-12">
     <div class="xl:col-span-9">
-      <div class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+      <div class="p-3" :class="cardClass">
         <div class="grid gap-3" :class="gridClasses">
           <div
             v-for="(camera, index) in filteredCameras"
@@ -111,14 +111,14 @@
     </div>
 
     <div class="xl:col-span-3">
-      <div class="flex h-full flex-col rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+      <div class="flex h-full flex-col" :class="cardClass">
         <button
           type="button"
           @click="toggleSiteList"
           class="flex cursor-pointer items-center justify-between p-4 text-left"
         >
           <div class="overflow-hidden">
-            <h3 class="m-0 truncate text-lg font-bold text-gray-900 dark:text-gray-100">
+            <h3 class="m-0 truncate text-lg font-semibold text-gray-900 dark:text-gray-100">
               {{ selectedSiteName }}
             </h3>
             <div class="text-sm text-gray-500">({{ totalCameras }} cameras)</div>
@@ -209,6 +209,7 @@
 </template>
 
 <script setup lang="ts">
+import { cardClass } from "@/core/helpers/badge";
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { useRoute } from 'vue-router';
 import { useI18n } from "vue-i18n";

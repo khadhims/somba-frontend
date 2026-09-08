@@ -2,11 +2,11 @@
   <!--begin::Team Overview-->
   <!--begin::Organization & Account Switcher-->
   <div
-    class="mb-5 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+    class="mb-5 p-4" :class="cardClass"
   >
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
-        <h4 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        <h4 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
           {{ t("controlplane.team.header.title") }}
         </h4>
         <p class="m-0 text-gray-500">
@@ -109,10 +109,10 @@
   <!--end::Error Alert-->
 
   <!--begin::Teams List-->
-  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+  <div :class="cardClass">
     <!--begin::Card header-->
     <div class="flex flex-wrap items-center justify-between gap-4 p-6 pb-0">
-      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+      <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
         {{ t("controlplane.team.toolbar.title") }}
       </h3>
 
@@ -293,14 +293,14 @@
         <button
           type="button"
           @click="addTeamDialog?.close()"
-          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+          :class="secondaryButtonClass"
         >
           {{ t("controlplane.team.modals.add.cancel") }}
         </button>
         <button
           type="submit"
           :disabled="creating"
-          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex items-center gap-2" :class="primaryButtonClass"
         >
           <span
             v-if="creating"
@@ -345,14 +345,14 @@
         <button
           type="button"
           @click="closeEditTeamDialog"
-          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+          :class="secondaryButtonClass"
         >
           {{ t("controlplane.team.modals.edit.cancel") }}
         </button>
         <button
           type="submit"
           :disabled="editing"
-          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex items-center gap-2" :class="primaryButtonClass"
         >
           <span
             v-if="editing"
@@ -390,6 +390,7 @@
 </template>
 
 <script setup lang="ts">
+import { cardClass, secondaryButtonClass, primaryButtonClass } from "@/core/helpers/badge";
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'

@@ -1,7 +1,7 @@
 <template>
   <!--begin::Events & Alerts Settings-->
-  <div class="mb-5 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-    <h4 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+  <div class="mb-5 p-4" :class="cardClass">
+    <h4 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
       {{ t("appsEventsAlerts.settings.header.title") }}
     </h4>
     <p class="m-0 text-gray-500">
@@ -12,9 +12,9 @@
   <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
     <!--begin::Event Detection Settings-->
     <div>
-      <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+      <div :class="cardClass">
         <div class="p-6 pb-0">
-          <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+          <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ t("appsEventsAlerts.settings.eventDetection.title") }}
           </h3>
         </div>
@@ -144,7 +144,7 @@
               <button
                 type="submit"
                 :disabled="savingEventSettings"
-                class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                class="inline-flex items-center gap-2" :class="primaryButtonClass"
               >
                 <span v-if="savingEventSettings" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                 {{ savingEventSettings ? t("appsEventsAlerts.actions.saving") : t("appsEventsAlerts.settings.eventDetection.saveButton") }}
@@ -158,9 +158,9 @@
 
     <!--begin::Alert Notifications-->
     <div>
-      <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+      <div :class="cardClass">
         <div class="p-6 pb-0">
-          <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+          <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ t("appsEventsAlerts.settings.notifications.title") }}
           </h3>
         </div>
@@ -278,7 +278,7 @@
               <button
                 type="submit"
                 :disabled="savingNotificationSettings"
-                class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                class="inline-flex items-center gap-2" :class="primaryButtonClass"
               >
                 <span v-if="savingNotificationSettings" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                 {{ savingNotificationSettings ? t("appsEventsAlerts.actions.saving") : t("appsEventsAlerts.settings.notifications.saveButton") }}
@@ -293,9 +293,9 @@
 
   <!--begin::Advanced Settings-->
   <div class="mt-5">
-    <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+    <div :class="cardClass">
       <div class="p-6 pb-0">
-        <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
           {{ t("appsEventsAlerts.settings.advanced.title") }}
         </h3>
       </div>
@@ -335,7 +335,7 @@
             type="button"
             @click="saveAdvancedSettings"
             :disabled="savingAdvancedSettings"
-            class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+            class="inline-flex items-center gap-2" :class="primaryButtonClass"
           >
             <span v-if="savingAdvancedSettings" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
             {{ savingAdvancedSettings ? t("appsEventsAlerts.actions.saving") : t("appsEventsAlerts.settings.advanced.saveButton") }}
@@ -351,7 +351,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import ApiService from "@/core/services/ApiService";
-import { formInputClass, badgeVariantClass } from "@/core/helpers/badge";
+import { formInputClass, badgeVariantClass, cardClass, primaryButtonClass } from "@/core/helpers/badge";
 import ToggleSwitch from "@/components/common/ToggleSwitch.vue";
 
 // Interface definitions

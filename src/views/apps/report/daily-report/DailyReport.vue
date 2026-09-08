@@ -1,9 +1,9 @@
 <template>
   <!--begin::Report Harian Overview-->
-  <div class="mb-5 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+  <div class="mb-5 p-4" :class="cardClass">
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
-        <h4 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">Report Harian Dapur Makassar</h4>
+        <h4 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">Report Harian Dapur Makassar</h4>
         <p class="m-0 text-gray-500">
           Laporan distribusi makanan area Pantai Losari &amp; sekitarnya
         </p>
@@ -46,7 +46,7 @@
   <!--begin::Statistics Cards-->
   <div class="mb-5 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
     <!--begin::Col - Total Report Hari Ini-->
-    <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+    <div :class="cardClass">
       <div class="p-6">
         <div class="flex items-center">
           <div class="mr-3 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-primary-light">
@@ -75,7 +75,7 @@
     <!--end::Col-->
 
     <!--begin::Col - Total Porsi-->
-    <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+    <div :class="cardClass">
       <div class="p-6">
         <div class="flex items-center">
           <div class="mr-3 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-success-light">
@@ -102,7 +102,7 @@
     <!--end::Col-->
 
     <!--begin::Col - Sekolah Dilayani-->
-    <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+    <div :class="cardClass">
       <div class="p-6">
         <div class="flex items-center">
           <div class="mr-3 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-warning-light">
@@ -131,7 +131,7 @@
     <!--end::Col-->
 
     <!--begin::Col - Driver Aktif-->
-    <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+    <div :class="cardClass">
       <div class="p-6">
         <div class="flex items-center">
           <div class="mr-3 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-info-light">
@@ -164,10 +164,10 @@
   <!--end::Statistics Cards-->
 
   <!--begin::Report List-->
-  <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+  <div :class="cardClass">
     <!--begin::Card header-->
     <div class="flex flex-wrap items-center justify-between gap-4 p-6 pb-0">
-      <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">Daftar Report Harian</h3>
+      <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">Daftar Report Harian</h3>
 
       <div class="flex flex-wrap items-center gap-3">
         <!--begin::Items per page-->
@@ -333,15 +333,15 @@
     <form @submit.prevent="saveReport">
       <div class="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
         <div>
-          <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Tanggal</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">Tanggal</label>
           <input type="date" v-model="formData.tanggal" required :class="formInputClass" />
         </div>
         <div>
-          <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Jam Kirim</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">Jam Kirim</label>
           <input type="time" v-model="formData.jam" required :class="formInputClass" />
         </div>
         <div class="sm:col-span-2">
-          <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Tujuan Sekolah</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">Tujuan Sekolah</label>
           <input
             type="text"
             v-model="formData.tujuan_sekolah"
@@ -351,7 +351,7 @@
           />
         </div>
         <div>
-          <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Driver</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">Driver</label>
           <input
             type="text"
             v-model="formData.driver"
@@ -361,7 +361,7 @@
           />
         </div>
         <div>
-          <label class="required mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Total Porsi</label>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">Total Porsi</label>
           <input
             type="number"
             v-model.number="formData.total_porsi"
@@ -385,14 +385,14 @@
         <button
           type="button"
           @click="closeModal"
-          class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+          :class="secondaryButtonClass"
         >
           Batal
         </button>
         <button
           type="submit"
           :disabled="isModalLoading"
-          class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex items-center gap-2" :class="primaryButtonClass"
         >
           <span
             v-if="isModalLoading"
@@ -472,7 +472,7 @@
       <button
         type="button"
         @click="closeViewModal"
-        class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+        :class="secondaryButtonClass"
       >
         Tutup
       </button>
@@ -521,7 +521,7 @@
 
       <form @submit.prevent="saveTargetSettings">
         <div class="mb-4">
-          <label class="required mb-2 flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300">
+          <label class="mb-2 flex items-center gap-1 text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
             Target Report Harian
             <i class="ki-duotone ki-information-5 fs-6 text-gray-500" title="Jumlah target report yang harus dibuat per hari">
               <span class="path1"></span>
@@ -545,7 +545,7 @@
         </div>
 
         <div class="mb-4">
-          <label class="required mb-2 flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300">
+          <label class="mb-2 flex items-center gap-1 text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300">
             Target Sekolah
             <i class="ki-duotone ki-information-5 fs-6 text-gray-500" title="Jumlah target sekolah yang harus dilayani per hari">
               <span class="path1"></span>
@@ -597,7 +597,7 @@
           <button
             type="button"
             @click="closeTargetModal"
-            class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+            :class="secondaryButtonClass"
           >
             Batal
           </button>
@@ -630,7 +630,7 @@ import Pagination from '@/components/common/Pagination.vue';
 import ApiService from "@/core/services/ApiService";
 import Swal from "sweetalert2";
 import RowActionButton from "@/components/common/RowActionButton.vue";
-import { formInputClass, badgeVariantClass } from "@/core/helpers/badge";
+import { formInputClass, badgeVariantClass, cardClass, secondaryButtonClass, primaryButtonClass } from "@/core/helpers/badge";
 
 // Interface definitions
 interface ReportHarian {

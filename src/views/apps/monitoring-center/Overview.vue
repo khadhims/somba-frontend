@@ -1,9 +1,9 @@
 <template>
   <!--begin::Monitoring Center Overview-->
-  <div class="mb-5 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+  <div class="mb-5 p-4" :class="cardClass">
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
-        <h4 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+        <h4 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
           {{ t("appsMonitoringCenter.overview.header.title") }}
         </h4>
         <p class="m-0 text-gray-500">
@@ -86,9 +86,9 @@
   <div class="mb-8 grid grid-cols-1 gap-5 xl:grid-cols-12">
     <!--begin::Real-time Charts-->
     <div class="xl:col-span-8">
-      <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+      <div :class="cardClass">
         <div class="flex flex-wrap items-center justify-between gap-3 p-6 pb-0">
-          <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+          <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ t("appsMonitoringCenter.overview.charts.systemPerformance.title") }}
           </h3>
           <div class="inline-flex overflow-hidden rounded-md border border-gray-300 dark:border-gray-700" role="group">
@@ -126,9 +126,9 @@
     </div>
 
     <div class="xl:col-span-4">
-      <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+      <div :class="cardClass">
         <div class="p-6 pb-0">
-          <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+          <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ t("appsMonitoringCenter.overview.charts.recentActivities.title") }}
           </h3>
         </div>
@@ -165,9 +165,9 @@
   <div class="mb-8 grid grid-cols-1 gap-5 xl:grid-cols-2">
     <!--begin::Device Status-->
     <div>
-      <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+      <div :class="cardClass">
         <div class="p-6 pb-0">
-          <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+          <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ t("appsMonitoringCenter.overview.tables.deviceStatus.title") }}
           </h3>
         </div>
@@ -243,9 +243,9 @@
 
     <!--begin::Alert Summary-->
     <div>
-      <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+      <div :class="cardClass">
         <div class="p-6 pb-0">
-          <h3 class="m-0 text-lg font-bold text-gray-900 dark:text-gray-100">
+          <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ t("appsMonitoringCenter.overview.tables.alertSummary.title") }}
           </h3>
         </div>
@@ -306,7 +306,7 @@ import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
 import RowActionButton from "@/components/common/RowActionButton.vue";
-import { badgeVariantClass } from "@/core/helpers/badge";
+import { badgeVariantClass, cardClass } from "@/core/helpers/badge";
 
 const { t } = useI18n();
 
