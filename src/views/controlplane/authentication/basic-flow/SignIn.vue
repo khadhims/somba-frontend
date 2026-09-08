@@ -294,7 +294,7 @@ export default defineComponent({
   left: 50%;
   width: 100vw;
   height: 100vh;
-  background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.15), transparent 60%);
+  background: radial-gradient(circle at 50% 50%, rgba(27, 132, 255, 0.15), transparent 60%);
   transform: translate(-50%, -50%);
   z-index: 0;
   pointer-events: none;
@@ -379,15 +379,15 @@ export default defineComponent({
   padding: 10px;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.06);
-  box-shadow: 0 8px 30px rgba(14,165,233,0.06), 0 2px 6px rgba(0,0,0,0.6);
+  box-shadow: 0 8px 30px rgba(27, 132, 255, 0.06), 0 2px 6px rgba(0,0,0,0.6);
   backdrop-filter: blur(6px);
 }
 
 .brand-logo img {
   height: 56px;
   display: block;
-  filter: drop-shadow(0 10px 30px rgba(14,165,233,0.22)) saturate(1.15) contrast(1.15);
-  -webkit-filter: drop-shadow(0 10px 30px rgba(14,165,233,0.22)) saturate(1.15) contrast(1.15);
+  filter: drop-shadow(0 10px 30px rgba(27, 132, 255, 0.22)) saturate(1.15) contrast(1.15);
+  -webkit-filter: drop-shadow(0 10px 30px rgba(27, 132, 255, 0.22)) saturate(1.15) contrast(1.15);
 }
 
 .brand-logo::after {
@@ -400,7 +400,7 @@ export default defineComponent({
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(14,165,233,0.08), transparent 40%);
+  background: radial-gradient(circle, rgba(27, 132, 255, 0.08), transparent 40%);
   z-index: 10;
   pointer-events: none;
 }
@@ -440,12 +440,12 @@ export default defineComponent({
 .camera-mount {
   width: 140px;
   height: 140px;
-  background: #0f172a;
+  background: var(--color-dark-active);
   border-radius: 50%;
   box-shadow: 
     inset 0 0 30px rgba(0,0,0,0.9),
-    0 0 0 2px #334155,
-    0 0 0 10px #1e293b;
+    0 0 0 2px var(--color-gray-700),
+    0 0 0 10px var(--color-dark);
   position: absolute;
   top: 50%;
   left: 50%;
@@ -455,7 +455,7 @@ export default defineComponent({
 .camera-head {
   width: 160px;
   height: 160px;
-  background: radial-gradient(circle at 30% 30%, #475569, #0f172a);
+  background: radial-gradient(circle at 30% 30%, var(--color-gray-600), var(--color-dark-active));
   border-radius: 50%;
   position: relative;
   box-shadow: 
@@ -473,7 +473,7 @@ export default defineComponent({
   height: 100px;
   background: #000;
   border-radius: 50%;
-  border: 5px solid #334155;
+  border: 5px solid var(--color-gray-700);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -484,10 +484,10 @@ export default defineComponent({
 .camera-lens-glass {
   width: 60px;
   height: 60px;
-  background: radial-gradient(circle at 50% 50%, #0ea5e9, #1e3a8a 60%, #000 100%);
+  background: radial-gradient(circle at 50% 50%, var(--color-primary), var(--color-primary-active) 60%, #000 100%);
   border-radius: 50%;
   position: relative;
-  box-shadow: 0 0 25px #0ea5e9;
+  box-shadow: 0 0 25px var(--color-primary);
   overflow: hidden;
 }
 
@@ -519,9 +519,9 @@ export default defineComponent({
   right: 30px;
   width: 8px;
   height: 8px;
-  background: #ef4444;
+  background: var(--color-danger);
   border-radius: 50%;
-  box-shadow: 0 0 10px #ef4444;
+  box-shadow: 0 0 10px var(--color-danger);
   animation: blink 2s infinite;
   transform: translateZ(20px);
 }
@@ -530,9 +530,9 @@ export default defineComponent({
   position: absolute;
   width: 4px;
   height: 4px;
-  background: #334155;
+  background: var(--color-gray-700);
   border-radius: 50%;
-  box-shadow: 0 0 2px #ef4444;
+  box-shadow: 0 0 2px var(--color-danger);
 }
 .ir-sensors span:nth-child(1) { bottom: 25px; left: 50%; }
 .ir-sensors span:nth-child(2) { bottom: 35px; left: 35%; }
@@ -551,9 +551,9 @@ export default defineComponent({
   width: 400px;
   height: 400px;
   background: conic-gradient(from 180deg at 50% 50%, 
-    rgba(14, 165, 233, 0) 0deg, 
-    rgba(14, 165, 233, 0.05) 20deg, 
-    rgba(14, 165, 233, 0) 40deg);
+    rgba(27, 132, 255, 0) 0deg, 
+    rgba(27, 132, 255, 0.05) 20deg, 
+    rgba(27, 132, 255, 0) 40deg);
   transform-origin: center;
   transform: translate(-50%, -50%) rotate(180deg);
   pointer-events: none;
@@ -581,7 +581,7 @@ export default defineComponent({
   font-weight: 900;
   line-height: 1;
   margin-bottom: 10px;
-  background: linear-gradient(to right, #fff, #94a3b8);
+  background: linear-gradient(to right, #fff, var(--color-gray-400));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -592,7 +592,7 @@ export default defineComponent({
 
 .sub-text {
   font-size: 1rem;
-  color: #0ea5e9;
+  color: var(--color-primary);
   font-family: monospace;
   letter-spacing: 2px;
   animation: textSlideIn 1s ease-out 0.7s forwards;
@@ -632,7 +632,7 @@ export default defineComponent({
 }
 
 .custom-label {
-  color: #94a3b8;
+  color: var(--color-gray-400);
   font-size: 0.85rem;
   margin-bottom: 8px;
   display: block;
@@ -649,14 +649,14 @@ export default defineComponent({
   left: 15px;
   top: 50%;
   transform: translateY(-50%);
-  color: #64748b;
+  color: var(--color-gray-500);
   font-size: 1.1rem;
   transition: color 0.3s;
 }
 
 .custom-input {
-  background: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid #334155 !important;
+  background: rgba(30, 33, 41, 0.6) !important;
+  border: 1px solid var(--color-gray-700) !important;
   color: white !important;
   border-radius: 12px !important;
   padding: 14px 14px 14px 45px !important;
@@ -665,31 +665,31 @@ export default defineComponent({
 }
 
 .custom-input:focus {
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
-  background: rgba(15, 23, 42, 0.9) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 4px rgba(27, 132, 255, 0.15) !important;
+  background: rgba(30, 33, 41, 0.9) !important;
 }
 
 .custom-input:focus + .input-icon,
 .input-wrapper:focus-within .input-icon {
-  color: #3b82f6;
+  color: var(--color-primary);
 }
 
 .forgot-link {
-  color: #3b82f6;
+  color: var(--color-primary);
   font-size: 0.85rem;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .forgot-link:hover {
-  color: #60a5fa;
+  color: var(--color-primary-light);
   text-decoration: underline;
 }
 
 /* Neon Button */
 .btn-neon {
-  background: linear-gradient(90deg, #2563eb, #4f46e5);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-info));
   color: white;
   border: none;
   border-radius: 12px;
@@ -700,13 +700,13 @@ export default defineComponent({
   position: relative;
   overflow: hidden;
   transition: all 0.3s;
-  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 4px 20px rgba(27, 132, 255, 0.4);
 }
 
 .btn-neon:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(37, 99, 235, 0.6);
-  background: linear-gradient(90deg, #1d4ed8, #4338ca);
+  box-shadow: 0 8px 30px rgba(27, 132, 255, 0.6);
+  background: linear-gradient(90deg, var(--color-primary-active), var(--color-info-active));
 }
 
 .btn-neon::after {
@@ -730,7 +730,7 @@ export default defineComponent({
   align-items: center;
   text-align: center;
   margin: 30px 0;
-  color: #64748b;
+  color: var(--color-gray-500);
   font-size: 0.8rem;
 }
 
@@ -738,7 +738,7 @@ export default defineComponent({
 .divider::after {
   content: '';
   flex: 1;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--color-gray-700);
 }
 
 .divider span {
@@ -755,9 +755,9 @@ export default defineComponent({
   width: 45px;
   height: 45px;
   border-radius: 12px;
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid #334155;
-  color: #94a3b8;
+  background: rgba(30, 33, 41, 0.8);
+  border: 1px solid var(--color-gray-700);
+  color: var(--color-gray-400);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -767,7 +767,7 @@ export default defineComponent({
 }
 
 .social-icon:hover {
-  background: #334155;
+  background: var(--color-gray-700);
   color: white;
   transform: translateY(-3px);
 }
@@ -777,17 +777,17 @@ export default defineComponent({
 .social-icon.facebook:hover { color: #1877f2; border-color: #1877f2; }
 
 .text-muted {
-  color: #64748b;
+  color: var(--color-gray-500);
 }
 
 .link-accent {
-  color: #3b82f6;
+  color: var(--color-primary);
   font-weight: 600;
   text-decoration: none;
 }
 
 .link-accent:hover {
-  color: #60a5fa;
+  color: var(--color-primary-light);
 }
 
 /* Responsive rules */
