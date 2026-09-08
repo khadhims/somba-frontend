@@ -3,7 +3,7 @@
     <!--begin::Content-->
     <div class="flex flex-col items-center p-10 text-center">
       <!--begin::Wrapper-->
-      <div class="w-full max-w-2xl rounded-lg bg-white py-5 dark:bg-gray-900">
+      <div class="w-full max-w-2xl rounded-xl bg-white py-5 shadow-sm dark:bg-gray-900 dark:shadow-none">
         <div class="px-4 py-15 lg:py-20">
           <!--begin::Title-->
           <h1 class="mb-4 text-4xl font-extrabold text-gray-900 dark:text-gray-100">Oops!</h1>
@@ -28,7 +28,8 @@
           <!--begin::Link-->
           <router-link
             to="/"
-            class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98]"
+            class="inline-flex items-center"
+            :class="primaryButtonClass"
           >
             Return Home
           </router-link>
@@ -47,6 +48,7 @@ import { defineComponent, onMounted } from "vue";
 import LayoutService from "@/core/services/LayoutService";
 import { useBodyStore } from "@/stores/body";
 import { themeMode } from "@/layouts/default-layout/config/helper";
+import { primaryButtonClass } from "@/core/helpers/badge";
 
 export default defineComponent({
   name: "error-404",
@@ -73,6 +75,7 @@ export default defineComponent({
       getIllustrationsPath,
       bgImage,
       getAssetPath,
+      primaryButtonClass,
     };
   },
 });
