@@ -1,24 +1,19 @@
 <template>
   <!--begin::Campaigns toolbar-->
-  <div class="d-flex flex-wrap flex-stack my-5">
+  <div class="flex flex-wrap items-center justify-between my-5">
     <!--begin::Title-->
-    <h2 class="fw-semibold my-2">
+    <h2 class="my-2 font-semibold">
       Campaigns
-      <span class="fs-4 text-gray-500 ms-1">30 Days</span>
+      <span class="ml-1 text-lg text-gray-500">30 Days</span>
     </h2>
     <!--end::Title-->
 
     <!--begin::Controls-->
-    <div class="d-flex align-items-center my-2">
+    <div class="my-2 flex items-center">
       <!--begin::Select wrapper-->
-      <div class="w-100px me-5">
+      <div class="mr-5 w-[100px]">
         <!--begin::Select-->
-        <select
-          name="status"
-          data-control="select2"
-          data-hide-search="true"
-          class="form-select form-select-white form-select-sm"
-        >
+        <select name="status" :class="[formInputClass, 'py-1 text-xs']">
           <option value="1" selected>30 Days</option>
           <option value="2">90 Days</option>
           <option value="3">6 Months</option>
@@ -29,8 +24,7 @@
       <!--end::Select wrapper-->
 
       <button
-        class="btn btn-primary btn-sm"
-        data-bs-toggle="tooltip"
+        class="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-primary-active"
         title="Coming soon"
       >
         Plan Campaigns
@@ -39,175 +33,138 @@
     <!--end::Controls-->
   </div>
   <!--end::Campaigns toolbar-->
-  <div class="row g-6 g-xl-9">
-    <div class="col-sm-6 col-xl-4">
-      <div class="card h-100">
-        <Card2
-          card-classes="h-100"
-          title="Twitch Posts"
-          :icon="getAssetPath('media/svg/brand-logos/twitch.svg')"
-          content="$500.00"
-          color="success"
-          arrow="arrow-up-right"
-          footer-data="+40.5%"
-          footer-text="more impressions"
-          indicator-value="0.5%"
-          indicator-label="MRR"
-        ></Card2>
-      </div>
-    </div>
-    <div class="col-sm-6 col-xl-4">
-      <div class="card h-100">
-        <Card2
-          card-classes="h-100"
-          title="Twitter Followers"
-          :icon="getAssetPath('media/svg/brand-logos/twitter.svg')"
-          content="807k"
-          color="success"
-          arrow="arrow-up-right"
-          footer-data="+17.62%"
-          footer-text="Followers growth"
-          indicator-label="New trials"
-          indicator-value="5%"
-        ></Card2>
-      </div>
-    </div>
-    <div class="col-sm-6 col-xl-4">
-      <div class="card h-100">
-        <Card2
-          card-classes="h-100"
-          title="Spotify Listeners"
-          :icon="getAssetPath('media/svg/brand-logos/spotify.svg')"
-          content="1,073"
-          color="danger"
-          arrow="arrow-down-right"
-          footer-data="+10.45%"
-          footer-text="Less comments than usual"
-          indicator-label="Impressions"
-          indicator-value="40%"
-        ></Card2>
-      </div>
-    </div>
-    <div class="col-sm-6 col-xl-4">
-      <div class="card h-100">
-        <Card2
-          card-classes="h-100"
-          title="Pinterest Posts"
-          :icon="getAssetPath('media/svg/brand-logos/pinterest-p.svg')"
-          content="97"
-          color="success"
-          arrow="arrow-up-right"
-          footer-data="+26.1%"
-          footer-text="More posts"
-          indicator-label="Spend"
-          indicator-value="10%"
-        ></Card2>
-      </div>
-    </div>
-    <div class="col-sm-6 col-xl-4">
-      <div class="card h-100">
-        <Card2
-          card-classes="h-100"
-          title="Github Contributes"
-          :icon="getAssetPath('media/svg/brand-logos/github.svg')"
-          content="4,109"
-          color="danger"
-          arrow="arrow-down-right"
-          footer-data="+32.8%"
-          footer-text="Less contributions"
-          indicator-label="Dispute"
-          indicator-value="40%"
-        ></Card2>
-      </div>
-    </div>
-    <div class="col-sm-6 col-xl-4">
-      <div class="card h-100">
-        <Card2
-          card-classes="h-100"
-          title="Youtube Subscribers"
-          :icon="getAssetPath('media/svg/brand-logos/youtube-3.svg')"
-          content="354"
-          color="success"
-          arrow="arrow-up-right"
-          footer-data="+29.45%"
-          footer-text="Subscribers growth"
-          indicator-label="Subscribers"
-          indicator-value="40%"
-        ></Card2>
-      </div>
-    </div>
-    <div class="col-sm-6 col-xl-4">
-      <div class="card h-100">
-        <Card2
-          card-classes="h-100"
-          title="Telegram Posts"
-          :icon="getAssetPath('media/svg/brand-logos/telegram.svg')"
-          content="566"
-          color="success"
-          arrow="arrow-up-right"
-          footer-data="+11.4%"
-          footer-text="more clicks"
-          indicator-label="Profit"
-          indicator-value="40%"
-        ></Card2>
-      </div>
-    </div>
-    <div class="col-sm-6 col-xl-4">
-      <div class="card h-100">
-        <Card2
-          card-classes="h-100"
-          title="Reddit Awards"
-          :icon="getAssetPath('media/svg/brand-logos/reddit.svg')"
-          content="2.1M"
-          color="success"
-          arrow="arrow-down-right"
-          footer-data="-46.7%"
-          footer-text="more adds"
-          indicator-label="Retention"
-          indicator-value="0.0%"
-        ></Card2>
-      </div>
-    </div>
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 xl:gap-9">
+    <Card2
+      card-classes="h-full"
+      title="Twitch Posts"
+      :icon="getAssetPath('media/svg/brand-logos/twitch.svg')"
+      content="$500.00"
+      color="success"
+      arrow="arrow-up-right"
+      footer-data="+40.5%"
+      footer-text="more impressions"
+      indicator-value="0.5%"
+      indicator-label="MRR"
+    ></Card2>
+    <Card2
+      card-classes="h-full"
+      title="Twitter Followers"
+      :icon="getAssetPath('media/svg/brand-logos/twitter.svg')"
+      content="807k"
+      color="success"
+      arrow="arrow-up-right"
+      footer-data="+17.62%"
+      footer-text="Followers growth"
+      indicator-label="New trials"
+      indicator-value="5%"
+    ></Card2>
+    <Card2
+      card-classes="h-full"
+      title="Spotify Listeners"
+      :icon="getAssetPath('media/svg/brand-logos/spotify.svg')"
+      content="1,073"
+      color="danger"
+      arrow="arrow-down-right"
+      footer-data="+10.45%"
+      footer-text="Less comments than usual"
+      indicator-label="Impressions"
+      indicator-value="40%"
+    ></Card2>
+    <Card2
+      card-classes="h-full"
+      title="Pinterest Posts"
+      :icon="getAssetPath('media/svg/brand-logos/pinterest-p.svg')"
+      content="97"
+      color="success"
+      arrow="arrow-up-right"
+      footer-data="+26.1%"
+      footer-text="More posts"
+      indicator-label="Spend"
+      indicator-value="10%"
+    ></Card2>
+    <Card2
+      card-classes="h-full"
+      title="Github Contributes"
+      :icon="getAssetPath('media/svg/brand-logos/github.svg')"
+      content="4,109"
+      color="danger"
+      arrow="arrow-down-right"
+      footer-data="+32.8%"
+      footer-text="Less contributions"
+      indicator-label="Dispute"
+      indicator-value="40%"
+    ></Card2>
+    <Card2
+      card-classes="h-full"
+      title="Youtube Subscribers"
+      :icon="getAssetPath('media/svg/brand-logos/youtube-3.svg')"
+      content="354"
+      color="success"
+      arrow="arrow-up-right"
+      footer-data="+29.45%"
+      footer-text="Subscribers growth"
+      indicator-label="Subscribers"
+      indicator-value="40%"
+    ></Card2>
+    <Card2
+      card-classes="h-full"
+      title="Telegram Posts"
+      :icon="getAssetPath('media/svg/brand-logos/telegram.svg')"
+      content="566"
+      color="success"
+      arrow="arrow-up-right"
+      footer-data="+11.4%"
+      footer-text="more clicks"
+      indicator-label="Profit"
+      indicator-value="40%"
+    ></Card2>
+    <Card2
+      card-classes="h-full"
+      title="Reddit Awards"
+      :icon="getAssetPath('media/svg/brand-logos/reddit.svg')"
+      content="2.1M"
+      color="success"
+      arrow="arrow-down-right"
+      footer-data="-46.7%"
+      footer-text="more adds"
+      indicator-label="Retention"
+      indicator-value="0.0%"
+    ></Card2>
   </div>
 
   <!--begin::Pagination-->
-  <div class="d-flex flex-stack flex-wrap pt-10">
-    <div class="fs-6 fw-semibold text-gray-700">
+  <div class="flex flex-wrap items-center justify-between pt-10">
+    <div class="text-sm font-semibold text-gray-700 dark:text-gray-300">
       Showing 1 to 10 of 50 entries
     </div>
 
     <!--begin::Pages-->
-    <ul class="pagination">
-      <li class="page-item previous">
-        <a href="#" class="page-link"><i class="previous"></i></a>
+    <ul class="flex items-center gap-1">
+      <li>
+        <a
+          href="#"
+          class="flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+          >‹</a
+        >
       </li>
-
-      <li class="page-item active">
-        <a href="#" class="page-link">1</a>
+      <li v-for="p in 6" :key="p">
+        <a
+          href="#"
+          class="flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-medium transition-colors"
+          :class="
+            p === 1
+              ? 'bg-primary text-white'
+              : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
+          "
+          >{{ p }}</a
+        >
       </li>
-
-      <li class="page-item">
-        <a href="#" class="page-link">2</a>
-      </li>
-
-      <li class="page-item">
-        <a href="#" class="page-link">3</a>
-      </li>
-
-      <li class="page-item">
-        <a href="#" class="page-link">4</a>
-      </li>
-
-      <li class="page-item">
-        <a href="#" class="page-link">5</a>
-      </li>
-
-      <li class="page-item">
-        <a href="#" class="page-link">6</a>
-      </li>
-
-      <li class="page-item next">
-        <a href="#" class="page-link"><i class="next"></i></a>
+      <li>
+        <a
+          href="#"
+          class="flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+          >›</a
+        >
       </li>
     </ul>
     <!--end::Pages-->
@@ -219,6 +176,7 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent } from "vue";
 import Card2 from "@/components/cards/Card2.vue";
+import { formInputClass } from "@/core/helpers/badge";
 
 export default defineComponent({
   name: "profile-campaigns",
@@ -228,6 +186,7 @@ export default defineComponent({
   setup() {
     return {
       getAssetPath,
+      formInputClass,
     };
   },
 });

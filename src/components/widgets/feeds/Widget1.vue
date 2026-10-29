@@ -1,25 +1,31 @@
 <template>
   <!--begin::Feeds Widget 1-->
-  <div class="card" :class="widgetClasses">
+  <div class="rounded-lg bg-white dark:bg-gray-900" :class="widgetClasses">
     <!--begin::Body-->
-    <div class="card-body pb-0">
+    <div class="p-6 pb-0">
       <!--begin::Header-->
-      <div class="d-flex align-items-center">
+      <div class="flex items-center">
         <!--begin::User-->
-        <div class="d-flex align-items-center flex-grow-1">
+        <div class="flex flex-1 items-center">
           <!--begin::Avatar-->
-          <div class="symbol symbol-45px me-5">
-            <img :src="getAssetPath('media/avatars/300-6.jpg')" alt="" />
+          <div class="mr-5 h-[45px] w-[45px] shrink-0">
+            <img
+              :src="getAssetPath('media/avatars/300-6.jpg')"
+              alt=""
+              class="h-full w-full rounded-full object-cover"
+            />
           </div>
           <!--end::Avatar-->
 
           <!--begin::Info-->
-          <div class="d-flex flex-column">
-            <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bold"
+          <div class="flex flex-col">
+            <a
+              href="#"
+              class="text-sm font-bold text-gray-800 transition-colors hover:text-primary dark:text-gray-100"
               >Grace Green</a
             >
 
-            <span class="text-gray-500 fw-semibold"
+            <span class="text-sm font-semibold text-gray-500"
               >PHP, SQLite, Artisan CLI</span
             >
           </div>
@@ -28,38 +34,44 @@
         <!--end::User-->
 
         <!--begin::Menu-->
-        <div class="my-0">
+        <div
+          class="relative"
+          :ref="(el) => (menuDropdown.containerRef.value = el as HTMLElement | null)"
+        >
           <button
             type="button"
-            class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary"
-            data-kt-menu-trigger="click"
-            data-kt-menu-placement="bottom-end"
-            data-kt-menu-flip="top-end"
+            class="flex h-8 w-8 items-center justify-center rounded-md text-primary transition-colors hover:bg-primary-light"
+            @click="menuDropdown.toggle"
           >
             <KTIcon icon-name="category" icon-class="fs-2" />
           </button>
-          <Dropdown2></Dropdown2>
+          <div
+            v-show="menuDropdown.isOpen.value"
+            class="absolute right-0 top-full z-20 mt-2"
+          >
+            <Dropdown2 @close="menuDropdown.close"></Dropdown2>
+          </div>
         </div>
         <!--end::Menu-->
       </div>
       <!--end::Header-->
 
       <!--begin::Form-->
-      <form id="kt_forms_widget_1_form" class="ql-quil ql-quil-plain pb-3">
+      <form id="kt_forms_widget_1_form" class="pb-3">
         <!--begin::Editor-->
         <div id="kt_forms_widget_1_editor" class="py-6"></div>
         <!--end::Editor-->
 
-        <div class="separator"></div>
+        <div class="border-t border-gray-200 dark:border-gray-700"></div>
 
         <!--begin::Toolbar-->
         <div
           id="kt_forms_widget_1_editor_toolbar"
-          class="ql-toolbar d-flex flex-stack py-2"
+          class="ql-toolbar flex items-center justify-between py-2"
         >
-          <div class="me-2">
+          <div class="mr-2">
             <span class="ql-formats ql-size ms-0">
-              <select class="ql-size w-75px"></select>
+              <select class="ql-size w-[75px]"></select>
             </span>
 
             <span class="ql-formats">
@@ -73,13 +85,17 @@
             </span>
           </div>
 
-          <div class="me-n3">
-            <span class="btn btn-icon btn-sm btn-active-color-primary">
-              <i class="flaticon2-clip-symbol icon-ms"></i>
+          <div class="-mr-3 flex items-center gap-1">
+            <span
+              class="flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"
+            >
+              <i class="flaticon2-clip-symbol"></i>
             </span>
 
-            <span class="btn btn-icon btn-sm btn-active-color-primary">
-              <i class="flaticon2-pin icon-ms"></i>
+            <span
+              class="flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"
+            >
+              <i class="flaticon2-pin"></i>
             </span>
           </div>
         </div>
@@ -97,6 +113,7 @@ import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, onMounted } from "vue";
 import Quill from "quill";
 import Dropdown2 from "@/components/dropdown/Dropdown2.vue";
+import { useDropdown } from "@/composables/useDropdown";
 
 export default defineComponent({
   name: "widget-1",
@@ -107,6 +124,8 @@ export default defineComponent({
     Dropdown2,
   },
   setup() {
+    const menuDropdown = useDropdown();
+
     onMounted(() => {
       const editorId = "kt_forms_widget_1_editor";
 
@@ -125,6 +144,7 @@ export default defineComponent({
     });
 
     return {
+      menuDropdown,
       getAssetPath,
     };
   },

@@ -1,21 +1,21 @@
 <template>
-  <div class="d-flex justify-content-start mb-10">
+  <div class="flex justify-start mb-10">
     <!--begin::Wrapper-->
-    <div class="d-flex flex-column align-items-start">
+    <div class="flex flex-col items-start">
       <!--begin::User-->
-      <div class="d-flex align-items-center mb-2">
-        <div class="symbol symbol-35px symbol-circle">
+      <div class="flex items-center mb-2">
+        <div class="h-[35px] w-[35px] overflow-hidden rounded-full">
           <img alt="Pic" :src="image" />
         </div>
 
         <!--begin::Details-->
-        <div class="ms-3">
+        <div class="ml-3">
           <a
             href="#"
-            class="fs-5 fw-bold text-gray-900 text-hover-primary me-1"
+            class="mr-1 text-sm font-bold text-gray-900 transition-colors hover:text-primary dark:text-gray-100"
             >{{ name }}</a
           >
-          <span class="text-muted fs-7 mb-1">{{ time }}</span>
+          <span class="mb-1 text-xs text-gray-500">{{ time }}</span>
         </div>
         <!--end::Details-->
       </div>
@@ -23,7 +23,7 @@
 
       <!--begin::Text-->
       <div
-        class="p-5 rounded bg-light-info text-gray-900 fw-semobold mw-lg-400px text-start"
+        class="rounded bg-info-light p-5 text-left font-semibold text-gray-900 lg:max-w-[400px]"
         data-kt-element="message-text"
       >
         {{ text }}

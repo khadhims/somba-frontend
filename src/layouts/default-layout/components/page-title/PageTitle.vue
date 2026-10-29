@@ -2,12 +2,13 @@
   <!--begin::Page title-->
   <div
     v-if="pageTitleDisplay"
-    :class="`page-title d-flex flex-${pageTitleDirection} justify-content-center flex-wrap me-3`"
+    class="mr-3 flex flex-wrap justify-center"
+    :class="directionClass"
   >
     <template v-if="pageTitle">
       <!--begin::Title-->
       <h1
-        class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0"
+        class="my-0 flex flex-col justify-center text-xl font-bold tracking-tight text-gray-900 dark:text-gray-100"
       >
         {{ pageTitle }}
       </h1>
@@ -15,36 +16,38 @@
 
       <span
         v-if="pageTitleDirection === 'row' && pageTitleBreadcrumbDisplay"
-        class="h-20px border-gray-200 border-start mx-3"
+        class="mx-3 h-5 border-l border-gray-200 dark:border-gray-700"
       ></span>
 
       <!--begin::Breadcrumb-->
       <ul
         v-if="breadcrumbs && breadcrumbs.length && pageTitleBreadcrumbDisplay"
-        class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1"
+        class="my-0 flex items-center gap-3 pt-1 text-xs font-semibold"
       >
         <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">
-          <router-link to="/" class="text-muted text-hover-primary">{{
-            homeLabel
-          }}</router-link>
+        <li class="text-gray-500">
+          <router-link
+            to="/"
+            class="text-gray-500 transition-colors hover:text-primary"
+            >{{ homeLabel }}</router-link
+          >
         </li>
         <!--end::Item-->
         <template v-for="(item, i) in breadcrumbs" :key="i">
           <!--begin::Item-->
-          <li class="breadcrumb-item">
-            <span class="bullet bg-gray-500 w-5px h-2px"></span>
+          <li>
+            <span class="block h-0.5 w-1.5 rounded-full bg-gray-400"></span>
           </li>
           <!--end::Item-->
           <!--begin::Item-->
-          <li class="breadcrumb-item text-muted">{{ item }}</li>
+          <li class="text-gray-500">{{ item }}</li>
           <!--end::Item-->
         </template>
       </ul>
       <!--end::Breadcrumb-->
     </template>
   </div>
-  <div v-else class="align-items-stretch"></div>
+  <div v-else></div>
   <!--end::Page title-->
 </template>
 
@@ -60,9 +63,7 @@ import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "layout-page-title",
-  components: {
-    /* empty */
-  },
+  components: {},
   setup() {
     const route = useRoute();
     const { t, te, locale } = useI18n();
@@ -125,12 +126,20 @@ export default defineComponent({
 
     const homeLabel = computed(() => translateLabel("Home", locale.value));
 
+    // Tailwind's build-time scanner can't see `flex-${direction}`
+    // template-literal interpolation - same trap documented in
+    // core/helpers/badge.ts. Explicit map instead ("row" | "column" only).
+    const directionClass = computed(() =>
+      pageTitleDirection.value === "column" ? "flex-col" : "flex-row"
+    );
+
     return {
       pageTitle,
       breadcrumbs,
       pageTitleDisplay,
       pageTitleBreadcrumbDisplay,
       pageTitleDirection,
+      directionClass,
       homeLabel,
     };
   },

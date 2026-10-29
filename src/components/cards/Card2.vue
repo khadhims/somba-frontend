@@ -1,12 +1,14 @@
 <template>
   <!--begin::Card-->
-  <div class="card h-100" :class="cardClasses">
+  <div class="h-full rounded-lg bg-white dark:bg-gray-900" :class="cardClasses">
     <!--begin::Card header-->
-    <div class="card-header flex-nowrap border-0 pt-9">
+    <div class="flex flex-nowrap items-center justify-between px-9 pt-9">
       <!--begin::Card title-->
-      <div class="card-title m-0">
+      <div class="m-0 flex items-center">
         <!--begin::Icon-->
-        <div class="symbol symbol-45px w-45px bg-light me-5">
+        <div
+          class="mr-5 flex h-[45px] w-[45px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800"
+        >
           <img :src="icon" alt="image" class="p-3" />
         </div>
         <!--end::Icon-->
@@ -14,7 +16,7 @@
         <!--begin::Title-->
         <a
           href="#"
-          class="fs-4 fw-semibold text-hover-primary text-gray-600 m-0"
+          class="m-0 text-lg font-semibold text-gray-600 transition-colors hover:text-primary dark:text-gray-300"
         >
           {{ title }}
         </a>
@@ -23,19 +25,25 @@
       <!--end::Card title-->
 
       <!--begin::Card toolbar-->
-      <div class="card-toolbar m-0">
+      <div
+        class="relative m-0"
+        :ref="(el) => (menuDropdown.containerRef.value = el as HTMLElement | null)"
+      >
         <!--begin::Menu-->
         <button
           type="button"
-          class="btn btn-clean btn-sm btn-icon btn-icon-primary btn-active-light-primary me-n3"
-          data-kt-menu-trigger="click"
-          data-kt-menu-placement="bottom-end"
-          data-kt-menu-flip="top-end"
+          class="-mr-3 flex h-8 w-8 items-center justify-center rounded-md text-primary transition-colors hover:bg-primary-light"
+          @click="menuDropdown.toggle"
         >
           <KTIcon icon-name="category" icon-class="fs-3 text-primary" />
         </button>
 
-        <Dropdown3></Dropdown3>
+        <div
+          v-show="menuDropdown.isOpen.value"
+          class="absolute right-0 top-full z-20 mt-2"
+        >
+          <Dropdown3 @close="menuDropdown.close"></Dropdown3>
+        </div>
         <!--end::Menu-->
       </div>
       <!--end::Card toolbar-->
@@ -43,25 +51,28 @@
     <!--end::Card header-->
 
     <!--begin::Card body-->
-    <div class="card-body d-flex flex-column px-9 pt-6 pb-8">
+    <div class="flex flex-col px-9 pb-8 pt-6">
       <!--begin::Heading-->
-      <div class="fs-2tx fw-bold mb-3">
+      <div class="mb-3 text-3xl font-bold">
         {{ content }}
       </div>
       <!--end::Heading-->
 
       <!--begin::Stats-->
-      <div class="d-flex align-items-center flex-wrap mb-5 mt-auto fs-6">
-        <KTIcon :icon-name="arrow" :icon-class="`fs-3 me-1 text-${color}`" />
+      <div class="mb-5 mt-auto flex flex-wrap items-center text-sm">
+        <KTIcon
+          :icon-name="arrow"
+          :icon-class="`fs-3 me-1 ${colorTextClass}`"
+        />
 
         <!--begin::Number-->
-        <div :class="`text-${color}`" class="fw-bold me-2">
+        <div :class="colorTextClass" class="mr-2 font-bold">
           {{ footerData }}
         </div>
         <!--end::Number-->
 
         <!--begin::Label-->
-        <div class="fw-semibold text-gray-500">
+        <div class="font-semibold text-gray-500">
           {{ footerText }}
         </div>
         <!--end::Label-->
@@ -69,12 +80,14 @@
       <!--end::Stats-->
 
       <!--begin::Indicator-->
-      <div class="d-flex align-items-center fw-semibold">
-        <span class="badge bg-light text-gray-700 px-3 py-2 me-2">
+      <div class="flex items-center font-semibold">
+        <span
+          class="mr-2 inline-flex rounded bg-gray-100 px-3 py-2 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+        >
           {{ indicatorValue }}
         </span>
 
-        <span class="text-gray-500 fs-7">{{ indicatorLabel }}</span>
+        <span class="text-xs text-gray-500">{{ indicatorLabel }}</span>
       </div>
       <!--end::Indicator-->
     </div>
@@ -85,8 +98,22 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 import Dropdown3 from "@/components/dropdown/Dropdown3.vue";
+import { useDropdown } from "@/composables/useDropdown";
+
+// Tailwind's build-time scanner needs literal class strings - `text-${color}`
+// template-literal interpolation (the original Bootstrap-era pattern) would
+// silently produce unstyled text in production, same trap documented in
+// core/helpers/badge.ts. Explicit map instead.
+const TEXT_COLOR_CLASSES: Record<string, string> = {
+  primary: "text-primary",
+  success: "text-success",
+  danger: "text-danger",
+  warning: "text-warning",
+  info: "text-info",
+  secondary: "text-gray-500",
+};
 
 export default defineComponent({
   name: "card-2",
@@ -114,9 +141,15 @@ export default defineComponent({
 
     indicatorLabel: String,
   },
-  setup() {
+  setup(props) {
+    const colorTextClass = computed(
+      () => TEXT_COLOR_CLASSES[props.color || "primary"] || "text-primary"
+    );
+    const menuDropdown = useDropdown();
     return {
       getAssetPath,
+      colorTextClass,
+      menuDropdown,
     };
   },
 });

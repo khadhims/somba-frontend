@@ -1,18 +1,23 @@
 <template>
+  <!--begin::Aside mobile backdrop-->
+  <div
+    v-if="drawers.asideMobileOpen"
+    class="fixed inset-0 z-20 bg-black/50 lg:hidden"
+    @click="drawers.asideMobileOpen = false"
+  ></div>
+  <!--end::Aside mobile backdrop-->
+
   <!--begin::Aside-->
   <div
     id="kt_aside"
-    class="aside"
-    data-kt-drawer="true"
-    data-kt-drawer-name="aside"
-    data-kt-drawer-activate="{default: true, lg: false}"
-    data-kt-drawer-overlay="true"
-    data-kt-drawer-width="{default:'200px', '300px': '250px'}"
-    data-kt-drawer-direction="start"
-    data-kt-drawer-toggle="#kt_aside_mobile_toggle"
+    class="fixed inset-y-0 left-0 z-30 flex w-[200px] -translate-x-full flex-col border-r border-gray-200 bg-white transition-transform duration-300 dark:border-gray-800 dark:bg-gray-900 lg:relative lg:z-auto lg:translate-x-0"
+    :class="{
+      'translate-x-0': drawers.asideMobileOpen,
+      'lg:w-[70px]': asideMinimized,
+    }"
   >
     <!--begin::Aside Toolbarl-->
-    <div class="aside-toolbar flex-column-auto" id="kt_aside_toolbar">
+    <div class="shrink-0" id="kt_aside_toolbar">
       <!--begin::Aside user-->
       <AsideToolbar />
       <!--end::Aside user-->
@@ -20,22 +25,10 @@
     <!--end::Aside Toolbarl-->
 
     <!--begin::Aside menu-->
-    <div class="aside-menu flex-column-fluid">
+    <div class="flex-1 overflow-y-auto">
       <KTMenu></KTMenu>
     </div>
     <!--end::Aside menu-->
-
-    <!--begin::Footer-->
-    <!-- <div class="aside-footer flex-column-auto py-5" id="kt_aside_footer">
-      <a
-        href="https://preview.keenthemes.com/metronic8/vue/docs/index"
-        class="btn btn-custom btn-primary w-100"
-      >
-        <span class="btn-label">{{ t("docsAndComponents") }}</span>
-        <KTIcon icon-name="document" icon-class="btn-icon fs-2" />
-      </a>
-    </div> -->
-    <!--end::Footer-->
   </div>
   <!--end::Aside-->
 </template>
@@ -46,6 +39,8 @@ import { defineComponent } from "vue";
 import { useI18n } from "vue-i18n";
 import KTMenu from "@/layouts/default-layout/components/aside/Menu.vue";
 import AsideToolbar from "@/layouts/default-layout/components/aside/AsideToolbar.vue";
+import { useDrawersStore } from "@/stores/drawers";
+import { asideMinimized } from "@/layouts/default-layout/config/helper";
 
 export default defineComponent({
   name: "KTAside",
@@ -59,10 +54,13 @@ export default defineComponent({
   },
   setup() {
     const { t } = useI18n();
+    const drawers = useDrawersStore();
 
     return {
       t,
       getAssetPath,
+      drawers,
+      asideMinimized,
     };
   },
 });

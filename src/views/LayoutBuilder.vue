@@ -1,15 +1,15 @@
 <template>
   <!--begin::Layout Builder Notice-->
-  <div class="card mb-10">
-    <div class="card-body d-flex align-items-center py-8">
+  <div class="mb-10 rounded-lg bg-white dark:bg-gray-900">
+    <div class="flex items-center p-6 py-8">
       <!--begin::Icon-->
       <div
-        class="d-flex h-50px w-50px h-lg-80px w-lg-80px flex-shrink-0 flex-center position-relative align-self-start align-self-lg-center mt-3 mt-lg-0"
+        class="relative flex h-[50px] w-[50px] shrink-0 items-center justify-center self-start lg:h-[80px] lg:w-[80px] lg:self-center"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          class="text-primary h-75px w-75px h-lg-100px w-lg-100px position-absolute opacity-5"
+          class="absolute h-[75px] w-[75px] text-primary opacity-5 lg:h-[100px] lg:w-[100px]"
         >
           <path
             fill="currentColor"
@@ -24,8 +24,8 @@
       <!--end::Icon-->
 
       <!--begin::Description-->
-      <div class="ms-6">
-        <p class="list-unstyled text-gray-600 fw-semibold fs-6 p-0 m-0">
+      <div class="ml-6">
+        <p class="m-0 p-0 text-sm font-semibold text-gray-600">
           The layout builder will assist you in setting up your preferred layout
           for your project, generating a layout configuration, and previewing it
           in real-time. To preview the default layout configuration, simply
@@ -37,20 +37,14 @@
   </div>
   <!--end::Layout Builder Notice-->
 
-  <div class="card mb-10">
+  <div class="mb-10 rounded-lg bg-white dark:bg-gray-900">
     <!--begin::Header-->
-    <div class="card-header card-header-stretch">
-      <ul
-        class="nav nav-stretch nav-line-tabs fw-semibold border-0"
-        role="tablist"
-        id="kt_layout_builder_tabs"
-        ref="kt_layout_builder_tabs"
-      >
-        <li class="nav-item">
+    <div class="border-b border-gray-200 px-6 dark:border-gray-700">
+      <ul class="flex gap-6 text-sm font-semibold">
+        <li>
           <a
-            class="nav-link cursor-pointer"
-            :class="{ active: tabIndex === 0 }"
-            data-bs-toggle="tab"
+            class="inline-block cursor-pointer border-b-2 border-transparent py-4 text-gray-500 transition-colors hover:text-primary"
+            :class="{ '!border-primary !text-primary': tabIndex === 0 }"
             @click="setActiveTab($event)"
             data-tab-index="0"
             role="tab"
@@ -58,11 +52,10 @@
             Main
           </a>
         </li>
-        <li class="nav-item">
+        <li>
           <a
-            class="nav-link cursor-pointer"
-            :class="{ active: tabIndex === 1 }"
-            data-bs-toggle="tab"
+            class="inline-block cursor-pointer border-b-2 border-transparent py-4 text-gray-500 transition-colors hover:text-primary"
+            :class="{ '!border-primary !text-primary': tabIndex === 1 }"
             @click="setActiveTab($event)"
             data-tab-index="1"
             role="tab"
@@ -70,11 +63,10 @@
             Header
           </a>
         </li>
-        <li class="nav-item">
+        <li>
           <a
-            class="nav-link cursor-pointer"
-            :class="{ active: tabIndex === 3 }"
-            data-bs-toggle="tab"
+            class="inline-block cursor-pointer border-b-2 border-transparent py-4 text-gray-500 transition-colors hover:text-primary"
+            :class="{ '!border-primary !text-primary': tabIndex === 3 }"
             @click="setActiveTab($event)"
             data-tab-index="3"
             role="tab"
@@ -82,11 +74,10 @@
             Aside
           </a>
         </li>
-        <li class="nav-item">
+        <li>
           <a
-            class="nav-link cursor-pointer"
-            :class="{ active: tabIndex === 4 }"
-            data-bs-toggle="tab"
+            class="inline-block cursor-pointer border-b-2 border-transparent py-4 text-gray-500 transition-colors hover:text-primary"
+            :class="{ '!border-primary !text-primary': tabIndex === 4 }"
             @click="setActiveTab($event)"
             data-tab-index="4"
             role="tab"
@@ -94,11 +85,10 @@
             Content
           </a>
         </li>
-        <li class="nav-item">
+        <li>
           <a
-            class="nav-link cursor-pointer"
-            :class="{ active: tabIndex === 5 }"
-            data-bs-toggle="tab"
+            class="inline-block cursor-pointer border-b-2 border-transparent py-4 text-gray-500 transition-colors hover:text-primary"
+            :class="{ '!border-primary !text-primary': tabIndex === 5 }"
             @click="setActiveTab($event)"
             data-tab-index="5"
             role="tab"
@@ -111,26 +101,24 @@
     <!--end::Header-->
 
     <!--begin::Form-->
-    <form class="form" id="kt_layout_builder_form" @submit="submit($event)">
+    <form id="kt_layout_builder_form" @submit="submit($event)">
       <!--begin::Body-->
-      <div class="card-body">
-        <div class="tab-content pt-3" id="kt_tabs">
-          <div
-            class="tab-pane"
-            :class="{ active: tabIndex === 0 }"
-            id="kt_builder_main"
-          >
+      <div class="p-6">
+        <div class="pt-3" id="kt_tabs">
+          <div v-show="tabIndex === 0" id="kt_builder_main">
             <!--begin::Form group-->
-            <div class="form-group d-flex flex-stack">
+            <div class="flex items-center justify-between">
               <!--begin::Heading-->
-              <div class="d-flex flex-column">
-                <h4 class="fw-bold text-gray-900">Keenicons Style</h4>
+              <div class="flex flex-col">
+                <h4 class="font-bold text-gray-900 dark:text-gray-100">
+                  Keenicons Style
+                </h4>
                 <div>
-                  <span class="fs-7 fw-semibold text-muted"
+                  <span class="text-xs font-semibold text-gray-500"
                     >Select global UI icons style.</span
                   >{{ " " }}
                   <a
-                    class="fw-semibold"
+                    class="text-xs font-semibold text-primary"
                     href="https://preview.keenthemes.com/html/metronic/docs/icons/keenicons"
                     target="_blank"
                     >Learn more</a
@@ -139,128 +127,86 @@
               </div>
               <!--end::Heading-->
               <!--begin::Options-->
-              <div
-                class="d-flex flex-stack gap-3 mw-lg-600px"
-                data-kt-buttons="true"
-                data-kt-buttons-target=".form-check-image,.form-check-input"
-                data-kt-initialized="1"
-              >
+              <div class="flex max-w-full gap-3 lg:max-w-[600px]">
                 <!--begin::Option-->
                 <label
-                  :class="config.general.iconsType === 'duotone' && 'active'"
-                  class="form-check-image form-check-success w-100 parent-active parent-hover"
+                  class="flex-1 cursor-pointer rounded-md border-2 px-4 py-3 transition-colors"
+                  :class="
+                    config.general.iconsType === 'duotone'
+                      ? 'border-success bg-success-light'
+                      : 'border-gray-200 dark:border-gray-700'
+                  "
                 >
                   <!--begin::Image-->
-                  <div
-                    class="form-check-wrapper d-flex flex-center border-gray-200 border-2 mb-0 py-3 px-4"
-                  >
+                  <div class="flex items-center justify-center">
                     <KTIcon
                       icon-type="duotone"
                       icon-name="picture"
-                      icon-class="fs-1 text-gray-500 parent-active-gray-700 parent-hover-gray-700"
+                      icon-class="fs-1 text-gray-500"
                     />
-                    <span
-                      class="fs-7 fw-semibold ms-2 text-gray-500 parent-active-gray-700 parent-hover-gray-700"
+                    <span class="ml-2 text-xs font-semibold text-gray-500"
                       >Duotone</span
                     >
                   </div>
                   <!--end::Image-->
-                  <!--begin::Check-->
-                  <div
-                    style="
-                      visibility: hidden;
-                      height: 0;
-                      width: 0;
-                      overflow: hidden;
-                    "
-                  >
-                    <input
-                      v-model="config.general.iconsType"
-                      class="form-check-input"
-                      type="radio"
-                      value="duotone"
-                      :checked="config.general.iconsType === 'duotone'"
-                    />
-                  </div>
-                  <!--end::Check-->
+                  <input
+                    v-model="config.general.iconsType"
+                    class="sr-only"
+                    type="radio"
+                    value="duotone"
+                  />
                 </label>
                 <!--end::Option-->
                 <!--begin::Option-->
                 <label
-                  :class="config.general.iconsType === 'outline' && 'active'"
-                  class="form-check-image form-check-success w-100 parent-active parent-hover"
+                  class="flex-1 cursor-pointer rounded-md border-2 px-4 py-3 transition-colors"
+                  :class="
+                    config.general.iconsType === 'outline'
+                      ? 'border-success bg-success-light'
+                      : 'border-gray-200 dark:border-gray-700'
+                  "
                 >
                   <!--begin::Image-->
-                  <div
-                    class="form-check-wrapper d-flex flex-center border-gray-200 border-2 mb-0 py-3 px-4"
-                  >
-                    <i
-                      class="ki-outline ki-picture fs-1 text-gray-500 parent-active-gray-700 parent-hover-gray-700"
-                    ></i>
-                    <span
-                      class="fs-7 fw-semibold ms-2 text-gray-500 parent-active-gray-700 parent-hover-gray-700"
+                  <div class="flex items-center justify-center">
+                    <i class="ki-outline ki-picture fs-1 text-gray-500"></i>
+                    <span class="ml-2 text-xs font-semibold text-gray-500"
                       >Outline</span
                     >
                   </div>
                   <!--end::Image-->
-                  <!--begin::Check-->
-                  <div
-                    style="
-                      visibility: hidden;
-                      height: 0;
-                      width: 0;
-                      overflow: hidden;
-                    "
-                  >
-                    <input
-                      v-model="config.general.iconsType"
-                      class="form-check-input"
-                      type="radio"
-                      value="outline"
-                      name="outline"
-                      :checked="config.general.iconsType === 'outline'"
-                    />
-                  </div>
-                  <!--end::Check-->
+                  <input
+                    v-model="config.general.iconsType"
+                    class="sr-only"
+                    type="radio"
+                    value="outline"
+                    name="outline"
+                  />
                 </label>
                 <!--end::Option-->
                 <!--begin::Option-->
                 <label
-                  :class="config.general.iconsType === 'solid' && 'active'"
-                  class="form-check-image form-check-success w-100 parent-active parent-hover"
+                  class="flex-1 cursor-pointer rounded-md border-2 px-4 py-3 transition-colors"
+                  :class="
+                    config.general.iconsType === 'solid'
+                      ? 'border-success bg-success-light'
+                      : 'border-gray-200 dark:border-gray-700'
+                  "
                 >
                   <!--begin::Image-->
-                  <div
-                    class="form-check-wrapper d-flex flex-center border-gray-200 border-2 mb-0 py-3 px-4"
-                  >
-                    <i
-                      class="ki-solid ki-picture fs-1 text-gray-500 parent-active-gray-700 parent-hover-gray-700"
-                    ></i>
-                    <span
-                      class="fs-7 fw-semibold ms-2 text-gray-500 parent-active-gray-700 parent-hover-gray-700"
+                  <div class="flex items-center justify-center">
+                    <i class="ki-solid ki-picture fs-1 text-gray-500"></i>
+                    <span class="ml-2 text-xs font-semibold text-gray-500"
                       >Solid</span
                     >
                   </div>
                   <!--end::Image-->
-                  <!--begin::Check-->
-                  <div
-                    style="
-                      visibility: hidden;
-                      height: 0;
-                      width: 0;
-                      overflow: hidden;
-                    "
-                  >
-                    <input
-                      v-model="config.general.iconsType"
-                      class="form-check-input"
-                      type="radio"
-                      value="solid"
-                      name="solid"
-                      :checked="config.general.iconsType === 'solid'"
-                    />
-                  </div>
-                  <!--end::Check-->
+                  <input
+                    v-model="config.general.iconsType"
+                    class="sr-only"
+                    type="radio"
+                    value="solid"
+                    name="solid"
+                  />
                 </label>
                 <!--end::Option-->
               </div>
@@ -268,136 +214,45 @@
             </div>
             <!--end::Form group-->
             <!--begin::Separator-->
-            <div class="separator separator-dashed my-6"></div>
+            <div
+              class="my-6 border-t border-dashed border-gray-200 dark:border-gray-700"
+            ></div>
             <!--end::Separator-->
-            <div class="row mb-10">
-              <label class="col-lg-3 col-form-label text-lg-end"
+            <div class="mb-10 grid grid-cols-1 gap-2 lg:grid-cols-12">
+              <label
+                class="text-sm text-gray-700 dark:text-gray-300 lg:col-span-3 lg:text-right"
                 >Illustration Set:</label
               >
-              <div class="col-lg-8 pe-10">
-                <div class="row g-9 mb-3">
-                  <div class="col-6">
+              <div class="lg:col-span-8">
+                <div class="mb-3 grid grid-cols-2 gap-4">
+                  <div v-for="set in illustrationSets" :key="set.value">
                     <label
-                      class="btn btn-outline btn-outline-dashed btn-outline-default d-flex flex-column text-start p-6"
-                      for="sketchy-1"
+                      class="flex cursor-pointer flex-col rounded-md border border-dashed border-gray-300 p-6 text-left transition-colors hover:border-primary dark:border-gray-700"
+                      :for="set.value"
                     >
-                      <span class="d-flex mb-2">
-                        <span
-                          class="form-check form-check-custom form-check-solid form-check-sm me-5"
-                        >
-                          <input
-                            class="form-check-input"
-                            type="radio"
-                            v-model="config.illustrations.set"
-                            value="sketchy-1"
-                            name="illustrations-set"
-                            id="sketchy-1"
-                          />
-                        </span>
-                        <span class="fs-4 fw-bold">Sketchy</span>
+                      <span class="mb-2 flex items-center">
+                        <input
+                          class="mr-5 h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                          type="radio"
+                          v-model="config.illustrations.set"
+                          :value="set.value"
+                          name="illustrations-set"
+                          :id="set.value"
+                        />
+                        <span class="text-base font-bold">{{ set.label }}</span>
                       </span>
                       <span
                         :style="{
                           backgroundImage: `url(${getAssetPath(
-                            '/media/illustrations/sketchy-1/1.png'
+                            `/media/illustrations/${set.value}/1.png`
                           )})`,
                         }"
-                        class="d-block h-200px w-100 bgi-no-repeat bgi-size-contain bgi-position-center"
-                      ></span>
-                    </label>
-                  </div>
-                  <div class="col-6">
-                    <label
-                      class="btn btn-outline btn-outline-dashed btn-outline-default d-flex flex-column text-start p-6"
-                      for="sigma-1"
-                    >
-                      <span class="d-flex mb-2">
-                        <span
-                          class="form-check form-check-custom form-check-solid form-check-sm me-5"
-                        >
-                          <input
-                            class="form-check-input"
-                            type="radio"
-                            v-model="config.illustrations.set"
-                            value="sigma-1"
-                            name="illustrations-set"
-                            id="sigma-1"
-                          />
-                        </span>
-                        <span class="fs-4 fw-bold">Sigma</span>
-                      </span>
-                      <span
-                        :style="{
-                          backgroundImage: `url(${getAssetPath(
-                            '/media/illustrations/sigma-1/1.png'
-                          )})`,
-                        }"
-                        class="d-block h-200px w-100 bgi-no-repeat bgi-size-contain bgi-position-center"
-                      ></span>
-                    </label>
-                  </div>
-                  <div class="col-6">
-                    <label
-                      class="btn btn-outline btn-outline-dashed btn-outline-default d-flex flex-column text-start p-6"
-                      for="dozzy-1"
-                    >
-                      <span class="d-flex mb-2">
-                        <span
-                          class="form-check form-check-custom form-check-solid form-check-sm me-5"
-                        >
-                          <input
-                            class="form-check-input"
-                            type="radio"
-                            v-model="config.illustrations.set"
-                            value="dozzy-1"
-                            name="illustrations-set"
-                            id="dozzy-1"
-                          />
-                        </span>
-                        <span class="fs-4 fw-bold">Dozzy</span>
-                      </span>
-                      <span
-                        :style="{
-                          backgroundImage: `url(${getAssetPath(
-                            '/media/illustrations/dozzy-1/1.png'
-                          )})`,
-                        }"
-                        class="d-block h-200px w-100 bgi-no-repeat bgi-size-contain bgi-position-center"
-                      ></span>
-                    </label>
-                  </div>
-                  <div class="col-6">
-                    <label
-                      class="btn btn-outline btn-outline-dashed btn-outline-default d-flex flex-column text-start p-6"
-                      for="unitedpalms-1"
-                    >
-                      <span class="d-flex mb-2">
-                        <span
-                          class="form-check form-check-custom form-check-solid form-check-sm me-5"
-                        >
-                          <input
-                            class="form-check-input"
-                            type="radio"
-                            v-model="config.illustrations.set"
-                            value="unitedpalms-1"
-                            name="illustrations-set"
-                            id="unitedpalms-1"
-                          />
-                        </span>
-                        <span class="fs-4 fw-bold">United Palms</span>
-                      </span>
-                      <span
-                        :style="{
-                          backgroundImage: `url(${getAssetPath(
-                            '/media/illustrations/unitedpalms-1/1.png'
-                          )})`,
-                        }"
-                        class="d-block h-200px w-100 bgi-no-repeat bgi-size-contain bgi-position-center"
+                        class="block h-[200px] w-full bg-contain bg-center bg-no-repeat"
                       ></span>
                     </label>
                   </div>
                 </div>
-                <div class="form-text text-muted">
+                <div class="text-sm text-gray-500">
                   Select one of our in-house designed illustration set and apply
                   globally for all apps and pages
                 </div>
@@ -405,110 +260,93 @@
             </div>
           </div>
 
-          <div
-            class="tab-pane"
-            :class="{ active: tabIndex === 1 }"
-            id="kt_builder_header"
-          >
-            <div class="row mb-10">
-              <label class="col-lg-3 col-form-label text-lg-end">Width:</label>
-              <div class="col-lg-9 col-xl-4">
-                <select
-                  class="form-select form-select-solid"
-                  v-model="config.header.width"
-                >
+          <div v-show="tabIndex === 1" id="kt_builder_header">
+            <div class="mb-10 grid grid-cols-1 gap-2 lg:grid-cols-12">
+              <label
+                class="text-sm text-gray-700 dark:text-gray-300 lg:col-span-3 lg:text-right"
+                >Width:</label
+              >
+              <div class="lg:col-span-4">
+                <select :class="formInputClass" v-model="config.header.width">
                   <option value="fluid">Fluid</option>
                   <option value="fixed">Fixed</option>
                 </select>
-                <div class="form-text text-muted">
+                <div class="mt-1 text-sm text-gray-500">
                   Select header width type.
                 </div>
               </div>
             </div>
           </div>
 
-          <div
-            class="tab-pane"
-            :class="{ active: tabIndex === 3 }"
-            id="kt_builder_aside"
-          >
-            <div class="row mb-10">
-              <label class="col-lg-3 col-form-label text-lg-end"
+          <div v-show="tabIndex === 3" id="kt_builder_aside">
+            <div class="mb-10 grid grid-cols-1 gap-2 lg:grid-cols-12">
+              <label
+                class="text-sm text-gray-700 dark:text-gray-300 lg:col-span-3 lg:text-right"
                 >Menu Icon:</label
               >
-              <div class="col-lg-9 col-xl-4">
-                <select
-                  class="form-select form-select-solid"
-                  v-model="config.aside.menuIcon"
-                >
+              <div class="lg:col-span-4">
+                <select :class="formInputClass" v-model="config.aside.menuIcon">
                   <option value="keenthemes">Keenthemes Font Icons</option>
                   <option value="bootstrap">Bootstrap Font Icons</option>
                 </select>
-                <div class="form-text text-muted">Select menu icon type.</div>
+                <div class="mt-1 text-sm text-gray-500">
+                  Select menu icon type.
+                </div>
               </div>
             </div>
-            <div class="row mb-10">
-              <label class="col-lg-3 col-form-label text-lg-end"
+            <div class="mb-10 grid grid-cols-1 gap-2 lg:grid-cols-12">
+              <label
+                class="text-sm text-gray-700 dark:text-gray-300 lg:col-span-3 lg:text-right"
                 >Minimized:</label
               >
-              <div class="col-lg-9 col-xl-4">
-                <span class="switch switch-icon">
-                  <input type="hidden" v-model="config.aside.minimized" />
-                  <div
-                    class="form-check form-check-custom form-check-solid form-switch mb-2"
-                  >
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      v-model="config.aside.minimized"
-                    />
-                  </div>
-                </span>
-                <div class="form-text text-muted">
+              <div class="lg:col-span-4">
+                <label class="mb-2 flex cursor-pointer items-center gap-2">
+                  <input
+                    type="checkbox"
+                    v-model="config.aside.minimized"
+                    class="peer sr-only"
+                  />
+                  <span
+                    class="h-5 w-9 shrink-0 rounded-full bg-gray-300 transition-colors peer-checked:bg-primary dark:bg-gray-700"
+                  ></span>
+                </label>
+                <div class="text-sm text-gray-500">
                   Minimize secondary panel by default
                 </div>
               </div>
             </div>
           </div>
 
-          <div
-            class="tab-pane"
-            :class="{ active: tabIndex === 4 }"
-            id="kt_builder_content"
-          >
-            <div class="row mb-10">
-              <label class="col-lg-3 col-form-label text-lg-end">Width:</label>
-              <div class="col-lg-9 col-xl-4">
-                <select
-                  class="form-select form-select-solid"
-                  v-model="config.content.width"
-                >
+          <div v-show="tabIndex === 4" id="kt_builder_content">
+            <div class="mb-10 grid grid-cols-1 gap-2 lg:grid-cols-12">
+              <label
+                class="text-sm text-gray-700 dark:text-gray-300 lg:col-span-3 lg:text-right"
+                >Width:</label
+              >
+              <div class="lg:col-span-4">
+                <select :class="formInputClass" v-model="config.content.width">
                   <option value="fluid">Fluid</option>
                   <option value="fixed">Fixed</option>
                 </select>
-                <div class="form-text text-muted">
+                <div class="mt-1 text-sm text-gray-500">
                   Select layout width type.
                 </div>
               </div>
             </div>
           </div>
 
-          <div
-            class="tab-pane"
-            :class="{ active: tabIndex === 5 }"
-            id="kt_builder_footer"
-          >
-            <div class="row mb-10">
-              <label class="col-lg-3 col-form-label text-lg-end">Width:</label>
-              <div class="col-lg-9 col-xl-4">
-                <select
-                  class="form-select form-select-solid"
-                  v-model="config.footer.width"
-                >
+          <div v-show="tabIndex === 5" id="kt_builder_footer">
+            <div class="mb-10 grid grid-cols-1 gap-2 lg:grid-cols-12">
+              <label
+                class="text-sm text-gray-700 dark:text-gray-300 lg:col-span-3 lg:text-right"
+                >Width:</label
+              >
+              <div class="lg:col-span-4">
+                <select :class="formInputClass" v-model="config.footer.width">
                   <option value="fluid">Fluid</option>
                   <option value="fixed">Fixed</option>
                 </select>
-                <div class="form-text text-muted">
+                <div class="mt-1 text-sm text-gray-500">
                   Select layout width type.
                 </div>
               </div>
@@ -519,10 +357,10 @@
       <!--end::Body-->
 
       <!--begin::Footer-->
-      <div class="card-footer py-6">
-        <div class="row">
-          <div class="col-lg-3"></div>
-          <div class="col-lg-9">
+      <div class="border-t border-gray-200 p-6 dark:border-gray-700">
+        <div class="grid grid-cols-1 lg:grid-cols-12">
+          <div class="lg:col-span-3"></div>
+          <div class="lg:col-span-9">
             <input
               type="hidden"
               id="kt_layout_builder_tab"
@@ -537,22 +375,16 @@
             <button
               type="submit"
               id="kt_layout_builder_preview"
-              class="btn btn-primary me-2"
+              class="mr-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active"
             >
-              <span class="indicator-label"> Preview </span>
-              <span class="indicator-progress">
-                Please wait...
-                <span
-                  class="spinner-border spinner-border-sm align-middle ms-2"
-                ></span>
-              </span>
+              Preview
             </button>
 
             <button
               @click="reset($event)"
               type="button"
               id="kt_layout_builder_reset"
-              class="btn btn-active-light btn-color-muted fw-semibold"
+              class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-200 dark:bg-gray-800"
             >
               Reset
             </button>
@@ -565,11 +397,16 @@
   </div>
 
   <!--begin::Card-->
-  <div class="card">
+  <div class="rounded-lg bg-white dark:bg-gray-900">
     <!--begin::Card Body-->
-    <div class="card-body p-10 p-lg-15">
+    <div class="p-10 lg:p-[3.75rem]">
       <!--begin::Heading-->
-      <h1 class="anchor fw-bold mb-5" id="overview">Generated config</h1>
+      <h1
+        class="mb-5 text-2xl font-bold text-gray-900 dark:text-gray-100"
+        id="overview"
+      >
+        Generated config
+      </h1>
       <!--end::Heading-->
       <div class="py-5">
         This config is used as a <b>{{ themeName }}</b> layout config, you can
@@ -588,9 +425,17 @@ import { config } from "@/layouts/default-layout/config/helper";
 import CodeHighlighter from "@/components/highlighters/CodeHighlighter.vue";
 import { themeName } from "@/core/helpers/system";
 import { LS_CONFIG_NAME_KEY } from "@/stores/config";
+import { formInputClass } from "@/core/helpers/badge";
 
 const LS_BUILDER_TAB_NAME =
   "layoutBuilderTabIndex_" + import.meta.env.VITE_APP_DEMO;
+
+const illustrationSets = [
+  { value: "sketchy-1", label: "Sketchy" },
+  { value: "sigma-1", label: "Sigma" },
+  { value: "dozzy-1", label: "Dozzy" },
+  { value: "unitedpalms-1", label: "United Palms" },
+];
 
 export default defineComponent({
   name: "layout-builder",
@@ -642,11 +487,13 @@ export default defineComponent({
     return {
       tabIndex,
       config,
+      illustrationSets,
       reset,
       setActiveTab,
       submit,
       themeName,
       getAssetPath,
+      formInputClass,
     };
   },
 });

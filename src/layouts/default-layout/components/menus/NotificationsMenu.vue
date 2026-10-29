@@ -1,51 +1,66 @@
 <template>
   <!--begin::Menu-->
   <div
-    class="menu menu-sub menu-sub-dropdown menu-column w-350px w-lg-375px"
-    data-kt-menu="true"
+    class="w-[350px] rounded-lg bg-white text-gray-800 shadow-lg lg:w-[375px] dark:bg-gray-900 dark:text-gray-100"
   >
     <!--begin::Heading-->
     <div
-      class="d-flex flex-column bgi-no-repeat rounded-top"
+      class="flex flex-col rounded-t-md bg-cover bg-no-repeat"
       :style="`background-image: url('${getAssetPath(
         '/media/misc/menu-header-bg.jpg'
       )}')`"
     >
       <!--begin::Title-->
-      <h3 class="text-white fw-semibold px-9 mt-10 mb-6">
-        Notifications <span class="fs-8 opacity-75 ps-3">24 reports</span>
+      <h3 class="mb-6 mt-10 px-9 font-semibold text-white">
+        Notifications <span class="ps-3 text-xs opacity-75">24 reports</span>
       </h3>
       <!--end::Title-->
 
       <!--begin::Tabs-->
-      <ul
-        class="nav nav-line-tabs nav-line-tabs-2x nav-stretch fw-semibold px-9"
-      >
-        <li class="nav-item">
-          <a
-            class="nav-link text-white opacity-75 opacity-state-100 pb-4"
-            data-bs-toggle="tab"
-            href="#kt_topbar_notifications_1"
-            >Alerts</a
+      <ul class="flex gap-6 px-9 text-sm font-semibold">
+        <li>
+          <button
+            type="button"
+            class="border-b-2 pb-4 text-white opacity-75 transition-opacity hover:opacity-100"
+            :class="
+              activeTab === 1
+                ? 'border-white opacity-100'
+                : 'border-transparent'
+            "
+            @click="activeTab = 1"
           >
+            Alerts
+          </button>
         </li>
 
-        <li class="nav-item">
-          <a
-            class="nav-link text-white opacity-75 opacity-state-100 pb-4 active"
-            data-bs-toggle="tab"
-            href="#kt_topbar_notifications_2"
-            >Updates</a
+        <li>
+          <button
+            type="button"
+            class="border-b-2 pb-4 text-white opacity-75 transition-opacity hover:opacity-100"
+            :class="
+              activeTab === 2
+                ? 'border-white opacity-100'
+                : 'border-transparent'
+            "
+            @click="activeTab = 2"
           >
+            Updates
+          </button>
         </li>
 
-        <li class="nav-item">
-          <a
-            class="nav-link text-white opacity-75 opacity-state-100 pb-4"
-            data-bs-toggle="tab"
-            href="#kt_topbar_notifications_3"
-            >Logs</a
+        <li>
+          <button
+            type="button"
+            class="border-b-2 pb-4 text-white opacity-75 transition-opacity hover:opacity-100"
+            :class="
+              activeTab === 3
+                ? 'border-white opacity-100'
+                : 'border-transparent'
+            "
+            @click="activeTab = 3"
           >
+            Logs
+          </button>
         </li>
       </ul>
       <!--end::Tabs-->
@@ -53,54 +68,63 @@
     <!--end::Heading-->
 
     <!--begin::Tab content-->
-    <div class="tab-content">
+    <div>
       <!--begin::Tab panel-->
-      <div class="tab-pane fade" id="kt_topbar_notifications_1" role="tabpanel">
+      <div v-show="activeTab === 1">
         <!--begin::Items-->
-        <div class="scroll-y mh-325px my-5 px-8">
-          <template v-for="(item, index) in data1" :key="index">
-            <!--begin::Item-->
-            <div class="d-flex flex-stack py-4">
-              <!--begin::Section-->
-              <div class="d-flex align-items-center">
-                <!--begin::Symbol-->
-                <div class="symbol symbol-35px me-4">
-                  <span :class="`bg-light-${item.state}`" class="symbol-label">
-                    <KTIcon
-                      :icon-name="item.icon"
-                      :icon-class="`text-${item.state}`"
-                    />
-                  </span>
-                </div>
-                <!--end::Symbol-->
-
-                <!--begin::Title-->
-                <div class="mb-0 me-2">
-                  <a
-                    href="#"
-                    class="fs-6 text-gray-800 text-hover-primary fw-bold"
-                    >{{ item.title }}</a
-                  >
-                  <div class="text-gray-500 fs-7">
-                    {{ item.description }}
-                  </div>
-                </div>
-                <!--end::Title-->
+        <div class="my-5 max-h-[325px] overflow-y-auto px-8">
+          <div
+            v-for="(item, index) in data1"
+            :key="index"
+            class="flex items-center justify-between py-4"
+          >
+            <!--begin::Section-->
+            <div class="flex items-center">
+              <!--begin::Symbol-->
+              <div
+                class="mr-4 flex h-[35px] w-[35px] shrink-0 items-center justify-center rounded-full"
+                :class="badgeVariantClass(item.state)"
+              >
+                <KTIcon
+                  :icon-name="item.icon"
+                  :icon-class="stateIconClass(item.state)"
+                />
               </div>
-              <!--end::Section-->
+              <!--end::Symbol-->
 
-              <!--begin::Label-->
-              <span class="badge badge-light fs-8">{{ item.time }}</span>
-              <!--end::Label-->
+              <!--begin::Title-->
+              <div class="mr-2">
+                <a
+                  href="#"
+                  class="block text-sm font-bold text-gray-800 transition-colors hover:text-primary dark:text-gray-100"
+                  >{{ item.title }}</a
+                >
+                <div class="text-xs text-gray-500">
+                  {{ item.description }}
+                </div>
+              </div>
+              <!--end::Title-->
             </div>
-            <!--end::Item-->
-          </template>
+            <!--end::Section-->
+
+            <!--begin::Label-->
+            <span
+              class="rounded bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+              >{{ item.time }}</span
+            >
+            <!--end::Label-->
+          </div>
         </div>
         <!--end::Items-->
 
         <!--begin::View more-->
-        <div class="py-3 text-center border-top">
-          <a href="#" class="btn btn-color-gray-600 btn-active-color-primary">
+        <div
+          class="border-t border-gray-200 py-3 text-center dark:border-gray-700"
+        >
+          <a
+            href="#"
+            class="inline-flex items-center gap-1 text-sm font-semibold text-gray-600 transition-colors hover:text-primary"
+          >
             View All
             <KTIcon icon-name="arrow-right" icon-class="fs-5" />
           </a>
@@ -110,33 +134,32 @@
       <!--end::Tab panel-->
 
       <!--begin::Tab panel-->
-      <div
-        class="tab-pane fade show active"
-        id="kt_topbar_notifications_2"
-        role="tabpanel"
-      >
+      <div v-show="activeTab === 2">
         <!--begin::Wrapper-->
-        <div class="d-flex flex-column px-9">
+        <div class="flex flex-col px-9">
           <!--begin::Section-->
-          <div class="pt-10 pb-0">
+          <div class="pb-0 pt-10">
             <!--begin::Title-->
-            <h3 class="text-gray-900 text-center fw-bold">Get Pro Access</h3>
+            <h3 class="text-center font-bold text-gray-900 dark:text-gray-100">
+              Get Pro Access
+            </h3>
             <!--end::Title-->
 
             <!--begin::Text-->
-            <div class="text-center text-gray-600 fw-semibold pt-1">
+            <div class="pt-1 text-center text-sm font-semibold text-gray-600">
               Outlines keep you honest. They stoping you from amazing poorly
               about drive
             </div>
             <!--end::Text-->
 
             <!--begin::Action-->
-            <div class="text-center mt-5 mb-9">
+            <!-- ponytail: original targeted a modal id (#kt_modal_upgrade_plan)
+            with no matching modal mounted anywhere in the app - already a
+            dead link before this migration, left inert. -->
+            <div class="mb-9 mt-5 text-center">
               <a
                 href="#"
-                class="btn btn-sm btn-primary px-6"
-                data-bs-toggle="modal"
-                data-bs-target="#kt_modal_upgrade_plan"
+                class="inline-block rounded-md bg-primary px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active"
                 >Upgrade</a
               >
             </div>
@@ -146,7 +169,7 @@
 
           <!--begin::Illustration-->
           <img
-            class="mw-100 mh-200px"
+            class="mx-auto max-h-[200px] max-w-full"
             alt="somba"
             :src="getIllustrationsPath('1.png')"
           />
@@ -157,44 +180,52 @@
       <!--end::Tab panel-->
 
       <!--begin::Tab panel-->
-      <div class="tab-pane fade" id="kt_topbar_notifications_3" role="tabpanel">
+      <div v-show="activeTab === 3">
         <!--begin::Items-->
-        <div class="scroll-y mh-325px my-5 px-8">
-          <template v-for="(item, index) in data2" :key="index">
-            <!--begin::Item-->
-            <div class="d-flex flex-stack py-4">
-              <!--begin::Section-->
-              <div class="d-flex align-items-center me-2">
-                <!--begin::Code-->
-                <span
-                  class="w-70px badge me-4"
-                  :class="`badge-light-${item.state}`"
-                  >{{ item.code }}</span
-                >
-                <!--end::Code-->
+        <div class="my-5 max-h-[325px] overflow-y-auto px-8">
+          <div
+            v-for="(item, index) in data2"
+            :key="index"
+            class="flex items-center justify-between py-4"
+          >
+            <!--begin::Section-->
+            <div class="mr-2 flex items-center">
+              <!--begin::Code-->
+              <span
+                class="mr-4 w-[70px] rounded px-2 py-1 text-center text-xs font-semibold"
+                :class="badgeVariantClass(item.state)"
+                >{{ item.code }}</span
+              >
+              <!--end::Code-->
 
-                <!--begin::Title-->
-                <a
-                  href="#"
-                  class="text-gray-800 text-hover-primary fw-semibold"
-                  >{{ item.message }}</a
-                >
-                <!--end::Title-->
-              </div>
-              <!--end::Section-->
-
-              <!--begin::Label-->
-              <span class="badge badge-light fs-8">{{ item.time }}</span>
-              <!--end::Label-->
+              <!--begin::Title-->
+              <a
+                href="#"
+                class="text-sm font-semibold text-gray-800 transition-colors hover:text-primary dark:text-gray-100"
+                >{{ item.message }}</a
+              >
+              <!--end::Title-->
             </div>
-            <!--end::Item-->
-          </template>
+            <!--end::Section-->
+
+            <!--begin::Label-->
+            <span
+              class="rounded bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+              >{{ item.time }}</span
+            >
+            <!--end::Label-->
+          </div>
         </div>
         <!--end::Items-->
 
         <!--begin::View more-->
-        <div class="py-3 text-center border-top">
-          <a href="#" class="btn btn-color-gray-600 btn-active-color-primary">
+        <div
+          class="border-t border-gray-200 py-3 text-center dark:border-gray-700"
+        >
+          <a
+            href="#"
+            class="inline-flex items-center gap-1 text-sm font-semibold text-gray-600 transition-colors hover:text-primary"
+          >
             View All
             <KTIcon icon-name="arrow-right" icon-class="fs-5" />
           </a>
@@ -210,7 +241,21 @@
 
 <script lang="ts">
 import { getAssetPath, getIllustrationsPath } from "@/core/helpers/assets";
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
+import { badgeVariantClass, type BadgeVariant } from "@/core/helpers/badge";
+
+// Tailwind's build-time scanner can't see `text-${state}` template-literal
+// interpolation - same trap documented in core/helpers/badge.ts. The icon
+// needs a plain text-color (not the bg+text pill badgeVariantClass gives),
+// hence this small extra map alongside it.
+const STATE_ICON_CLASSES: Record<BadgeVariant, string> = {
+  primary: "text-primary",
+  success: "text-success",
+  danger: "text-danger",
+  warning: "text-warning",
+  info: "text-info",
+  secondary: "text-gray-500",
+};
 
 export default defineComponent({
   name: "notifications-menu",
@@ -218,7 +263,17 @@ export default defineComponent({
     /* empty */
   },
   setup() {
-    const data1 = [
+    const activeTab = ref(2);
+
+    const stateIconClass = (state: BadgeVariant) => STATE_ICON_CLASSES[state];
+
+    const data1: Array<{
+      title: string;
+      description: string;
+      time: string;
+      icon: string;
+      state: BadgeVariant;
+    }> = [
       {
         title: "Project Alice",
         description: "Phase 1 development",
@@ -270,7 +325,12 @@ export default defineComponent({
       },
     ];
 
-    const data2 = [
+    const data2: Array<{
+      code: string;
+      state: BadgeVariant;
+      message: string;
+      time: string;
+    }> = [
       {
         code: "200 OK",
         state: "success",
@@ -346,8 +406,11 @@ export default defineComponent({
     ];
 
     return {
+      activeTab,
       data1,
       data2,
+      badgeVariantClass,
+      stateIconClass,
       getIllustrationsPath,
       getAssetPath,
     };

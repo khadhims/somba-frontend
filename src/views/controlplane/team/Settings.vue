@@ -1,25 +1,26 @@
 <template>
   <!--begin::Basic info-->
-  <div class="card mb-5 mb-xl-10">
+  <div class="mb-5 xl:mb-10" :class="cardClass">
     <!--begin::Card header-->
     <div
-      class="card-header border-0 cursor-pointer"
+      class="flex items-center justify-between p-6 cursor-pointer"
       role="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#kt_account_profile_details"
-      aria-expanded="true"
+      @click="profileDetailsOpen = !profileDetailsOpen"
+      :aria-expanded="profileDetailsOpen"
       aria-controls="kt_account_profile_details"
     >
       <!--begin::Card title-->
-      <div class="card-title m-0">
-        <h3 class="fw-bold m-0">Profile Details</h3>
+      <div class="m-0">
+        <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Profile Details
+        </h3>
       </div>
       <!--end::Card title-->
     </div>
     <!--begin::Card header-->
 
     <!--begin::Content-->
-    <div id="kt_account_profile_details" class="collapse show">
+    <div id="kt_account_profile_details" v-show="profileDetailsOpen">
       <!--begin::Form-->
       <VForm
         id="kt_account_profile_details_form"
@@ -29,21 +30,22 @@
         :validation-schema="profileDetailsValidator"
       >
         <!--begin::Card body-->
-        <div class="card-body border-top p-9">
+        <div class="border-t border-gray-200 p-6 dark:border-gray-700">
           <!--begin::Input group-->
-          <div class="row mb-6">
+          <div
+            class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6"
+          >
             <!--begin::Label-->
-            <label class="col-lg-4 col-form-label fw-semibold fs-6"
+            <label class="lg:col-span-4 text-sm font-semibold lg:pt-2"
               >Avatar</label
             >
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="col-lg-8">
+            <div class="lg:col-span-8">
               <!--begin::Image input-->
               <div
-                class="image-input image-input-outline"
-                data-kt-image-input="true"
+                class="relative h-[125px] w-[125px] rounded-full bg-cover bg-center"
                 :style="{
                   backgroundImage: `url(${getAssetPath(
                     '/media/avatars/blank.png'
@@ -52,22 +54,28 @@
               >
                 <!--begin::Preview existing avatar-->
                 <div
-                  class="image-input-wrapper w-125px h-125px"
+                  class="h-full w-full rounded-full bg-cover bg-center"
                   :style="`background-image: url(${profileDetails.avatar})`"
                 ></div>
                 <!--end::Preview existing avatar-->
 
                 <!--begin::Label-->
                 <label
-                  class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                  data-kt-image-input-action="change"
-                  data-bs-toggle="tooltip"
+                  class="absolute bottom-0 right-0 flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-full bg-white text-gray-600 shadow transition-colors hover:text-primary dark:bg-gray-800 dark:text-gray-300"
                   title="Change avatar"
                 >
-                  <i class="bi bi-pencil-fill fs-7"></i>
+                  <i class="ki-duotone ki-pencil fs-7">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
 
                   <!--begin::Inputs-->
-                  <input type="file" name="avatar" accept=".png, .jpg, .jpeg" />
+                  <input
+                    type="file"
+                    name="avatar"
+                    accept=".png, .jpg, .jpeg"
+                    class="hidden"
+                  />
                   <input type="hidden" name="avatar_remove" />
                   <!--end::Inputs-->
                 </label>
@@ -75,20 +83,23 @@
 
                 <!--begin::Remove-->
                 <span
-                  class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                  data-kt-image-input-action="remove"
-                  data-bs-toggle="tooltip"
+                  class="absolute right-0 top-0 flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-full bg-white text-gray-600 shadow transition-colors hover:text-danger dark:bg-gray-800 dark:text-gray-300"
                   @click="removeImage()"
                   title="Remove avatar"
                 >
-                  <i class="bi bi-x fs-2"></i>
+                  <i class="ki-duotone ki-cross fs-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
                 </span>
                 <!--end::Remove-->
               </div>
               <!--end::Image input-->
 
               <!--begin::Hint-->
-              <div class="form-text">Allowed file types: png, jpg, jpeg.</div>
+              <div class="mt-1 text-sm text-gray-500">
+                Allowed file types: png, jpg, jpeg.
+              </div>
               <!--end::Hint-->
             </div>
             <!--end::Col-->
@@ -96,23 +107,26 @@
           <!--end::Input group-->
 
           <!--begin::Input group-->
-          <div class="row mb-6">
+          <div
+            class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6"
+          >
             <!--begin::Label-->
-            <label class="col-lg-4 col-form-label required fw-semibold fs-6"
+            <label
+              class="lg:col-span-4 text-sm font-semibold lg:pt-2 after:content-['*'] after:ml-0.5 after:text-danger"
               >Full Name</label
             >
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="col-lg-8">
+            <div class="lg:col-span-8">
               <!--begin::Row-->
-              <div class="row">
+              <div class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6">
                 <!--begin::Col-->
-                <div class="col-lg-6 fv-row">
+                <div class="lg:col-span-6 fv-row">
                   <Field
                     type="text"
                     name="fname"
-                    class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
+                    :class="[formInputClass, 'mb-3 lg:mb-0']"
                     placeholder="First name"
                     v-model="profileDetails.name"
                   />
@@ -125,11 +139,11 @@
                 <!--end::Col-->
 
                 <!--begin::Col-->
-                <div class="col-lg-6 fv-row">
+                <div class="lg:col-span-6 fv-row">
                   <Field
                     type="text"
                     name="lname"
-                    class="form-control form-control-lg form-control-solid"
+                    :class="formInputClass"
                     placeholder="Last name"
                     v-model="profileDetails.surname"
                   />
@@ -148,19 +162,22 @@
           <!--end::Input group-->
 
           <!--begin::Input group-->
-          <div class="row mb-6">
+          <div
+            class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6"
+          >
             <!--begin::Label-->
-            <label class="col-lg-4 col-form-label required fw-semibold fs-6"
+            <label
+              class="lg:col-span-4 text-sm font-semibold lg:pt-2 after:content-['*'] after:ml-0.5 after:text-danger"
               >Company</label
             >
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="col-lg-8 fv-row">
+            <div class="lg:col-span-8 fv-row">
               <Field
                 type="text"
                 name="company"
-                class="form-control form-control-lg form-control-solid"
+                :class="formInputClass"
                 placeholder="Company name"
                 v-model="profileDetails.company"
               />
@@ -175,25 +192,28 @@
           <!--end::Input group-->
 
           <!--begin::Input group-->
-          <div class="row mb-6">
+          <div
+            class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6"
+          >
             <!--begin::Label-->
-            <label class="col-lg-4 col-form-label fw-semibold fs-6">
-              <span class="required">Contact Phone</span>
+            <label class="lg:col-span-4 text-sm font-semibold lg:pt-2">
+              <span class="after:content-['*'] after:ml-0.5 after:text-danger"
+                >Contact Phone</span
+              >
 
               <i
                 class="fas fa-exclamation-circle ms-1 fs-7"
-                data-bs-toggle="tooltip"
                 title="Phone number must be active"
               ></i>
             </label>
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="col-lg-8 fv-row">
+            <div class="lg:col-span-8 fv-row">
               <Field
                 type="tel"
                 name="phone"
-                class="form-control form-control-lg form-control-solid"
+                :class="formInputClass"
                 placeholder="Phone number"
                 v-model="profileDetails.contactPhone"
               />
@@ -208,19 +228,21 @@
           <!--end::Input group-->
 
           <!--begin::Input group-->
-          <div class="row mb-6">
+          <div
+            class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6"
+          >
             <!--begin::Label-->
-            <label class="col-lg-4 col-form-label fw-semibold fs-6"
+            <label class="lg:col-span-4 text-sm font-semibold lg:pt-2"
               >Company Site</label
             >
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="col-lg-8 fv-row">
+            <div class="lg:col-span-8 fv-row">
               <Field
                 type="text"
                 name="website"
-                class="form-control form-control-lg form-control-solid"
+                :class="formInputClass"
                 placeholder="Company website"
                 v-model="profileDetails.companySite"
               />
@@ -235,25 +257,28 @@
           <!--end::Input group-->
 
           <!--begin::Input group-->
-          <div class="row mb-6">
+          <div
+            class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6"
+          >
             <!--begin::Label-->
-            <label class="col-lg-4 col-form-label fw-semibold fs-6">
-              <span class="required">Country</span>
+            <label class="lg:col-span-4 text-sm font-semibold lg:pt-2">
+              <span class="after:content-['*'] after:ml-0.5 after:text-danger"
+                >Country</span
+              >
 
               <i
                 class="fas fa-exclamation-circle ms-1 fs-7"
-                data-bs-toggle="tooltip"
                 title="Country of origination"
               ></i>
             </label>
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="col-lg-8 fv-row">
+            <div class="lg:col-span-8 fv-row">
               <Field
                 as="select"
                 name="country"
-                class="form-select form-select-solid form-select-lg fw-semibold"
+                :class="[formInputClass, 'font-semibold']"
                 v-model="profileDetails.country"
               >
                 <option value="AF">Afghanistan</option>
@@ -525,20 +550,23 @@
           <!--end::Input group-->
 
           <!--begin::Input group-->
-          <div class="row mb-6">
+          <div
+            class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6"
+          >
             <!--begin::Label-->
-            <label class="col-lg-4 col-form-label required fw-semibold fs-6"
+            <label
+              class="lg:col-span-4 text-sm font-semibold lg:pt-2 after:content-['*'] after:ml-0.5 after:text-danger"
               >Language</label
             >
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="col-lg-8 fv-row">
+            <div class="lg:col-span-8 fv-row">
               <!--begin::Input-->
               <Field
                 as="select"
                 name="language"
-                class="form-select form-select-solid form-select-lg"
+                :class="formInputClass"
                 v-model="profileDetails.language"
               >
                 <option value="id">Bahasa Indonesia - Indonesian</option>
@@ -596,7 +624,7 @@
               <!--end::Input-->
 
               <!--begin::Hint-->
-              <div class="form-text">
+              <div class="mt-1 text-sm text-gray-500">
                 Please select a preferred language, including date, time, and
                 number formatting.
               </div>
@@ -607,19 +635,22 @@
           <!--end::Input group-->
 
           <!--begin::Input group-->
-          <div class="row mb-6">
+          <div
+            class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6"
+          >
             <!--begin::Label-->
-            <label class="col-lg-4 col-form-label required fw-semibold fs-6"
+            <label
+              class="lg:col-span-4 text-sm font-semibold lg:pt-2 after:content-['*'] after:ml-0.5 after:text-danger"
               >Time Zone</label
             >
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="col-lg-8 fv-row">
+            <div class="lg:col-span-8 fv-row">
               <Field
                 as="select"
                 name="timezone"
-                class="form-select form-select-solid form-select-lg"
+                :class="formInputClass"
                 v-model="profileDetails.timezone"
               >
                 <option
@@ -1074,19 +1105,22 @@
           <!--end::Input group-->
 
           <!--begin::Input group-->
-          <div class="row mb-6">
+          <div
+            class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6"
+          >
             <!--begin::Label-->
-            <label class="col-lg-4 col-form-label required fw-semibold fs-6"
+            <label
+              class="lg:col-span-4 text-sm font-semibold lg:pt-2 after:content-['*'] after:ml-0.5 after:text-danger"
               >Currency</label
             >
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="col-lg-8 fv-row">
+            <div class="lg:col-span-8 fv-row">
               <Field
                 as="select"
                 name="currency"
-                class="form-select form-select-solid form-select-lg"
+                :class="formInputClass"
                 v-model="profileDetails.currency"
               >
                 <option value="USD"><b>USD</b>&#160;-&#160;USA dollar</option>
@@ -1116,38 +1150,38 @@
           <!--end::Input group-->
 
           <!--begin::Input group-->
-          <div class="row mb-6">
+          <div
+            class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6"
+          >
             <!--begin::Label-->
-            <label class="col-lg-4 col-form-label fw-semibold fs-6"
+            <label class="lg:col-span-4 text-sm font-semibold lg:pt-2"
               >Communication</label
             >
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="col-lg-8 fv-row">
+            <div class="lg:col-span-8 fv-row">
               <!--begin::Options-->
-              <div class="d-flex align-items-center mt-3">
+              <div class="flex items-center mt-3">
                 <!--begin::Option-->
-                <label
-                  class="form-check form-check-inline form-check-solid me-5"
-                >
+                <label class="mr-5 flex items-center">
                   <input
-                    class="form-check-input"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     name="communication[]"
                     type="checkbox"
                   />
-                  <span class="fw-semibold ps-2 fs-6"> Email </span>
+                  <span class="pl-2 text-sm font-semibold"> Email </span>
                 </label>
                 <!--end::Option-->
 
                 <!--begin::Option-->
-                <label class="form-check form-check-inline form-check-solid">
+                <label class="flex items-center">
                   <input
-                    class="form-check-input"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     name="communication[]"
                     type="checkbox"
                   />
-                  <span class="fw-semibold ps-2 fs-6"> Phone </span>
+                  <span class="pl-2 text-sm font-semibold"> Phone </span>
                 </label>
                 <!--end::Option-->
               </div>
@@ -1158,22 +1192,28 @@
           <!--end::Input group-->
 
           <!--begin::Input group-->
-          <div class="row mb-0">
+          <div
+            class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-0"
+          >
             <!--begin::Label-->
-            <label class="col-lg-4 col-form-label fw-semibold fs-6"
+            <label class="lg:col-span-4 text-sm font-semibold lg:pt-2"
               >Allow Marketing</label
             >
             <!--begin::Label-->
 
             <!--begin::Label-->
-            <div class="col-lg-8 d-flex align-items-center">
-              <div class="form-check form-check-solid form-switch fv-row">
-                <input
-                  class="form-check-input w-45px h-30px"
-                  type="checkbox"
-                  id="allowmarketing"
-                />
-                <label class="form-check-label" for="allowmarketing"></label>
+            <div class="lg:col-span-8 flex items-center">
+              <div class="fv-row">
+                <label class="inline-flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    class="peer sr-only"
+                    id="allowmarketing"
+                  />
+                  <span
+                    class="relative h-6 w-11 shrink-0 rounded-full bg-gray-300 transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-5 dark:bg-gray-600"
+                  ></span>
+                </label>
               </div>
             </div>
             <!--begin::Label-->
@@ -1183,25 +1223,22 @@
         <!--end::Card body-->
 
         <!--begin::Actions-->
-        <div class="card-footer d-flex justify-content-end py-6 px-9">
-          <button
-            type="reset"
-            class="btn btn-light btn-active-light-primary me-2"
-          >
+        <div class="flex justify-end py-6 px-6">
+          <button type="reset" class="mr-2" :class="secondaryButtonClass">
             Discard
           </button>
 
           <button
             type="submit"
             id="kt_account_profile_details_submit"
-            ref="submitButton1"
-            class="btn btn-primary"
+            :disabled="isSubmitting1"
+            :class="primaryButtonClass"
           >
-            <span class="indicator-label"> Save Changes </span>
-            <span class="indicator-progress">
+            <span v-if="!isSubmitting1">Save Changes</span>
+            <span v-else class="inline-flex items-center gap-2">
               Please wait...
               <span
-                class="spinner-border spinner-border-sm align-middle ms-2"
+                class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
               ></span>
             </span>
           </button>
@@ -1215,37 +1252,40 @@
   <!--end::Basic info-->
 
   <!--begin::Sign-in Method-->
-  <div class="card mb-5 mb-xl-10">
+  <div class="mb-5 xl:mb-10" :class="cardClass">
     <!--begin::Card header-->
     <div
-      class="card-header border-0 cursor-pointer"
+      class="flex items-center justify-between p-6 cursor-pointer"
       role="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#kt_account_signin_method"
+      @click="signinMethodOpen = !signinMethodOpen"
+      :aria-expanded="signinMethodOpen"
+      aria-controls="kt_account_signin_method"
     >
-      <div class="card-title m-0">
-        <h3 class="fw-bolder m-0">Sign-in Method</h3>
+      <div class="m-0">
+        <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Sign-in Method
+        </h3>
       </div>
     </div>
     <!--end::Card header-->
 
     <!--begin::Content-->
-    <div id="kt_account_signin_method" class="collapse show">
+    <div id="kt_account_signin_method" v-show="signinMethodOpen">
       <!--begin::Card body-->
-      <div class="card-body border-top p-9">
+      <div class="border-t border-gray-200 p-6 dark:border-gray-700">
         <!--begin::Email Address-->
-        <div class="d-flex flex-wrap align-items-center mb-8">
-          <div id="kt_signin_email" :class="{ 'd-none': emailFormDisplay }">
-            <div class="fs-4 fw-bolder mb-1">Email Address</div>
-            <div class="fs-6 fw-semibold text-gray-600">
+        <div class="flex flex-wrap items-center mb-8">
+          <div id="kt_signin_email" :class="{ hidden: emailFormDisplay }">
+            <div class="mb-1 text-lg font-extrabold">Email Address</div>
+            <div class="text-sm font-semibold text-gray-600 dark:text-gray-400">
               support@keenthemes.com
             </div>
           </div>
 
           <div
             id="kt_signin_email_edit"
-            :class="{ 'd-none': !emailFormDisplay }"
-            class="flex-row-fluid"
+            :class="{ hidden: !emailFormDisplay }"
+            class="flex-1"
           >
             <!--begin::Form-->
             <VForm
@@ -1255,17 +1295,17 @@
               @submit="updateEmail()"
               :validation-schema="changeEmail"
             >
-              <div class="row mb-6">
-                <div class="col-lg-6 mb-4 mb-lg-0">
+              <div
+                class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6"
+              >
+                <div class="lg:col-span-6 mb-4 lg:mb-0">
                   <div class="fv-row mb-0">
-                    <label
-                      for="emailaddress"
-                      class="form-label fs-6 fw-bold mb-3"
+                    <label for="emailaddress" class="mb-3 text-sm font-bold"
                       >Enter New Email Address</label
                     >
                     <Field
                       type="email"
-                      class="form-control form-control-lg form-control-solid fw-semibold fs-6"
+                      :class="[formInputClass, 'font-semibold text-sm']"
                       id="emailaddress"
                       placeholder="Email Address"
                       name="emailaddress"
@@ -1278,16 +1318,16 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-lg-6">
+                <div class="lg:col-span-6">
                   <div class="fv-row mb-0">
                     <label
                       for="confirmemailpassword"
-                      class="form-label fs-6 fw-bold mb-3"
+                      class="mb-3 text-sm font-bold"
                       >Confirm Password</label
                     >
                     <Field
                       type="password"
-                      class="form-control form-control-lg form-control-solid fw-semibold fs-6"
+                      :class="[formInputClass, 'font-semibold text-sm']"
                       name="confirmemailpassword"
                       id="confirmemailpassword"
                     />
@@ -1299,25 +1339,25 @@
                   </div>
                 </div>
               </div>
-              <div class="d-flex">
+              <div class="flex">
                 <button
                   id="kt_signin_submit"
                   type="submit"
-                  ref="updateEmailButton"
-                  class="btn btn-primary me-2 px-6"
+                  :disabled="isSubmittingEmail"
+                  class="mr-2 rounded-md bg-primary px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  <span class="indicator-label"> Update Email </span>
-                  <span class="indicator-progress">
+                  <span v-if="!isSubmittingEmail">Update Email</span>
+                  <span v-else class="inline-flex items-center gap-2">
                     Please wait...
                     <span
-                      class="spinner-border spinner-border-sm align-middle ms-2"
+                      class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                     ></span>
                   </span>
                 </button>
                 <button
                   id="kt_signin_cancel"
                   type="button"
-                  class="btn btn-color-gray-500 btn-active-light-primary px-6"
+                  class="rounded-md px-6 py-2 text-sm font-semibold text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"
                   @click="emailFormDisplay = !emailFormDisplay"
                 >
                   Cancel
@@ -1328,11 +1368,11 @@
           </div>
           <div
             id="kt_signin_email_button"
-            :class="{ 'd-none': emailFormDisplay }"
-            class="ms-auto"
+            :class="{ hidden: emailFormDisplay }"
+            class="ml-auto"
           >
             <button
-              class="btn btn-light fw-bolder px-6"
+              class="rounded-md bg-gray-100 px-6 py-2 text-sm font-extrabold text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
               @click="emailFormDisplay = !emailFormDisplay"
             >
               Change Email
@@ -1342,20 +1382,21 @@
         <!--end::Email Address-->
 
         <!--begin::Password-->
-        <div class="d-flex flex-wrap align-items-center mb-8">
-          <div
-            id="kt_signin_password"
-            :class="{ 'd-none': passwordFormDisplay }"
-          >
-            <div class="fs-4 fw-bolder mb-1">Password</div>
-            <div class="fs-6 fw-semibold text-gray-600">************</div>
+        <div class="flex flex-wrap items-center mb-8">
+          <div id="kt_signin_password" :class="{ hidden: passwordFormDisplay }">
+            <div class="mb-1 text-lg font-extrabold">Password</div>
+            <div class="text-sm font-semibold text-gray-600 dark:text-gray-400">
+              ************
+            </div>
           </div>
           <div
             id="kt_signin_password_edit"
-            class="flex-row-fluid"
-            :class="{ 'd-none': !passwordFormDisplay }"
+            class="flex-1"
+            :class="{ hidden: !passwordFormDisplay }"
           >
-            <div class="fs-6 fw-semibold text-gray-600 mb-4">
+            <div
+              class="mb-4 text-sm font-semibold text-gray-600 dark:text-gray-400"
+            >
               Password must be at least 8 character and contain symbols
             </div>
 
@@ -1367,17 +1408,17 @@
               @submit="updatePassword()"
               :validation-schema="changePassword"
             >
-              <div class="row mb-6">
-                <div class="col-lg-4">
+              <div
+                class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6"
+              >
+                <div class="lg:col-span-4">
                   <div class="fv-row mb-0">
-                    <label
-                      for="currentpassword"
-                      class="form-label fs-6 fw-bold mb-3"
+                    <label for="currentpassword" class="mb-3 text-sm font-bold"
                       >Current Password</label
                     >
                     <Field
                       type="password"
-                      class="form-control form-control-lg form-control-solid fw-semibold fs-6"
+                      :class="[formInputClass, 'font-semibold text-sm']"
                       name="currentpassword"
                       id="currentpassword"
                     />
@@ -1388,16 +1429,14 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="lg:col-span-4">
                   <div class="fv-row mb-0">
-                    <label
-                      for="newpassword"
-                      class="form-label fs-6 fw-bold mb-3"
+                    <label for="newpassword" class="mb-3 text-sm font-bold"
                       >New Password</label
                     >
                     <Field
                       type="password"
-                      class="form-control form-control-lg form-control-solid fw-semibold fs-6"
+                      :class="[formInputClass, 'font-semibold text-sm']"
                       name="newpassword"
                       id="newpassword"
                     />
@@ -1408,16 +1447,14 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="lg:col-span-4">
                   <div class="fv-row mb-0">
-                    <label
-                      for="confirmpassword"
-                      class="form-label fs-6 fw-bold mb-3"
+                    <label for="confirmpassword" class="mb-3 text-sm font-bold"
                       >Confirm New Password</label
                     >
                     <Field
                       type="password"
-                      class="form-control form-control-lg form-control-solid fw-semibold fs-6"
+                      :class="[formInputClass, 'font-semibold text-sm']"
                       name="confirmpassword"
                       id="confirmpassword"
                     />
@@ -1429,18 +1466,18 @@
                   </div>
                 </div>
               </div>
-              <div class="d-flex">
+              <div class="flex">
                 <button
                   id="kt_password_submit"
                   type="submit"
-                  ref="updatePasswordButton"
-                  class="btn btn-primary me-2 px-6"
+                  :disabled="isSubmittingPassword"
+                  class="mr-2 rounded-md bg-primary px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  <span class="indicator-label"> Update Password </span>
-                  <span class="indicator-progress">
+                  <span v-if="!isSubmittingPassword">Update Password</span>
+                  <span v-else class="inline-flex items-center gap-2">
                     Please wait...
                     <span
-                      class="spinner-border spinner-border-sm align-middle ms-2"
+                      class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                     ></span>
                   </span>
                 </button>
@@ -1448,7 +1485,7 @@
                   id="kt_password_cancel"
                   type="button"
                   @click="passwordFormDisplay = !passwordFormDisplay"
-                  class="btn btn-color-gray-500 btn-active-light-primary px-6"
+                  class="rounded-md px-6 py-2 text-sm font-semibold text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"
                 >
                   Cancel
                 </button>
@@ -1458,12 +1495,12 @@
           </div>
           <div
             id="kt_signin_password_button"
-            class="ms-auto"
-            :class="{ 'd-none': passwordFormDisplay }"
+            class="ml-auto"
+            :class="{ hidden: passwordFormDisplay }"
           >
             <button
               @click="passwordFormDisplay = !passwordFormDisplay"
-              class="btn btn-light fw-bolder"
+              class="rounded-md bg-gray-100 px-4 py-2 text-sm font-extrabold text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             >
               Reset Password
             </button>
@@ -1478,28 +1515,29 @@
   <!--end::Sign-in Method-->
 
   <!--begin::Connected Accounts-->
-  <div class="card mb-5 mb-xl-10">
+  <div class="mb-5 xl:mb-10" :class="cardClass">
     <!--begin::Card header-->
     <div
-      class="card-header border-0 cursor-pointer"
+      class="flex items-center justify-between p-6 cursor-pointer"
       role="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#kt_account_connected_accounts"
-      aria-expanded="true"
+      @click="connectedAccountsOpen = !connectedAccountsOpen"
+      :aria-expanded="connectedAccountsOpen"
       aria-controls="kt_account_connected_accounts"
     >
-      <div class="card-title m-0">
-        <h3 class="fw-bold m-0">Connected Accounts</h3>
+      <div class="m-0">
+        <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Connected Accounts
+        </h3>
       </div>
     </div>
     <!--end::Card header-->
 
     <!--begin::Content-->
-    <div id="kt_account_connected_accounts" class="collapse show">
+    <div id="kt_account_connected_accounts" v-show="connectedAccountsOpen">
       <!--begin::Card body-->
-      <div class="card-body border-top p-9">
+      <div class="border-t border-gray-200 p-6 dark:border-gray-700">
         <div
-          class="notice d-flex bg-light-primary rounded border-primary border border-dashed mb-9 p-6"
+          class="flex rounded border border-dashed border-primary bg-primary-light mb-9 p-6"
         >
           <KTIcon
             icon-name="design-frame"
@@ -1507,13 +1545,13 @@
           />
 
           <!--begin::Wrapper-->
-          <div class="d-flex flex-stack flex-grow-1">
+          <div class="flex flex-1 items-center justify-between">
             <!--begin::Content-->
-            <div class="fw-semibold">
-              <div class="fs-6 text-gray-600">
+            <div class="font-semibold">
+              <div class="text-sm text-gray-600 dark:text-gray-400">
                 Two-factor authentication adds an extra layer of security to
                 your account. To log in, in you'll need to provide a 4 digit
-                amazing code. <a href="#" class="fw-bold">Learn More</a>
+                amazing code. <a href="#" class="font-bold">Learn More</a>
               </div>
             </div>
             <!--end::Content-->
@@ -1524,106 +1562,112 @@
         <!--begin::Items-->
         <div class="py-2">
           <!--begin::Item-->
-          <div class="d-flex flex-stack">
-            <div class="d-flex">
+          <div class="flex items-center justify-between">
+            <div class="flex">
               <img
                 :src="getAssetPath('media/svg/brand-logos/google-icon.svg')"
-                class="w-30px me-6"
+                class="w-[30px] mr-6"
                 alt=""
               />
 
-              <div class="d-flex flex-column">
+              <div class="flex flex-col">
                 <a
                   href="#"
-                  class="fs-5 text-gray-900 text-hover-primary fw-bold"
+                  class="text-base font-bold text-gray-900 transition-colors hover:text-primary dark:text-gray-100"
                   >Google</a
                 >
-                <div class="fs-6 fw-semibold text-gray-500">
+                <div class="text-sm font-semibold text-gray-500">
                   Plan properly your workflow
                 </div>
               </div>
             </div>
-            <div class="d-flex justify-content-end">
-              <div class="form-check form-check-solid form-switch">
+            <div class="flex justify-end">
+              <label class="inline-flex cursor-pointer items-center">
                 <input
-                  class="form-check-input w-45px h-30px"
                   type="checkbox"
+                  class="peer sr-only"
                   id="googleswitch"
                   checked
                 />
-                <label class="form-check-label" for="googleswitch"></label>
-              </div>
+                <span
+                  class="relative h-6 w-11 shrink-0 rounded-full bg-gray-300 transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-5 dark:bg-gray-600"
+                ></span>
+              </label>
             </div>
           </div>
           <!--end::Item-->
 
-          <div class="separator separator-dashed my-5"></div>
+          <div
+            class="border-t border-dashed border-gray-200 my-5 dark:border-gray-700"
+          ></div>
 
           <!--begin::Item-->
-          <div class="d-flex flex-stack">
-            <div class="d-flex">
+          <div class="flex items-center justify-between">
+            <div class="flex">
               <img
                 :src="getAssetPath('media/svg/brand-logos/github.svg')"
-                class="w-30px me-6"
+                class="w-[30px] mr-6"
                 alt=""
               />
 
-              <div class="d-flex flex-column">
+              <div class="flex flex-col">
                 <a
                   href="#"
-                  class="fs-5 text-gray-900 text-hover-primary fw-bold"
+                  class="text-base font-bold text-gray-900 transition-colors hover:text-primary dark:text-gray-100"
                   >Github</a
                 >
-                <div class="fs-6 fw-semibold text-gray-500">
+                <div class="text-sm font-semibold text-gray-500">
                   Keep eye on on your Repositories
                 </div>
               </div>
             </div>
-            <div class="d-flex justify-content-end">
-              <div class="form-check form-check-solid form-switch">
+            <div class="flex justify-end">
+              <label class="inline-flex cursor-pointer items-center">
                 <input
-                  class="form-check-input w-45px h-30px"
                   type="checkbox"
+                  class="peer sr-only"
                   id="githubswitch"
                   checked
                 />
-                <label class="form-check-label" for="githubswitch"></label>
-              </div>
+                <span
+                  class="relative h-6 w-11 shrink-0 rounded-full bg-gray-300 transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-5 dark:bg-gray-600"
+                ></span>
+              </label>
             </div>
           </div>
           <!--end::Item-->
 
-          <div class="separator separator-dashed my-5"></div>
+          <div
+            class="border-t border-dashed border-gray-200 my-5 dark:border-gray-700"
+          ></div>
 
           <!--begin::Item-->
-          <div class="d-flex flex-stack">
-            <div class="d-flex">
+          <div class="flex items-center justify-between">
+            <div class="flex">
               <img
                 :src="getAssetPath('media/svg/brand-logos/slack-icon.svg')"
-                class="w-30px me-6"
+                class="w-[30px] mr-6"
                 alt=""
               />
 
-              <div class="d-flex flex-column">
+              <div class="flex flex-col">
                 <a
                   href="#"
-                  class="fs-5 text-gray-900 text-hover-primary fw-bold"
+                  class="text-base font-bold text-gray-900 transition-colors hover:text-primary dark:text-gray-100"
                   >Slack</a
                 >
-                <div class="fs-6 fw-semibold text-gray-500">
+                <div class="text-sm font-semibold text-gray-500">
                   Integrate Projects Discussions
                 </div>
               </div>
             </div>
-            <div class="d-flex justify-content-end">
-              <div class="form-check form-check-solid form-switch">
-                <input
-                  class="form-check-input w-45px h-30px"
-                  type="checkbox"
-                  id="slackswitch"
-                />
-                <label class="form-check-label" for="slackswitch"></label>
-              </div>
+            <div class="flex justify-end">
+              <label class="inline-flex cursor-pointer items-center">
+                <input type="checkbox" class="peer sr-only" id="slackswitch" />
+                <span
+                  class="relative h-6 w-11 shrink-0 rounded-full bg-gray-300 transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-5 dark:bg-gray-600"
+                ></span>
+              </label>
             </div>
           </div>
           <!--end::Item-->
@@ -1633,20 +1677,18 @@
       <!--end::Card body-->
 
       <!--begin::Card footer-->
-      <div class="card-footer d-flex justify-content-end py-6 px-9">
-        <button class="btn btn-light btn-active-light-primary me-2">
-          Discard
-        </button>
+      <div class="flex justify-end py-6 px-6">
+        <button class="mr-2" :class="secondaryButtonClass">Discard</button>
         <button
-          ref="submitButton2"
-          class="btn btn-primary"
+          :class="primaryButtonClass"
           @click="saveChanges2()"
+          :disabled="isSubmitting2"
         >
-          <span class="indicator-label"> Save Changes </span>
-          <span class="indicator-progress">
+          <span v-if="!isSubmitting2">Save Changes</span>
+          <span v-else class="inline-flex items-center gap-2">
             Please wait...
             <span
-              class="spinner-border spinner-border-sm align-middle ms-2"
+              class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
             ></span>
           </span>
         </button>
@@ -1658,35 +1700,34 @@
   <!--end::Connected Accounts-->
 
   <!--begin::Notifications-->
-  <div class="card mb-5 mb-xl-10">
+  <div class="mb-5 xl:mb-10" :class="cardClass">
     <!--begin::Card header-->
     <div
-      class="card-header border-0 cursor-pointer"
+      class="flex items-center justify-between p-6 cursor-pointer"
       role="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#kt_account_email_preferences"
-      aria-expanded="true"
+      @click="emailPreferencesOpen = !emailPreferencesOpen"
+      :aria-expanded="emailPreferencesOpen"
       aria-controls="kt_account_email_preferences"
     >
-      <div class="card-title m-0">
-        <h3 class="fw-bold m-0">Email Preferences</h3>
+      <div class="m-0">
+        <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Email Preferences
+        </h3>
       </div>
     </div>
     <!--begin::Card header-->
 
     <!--begin::Content-->
-    <div id="kt_account_email_preferences" class="collapse show">
+    <div id="kt_account_email_preferences" v-show="emailPreferencesOpen">
       <!--begin::Form-->
       <form class="form" @submit.prevent="saveChanges3()">
         <!--begin::Card body-->
-        <div class="card-body border-top px-9 py-9">
+        <div class="border-t border-gray-200 px-6 py-6 dark:border-gray-700">
           <!--begin::Option-->
-          <label
-            class="form-check form-check-custom form-check-solid align-items-start"
-          >
+          <label class="flex items-start cursor-pointer">
             <!--begin::Input-->
             <input
-              class="form-check-input me-3"
+              class="mt-0.5 mr-3 h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
               type="checkbox"
               name="email-preferences1"
               value="1"
@@ -1694,9 +1735,9 @@
             <!--end::Input-->
 
             <!--begin::Label-->
-            <span class="form-check-label d-flex flex-column align-items-start">
-              <span class="fw-bold fs-5 mb-0">Successful Payments</span>
-              <span class="text-muted fs-6"
+            <span class="flex flex-col items-start">
+              <span class="mb-0 text-base font-bold">Successful Payments</span>
+              <span class="text-sm text-gray-500"
                 >Receive a notification for every successful payment.</span
               >
             </span>
@@ -1704,16 +1745,16 @@
           </label>
           <!--end::Option-->
           <!--begin::Option-->
-          <div class="separator separator-dashed my-6"></div>
+          <div
+            class="border-t border-dashed border-gray-200 my-6 dark:border-gray-700"
+          ></div>
           <!--end::Option-->
 
           <!--begin::Option-->
-          <label
-            class="form-check form-check-custom form-check-solid align-items-start"
-          >
+          <label class="flex items-start cursor-pointer">
             <!--begin::Input-->
             <input
-              class="form-check-input me-3"
+              class="mt-0.5 mr-3 h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
               type="checkbox"
               name="email-preferences1"
               checked
@@ -1722,9 +1763,9 @@
             <!--end::Input-->
 
             <!--begin::Label-->
-            <span class="form-check-label d-flex flex-column align-items-start">
-              <span class="fw-bold fs-5 mb-0">Payouts</span>
-              <span class="text-muted fs-6"
+            <span class="flex flex-col items-start">
+              <span class="mb-0 text-base font-bold">Payouts</span>
+              <span class="text-sm text-gray-500"
                 >Receive a notification for every initiated payout.</span
               >
             </span>
@@ -1732,16 +1773,16 @@
           </label>
           <!--end::Option-->
           <!--begin::Option-->
-          <div class="separator separator-dashed my-6"></div>
+          <div
+            class="border-t border-dashed border-gray-200 my-6 dark:border-gray-700"
+          ></div>
           <!--end::Option-->
 
           <!--begin::Option-->
-          <label
-            class="form-check form-check-custom form-check-solid align-items-start"
-          >
+          <label class="flex items-start cursor-pointer">
             <!--begin::Input-->
             <input
-              class="form-check-input me-3"
+              class="mt-0.5 mr-3 h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
               type="checkbox"
               name="email-preferences1"
               value="1"
@@ -1749,9 +1790,9 @@
             <!--end::Input-->
 
             <!--begin::Label-->
-            <span class="form-check-label d-flex flex-column align-items-start">
-              <span class="fw-bold fs-5 mb-0">Fee Collection</span>
-              <span class="text-muted fs-6"
+            <span class="flex flex-col items-start">
+              <span class="mb-0 text-base font-bold">Fee Collection</span>
+              <span class="text-sm text-gray-500"
                 >Receive a notification each time you collect a fee from
                 sales</span
               >
@@ -1760,16 +1801,16 @@
           </label>
           <!--end::Option-->
           <!--begin::Option-->
-          <div class="separator separator-dashed my-6"></div>
+          <div
+            class="border-t border-dashed border-gray-200 my-6 dark:border-gray-700"
+          ></div>
           <!--end::Option-->
 
           <!--begin::Option-->
-          <label
-            class="form-check form-check-custom form-check-solid align-items-start"
-          >
+          <label class="flex items-start cursor-pointer">
             <!--begin::Input-->
             <input
-              class="form-check-input me-3"
+              class="mt-0.5 mr-3 h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
               type="checkbox"
               name="email-preferences1"
               checked
@@ -1778,9 +1819,11 @@
             <!--end::Input-->
 
             <!--begin::Label-->
-            <span class="form-check-label d-flex flex-column align-items-start">
-              <span class="fw-bold fs-5 mb-0">Customer Payment Dispute</span>
-              <span class="text-muted fs-6"
+            <span class="flex flex-col items-start">
+              <span class="mb-0 text-base font-bold"
+                >Customer Payment Dispute</span
+              >
+              <span class="text-sm text-gray-500"
                 >Receive a notification if a payment is disputed by a customer
                 and for dispute purposes.</span
               >
@@ -1789,16 +1832,16 @@
           </label>
           <!--end::Option-->
           <!--begin::Option-->
-          <div class="separator separator-dashed my-6"></div>
+          <div
+            class="border-t border-dashed border-gray-200 my-6 dark:border-gray-700"
+          ></div>
           <!--end::Option-->
 
           <!--begin::Option-->
-          <label
-            class="form-check form-check-custom form-check-solid align-items-start"
-          >
+          <label class="flex items-start cursor-pointer">
             <!--begin::Input-->
             <input
-              class="form-check-input me-3"
+              class="mt-0.5 mr-3 h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
               type="checkbox"
               name="email-preferences1"
               value="1"
@@ -1806,9 +1849,9 @@
             <!--end::Input-->
 
             <!--begin::Label-->
-            <span class="form-check-label d-flex flex-column align-items-start">
-              <span class="fw-bold fs-5 mb-0">Refund Alerts</span>
-              <span class="text-muted fs-6"
+            <span class="flex flex-col items-start">
+              <span class="mb-0 text-base font-bold">Refund Alerts</span>
+              <span class="text-sm text-gray-500"
                 >Receive a notification if a payment is stated as risk by the
                 Finance Department.</span
               >
@@ -1817,16 +1860,16 @@
           </label>
           <!--end::Option-->
           <!--begin::Option-->
-          <div class="separator separator-dashed my-6"></div>
+          <div
+            class="border-t border-dashed border-gray-200 my-6 dark:border-gray-700"
+          ></div>
           <!--end::Option-->
 
           <!--begin::Option-->
-          <label
-            class="form-check form-check-custom form-check-solid align-items-start"
-          >
+          <label class="flex items-start cursor-pointer">
             <!--begin::Input-->
             <input
-              class="form-check-input me-3"
+              class="mt-0.5 mr-3 h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
               type="checkbox"
               name="email-preferences1"
               checked
@@ -1835,9 +1878,9 @@
             <!--end::Input-->
 
             <!--begin::Label-->
-            <span class="form-check-label d-flex flex-column align-items-start">
-              <span class="fw-bold fs-5 mb-0">Invoice Payments</span>
-              <span class="text-muted fs-6"
+            <span class="flex flex-col items-start">
+              <span class="mb-0 text-base font-bold">Invoice Payments</span>
+              <span class="text-sm text-gray-500"
                 >Receive a notification if a customer sends an incorrect amount
                 to pay their invoice.</span
               >
@@ -1846,16 +1889,16 @@
           </label>
           <!--end::Option-->
           <!--begin::Option-->
-          <div class="separator separator-dashed my-6"></div>
+          <div
+            class="border-t border-dashed border-gray-200 my-6 dark:border-gray-700"
+          ></div>
           <!--end::Option-->
 
           <!--begin::Option-->
-          <label
-            class="form-check form-check-custom form-check-solid align-items-start"
-          >
+          <label class="flex items-start cursor-pointer">
             <!--begin::Input-->
             <input
-              class="form-check-input me-3"
+              class="mt-0.5 mr-3 h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
               type="checkbox"
               name="email-preferences1"
               value="1"
@@ -1863,9 +1906,11 @@
             <!--end::Input-->
 
             <!--begin::Label-->
-            <span class="form-check-label d-flex flex-column align-items-start">
-              <span class="fw-bold fs-5 mb-0">Webhook API Endpoints</span>
-              <span class="text-muted fs-6"
+            <span class="flex flex-col items-start">
+              <span class="mb-0 text-base font-bold"
+                >Webhook API Endpoints</span
+              >
+              <span class="text-sm text-gray-500"
                 >Receive notifications for consistently failing webhook API
                 endpoints.</span
               >
@@ -1874,26 +1919,26 @@
           </label>
           <!--end::Option-->
           <!--begin::Option-->
-          <div class="separator separator-dashed my-6"></div>
+          <div
+            class="border-t border-dashed border-gray-200 my-6 dark:border-gray-700"
+          ></div>
           <!--end::Option-->
         </div>
         <!--end::Card body-->
 
         <!--begin::Card footer-->
-        <div class="card-footer d-flex justify-content-end py-6 px-9">
-          <button class="btn btn-light btn-active-light-primary me-2">
-            Discard
-          </button>
+        <div class="flex justify-end py-6 px-6">
+          <button class="mr-2" :class="secondaryButtonClass">Discard</button>
           <button
-            ref="submitButton3"
             type="submit"
-            class="btn btn-primary px-6"
+            class="rounded-md bg-primary px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-70"
+            :disabled="isSubmitting3"
           >
-            <span class="indicator-label"> Save Changes </span>
-            <span class="indicator-progress">
+            <span v-if="!isSubmitting3">Save Changes</span>
+            <span v-else class="inline-flex items-center gap-2">
               Please wait...
               <span
-                class="spinner-border spinner-border-sm align-middle ms-2"
+                class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
               ></span>
             </span>
           </button>
@@ -1907,69 +1952,74 @@
   <!--end::Notifications-->
 
   <!--begin::Notifications-->
-  <div class="card mb-5 mb-xl-10">
+  <div class="mb-5 xl:mb-10" :class="cardClass">
     <!--begin::Card header-->
     <div
-      class="card-header border-0 cursor-pointer"
+      class="flex items-center justify-between p-6 cursor-pointer"
       role="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#kt_account_notifications"
-      aria-expanded="true"
+      @click="notificationsOpen = !notificationsOpen"
+      :aria-expanded="notificationsOpen"
       aria-controls="kt_account_notifications"
     >
-      <div class="card-title m-0">
-        <h3 class="fw-bold m-0">Notifications</h3>
+      <div class="m-0">
+        <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Notifications
+        </h3>
       </div>
     </div>
     <!--begin::Card header-->
 
     <!--begin::Content-->
-    <div id="kt_account_notifications" class="collapse show">
+    <div id="kt_account_notifications" v-show="notificationsOpen">
       <!--begin::Form-->
       <form class="form" @submit.prevent="saveChanges4()">
         <!--begin::Card body-->
-        <div class="card-body border-top px-9 pt-3 pb-4">
+        <div
+          class="border-t border-gray-200 px-6 pt-3 pb-4 dark:border-gray-700"
+        >
           <!--begin::Table-->
-          <div class="table-responsive">
-            <table
-              class="table table-row-dashed border-gray-300 align-middle gy-6"
-            >
-              <tbody class="fs-6 fw-semibold">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <tbody class="text-sm font-semibold">
                 <!--begin::Table row-->
                 <tr>
-                  <td class="min-w-250px fs-4 fw-bold">Notifications</td>
-                  <td class="w-125px">
-                    <div class="form-check form-check-solid">
+                  <td
+                    class="min-w-[250px] border-b border-dashed border-gray-200 py-3 text-lg font-bold dark:border-gray-700"
+                  >
+                    Notifications
+                  </td>
+                  <td
+                    class="w-[125px] border-b border-dashed border-gray-200 py-3 dark:border-gray-700"
+                  >
+                    <div class="flex items-center">
                       <input
-                        class="form-check-input"
+                        class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                         type="checkbox"
                         value=""
                         id="kt_settings_notification_email"
                         checked
-                        data-kt-check="true"
-                        data-kt-check-target="[data-kt-settings-notification=email]"
                       />
                       <label
-                        class="form-check-label ps-2"
+                        class="pl-2 cursor-pointer"
                         for="kt_settings_notification_email"
                       >
                         Email
                       </label>
                     </div>
                   </td>
-                  <td class="w-125px">
-                    <div class="form-check form-check-solid">
+                  <td
+                    class="w-[125px] border-b border-dashed border-gray-200 py-3 dark:border-gray-700"
+                  >
+                    <div class="flex items-center">
                       <input
-                        class="form-check-input"
+                        class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                         type="checkbox"
                         value=""
                         id="kt_settings_notification_phone"
                         checked
-                        data-kt-check="true"
-                        data-kt-check-target="[data-kt-settings-notification=phone]"
                       />
                       <label
-                        class="form-check-label ps-2"
+                        class="pl-2 cursor-pointer"
                         for="kt_settings_notification_phone"
                       >
                         Phone
@@ -1981,37 +2031,37 @@
 
                 <!--begin::Table row-->
                 <tr>
-                  <td>Billing Updates</td>
-                  <td>
-                    <div class="form-check form-check-solid">
+                  <td
+                    class="border-b border-dashed border-gray-200 py-3 dark:border-gray-700"
+                  >
+                    Billing Updates
+                  </td>
+                  <td
+                    class="border-b border-dashed border-gray-200 py-3 dark:border-gray-700"
+                  >
+                    <div class="flex items-center">
                       <input
-                        class="form-check-input"
+                        class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                         type="checkbox"
                         value="1"
                         id="billing1"
                         checked
-                        data-kt-settings-notification="email"
                       />
-                      <label
-                        class="form-check-label ps-2"
-                        for="billing1"
-                      ></label>
+                      <label class="pl-2 cursor-pointer" for="billing1"></label>
                     </div>
                   </td>
-                  <td>
-                    <div class="form-check form-check-solid">
+                  <td
+                    class="border-b border-dashed border-gray-200 py-3 dark:border-gray-700"
+                  >
+                    <div class="flex items-center">
                       <input
-                        class="form-check-input"
+                        class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                         type="checkbox"
                         value=""
                         id="billing2"
                         checked
-                        data-kt-settings-notification="phone"
                       />
-                      <label
-                        class="form-check-label ps-2"
-                        for="billing2"
-                      ></label>
+                      <label class="pl-2 cursor-pointer" for="billing2"></label>
                     </div>
                   </td>
                 </tr>
@@ -2019,30 +2069,36 @@
 
                 <!--begin::Table row-->
                 <tr>
-                  <td>New Team Members</td>
-                  <td>
-                    <div class="form-check form-check-solid">
+                  <td
+                    class="border-b border-dashed border-gray-200 py-3 dark:border-gray-700"
+                  >
+                    New Team Members
+                  </td>
+                  <td
+                    class="border-b border-dashed border-gray-200 py-3 dark:border-gray-700"
+                  >
+                    <div class="flex items-center">
                       <input
-                        class="form-check-input"
+                        class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                         type="checkbox"
                         value=""
                         id="team1"
                         checked
-                        data-kt-settings-notification="email"
                       />
-                      <label class="form-check-label ps-2" for="team1"></label>
+                      <label class="pl-2 cursor-pointer" for="team1"></label>
                     </div>
                   </td>
-                  <td>
-                    <div class="form-check form-check-solid">
+                  <td
+                    class="border-b border-dashed border-gray-200 py-3 dark:border-gray-700"
+                  >
+                    <div class="flex items-center">
                       <input
-                        class="form-check-input"
+                        class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                         type="checkbox"
                         value=""
                         id="team2"
-                        data-kt-settings-notification="phone"
                       />
-                      <label class="form-check-label ps-2" for="team2"></label>
+                      <label class="pl-2 cursor-pointer" for="team2"></label>
                     </div>
                   </td>
                 </tr>
@@ -2050,36 +2106,36 @@
 
                 <!--begin::Table row-->
                 <tr>
-                  <td>Completed Projects</td>
-                  <td>
-                    <div class="form-check form-check-solid">
+                  <td
+                    class="border-b border-dashed border-gray-200 py-3 dark:border-gray-700"
+                  >
+                    Completed Projects
+                  </td>
+                  <td
+                    class="border-b border-dashed border-gray-200 py-3 dark:border-gray-700"
+                  >
+                    <div class="flex items-center">
                       <input
-                        class="form-check-input"
+                        class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                         type="checkbox"
                         value=""
                         id="project1"
-                        data-kt-settings-notification="email"
                       />
-                      <label
-                        class="form-check-label ps-2"
-                        for="project1"
-                      ></label>
+                      <label class="pl-2 cursor-pointer" for="project1"></label>
                     </div>
                   </td>
-                  <td>
-                    <div class="form-check form-check-solid">
+                  <td
+                    class="border-b border-dashed border-gray-200 py-3 dark:border-gray-700"
+                  >
+                    <div class="flex items-center">
                       <input
-                        class="form-check-input"
+                        class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                         type="checkbox"
                         value=""
                         id="project2"
                         checked
-                        data-kt-settings-notification="phone"
                       />
-                      <label
-                        class="form-check-label ps-2"
-                        for="project2"
-                      ></label>
+                      <label class="pl-2 cursor-pointer" for="project2"></label>
                     </div>
                   </td>
                 </tr>
@@ -2087,33 +2143,31 @@
 
                 <!--begin::Table row-->
                 <tr>
-                  <td class="border-bottom-0">Newsletters</td>
-                  <td class="border-bottom-0">
-                    <div class="form-check form-check-solid">
+                  <td class="border-b-0 py-3">Newsletters</td>
+                  <td class="border-b-0 py-3">
+                    <div class="flex items-center">
                       <input
-                        class="form-check-input"
+                        class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                         type="checkbox"
                         value=""
                         id="newsletter1"
-                        data-kt-settings-notification="email"
                       />
                       <label
-                        class="form-check-label ps-2"
+                        class="pl-2 cursor-pointer"
                         for="newsletter1"
                       ></label>
                     </div>
                   </td>
-                  <td class="border-bottom-0">
-                    <div class="form-check form-check-solid">
+                  <td class="border-b-0 py-3">
+                    <div class="flex items-center">
                       <input
-                        class="form-check-input"
+                        class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                         type="checkbox"
                         value=""
                         id="newsletter2"
-                        data-kt-settings-notification="phone"
                       />
                       <label
-                        class="form-check-label ps-2"
+                        class="pl-2 cursor-pointer"
                         for="newsletter2"
                       ></label>
                     </div>
@@ -2128,20 +2182,18 @@
         <!--end::Card body-->
 
         <!--begin::Card footer-->
-        <div class="card-footer d-flex justify-content-end py-6 px-9">
-          <button class="btn btn-light btn-active-light-primary me-2">
-            Discard
-          </button>
+        <div class="flex justify-end py-6 px-6">
+          <button class="mr-2" :class="secondaryButtonClass">Discard</button>
           <button
-            ref="submitButton4"
             type="submit"
-            class="btn btn-primary px-6"
+            class="rounded-md bg-primary px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-70"
+            :disabled="isSubmitting4"
           >
-            <span class="indicator-label"> Save Changes </span>
-            <span class="indicator-progress">
+            <span v-if="!isSubmitting4">Save Changes</span>
+            <span v-else class="inline-flex items-center gap-2">
               Please wait...
               <span
-                class="spinner-border spinner-border-sm align-middle ms-2"
+                class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
               ></span>
             </span>
           </button>
@@ -2155,24 +2207,25 @@
   <!--end::Notifications-->
 
   <!--begin::Deactivate Account-->
-  <div class="card mb-5 mb-xl-10">
+  <div class="mb-5 xl:mb-10" :class="cardClass">
     <!--begin::Card header-->
     <div
-      class="card-header border-0 cursor-pointer"
+      class="flex items-center justify-between p-6 cursor-pointer"
       role="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#kt_account_deactivate"
-      aria-expanded="true"
+      @click="deactivateOpen = !deactivateOpen"
+      :aria-expanded="deactivateOpen"
       aria-controls="kt_account_deactivate"
     >
-      <div class="card-title m-0">
-        <h3 class="fw-bolder m-0">Deactivate Account</h3>
+      <div class="m-0">
+        <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Deactivate Account
+        </h3>
       </div>
     </div>
     <!--end::Card header-->
 
     <!--begin::Content-->
-    <div id="kt_account_deactivate" class="collapse show">
+    <div id="kt_account_deactivate" v-show="deactivateOpen">
       <!--begin::Form-->
       <form
         id="kt_account_deactivate_form"
@@ -2180,26 +2233,26 @@
         @submit.prevent="deactivateAccount()"
       >
         <!--begin::Card body-->
-        <div class="card-body border-top p-9">
+        <div class="border-t border-gray-200 p-6 dark:border-gray-700">
           <div
-            class="notice d-flex bg-light-warning rounded border-warning border border-dashed mb-9 p-6"
+            class="flex rounded border border-dashed border-warning bg-warning-light mb-9 p-6"
           >
             <KTIcon
               icon-name="information-5"
               icon-class="fs-2tx text-warning me-4"
             />
             <!--begin::Wrapper-->
-            <div class="d-flex flex-stack flex-grow-1">
+            <div class="flex flex-1 items-center justify-between">
               <!--begin::Content-->
-              <div class="fw-semibold">
-                <h4 class="text-gray-800 fw-bold">
+              <div class="font-semibold">
+                <h4 class="font-bold text-gray-800 dark:text-gray-200">
                   You Are Deactivating Your Account
                 </h4>
 
-                <div class="fs-6 text-gray-600">
+                <div class="text-sm text-gray-600 dark:text-gray-400">
                   For extra security, this requires you to confirm your email or
                   phone number when you reset yousignr password. <br /><a
-                    class="fw-bold"
+                    class="font-bold"
                     href="#"
                     >Learn more</a
                   >
@@ -2211,16 +2264,16 @@
           </div>
 
           <!--begin::Form input row-->
-          <div class="form-check form-check-solid fv-row">
+          <div class="flex items-center fv-row">
             <input
               name="deactivate"
-              class="form-check-input"
+              class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
               type="checkbox"
               value=""
               id="deactivate"
             />
             <label
-              class="form-check-label fw-semibold ps-2 fs-6"
+              class="pl-2 cursor-pointer text-sm font-semibold"
               for="deactivate"
               >Confirm Account Deactivation</label
             >
@@ -2230,18 +2283,18 @@
         <!--end::Card body-->
 
         <!--begin::Card footer-->
-        <div class="card-footer d-flex justify-content-end py-6 px-9">
+        <div class="flex justify-end py-6 px-6">
           <button
             id="kt_account_deactivate_account_submit"
-            ref="submitButton5"
             type="submit"
-            class="btn btn-danger fw-semibold"
+            class="rounded-md bg-danger px-4 py-2 text-sm font-semibold text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+            :disabled="isSubmitting5"
           >
-            <span class="indicator-label"> Deactivate Account </span>
-            <span class="indicator-progress">
+            <span v-if="!isSubmitting5">Deactivate Account</span>
+            <span v-else class="inline-flex items-center gap-2">
               Please wait...
               <span
-                class="spinner-border spinner-border-sm align-middle ms-2"
+                class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
               ></span>
             </span>
           </button>
@@ -2261,6 +2314,13 @@ import { defineComponent, ref } from "vue";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import * as Yup from "yup";
+import {
+  formInputClass,
+  swalConfirmButtonClass,
+  cardClass,
+  primaryButtonClass,
+  secondaryButtonClass,
+} from "@/core/helpers/badge";
 
 interface ProfileDetails {
   avatar: string;
@@ -2288,16 +2348,30 @@ export default defineComponent({
     VForm,
   },
   setup() {
-    const submitButton1 = ref<HTMLElement | null>(null);
-    const submitButton2 = ref<HTMLElement | null>(null);
-    const submitButton3 = ref<HTMLElement | null>(null);
-    const submitButton4 = ref<HTMLElement | null>(null);
-    const submitButton5 = ref<HTMLElement | null>(null);
-    const updateEmailButton = ref<HTMLElement | null>(null);
-    const updatePasswordButton = ref<HTMLElement | null>(null);
+    // Was 7 `data-kt-indicator` button-loading toggles (setAttribute/
+    // removeAttribute on element refs) - pure CSS in Metronic's SCSS,
+    // ported to plain reactive booleans driving v-if/v-else in the template.
+    const isSubmitting1 = ref(false);
+    const isSubmitting2 = ref(false);
+    const isSubmitting3 = ref(false);
+    const isSubmitting4 = ref(false);
+    const isSubmitting5 = ref(false);
+    const isSubmittingEmail = ref(false);
+    const isSubmittingPassword = ref(false);
 
     const emailFormDisplay = ref(false);
     const passwordFormDisplay = ref(false);
+
+    // Was Bootstrap's `data-bs-toggle="collapse"` (works via the global
+    // Collapse data-api side effect registered by importing `bootstrap`
+    // anywhere in the app, same mechanism as Tab) - all 6 sections default
+    // open, matching the original `collapse show` markup.
+    const profileDetailsOpen = ref(true);
+    const signinMethodOpen = ref(true);
+    const connectedAccountsOpen = ref(true);
+    const emailPreferencesOpen = ref(true);
+    const notificationsOpen = ref(true);
+    const deactivateOpen = ref(true);
 
     const profileDetailsValidator = Yup.object().shape({
       fname: Yup.string().required().label("First name"),
@@ -2345,108 +2419,79 @@ export default defineComponent({
     });
 
     const saveChanges1 = () => {
-      if (submitButton1.value) {
-        // Activate indicator
-        submitButton1.value.setAttribute("data-kt-indicator", "on");
-
-        setTimeout(() => {
-          submitButton1.value?.removeAttribute("data-kt-indicator");
-        }, 2000);
-      }
+      isSubmitting1.value = true;
+      setTimeout(() => {
+        isSubmitting1.value = false;
+      }, 2000);
     };
 
     const saveChanges2 = () => {
-      if (submitButton2.value) {
-        // Activate indicator
-        submitButton2.value.setAttribute("data-kt-indicator", "on");
-
-        setTimeout(() => {
-          submitButton2.value?.removeAttribute("data-kt-indicator");
-        }, 2000);
-      }
+      isSubmitting2.value = true;
+      setTimeout(() => {
+        isSubmitting2.value = false;
+      }, 2000);
     };
 
     const saveChanges3 = () => {
-      if (submitButton3.value) {
-        // Activate indicator
-        submitButton3.value.setAttribute("data-kt-indicator", "on");
-
-        setTimeout(() => {
-          submitButton3.value?.removeAttribute("data-kt-indicator");
-        }, 2000);
-      }
+      isSubmitting3.value = true;
+      setTimeout(() => {
+        isSubmitting3.value = false;
+      }, 2000);
     };
 
     const saveChanges4 = () => {
-      if (submitButton4.value) {
-        // Activate indicator
-        submitButton4.value.setAttribute("data-kt-indicator", "on");
-
-        setTimeout(() => {
-          submitButton4.value?.removeAttribute("data-kt-indicator");
-        }, 2000);
-      }
+      isSubmitting4.value = true;
+      setTimeout(() => {
+        isSubmitting4.value = false;
+      }, 2000);
     };
 
     const deactivateAccount = () => {
-      if (submitButton5.value) {
-        // Activate indicator
-        submitButton5.value.setAttribute("data-kt-indicator", "on");
+      isSubmitting5.value = true;
+      setTimeout(() => {
+        isSubmitting5.value = false;
 
-        setTimeout(() => {
-          submitButton5.value?.removeAttribute("data-kt-indicator");
-
-          Swal.fire({
-            text: "Email is successfully changed!",
-            icon: "success",
-            confirmButtonText: "Ok",
-            buttonsStyling: false,
-            heightAuto: false,
-            customClass: {
-              confirmButton: "btn btn-light-primary",
-            },
-          }).then(() => {
-            emailFormDisplay.value = false;
-          });
-        }, 2000);
-      }
+        Swal.fire({
+          text: "Email is successfully changed!",
+          icon: "success",
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          heightAuto: false,
+          customClass: {
+            confirmButton: swalConfirmButtonClass,
+          },
+        }).then(() => {
+          emailFormDisplay.value = false;
+        });
+      }, 2000);
     };
 
     const updateEmail = () => {
-      if (updateEmailButton.value) {
-        // Activate indicator
-        updateEmailButton.value.setAttribute("data-kt-indicator", "on");
-
-        setTimeout(() => {
-          updateEmailButton.value?.removeAttribute("data-kt-indicator");
-
-          emailFormDisplay.value = false;
-        }, 2000);
-      }
+      isSubmittingEmail.value = true;
+      setTimeout(() => {
+        isSubmittingEmail.value = false;
+        emailFormDisplay.value = false;
+      }, 2000);
     };
 
     const updatePassword = () => {
-      if (updatePasswordButton.value) {
-        // Activate indicator
-        updatePasswordButton.value.setAttribute("data-kt-indicator", "on");
+      isSubmittingPassword.value = true;
+      setTimeout(() => {
+        isSubmittingPassword.value = false;
 
-        setTimeout(() => {
-          updatePasswordButton.value?.removeAttribute("data-kt-indicator");
-
-          Swal.fire({
-            text: "Password is successfully changed!",
-            icon: "success",
-            confirmButtonText: "Ok",
-            buttonsStyling: false,
-            heightAuto: false,
-            customClass: {
-              confirmButton: "btn btn-light-primary",
-            },
-          }).then(() => {
-            passwordFormDisplay.value = false;
-          });
-        }, 2000);
-      }
+        Swal.fire({
+          text: "Password is successfully changed!",
+          icon: "success",
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          heightAuto: false,
+          customClass: {
+            confirmButton: swalConfirmButtonClass,
+          },
+        }).then(() => {
+          passwordFormDisplay.value = false;
+        });
+      }, 2000);
     };
 
     const removeImage = () => {
@@ -2454,11 +2499,11 @@ export default defineComponent({
     };
 
     return {
-      submitButton1,
-      submitButton2,
-      submitButton3,
-      submitButton4,
-      submitButton5,
+      isSubmitting1,
+      isSubmitting2,
+      isSubmitting3,
+      isSubmitting4,
+      isSubmitting5,
       saveChanges1,
       saveChanges2,
       saveChanges3,
@@ -2471,11 +2516,21 @@ export default defineComponent({
       profileDetailsValidator,
       changeEmail,
       changePassword,
-      updateEmailButton,
-      updatePasswordButton,
+      isSubmittingEmail,
+      isSubmittingPassword,
       updateEmail,
       updatePassword,
       getAssetPath,
+      formInputClass,
+      cardClass,
+      primaryButtonClass,
+      secondaryButtonClass,
+      profileDetailsOpen,
+      signinMethodOpen,
+      connectedAccountsOpen,
+      emailPreferencesOpen,
+      notificationsOpen,
+      deactivateOpen,
     };
   },
 });

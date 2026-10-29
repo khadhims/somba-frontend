@@ -1,12 +1,17 @@
 <template>
   <!--begin::Card-->
-  <a href="#" class="card border border-2 border-gray-300 border-hover">
+  <a
+    href="#"
+    class="block rounded-lg border-2 border-gray-300 bg-white transition-colors hover:border-primary dark:bg-gray-900 dark:border-gray-700"
+  >
     <!--begin::Card header-->
-    <div class="card-header border-0 pt-9">
+    <div class="flex items-center justify-between px-9 pt-9">
       <!--begin::Card Title-->
-      <div class="card-title m-0">
+      <div class="m-0">
         <!--begin::Avatar-->
-        <div class="symbol symbol-50px w-50px bg-light">
+        <div
+          class="flex h-[50px] w-[50px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800"
+        >
           <img :src="icon" alt="image" class="p-3" />
         </div>
         <!--end::Avatar-->
@@ -14,10 +19,10 @@
       <!--end::Car Title-->
 
       <!--begin::Card toolbar-->
-      <div class="card-toolbar">
+      <div>
         <span
-          :class="getStatusDataBadgeColor"
-          class="badge fw-bold me-auto px-4 py-3"
+          class="mr-auto inline-flex rounded px-4 py-3 text-xs font-bold"
+          :class="badgeVariantClass(statusVariant)"
           >{{ getStatus }}</span
         >
       </div>
@@ -26,36 +31,40 @@
     <!--end:: Card header-->
 
     <!--begin:: Card body-->
-    <div class="card-body p-9">
+    <div class="p-9">
       <!--begin::Name-->
-      <div class="fs-3 fw-bold text-gray-900">
+      <div class="text-xl font-bold text-gray-900 dark:text-gray-100">
         {{ title }}
       </div>
       <!--end::Name-->
 
       <!--begin::Description-->
-      <p class="text-gray-500 fw-semibold fs-5 mt-1 mb-7">
+      <p class="mb-7 mt-1 text-base font-semibold text-gray-500">
         {{ getDescription }}
       </p>
       <!--end::Description-->
 
       <!--begin::Info-->
-      <div class="d-flex flex-wrap mb-5">
+      <div class="mb-5 flex flex-wrap">
         <!--begin::Due-->
         <div
-          class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-7 mb-3"
+          class="mb-3 mr-7 min-w-[125px] rounded border border-dashed border-gray-300 px-4 py-3"
         >
-          <div class="fs-6 text-gray-800 fw-bold">{{ getDate }}</div>
-          <div class="fw-semibold text-gray-500">Due Date</div>
+          <div class="text-sm font-bold text-gray-800 dark:text-gray-200">
+            {{ getDate }}
+          </div>
+          <div class="font-semibold text-gray-500">Due Date</div>
         </div>
         <!--end::Due-->
 
         <!--begin::Budget-->
         <div
-          class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 mb-3"
+          class="mb-3 min-w-[125px] rounded border border-dashed border-gray-300 px-4 py-3"
         >
-          <div class="fs-6 text-gray-800 fw-bold">{{ getBudget }}</div>
-          <div class="fw-semibold text-gray-500">Budget</div>
+          <div class="text-sm font-bold text-gray-800 dark:text-gray-200">
+            {{ getBudget }}
+          </div>
+          <div class="font-semibold text-gray-500">Budget</div>
         </div>
         <!--end::Budget-->
       </div>
@@ -63,13 +72,12 @@
 
       <!--begin::Progress-->
       <div
-        class="h-4px w-100 bg-light mb-5"
-        data-bs-toggle="tooltip"
+        class="mb-5 h-1 w-full rounded bg-gray-100 dark:bg-gray-800"
         :title="`This project ${progress}% completed`"
       >
         <div
-          :class="getStatusDataColor"
-          class="rounded h-4px"
+          class="h-1 rounded"
+          :class="solidBgClass"
           role="progressbar"
           :style="{ width: progress + `%` }"
           :aria-valuenow="progress"
@@ -81,19 +89,18 @@
 
       <template v-if="users">
         <!--begin::Users-->
-        <div class="symbol-group symbol-hover">
+        <div class="flex -space-x-2">
           <template v-for="(user, index) in users" :key="index">
             <!--begin::User-->
             <div
-              class="symbol symbol-35px symbol-circle"
-              data-bs-toggle="tooltip"
+              class="h-[35px] w-[35px] overflow-hidden rounded-full ring-2 ring-white dark:ring-gray-900"
               :title="user.title"
             >
               <img v-if="user.src" alt="Pic" :src="user.src" />
               <span
                 v-else
-                class="symbol-label fw-bold"
-                :class="`bg-${user.state} text-inverse-${user.state}`"
+                class="flex h-full w-full items-center justify-center text-xs font-bold"
+                :class="userSolidClass(user.state)"
                 >{{ user.initials }}</span
               >
             </div>
@@ -110,6 +117,22 @@
 
 <script lang="ts">
 import { computed, defineComponent } from "vue";
+import { badgeVariantClass, type BadgeVariant } from "@/core/helpers/badge";
+
+// Solid bg (+ white text for avatar initials) per variant - a different
+// look from badgeVariantClass()'s light-pill style, needed for the
+// progress-bar fill and the stacked user-initials avatars here. Was
+// `bg-${state} text-inverse-${state}` template-literal interpolation,
+// which Tailwind's build-time scanner can't see - same trap documented in
+// core/helpers/badge.ts.
+const SOLID_BG_CLASSES: Record<string, string> = {
+  primary: "bg-primary",
+  success: "bg-success",
+  danger: "bg-danger",
+  warning: "bg-warning",
+  info: "bg-info",
+  secondary: "bg-gray-400",
+};
 
 export default defineComponent({
   name: "card-1",
@@ -119,9 +142,12 @@ export default defineComponent({
   props: {
     progress: Number,
 
-    statusDataBadgeColor: String,
-
-    statusDataColor: String,
+    // Was `statusDataBadgeColor`/`statusDataColor` string props holding raw
+    // Bootstrap class names (e.g. "badge-light-success", "bg-primary") -
+    // Tailwind needs a variant name + a literal class lookup instead (same
+    // reasoning as badge.ts). No caller ever varied the two independently,
+    // so they're unified into one variant prop.
+    statusVariant: { type: String as () => BadgeVariant, default: "primary" },
 
     status: String,
 
@@ -156,23 +182,21 @@ export default defineComponent({
       return props.status ? props.status : "In Progress";
     });
 
-    const getStatusDataBadgeColor = computed(() => {
-      return props.statusDataBadgeColor
-        ? props.statusDataBadgeColor
-        : "badge-light-primary";
-    });
+    const solidBgClass = computed(
+      () => SOLID_BG_CLASSES[props.statusVariant] || SOLID_BG_CLASSES.primary
+    );
 
-    const getStatusDataColor = computed(() => {
-      return props.statusDataColor ? props.statusDataColor : "bg-primary";
-    });
+    const userSolidClass = (state: string) =>
+      `text-white ${SOLID_BG_CLASSES[state] || SOLID_BG_CLASSES.primary}`;
 
     return {
       getDescription,
       getDate,
       getBudget,
       getStatus,
-      getStatusDataBadgeColor,
-      getStatusDataColor,
+      badgeVariantClass,
+      solidBgClass,
+      userSolidClass,
     };
   },
 });

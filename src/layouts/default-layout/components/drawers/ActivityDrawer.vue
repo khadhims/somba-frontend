@@ -1,27 +1,34 @@
 <template>
+  <!--begin::Activities drawer backdrop-->
+  <div
+    v-if="drawers.activityOpen"
+    class="fixed inset-0 z-40 bg-black/50"
+    @click="drawers.activityOpen = false"
+  ></div>
+  <!--end::Activities drawer backdrop-->
+
   <!--begin::Activities drawer-->
   <div
     id="kt_activities"
-    class="bg-body"
-    data-kt-drawer="true"
-    data-kt-drawer-name="activities"
-    data-kt-drawer-activate="true"
-    data-kt-drawer-overlay="true"
-    data-kt-drawer-width="{default:'300px', 'lg': '900px'}"
-    data-kt-drawer-direction="end"
-    data-kt-drawer-toggle="#kt_activities_toggle"
-    data-kt-drawer-close="#kt_activities_close"
+    class="fixed inset-y-0 right-0 z-50 flex w-[300px] translate-x-full flex-col bg-white transition-transform duration-300 lg:w-[900px] dark:bg-gray-900"
+    :class="{ 'translate-x-0': drawers.activityOpen }"
   >
-    <div class="card shadow-none">
+    <div class="flex h-full flex-col">
       <!--begin::Header-->
-      <div class="card-header" id="kt_activities_header">
-        <h3 class="card-title fw-bold text-gray-900">Activity Logs</h3>
+      <div
+        class="flex items-center justify-between border-b border-gray-200 p-6 dark:border-gray-700"
+        id="kt_activities_header"
+      >
+        <h3 class="font-bold text-gray-900 dark:text-gray-100">
+          Activity Logs
+        </h3>
 
-        <div class="card-toolbar">
+        <div>
           <button
             type="button"
-            class="btn btn-sm btn-icon btn-active-light-primary me-n5"
+            class="flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"
             id="kt_activities_close"
+            @click="drawers.activityOpen = false"
           >
             <KTIcon icon-name="cross" icon-class="fs-1" />
           </button>
@@ -30,19 +37,11 @@
       <!--end::Header-->
 
       <!--begin::Body-->
-      <div class="card-body position-relative" id="kt_activities_body">
+      <div class="relative flex-1 overflow-y-auto p-6" id="kt_activities_body">
         <!--begin::Content-->
-        <div
-          id="kt_activities_scroll"
-          class="position-relative scroll-y me-n5 pe-5"
-          data-kt-scroll="true"
-          data-kt-scroll-height="auto"
-          data-kt-scroll-wrappers="#kt_activities_body"
-          data-kt-scroll-dependencies="#kt_activities_header, #kt_activities_footer"
-          data-kt-scroll-offset="5px"
-        >
+        <div id="kt_activities_scroll" class="relative">
           <!--begin::Timeline items-->
-          <div class="timeline">
+          <div>
             <Item1></Item1>
             <Item2></Item2>
             <Item3></Item3>
@@ -59,8 +58,14 @@
       <!--end::Body-->
 
       <!--begin::Footer-->
-      <div class="card-footer py-5 text-center" id="kt_activities_footer">
-        <a href="#" class="btn btn-bg-body text-primary">
+      <div
+        class="border-t border-gray-200 py-5 text-center dark:border-gray-700"
+        id="kt_activities_footer"
+      >
+        <a
+          href="#"
+          class="inline-flex items-center gap-1 text-sm font-semibold text-primary transition-colors hover:underline"
+        >
           View All Activities
           <KTIcon icon-name="arrow-right" icon-class="fs-3 text-primary" />
         </a>
@@ -82,6 +87,7 @@ import Item5 from "@/components/activity-timeline-items/Item5.vue";
 import Item6 from "@/components/activity-timeline-items/Item6.vue";
 import Item7 from "@/components/activity-timeline-items/Item7.vue";
 import Item8 from "@/components/activity-timeline-items/Item8.vue";
+import { useDrawersStore } from "@/stores/drawers";
 
 export default defineComponent({
   name: "kt-activity-drawer",
@@ -96,8 +102,10 @@ export default defineComponent({
     Item8,
   },
   setup() {
+    const drawers = useDrawersStore();
     return {
       getAssetPath,
+      drawers,
     };
   },
 });

@@ -2,10 +2,11 @@ import { fileURLToPath, URL } from "node:url";
 
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), tailwindcss()],
   server: {
     port: 5173,
     strictPort: true,
@@ -19,20 +20,5 @@ export default defineConfig({
   base: "/",
   build: {
     chunkSizeWarningLimit: 3000,
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        includePaths: ["node_modules"],
-        quietDeps: true,
-        // Silence legacy Sass deprecation noise from third-party packages until they migrate.
-        silenceDeprecations: [
-          "import",
-          "global-builtin",
-          "color-functions",
-          "abs-percent",
-        ],
-      },
-    },
   },
 });

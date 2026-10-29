@@ -1,20 +1,18 @@
 <template>
-  <div class="dataTables_wrapper dt-bootstrap4 no-footer">
-    <div class="table-responsive">
+  <div class="relative">
+    <div class="overflow-x-auto">
       <table
-        :class="[loading && 'overlay overlay-block']"
-        class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
+        class="w-full text-sm"
+        :class="{ 'pointer-events-none opacity-50': loading }"
       >
         <!-- Table Header -->
-        <thead class="table-header-modern">
+        <thead class="sticky top-0 z-10 bg-gray-100 dark:bg-gray-800">
           <tr>
-            <th v-if="checkboxEnabled" class="checkbox-column">
-              <div
-                class="form-check form-check-sm form-check-custom form-check-solid"
-              >
+            <th v-if="checkboxEnabled" class="w-[50px] px-6 py-4">
+              <div class="flex justify-center">
                 <input
-                  class="form-check-input"
                   type="checkbox"
+                  class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                   v-model="headerChecked"
                   @change="selectAll"
                 />
@@ -22,11 +20,8 @@
             </th>
             <template v-for="(column, i) in header" :key="i">
               <th
-                class="table-header-cell text-start"
-                :class="{
-                  sortable: column.sortEnabled,
-                  'active-sort': currentSort.label === column.columnLabel,
-                }"
+                class="group whitespace-nowrap px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-100"
+                :class="{ 'cursor-pointer select-none': column.sortEnabled }"
                 @click="handleSort(column.columnLabel, column.sortEnabled)"
                 :style="{
                   width: column.columnWidth
@@ -37,26 +32,30 @@
                     : '0',
                 }"
               >
-                <div class="header-content">
-                  <span class="header-text">{{ column.columnName }}</span>
-                  <div v-if="column.sortEnabled" class="sort-icon-wrapper">
-                    <ArrowUp
+                <div class="flex items-center justify-start gap-2">
+                  <span>{{ column.columnName }}</span>
+                  <div v-if="column.sortEnabled" class="flex items-center">
+                    <KTIcon
                       v-if="
                         currentSort.label === column.columnLabel &&
                         currentSort.order === 'asc'
                       "
-                      :size="16"
-                      class="sort-icon active"
+                      icon-name="arrow-up"
+                      icon-class="fs-6 text-primary"
                     />
-                    <ArrowDown
+                    <KTIcon
                       v-else-if="
                         currentSort.label === column.columnLabel &&
                         currentSort.order === 'desc'
                       "
-                      :size="16"
-                      class="sort-icon active"
+                      icon-name="arrow-down"
+                      icon-class="fs-6 text-primary"
                     />
-                    <ArrowUpDown v-else :size="16" class="sort-icon inactive" />
+                    <KTIcon
+                      v-else
+                      icon-name="arrow-up-down"
+                      icon-class="fs-6 text-gray-400 opacity-50 transition-opacity group-hover:opacity-80"
+                    />
                   </div>
                 </div>
               </th>
@@ -67,17 +66,17 @@
         <!-- Table Body -->
         <tbody
           v-if="dataToDisplay.length !== 0"
-          class="fw-semibold text-gray-600"
+          class="divide-y divide-gray-100 font-semibold text-gray-600 dark:divide-gray-800 dark:text-gray-300"
         >
           <template v-for="(row, i) in dataToDisplay" :key="i">
-            <tr>
-              <td v-if="checkboxEnabled">
-                <div
-                  class="form-check form-check-sm form-check-custom form-check-solid"
-                >
+            <tr
+              class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/60"
+            >
+              <td v-if="checkboxEnabled" class="px-6 py-4">
+                <div class="flex justify-center">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     :value="row[checkboxLabel]"
                     v-model="selectedItems"
                     @change="onItemsChange"
@@ -85,7 +84,7 @@
                 </div>
               </td>
               <template v-for="(properties, j) in header" :key="j">
-                <td class="text-start">
+                <td class="px-6 py-4 text-left">
                   <slot :name="`${properties.columnLabel}`" :row="row">
                     {{ row[properties.columnLabel] }}
                   </slot>
@@ -97,25 +96,28 @@
 
         <!-- Empty State -->
         <tbody v-else>
-          <tr class="odd">
+          <tr>
             <td
               :colspan="header.length + (checkboxEnabled ? 1 : 0)"
-              class="dataTables_empty"
+              class="px-6 py-8 text-center text-gray-500"
             >
               {{ emptyTableText }}
             </td>
           </tr>
         </tbody>
-
-        <!-- Loading Overlay -->
-        <div v-if="loading" class="overlay-wrapper">
-          <div class="overlay-layer bg-dark bg-opacity-5 rounded">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        </div>
       </table>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div
+      v-if="loading"
+      class="absolute inset-0 z-20 flex items-center justify-center rounded bg-black/5"
+    >
+      <div
+        class="h-8 w-8 animate-spin rounded-full border-4 border-primary/30 border-t-primary"
+        role="status"
+        aria-label="Loading"
+      ></div>
     </div>
   </div>
 </template>
@@ -123,7 +125,6 @@
 <script lang="ts">
 import { computed, defineComponent, ref, watch, onMounted } from "vue";
 import type { Sort } from "@/components/kt-datatable/table-partials/models";
-import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-vue-next";
 
 interface TableHeader {
   columnName: string;
@@ -135,11 +136,6 @@ interface TableHeader {
 
 export default defineComponent({
   name: "kt-datatable",
-  components: {
-    ArrowUp,
-    ArrowDown,
-    ArrowUpDown,
-  },
   props: {
     header: { type: Array as () => TableHeader[], required: true },
     data: { type: Array as () => any[], required: true },
@@ -316,143 +312,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-.table-header-modern {
-  background: var(--bs-gray-100);
-  border: none;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-[data-bs-theme="dark"] .table-header-modern {
-  background: var(--bs-gray-900) !important;
-}
-
-.table-header-cell {
-  padding: 1rem 1.5rem !important;
-  border: none;
-  font-weight: 600;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-  color: var(--bs-gray-600);
-  transition: all 0.2s ease;
-  position: relative;
-  white-space: nowrap;
-}
-
-/* Ensure consistent padding for all table cells */
-.table td {
-  padding: 1rem 1.5rem !important;
-}
-
-/* Override any conflicting Bootstrap table styles */
-.table > :not(caption) > * > * {
-  padding: 1rem 1.5rem !important;
-}
-
-[data-bs-theme="dark"] .table-header-cell {
-  color: #ffffff !important;
-  background-color: var(--bs-gray-900) !important;
-}
-
-.table-header-cell.sortable {
-  cursor: pointer;
-  user-select: none;
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.5rem;
-}
-
-.header-text {
-  font-weight: inherit;
-}
-
-.sort-icon-wrapper {
-  display: flex;
-  align-items: center;
-}
-
-.sort-icon {
-  opacity: 0.5;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.sort-icon.active {
-  opacity: 1;
-  color: var(--bs-primary);
-}
-
-.sort-icon.inactive:hover {
-  opacity: 0.8;
-}
-
-/* On hover of the header cell, highlight the inactive sort icon */
-.table-header-cell:hover .sort-icon.inactive {
-  opacity: 0.8;
-}
-
-.checkbox-column {
-  width: 50px;
-  padding: 1rem 1.5rem !important;
-  border: none;
-  background: inherit;
-}
-
-[data-bs-theme="dark"] .checkbox-column {
-  background-color: var(--bs-gray-900) !important;
-}
-
-.checkbox-column .form-check {
-  margin: 0;
-  display: flex;
-  justify-content: center;
-}
-
-/* Remove all table borders */
-.table-header-modern tr,
-.table-header-modern th {
-  border: none !important;
-  border-bottom: none !important;
-  border-top: none !important;
-}
-
-/* Loading overlay */
-.overlay-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 20;
-}
-
-.overlay-layer {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .table-header-cell,
-  .table td,
-  .table > :not(caption) > * > * {
-    padding: 0.75rem 1rem !important;
-    font-size: 0.8rem;
-  }
-
-  .checkbox-column {
-    width: 40px;
-    padding: 0.75rem 0.5rem !important;
-  }
-}
-</style>

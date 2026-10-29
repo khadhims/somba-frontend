@@ -14,83 +14,82 @@
     :empty-table-text="t('appsEventsAlerts.eventsTable.empty')"
   >
     <template #event_name="{ row }">
-      <div
-        class="d-flex align-items-center"
-        style="max-width: 300px; min-width: 250px"
-      >
-        <div class="me-3">
+      <div class="flex min-w-[250px] max-w-[300px] items-center">
+        <div class="mr-3 shrink-0">
           <img
             v-if="row.image_url"
             :src="row.image_url"
-            class="rounded"
             alt="Event Thumbnail"
-            style="width: 60px; height: 60px; object-fit: cover"
+            class="h-[60px] w-[60px] rounded object-cover"
             @error="handleImageError"
           />
           <div
             v-else
-            class="bg-light rounded d-flex align-items-center justify-content-center"
-            style="width: 60px; height: 60px"
+            class="flex h-[60px] w-[60px] items-center justify-center rounded bg-gray-100 dark:bg-gray-800"
           >
-            <i class="ki-duotone ki-picture fs-2x text-muted"
-              ><span class="path1"></span><span class="path2"></span
-            ></i>
+            <i class="ki-duotone ki-picture fs-2x text-gray-400">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
           </div>
         </div>
-        <div class="d-flex flex-column">
-          <span class="text-dark fw-bold text-hover-primary fs-6">
+        <div class="flex flex-col">
+          <span
+            class="font-bold text-gray-900 hover:text-primary dark:text-gray-100"
+          >
             {{ row.event_name || "Unknown Event" }}
           </span>
-          <span class="text-muted fs-7">{{ row.camera_name }}</span>
+          <span class="text-sm text-gray-500">{{ row.camera_name }}</span>
         </div>
       </div>
     </template>
 
     <template #duration="{ row }">
-      <span class="text-dark fw-bold fs-6">{{
+      <span class="font-bold tabular-nums text-gray-900 dark:text-gray-100">{{
         formatDuration(row.duration_minutes)
       }}</span>
     </template>
 
     <template #timestamp="{ row }">
-      <span class="text-dark fw-bold d-block fs-6">{{
-        formatDate(row.event_start)
-      }}</span>
-      <span class="text-muted fw-semibold d-block fs-7">{{
+      <span
+        class="block font-bold tabular-nums text-gray-900 dark:text-gray-100"
+        >{{ formatDate(row.event_start) }}</span
+      >
+      <span class="block text-sm tabular-nums text-gray-500">{{
         formatTime(row.event_start)
       }}</span>
     </template>
 
     <template #status="{ row }">
-      <span class="badge" :class="statusBadge(row.status)">{{
-        statusLabel(row.status)
-      }}</span>
+      <span
+        class="inline-flex rounded px-2 py-1 text-xs font-semibold"
+        :class="statusBadgeClass(row.status)"
+        >{{ statusLabel(row.status) }}</span
+      >
     </template>
 
     <template #actions="{ row }">
       <button
         @click="viewDetail(row)"
-        class="btn btn-sm btn-light-primary btn-icon"
         title="View Detail"
+        class="flex h-8 w-8 items-center justify-center rounded-md bg-primary-light text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.95]"
       >
-        <i class="ki-duotone ki-eye fs-2"
-          ><span class="path1"></span><span class="path2"></span
-          ><span class="path3"></span
-        ></i>
+        <i class="ki-duotone ki-eye fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+          <span class="path3"></span>
+        </i>
       </button>
     </template>
   </KTDataTable>
 </template>
 
 <script setup lang="ts">
-defineOptions({
-  name: "EventsTableComponent",
-});
-
 import { useI18n } from "vue-i18n";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import { badgeVariantClass } from "@/core/helpers/badge";
 
-defineProps<{
+const props = defineProps<{
   events: any[];
   header: any[];
   pagination: {
@@ -121,7 +120,7 @@ const handleImageError = (e: Event) => {
   const parent = img.parentElement;
   if (parent) {
     parent.innerHTML =
-      '<div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;"><i class="ki-duotone ki-picture fs-2x text-muted"><span class="path1"></span><span class="path2"></span></i></div>';
+      '<div class="flex h-[60px] w-[60px] items-center justify-center rounded bg-gray-100 dark:bg-gray-800"><i class="ki-duotone ki-picture fs-2x text-gray-400"><span class="path1"></span><span class="path2"></span></i></div>';
   }
 };
 
@@ -171,13 +170,14 @@ const formatTime = (value?: string) => {
 
 const normalizeKey = (v?: string) =>
   (v || "").toLowerCase().replace(/[\s_-]/g, "");
-const statusBadge = (status: string) => {
+const statusBadgeClass = (status: string) => {
   const k = normalizeKey(status);
-  if (k === "active" || k === "unresolved") return "badge-light-danger";
-  if (k === "acknowledged") return "badge-light-warning";
-  if (k === "resolved" || k === "notresolved") return "badge-light-success";
-  if (k === "falsedetection") return "badge-light-info";
-  return "badge-light-secondary";
+  if (k === "active" || k === "unresolved") return badgeVariantClass("danger");
+  if (k === "acknowledged") return badgeVariantClass("warning");
+  if (k === "resolved" || k === "notresolved")
+    return badgeVariantClass("success");
+  if (k === "falsedetection") return badgeVariantClass("info");
+  return badgeVariantClass("secondary");
 };
 const statusLabel = (status: string) => {
   const k = normalizeKey(status);

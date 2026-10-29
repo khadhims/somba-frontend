@@ -1,25 +1,23 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-import { Tooltip } from "bootstrap";
 import App from "./App.vue";
 
-import "bootstrap-icons/font/bootstrap-icons.css";
 import "apexcharts/dist/apexcharts.css";
 import "quill/dist/quill.snow.css";
 import "animate.css";
 import "sweetalert2/dist/sweetalert2.css";
 import "nouislider/dist/nouislider.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import "socicon/css/socicon.css";
-import "line-awesome/dist/line-awesome/css/line-awesome.css";
 import "dropzone/dist/dropzone.css";
 import "@vueform/multiselect/themes/default.css";
 import "prism-themes/themes/prism-shades-of-purple.css";
 import "element-plus/dist/index.css";
-import "primeicons/primeicons.css";
 import "@/assets/keenicons/duotone/style.css";
 import "@/assets/keenicons/outline/style.css";
 import "@/assets/keenicons/solid/style.css";
+// Imported last so Tailwind utility classes can win over Bootstrap/Element
+// Plus component classes on pages that have been migrated.
+import "@/assets/css/tailwind.css";
 
 /*
 TIP: To get started with clean router change path to @/router/clean.ts.
@@ -84,10 +82,6 @@ initKtIcon(app);
 initVeeValidate();
 
 app.use(i18n);
-
-app.directive("tooltip", (el) => {
-  new Tooltip(el);
-});
 
 app.config.errorHandler = (err, instance, info) => {
   console.error("[Global Error Handler]", err, info);

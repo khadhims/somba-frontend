@@ -1,45 +1,53 @@
 <template>
-  <div class="d-flex align-items-center me-4">
-    <div
-      class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px"
-      data-kt-menu-trigger="{default: 'click'}"
-      data-kt-menu-attach="parent"
-      data-kt-menu-placement="bottom-end"
+  <div
+    class="relative mr-4 flex items-center"
+    :ref="(el) => (dropdown.containerRef.value = el as HTMLElement | null)"
+  >
+    <button
+      type="button"
+      class="flex h-[35px] w-[35px] items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"
+      @click="dropdown.toggle"
     >
-      <span class="symbol symbol-20px">
-        <img class="rounded-1" :src="currentLanguageFlag" alt="flag" />
+      <span class="h-5 w-5 overflow-hidden rounded-sm">
+        <img
+          class="h-full w-full object-cover"
+          :src="currentLanguageFlag"
+          alt="flag"
+        />
       </span>
-    </div>
+    </button>
 
     <div
-      class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-175px"
-      data-kt-menu="true"
+      v-show="dropdown.isOpen.value"
+      class="absolute right-0 top-full z-20 mt-2"
     >
-      <div class="menu-item px-3">
+      <div
+        class="w-[175px] rounded-lg bg-white py-4 text-sm font-semibold text-gray-800 shadow-lg dark:bg-gray-900 dark:text-gray-100"
+      >
         <a
-          class="menu-link d-flex px-5"
-          :class="{ active: currentLanguage === 'en' }"
-          @click="setLocale('en')"
+          href="#"
+          class="flex items-center gap-2 px-5 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+          :class="{ 'text-primary': currentLanguage === 'en' }"
+          @click.prevent="setLocale('en')"
         >
-          <span class="symbol symbol-20px me-4">
+          <span class="h-5 w-5 overflow-hidden rounded-sm">
             <img
-              class="rounded-1"
+              class="h-full w-full object-cover"
               :src="getAssetPath('media/flags/united-kingdom.svg')"
               alt="English"
             />
           </span>
           English
         </a>
-      </div>
-      <div class="menu-item px-3">
         <a
-          class="menu-link d-flex px-5"
-          :class="{ active: currentLanguage === 'id' }"
-          @click="setLocale('id')"
+          href="#"
+          class="flex items-center gap-2 px-5 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+          :class="{ 'text-primary': currentLanguage === 'id' }"
+          @click.prevent="setLocale('id')"
         >
-          <span class="symbol symbol-20px me-4">
+          <span class="h-5 w-5 overflow-hidden rounded-sm">
             <img
-              class="rounded-1"
+              class="h-full w-full object-cover"
               :src="getAssetPath('media/flags/indonesia.svg')"
               alt="Bahasa Indonesia"
             />
@@ -56,11 +64,13 @@ import { defineComponent, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { getAssetPath } from "@/core/helpers/assets";
 import { type AppLocale, setAppLocale } from "@/core/plugins/i18n";
+import { useDropdown } from "@/composables/useDropdown";
 
 export default defineComponent({
   name: "LanguageSwitcher",
   setup() {
     const { locale } = useI18n();
+    const dropdown = useDropdown();
 
     const currentLanguage = computed(() => {
       return locale.value as AppLocale;
@@ -76,9 +86,11 @@ export default defineComponent({
       if (target !== locale.value) {
         setAppLocale(target);
       }
+      dropdown.close();
     };
 
     return {
+      dropdown,
       currentLanguage,
       currentLanguageFlag,
       setLocale,

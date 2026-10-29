@@ -1,242 +1,182 @@
 <template>
   <!--begin::Monitoring Center Overview-->
-  <div class="card mb-5">
-    <div class="card-body py-4">
-      <div class="row align-items-center">
-        <div class="col-md-4">
-          <h4 class="card-title mb-0">
-            {{ t("appsMonitoringCenter.overview.header.title") }}
-          </h4>
-          <p class="text-muted mb-0">
-            {{ t("appsMonitoringCenter.overview.header.subtitle") }}
-          </p>
+  <div class="mb-5 p-4" :class="cardClass">
+    <div
+      class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+    >
+      <div>
+        <h4 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {{ t("appsMonitoringCenter.overview.header.title") }}
+        </h4>
+        <p class="m-0 text-gray-500">
+          {{ t("appsMonitoringCenter.overview.header.subtitle") }}
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center justify-end gap-4">
+        <div class="flex items-center" v-if="sites.length > 0">
+          <label
+            class="mr-3 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300"
+          >
+            {{ t("appsMonitoringCenter.overview.header.filters.siteLabel") }}
+          </label>
+          <select
+            v-model="selectedSiteId"
+            @change="switchSite"
+            :disabled="loadingSites"
+            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          >
+            <option value="">
+              {{ t("appsMonitoringCenter.overview.header.filters.siteAll") }}
+            </option>
+            <option v-for="site in sites" :key="site.uid" :value="site.uid">
+              {{ site.name }}
+            </option>
+          </select>
         </div>
-        <div class="col-md-8">
-          <div class="d-flex justify-content-end gap-3">
-            <div class="d-flex align-items-center" v-if="sites.length > 0">
-              <label class="form-label me-3 mb-0 fw-semibold">{{
-                t("appsMonitoringCenter.overview.header.filters.siteLabel")
-              }}</label>
-              <select
-                v-model="selectedSiteId"
-                @change="switchSite"
-                class="form-select form-select-solid w-200px"
-                :disabled="loadingSites"
-              >
-                <option value="">
-                  {{
-                    t("appsMonitoringCenter.overview.header.filters.siteAll")
-                  }}
-                </option>
-                <option v-for="site in sites" :key="site.uid" :value="site.uid">
-                  {{ site.name }}
-                </option>
-              </select>
-            </div>
-            <div class="d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">{{
-                t("appsMonitoringCenter.overview.header.filters.timeRangeLabel")
-              }}</label>
-              <select
-                v-model="selectedTimeRange"
-                @change="updateTimeRange"
-                class="form-select form-select-solid w-150px"
-              >
-                <option value="1h">
-                  {{
-                    t(
-                      "appsMonitoringCenter.overview.header.filters.timeRanges.1h"
-                    )
-                  }}
-                </option>
-                <option value="24h">
-                  {{
-                    t(
-                      "appsMonitoringCenter.overview.header.filters.timeRanges.24h"
-                    )
-                  }}
-                </option>
-                <option value="7d">
-                  {{
-                    t(
-                      "appsMonitoringCenter.overview.header.filters.timeRanges.7d"
-                    )
-                  }}
-                </option>
-                <option value="30d">
-                  {{
-                    t(
-                      "appsMonitoringCenter.overview.header.filters.timeRanges.30d"
-                    )
-                  }}
-                </option>
-              </select>
-            </div>
-          </div>
+        <div class="flex items-center">
+          <label
+            class="mr-3 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300"
+          >
+            {{
+              t("appsMonitoringCenter.overview.header.filters.timeRangeLabel")
+            }}
+          </label>
+          <select
+            v-model="selectedTimeRange"
+            @change="updateTimeRange"
+            class="w-[150px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          >
+            <option value="1h">
+              {{
+                t("appsMonitoringCenter.overview.header.filters.timeRanges.1h")
+              }}
+            </option>
+            <option value="24h">
+              {{
+                t("appsMonitoringCenter.overview.header.filters.timeRanges.24h")
+              }}
+            </option>
+            <option value="7d">
+              {{
+                t("appsMonitoringCenter.overview.header.filters.timeRanges.7d")
+              }}
+            </option>
+            <option value="30d">
+              {{
+                t("appsMonitoringCenter.overview.header.filters.timeRanges.30d")
+              }}
+            </option>
+          </select>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="row g-5 g-xl-8 mb-8">
+  <div class="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
     <!--begin::System Health Cards-->
-    <div class="col-xl-3">
-      <Widget1
-        :description="
-          t('appsMonitoringCenter.overview.widgets.systemHealth.title')
-        "
-        :value="`${systemHealthPercentage}%`"
-        :progress-text="
-          t('appsMonitoringCenter.overview.widgets.systemHealth.progress', {
-            online: onlineDevices,
-            total: totalDevices,
-          })
-        "
-        :progress-value="systemHealthPercentage"
-        bg-color="#17C653"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="
-          t('appsMonitoringCenter.overview.widgets.activeAlerts.title')
-        "
-        :value="activeAlerts"
-        :progress-text="
-          t('appsMonitoringCenter.overview.widgets.activeAlerts.progress', {
-            count: criticalAlerts,
-          })
-        "
-        :progress-value="criticalAlertsPercentage"
-        bg-color="#F1416C"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="
-          t('appsMonitoringCenter.overview.widgets.storageUsage.title')
-        "
-        :value="`${storageUsedPercentage}%`"
-        :progress-text="
-          t('appsMonitoringCenter.overview.widgets.storageUsage.progress', {
-            used: usedStorageGB,
-          })
-        "
-        :progress-value="storageUsedPercentage"
-        bg-color="#FFA800"
-        text-color="white"
-      />
-    </div>
-
-    <div class="col-xl-3">
-      <Widget1
-        :description="
-          t('appsMonitoringCenter.overview.widgets.bandwidthUsage.title')
-        "
-        :value="`${currentBandwidthMbps}Mbps`"
-        :progress-text="
-          t('appsMonitoringCenter.overview.widgets.bandwidthUsage.progress', {
-            percentage: bandwidthUsagePercentage,
-          })
-        "
-        :progress-value="bandwidthUsagePercentage"
-        bg-color="#3699FF"
-        text-color="white"
-      />
-    </div>
+    <Widget1
+      :description="
+        t('appsMonitoringCenter.overview.widgets.systemHealth.title')
+      "
+      :value="`${systemHealthPercentage}%`"
+      :progress-text="
+        t('appsMonitoringCenter.overview.widgets.systemHealth.progress', {
+          online: onlineDevices,
+          total: totalDevices,
+        })
+      "
+      :progress-value="systemHealthPercentage"
+      bg-color="#17C653"
+      text-color="white"
+    />
+    <Widget1
+      :description="
+        t('appsMonitoringCenter.overview.widgets.activeAlerts.title')
+      "
+      :value="activeAlerts"
+      :progress-text="
+        t('appsMonitoringCenter.overview.widgets.activeAlerts.progress', {
+          count: criticalAlerts,
+        })
+      "
+      :progress-value="criticalAlertsPercentage"
+      bg-color="#F1416C"
+      text-color="white"
+    />
+    <Widget1
+      :description="
+        t('appsMonitoringCenter.overview.widgets.storageUsage.title')
+      "
+      :value="`${storageUsedPercentage}%`"
+      :progress-text="
+        t('appsMonitoringCenter.overview.widgets.storageUsage.progress', {
+          used: usedStorageGB,
+        })
+      "
+      :progress-value="storageUsedPercentage"
+      bg-color="#FFA800"
+      text-color="white"
+    />
+    <Widget1
+      :description="
+        t('appsMonitoringCenter.overview.widgets.bandwidthUsage.title')
+      "
+      :value="`${currentBandwidthMbps}Mbps`"
+      :progress-text="
+        t('appsMonitoringCenter.overview.widgets.bandwidthUsage.progress', {
+          percentage: bandwidthUsagePercentage,
+        })
+      "
+      :progress-value="bandwidthUsagePercentage"
+      bg-color="#3699FF"
+      text-color="white"
+    />
   </div>
   <!--end::System Health Cards-->
 
-  <div class="row g-5 g-xl-8 mb-8">
+  <div class="mb-8 grid grid-cols-1 gap-5 xl:grid-cols-12">
     <!--begin::Real-time Charts-->
-    <div class="col-xl-8">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <h3 class="fw-bold">
+    <div class="xl:col-span-8">
+      <div :class="cardClass">
+        <div class="flex flex-wrap items-center justify-between gap-3 p-6 pb-0">
+          <h3
+            class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100"
+          >
+            {{
+              t("appsMonitoringCenter.overview.charts.systemPerformance.title")
+            }}
+          </h3>
+          <div
+            class="inline-flex overflow-hidden rounded-md border border-gray-300 dark:border-gray-700"
+            role="group"
+          >
+            <button
+              v-for="metric in ['cpu', 'memory', 'storage', 'network']"
+              :key="metric"
+              type="button"
+              @click="setChartMetric(metric)"
+              class="border-r border-gray-300 px-3 py-1.5 text-sm font-semibold transition-colors last:border-r-0 dark:border-gray-700"
+              :class="
+                chartMetric === metric
+                  ? 'bg-primary text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800'
+              "
+            >
               {{
                 t(
-                  "appsMonitoringCenter.overview.charts.systemPerformance.title"
+                  `appsMonitoringCenter.overview.charts.systemPerformance.metrics.${metric}`
                 )
               }}
-            </h3>
-          </div>
-          <div class="card-toolbar">
-            <div class="btn-group" role="group">
-              <button
-                type="button"
-                class="btn btn-sm"
-                :class="{
-                  'btn-primary': chartMetric === 'cpu',
-                  'btn-light': chartMetric !== 'cpu',
-                }"
-                @click="setChartMetric('cpu')"
-              >
-                {{
-                  t(
-                    "appsMonitoringCenter.overview.charts.systemPerformance.metrics.cpu"
-                  )
-                }}
-              </button>
-              <button
-                type="button"
-                class="btn btn-sm"
-                :class="{
-                  'btn-primary': chartMetric === 'memory',
-                  'btn-light': chartMetric !== 'memory',
-                }"
-                @click="setChartMetric('memory')"
-              >
-                {{
-                  t(
-                    "appsMonitoringCenter.overview.charts.systemPerformance.metrics.memory"
-                  )
-                }}
-              </button>
-              <button
-                type="button"
-                class="btn btn-sm"
-                :class="{
-                  'btn-primary': chartMetric === 'storage',
-                  'btn-light': chartMetric !== 'storage',
-                }"
-                @click="setChartMetric('storage')"
-              >
-                {{
-                  t(
-                    "appsMonitoringCenter.overview.charts.systemPerformance.metrics.storage"
-                  )
-                }}
-              </button>
-              <button
-                type="button"
-                class="btn btn-sm"
-                :class="{
-                  'btn-primary': chartMetric === 'network',
-                  'btn-light': chartMetric !== 'network',
-                }"
-                @click="setChartMetric('network')"
-              >
-                {{
-                  t(
-                    "appsMonitoringCenter.overview.charts.systemPerformance.metrics.network"
-                  )
-                }}
-              </button>
-            </div>
+            </button>
           </div>
         </div>
-        <div class="card-body">
+        <div class="p-6">
           <div class="chart-container" style="height: 300px">
             <div
-              class="d-flex align-items-center justify-content-center h-100 bg-light rounded"
+              class="flex h-full items-center justify-center rounded bg-gray-100 dark:bg-gray-800"
             >
               <div class="text-center">
-                <i class="ki-duotone ki-chart-line fs-3x text-gray-400 mb-3">
+                <i class="ki-duotone ki-chart-line mb-3 text-3xl text-gray-400">
                   <span class="path1"></span>
                   <span class="path2"></span>
                 </i>
@@ -248,7 +188,7 @@
                     )
                   }}
                 </p>
-                <small class="text-muted">{{
+                <small class="text-gray-500">{{
                   t(
                     "appsMonitoringCenter.overview.charts.systemPerformance.placeholder.comingSoon"
                   )
@@ -260,43 +200,48 @@
       </div>
     </div>
 
-    <div class="col-xl-4">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <h3 class="fw-bold">
-              {{
-                t("appsMonitoringCenter.overview.charts.recentActivities.title")
-              }}
-            </h3>
-          </div>
+    <div class="xl:col-span-4">
+      <div :class="cardClass">
+        <div class="p-6 pb-0">
+          <h3
+            class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100"
+          >
+            {{
+              t("appsMonitoringCenter.overview.charts.recentActivities.title")
+            }}
+          </h3>
         </div>
-        <div class="card-body" style="max-height: 350px; overflow-y: auto">
+        <div class="overflow-y-auto p-6" style="max-height: 350px">
           <div class="timeline">
             <div
               v-for="activity in recentActivities"
               :key="activity.id"
               class="timeline-item"
             >
-              <div class="timeline-line w-40px"></div>
-              <div class="timeline-icon symbol symbol-circle symbol-40px">
+              <div class="timeline-line w-10"></div>
+              <div
+                class="timeline-icon flex h-10 w-10 items-center justify-center rounded-full"
+              >
                 <div
-                  class="symbol-label"
+                  class="flex h-full w-full items-center justify-center rounded-full"
                   :class="getActivityIconClass(activity.type)"
                 >
-                  <i :class="getActivityIcon(activity.type)" class="fs-2"></i>
+                  <i
+                    :class="getActivityIcon(activity.type)"
+                    class="text-xl"
+                  ></i>
                 </div>
               </div>
-              <div class="timeline-content ms-3">
+              <div class="timeline-content ml-3">
                 <div class="mb-1">
-                  <span class="fs-6 text-gray-800 fw-bold">{{
+                  <span class="font-bold text-gray-800">{{
                     activity.title
                   }}</span>
-                  <span class="text-muted fw-bold fs-7 ms-2">
+                  <span class="ml-2 text-sm font-bold text-gray-500">
                     {{ formatTime(activity.timestamp) }}
                   </span>
                 </div>
-                <div class="text-muted fw-semibold fs-7">
+                <div class="text-sm font-semibold text-gray-500">
                   {{ activity.description }}
                 </div>
               </div>
@@ -308,18 +253,18 @@
   </div>
   <!--end::Real-time Charts-->
 
-  <div class="row g-5 g-xl-8 mb-8">
+  <div class="mb-8 grid grid-cols-1 gap-5 xl:grid-cols-2">
     <!--begin::Device Status-->
-    <div class="col-xl-6">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <h3 class="fw-bold">
-              {{ t("appsMonitoringCenter.overview.tables.deviceStatus.title") }}
-            </h3>
-          </div>
+    <div>
+      <div :class="cardClass">
+        <div class="p-6 pb-0">
+          <h3
+            class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100"
+          >
+            {{ t("appsMonitoringCenter.overview.tables.deviceStatus.title") }}
+          </h3>
         </div>
-        <div class="card-body">
+        <div class="p-6">
           <KTDataTable
             :data="devices"
             :header="deviceTableHeader"
@@ -332,46 +277,40 @@
             "
           >
             <template v-slot:name="{ row }">
-              <div class="d-flex align-items-center">
-                <div class="symbol symbol-35px me-3">
-                  <span
-                    class="symbol-label"
-                    :class="getDeviceTypeIconClass(row.type)"
-                  >
-                    <i :class="getDeviceTypeIcon(row.type)" class="fs-6"></i>
-                  </span>
+              <div class="flex items-center">
+                <div
+                  class="mr-3 flex h-[35px] w-[35px] items-center justify-center rounded-full"
+                  :class="getDeviceTypeIconClass(row.type)"
+                >
+                  <i :class="getDeviceTypeIcon(row.type)" class="text-sm"></i>
                 </div>
-                <div class="d-flex justify-content-start flex-column">
-                  <span class="text-dark fw-bold text-hover-primary fs-6">{{
-                    row.name
-                  }}</span>
+                <div class="flex flex-col">
                   <span
-                    class="text-muted fw-semibold text-muted d-block fs-7"
-                    >{{ getDeviceTypeText(row.type) }}</span
+                    class="font-bold text-gray-900 hover:text-primary dark:text-gray-100"
+                    >{{ row.name }}</span
                   >
+                  <span class="text-sm text-gray-500">{{
+                    getDeviceTypeText(row.type)
+                  }}</span>
                 </div>
               </div>
             </template>
 
             <template v-slot:status="{ row }">
-              <span
-                class="badge"
-                :class="getDeviceStatusBadgeClass(row.status)"
-              >
+              <span :class="getDeviceStatusBadgeClass(row.status)">
                 {{ getDeviceStatusText(row.status) }}
               </span>
             </template>
 
             <template v-slot:last_seen="{ row }">
-              <span class="text-dark fw-bold d-block fs-6">
+              <span class="block font-bold text-gray-900 dark:text-gray-100">
                 {{ formatLastSeen(row.last_seen) }}
               </span>
             </template>
 
             <template v-slot:actions="{ row }">
-              <div class="d-flex justify-content-end flex-shrink-0">
-                <button
-                  class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
+              <div class="flex justify-end gap-1">
+                <RowActionButton
                   @click="viewDeviceDetails(row)"
                   :title="
                     t(
@@ -383,22 +322,22 @@
                     <span class="path1"></span>
                     <span class="path2"></span>
                   </i>
-                </button>
-                <button
+                </RowActionButton>
+                <RowActionButton
                   v-if="row.status === 'offline'"
-                  class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm"
                   @click="restartDevice(row)"
                   :title="
                     t(
                       'appsMonitoringCenter.overview.tables.deviceStatus.actions.restart'
                     )
                   "
+                  variant="warning"
                 >
                   <i class="ki-duotone ki-arrows-circle fs-2">
                     <span class="path1"></span>
                     <span class="path2"></span>
                   </i>
-                </button>
+                </RowActionButton>
               </div>
             </template>
           </KTDataTable>
@@ -407,16 +346,16 @@
     </div>
 
     <!--begin::Alert Summary-->
-    <div class="col-xl-6">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <h3 class="fw-bold">
-              {{ t("appsMonitoringCenter.overview.tables.alertSummary.title") }}
-            </h3>
-          </div>
+    <div>
+      <div :class="cardClass">
+        <div class="p-6 pb-0">
+          <h3
+            class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100"
+          >
+            {{ t("appsMonitoringCenter.overview.tables.alertSummary.title") }}
+          </h3>
         </div>
-        <div class="card-body">
+        <div class="p-6">
           <KTDataTable
             :data="alerts"
             :header="alertTableHeader"
@@ -429,39 +368,41 @@
             "
           >
             <template v-slot:severity="{ row }">
-              <span class="badge" :class="getSeverityBadgeClass(row.severity)">
+              <span :class="getSeverityBadgeClass(row.severity)">
                 {{ getSeverityText(row.severity) }}
               </span>
             </template>
 
             <template v-slot:message="{ row }">
-              <div class="d-flex justify-content-start flex-column">
-                <span class="text-dark fw-bold fs-6">{{ row.message }}</span>
-                <span class="text-muted fw-semibold text-muted d-block fs-7">{{
+              <div class="flex flex-col">
+                <span class="font-bold text-gray-900 dark:text-gray-100">{{
+                  row.message
+                }}</span>
+                <span class="block text-sm text-gray-500">{{
                   row.source
                 }}</span>
               </div>
             </template>
 
             <template v-slot:timestamp="{ row }">
-              <span class="text-dark fw-bold d-block fs-6">
+              <span class="block font-bold text-gray-900 dark:text-gray-100">
                 {{ formatTime(row.timestamp) }}
               </span>
             </template>
 
             <template v-slot:actions="{ row }">
-              <div class="d-flex justify-content-end flex-shrink-0">
-                <button
-                  class="btn btn-icon btn-bg-light btn-active-color-success btn-sm"
+              <div class="flex justify-end">
+                <RowActionButton
                   @click="acknowledgeAlert(row)"
                   :title="
                     t(
                       'appsMonitoringCenter.overview.tables.alertSummary.actions.acknowledge'
                     )
                   "
+                  variant="success"
                 >
                   <i class="ki-duotone ki-check fs-2"></i>
-                </button>
+                </RowActionButton>
               </div>
             </template>
           </KTDataTable>
@@ -473,15 +414,13 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({
-  name: "OverviewComponent",
-});
-
 import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
-// import ApiService from "@/core/services/ApiService";
+import ApiService from "@/core/services/ApiService";
+import RowActionButton from "@/components/common/RowActionButton.vue";
+import { badgeVariantClass, cardClass } from "@/core/helpers/badge";
 
 const { t } = useI18n();
 
@@ -489,7 +428,7 @@ const { t } = useI18n();
 interface Device {
   uid: string;
   name: string;
-  type: "camera" | "sensor" | "controller";
+  type: "camera" | "nvr" | "sensor" | "controller";
   status: "online" | "offline" | "warning";
   last_seen: string;
   site_uid?: string;
@@ -612,8 +551,8 @@ const mockDevices: Device[] = [
   },
   {
     uid: "2",
-    name: "Kitchen Camera",
-    type: "camera",
+    name: "Main NVR System",
+    type: "nvr",
     status: "online",
     last_seen: new Date(Date.now() - 1000 * 60 * 1).toISOString(),
     site_uid: "site1",
@@ -800,16 +739,17 @@ const formatLastSeen = (timestamp: string): string => {
 };
 
 // Badge and icon helpers
+const badgePillClass = "inline-flex rounded px-2 py-1 text-xs font-semibold";
 const getDeviceStatusBadgeClass = (status: string) => {
   switch (status) {
     case "online":
-      return "badge-light-success";
+      return `${badgePillClass} ${badgeVariantClass("success")}`;
     case "offline":
-      return "badge-light-danger";
+      return `${badgePillClass} ${badgeVariantClass("danger")}`;
     case "warning":
-      return "badge-light-warning";
+      return `${badgePillClass} ${badgeVariantClass("warning")}`;
     default:
-      return "badge-light-secondary";
+      return `${badgePillClass} ${badgeVariantClass("secondary")}`;
   }
 };
 
@@ -835,15 +775,15 @@ const getDeviceStatusText = (status: string) => {
 const getSeverityBadgeClass = (severity: string) => {
   switch (severity) {
     case "critical":
-      return "badge-danger";
+      return `${badgePillClass} ${badgeVariantClass("danger")}`;
     case "high":
-      return "badge-warning";
+      return `${badgePillClass} ${badgeVariantClass("warning")}`;
     case "medium":
-      return "badge-primary";
+      return `${badgePillClass} ${badgeVariantClass("primary")}`;
     case "low":
-      return "badge-success";
+      return `${badgePillClass} ${badgeVariantClass("success")}`;
     default:
-      return "badge-secondary";
+      return `${badgePillClass} ${badgeVariantClass("secondary")}`;
   }
 };
 
@@ -874,6 +814,8 @@ const getDeviceTypeIcon = (type: string) => {
   switch (type) {
     case "camera":
       return "ki-duotone ki-security-user";
+    case "nvr":
+      return "ki-duotone ki-router";
     case "sensor":
       return "ki-duotone ki-technology-4";
     case "controller":
@@ -886,13 +828,15 @@ const getDeviceTypeIcon = (type: string) => {
 const getDeviceTypeIconClass = (type: string) => {
   switch (type) {
     case "camera":
-      return "bg-light-primary text-primary";
+      return badgeVariantClass("primary");
+    case "nvr":
+      return badgeVariantClass("success");
     case "sensor":
-      return "bg-light-warning text-warning";
+      return badgeVariantClass("warning");
     case "controller":
-      return "bg-light-info text-info";
+      return badgeVariantClass("info");
     default:
-      return "bg-light-secondary text-secondary";
+      return badgeVariantClass("secondary");
   }
 };
 
@@ -901,6 +845,10 @@ const getDeviceTypeText = (type: string) => {
     case "camera":
       return t(
         "appsMonitoringCenter.overview.tables.deviceStatus.deviceTypes.camera"
+      );
+    case "nvr":
+      return t(
+        "appsMonitoringCenter.overview.tables.deviceStatus.deviceTypes.nvr"
       );
     case "sensor":
       return t(
@@ -933,15 +881,15 @@ const getActivityIcon = (type: string) => {
 const getActivityIconClass = (type: string) => {
   switch (type) {
     case "event":
-      return "bg-light-warning text-warning";
+      return badgeVariantClass("warning");
     case "system":
-      return "bg-light-primary text-primary";
+      return badgeVariantClass("primary");
     case "user":
-      return "bg-light-success text-success";
+      return badgeVariantClass("success");
     case "maintenance":
-      return "bg-light-info text-info";
+      return badgeVariantClass("info");
     default:
-      return "bg-light-secondary text-secondary";
+      return badgeVariantClass("secondary");
   }
 };
 

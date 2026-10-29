@@ -14,87 +14,88 @@
     :empty-table-text="t('appsEventsAlerts.alertsTable.empty')"
   >
     <template #alert_name="{ row }">
-      <div
-        class="d-flex align-items-center"
-        style="max-width: 300px; min-width: 250px"
-      >
-        <div class="me-3">
+      <div class="flex min-w-[250px] max-w-[300px] items-center">
+        <div class="mr-3 shrink-0">
           <img
             v-if="row.image_url"
             :src="row.image_url"
-            class="rounded"
             alt="Alert Thumbnail"
-            style="width: 60px; height: 60px; object-fit: cover"
+            class="h-[60px] w-[60px] rounded object-cover"
             @error="handleImageError"
           />
           <div
             v-else
-            class="bg-light rounded d-flex align-items-center justify-content-center"
-            style="width: 60px; height: 60px"
+            class="flex h-[60px] w-[60px] items-center justify-center rounded bg-gray-100 dark:bg-gray-800"
           >
-            <i class="ki-duotone ki-picture fs-2x text-muted"
-              ><span class="path1"></span><span class="path2"></span
-            ></i>
+            <i class="ki-duotone ki-picture fs-2x text-gray-400">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
           </div>
         </div>
-        <div class="d-flex flex-column">
-          <span class="text-dark fw-bold text-hover-primary fs-6">
+        <div class="flex flex-col">
+          <span
+            class="font-bold text-gray-900 hover:text-primary dark:text-gray-100"
+          >
             {{ row.violation_name || "Unknown Violation" }}
           </span>
-          <span class="text-muted fs-7">{{ row.camera_name }}</span>
+          <span class="text-sm text-gray-500">{{ row.camera_name }}</span>
         </div>
       </div>
     </template>
 
     <template #duration="{ row }">
-      <span class="text-dark fw-bold fs-6">{{
+      <span class="font-bold tabular-nums text-gray-900 dark:text-gray-100">{{
         formatDuration(row.duration_minutes)
       }}</span>
     </template>
 
     <template #detections="{ row }">
-      <span class="badge badge-light-primary fs-6">{{
-        row.total_detections || 0
-      }}</span>
+      <span
+        class="inline-flex rounded px-2 py-1 text-xs font-semibold tabular-nums"
+        :class="badgeVariantClass('primary')"
+        >{{ row.total_detections || 0 }}</span
+      >
     </template>
 
     <template #timestamp="{ row }">
-      <span class="text-dark fw-bold d-block fs-6">{{
-        formatDate(row.timestamp)
-      }}</span>
+      <span
+        class="block font-bold tabular-nums text-gray-900 dark:text-gray-100"
+        >{{ formatDate(row.timestamp) }}</span
+      >
     </template>
 
     <template #status="{ row }">
-      <span class="badge" :class="statusBadge(row.status)">{{
-        statusLabel(row.status)
-      }}</span>
+      <span
+        class="inline-flex rounded px-2 py-1 text-xs font-semibold"
+        :class="statusBadgeClass(row.status)"
+        >{{ statusLabel(row.status) }}</span
+      >
     </template>
 
     <template #actions="{ row }">
       <button
         @click="viewDetail(row)"
-        class="btn btn-sm btn-light-primary btn-icon"
         title="View Detail"
         :disabled="loadingDetail"
+        class="flex h-8 w-8 items-center justify-center rounded-md bg-primary-light text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.95] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
       >
-        <i class="ki-duotone ki-eye fs-2"
-          ><span class="path1"></span><span class="path2"></span
-          ><span class="path3"></span
-        ></i>
+        <i class="ki-duotone ki-eye fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+          <span class="path3"></span>
+        </i>
       </button>
     </template>
   </KTDataTable>
 </template>
 
 <script setup lang="ts">
-defineOptions({
-  name: "AlertsTableComponent",
-});
-
 import { useI18n } from "vue-i18n";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
+import { badgeVariantClass } from "@/core/helpers/badge";
 
-defineProps<{
+const props = defineProps<{
   alerts: any[];
   header: any[];
   pagination: {
@@ -147,13 +148,12 @@ const formatDuration = (m?: number | null) => {
 };
 const normalizeKey = (v?: string) =>
   (v || "").toLowerCase().replace(/[\s_-]/g, "");
-const statusBadge = (s: string) => {
+const statusBadgeClass = (s: string) => {
   const k = normalizeKey(s);
-  if (k === "notresolved") return "badge-light-danger";
-  if (k === "resolved") return "badge-light-success";
-  if (k === "falsealarm") return "badge-light-info";
-  if (!s || s === "No Status") return "badge-light-secondary";
-  return "badge-light-secondary";
+  if (k === "notresolved") return badgeVariantClass("danger");
+  if (k === "resolved") return badgeVariantClass("success");
+  if (k === "falsealarm") return badgeVariantClass("info");
+  return badgeVariantClass("secondary");
 };
 const statusLabel = (s: string) => {
   if (!s || s === "No Status") return s || "No Status";
@@ -174,7 +174,7 @@ const handleImageError = (e: Event) => {
   target.style.display = "none";
   const parent = target.parentElement;
   if (parent) {
-    parent.innerHTML = `<div class='bg-light rounded d-flex align-items-center justify-content-center' style='width:60px;height:60px;'><i class='ki-duotone ki-picture fs-2x text-muted'><span class='path1'></span><span class='path2'></span></i></div>`;
+    parent.innerHTML = `<div class="flex h-[60px] w-[60px] items-center justify-center rounded bg-gray-100 dark:bg-gray-800"><i class="ki-duotone ki-picture fs-2x text-gray-400"><span class="path1"></span><span class="path2"></span></i></div>`;
   }
 };
 </script>

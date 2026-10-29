@@ -1,49 +1,17 @@
-import {
-  DrawerComponent,
-  MenuComponent,
-  ScrollComponent,
-  StickyComponent,
-  SwapperComponent,
-  ToggleComponent,
-} from "@/assets/ts/components";
 import { ThemeModeComponent } from "@/assets/ts/layout";
 import type { App } from "vue";
 import KTIcon from "@/core/helpers/kt-icon/KTIcon.vue";
 
 /**
- * @description Initialize KeenThemes custom components
+ * @description Initialize dark/light mode bridging (data-bs-theme <-> the
+ * Tailwind `dark:` variant). The rest of Metronic's KT JS component system
+ * (ToggleComponent, StickyComponent, MenuComponent, ScrollComponent/
+ * ScrollTopComponent, DrawerComponent, SwapperComponent) has been fully
+ * replaced by Vue-native equivalents (see TAILWIND_MIGRATION.md) and no
+ * longer has any live consumers - removed rather than left as dead code.
  */
 const initializeComponents = () => {
   ThemeModeComponent.init();
-  setTimeout(() => {
-    ToggleComponent.bootstrap();
-    StickyComponent.bootstrap();
-    MenuComponent.bootstrap();
-    ScrollComponent.bootstrap();
-    DrawerComponent.bootstrap();
-    SwapperComponent.bootstrap();
-  }, 0);
-};
-
-/**
- * @description Reinitialize KeenThemes custom components
- */
-const reinitializeComponents = () => {
-  ThemeModeComponent.init();
-  setTimeout(() => {
-    ToggleComponent.reinitialization();
-    StickyComponent.reInitialization();
-    MenuComponent.reinitialization();
-    reinitializeScrollComponent().then(() => {
-      ScrollComponent.updateAll();
-    });
-    DrawerComponent.reinitialization();
-    SwapperComponent.reinitialization();
-  }, 0);
-};
-
-const reinitializeScrollComponent = async () => {
-  await ScrollComponent.reinitialization();
 };
 
 /**
@@ -54,9 +22,4 @@ function initKtIcon(app: App<Element>) {
   app.component("KTIcon", KTIcon);
 }
 
-export {
-  initializeComponents,
-  reinitializeComponents,
-  reinitializeScrollComponent,
-  initKtIcon,
-};
+export { initializeComponents, initKtIcon };

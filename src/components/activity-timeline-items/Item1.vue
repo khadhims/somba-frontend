@@ -1,42 +1,36 @@
 <template>
   <!--begin::Timeline item-->
-  <div class="timeline-item">
-    <!--begin::Timeline line-->
-    <div class="timeline-line w-40px"></div>
-    <!--end::Timeline line-->
-
+  <div class="relative flex gap-4 pb-10 last:pb-0">
     <!--begin::Timeline icon-->
-    <div class="timeline-icon symbol symbol-circle symbol-40px me-4">
-      <div class="symbol-label bg-light">
+    <div
+      class="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 after:absolute after:left-1/2 after:top-full after:h-10 after:w-px after:-translate-x-1/2 after:bg-gray-200 dark:after:bg-gray-700"
+    >
+      <div class="flex h-full w-full items-center justify-center rounded-full">
         <KTIcon icon-name="message-text-2" icon-class="fs-2 text-gray-500" />
       </div>
     </div>
     <!--end::Timeline icon-->
 
     <!--begin::Timeline content-->
-    <div class="timeline-content mb-10 mt-n1">
+    <div class="flex-1 pb-2">
       <!--begin::Timeline heading-->
-      <div class="pe-3 mb-5">
+      <div class="pr-3 mb-5">
         <!--begin::Title-->
-        <div class="fs-5 fw-semibold mb-2">
+        <div
+          class="mb-2 text-sm font-semibold text-gray-800 dark:text-gray-100"
+        >
           There are 2 new tasks for you in “AirPlus Mobile APp” project:
         </div>
         <!--end::Title-->
 
         <!--begin::Description-->
-        <div class="d-flex align-items-center mt-1 fs-6">
+        <div class="flex items-center gap-2 mt-1 text-sm">
           <!--begin::Info-->
-          <div class="text-muted me-2 fs-7">Added at 4:23 PM by</div>
+          <div class="text-xs text-gray-500">Added at 4:23 PM by</div>
           <!--end::Info-->
 
           <!--begin::User-->
-          <div
-            class="symbol symbol-circle symbol-25px"
-            data-bs-toggle="tooltip"
-            data-bs-boundary="window"
-            data-bs-placement="top"
-            title="Nina Nilson"
-          >
+          <div class="h-6 w-6 rounded-full overflow-hidden" title="Nina Nilson">
             <img :src="getAssetPath('media/avatars/300-14.jpg')" alt="img" />
           </div>
           <!--end::User-->
@@ -49,42 +43,43 @@
       <div class="overflow-auto pb-5">
         <!--begin::Record-->
         <div
-          class="d-flex align-items-center border border-dashed border-gray-300 rounded min-w-750px px-7 py-3 mb-5"
+          class="flex items-center gap-2 rounded border border-dashed border-gray-300 min-w-[750px] px-7 py-3 mb-5"
         >
           <!--begin::Title-->
           <a
             href="#"
-            class="fs-5 text-gray-900 text-hover-primary fw-semobold w-375px min-w-200px"
+            class="text-sm font-semibold text-gray-900 transition-colors hover:text-primary w-[375px] min-w-[200px]"
             >Meeting with customer</a
           >
           <!--end::Title-->
 
           <!--begin::Label-->
-          <div class="min-w-175px pe-2">
-            <span class="badge badge-light text-muted">Application Design</span>
+          <div class="min-w-[175px] pr-2">
+            <span
+              class="inline-flex rounded px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-500"
+              >Application Design</span
+            >
           </div>
           <!--end::Label-->
 
           <!--begin::Users-->
-          <div
-            class="symbol-group symbol-hover flex-nowrap flex-grow-1 min-w-100px pe-2"
-          >
+          <div class="flex -space-x-2 flex-1 min-w-[100px] pr-2">
             <!--begin::User-->
-            <div class="symbol symbol-circle symbol-25px">
+            <div class="h-6 w-6 rounded-full overflow-hidden">
               <img :src="getAssetPath('media/avatars/300-2.jpg')" alt="img" />
             </div>
             <!--end::User-->
 
             <!--begin::User-->
-            <div class="symbol symbol-circle symbol-25px">
+            <div class="h-6 w-6 rounded-full overflow-hidden">
               <img :src="getAssetPath('media/avatars/300-14.jpg')" alt="img" />
             </div>
             <!--end::User-->
 
             <!--begin::User-->
-            <div class="symbol symbol-circle symbol-25px">
+            <div class="h-6 w-6 rounded-full overflow-hidden">
               <div
-                class="symbol-label fs-8 fw-semibold bg-primary text-inverse-primary"
+                class="flex h-full w-full items-center justify-center text-[10px] font-semibold bg-primary text-white"
               >
                 A
               </div>
@@ -94,13 +89,19 @@
           <!--end::Users-->
 
           <!--begin::Progress-->
-          <div class="min-w-125px pe-2">
-            <span class="badge badge-light-primary">In Progress</span>
+          <div class="min-w-[125px] pr-2">
+            <span
+              class="inline-flex rounded px-2 py-1 text-xs font-semibold"
+              :class="badgeVariantClass('primary')"
+              >In Progress</span
+            >
           </div>
           <!--end::Progress-->
 
           <!--begin::Action-->
-          <a href="#" class="btn btn-sm btn-light btn-active-light-primary"
+          <a
+            href="#"
+            class="inline-flex items-center rounded-md bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-primary-light hover:text-primary dark:bg-gray-800 dark:text-gray-300"
             >View</a
           >
           <!--end::Action-->
@@ -109,38 +110,37 @@
 
         <!--begin::Record-->
         <div
-          class="d-flex align-items-center border border-dashed border-gray-300 rounded min-w-750px px-7 py-3 mb-0"
+          class="flex items-center gap-2 rounded border border-dashed border-gray-300 min-w-[750px] px-7 py-3 mb-0"
         >
           <!--begin::Title-->
           <a
             href="#"
-            class="fs-5 text-gray-900 text-hover-primary fw-semobold w-375px min-w-200px"
+            class="text-sm font-semibold text-gray-900 transition-colors hover:text-primary w-[375px] min-w-[200px]"
             >Project Delivery Preparation</a
           >
           <!--end::Title-->
 
           <!--begin::Label-->
-          <div class="min-w-175px">
-            <span class="badge badge-light text-muted"
+          <div class="min-w-[175px]">
+            <span
+              class="inline-flex rounded px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-500"
               >CRM System Development</span
             >
           </div>
           <!--end::Label-->
 
           <!--begin::Users-->
-          <div
-            class="symbol-group symbol-hover flex-nowrap flex-grow-1 min-w-100px"
-          >
+          <div class="flex -space-x-2 flex-1 min-w-[100px]">
             <!--begin::User-->
-            <div class="symbol symbol-circle symbol-25px">
+            <div class="h-6 w-6 rounded-full overflow-hidden">
               <img :src="getAssetPath('media/avatars/300-20.jpg')" alt="img" />
             </div>
             <!--end::User-->
 
             <!--begin::User-->
-            <div class="symbol symbol-circle symbol-25px">
+            <div class="h-6 w-6 rounded-full overflow-hidden">
               <div
-                class="symbol-label fs-8 fw-semibold bg-success text-inverse-primary"
+                class="flex h-full w-full items-center justify-center text-[10px] font-semibold bg-success text-white"
               >
                 B
               </div>
@@ -150,13 +150,19 @@
           <!--end::Users-->
 
           <!--begin::Progress-->
-          <div class="min-w-125px">
-            <span class="badge badge-light-success">Completed</span>
+          <div class="min-w-[125px]">
+            <span
+              class="inline-flex rounded px-2 py-1 text-xs font-semibold"
+              :class="badgeVariantClass('success')"
+              >Completed</span
+            >
           </div>
           <!--end::Progress-->
 
           <!--begin::Action-->
-          <a href="#" class="btn btn-sm btn-light btn-active-light-primary"
+          <a
+            href="#"
+            class="inline-flex items-center rounded-md bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-primary-light hover:text-primary dark:bg-gray-800 dark:text-gray-300"
             >View</a
           >
           <!--end::Action-->
@@ -172,6 +178,7 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
+import { badgeVariantClass } from "@/core/helpers/badge";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -182,6 +189,7 @@ export default defineComponent({
   setup() {
     return {
       getAssetPath,
+      badgeVariantClass,
     };
   },
 });

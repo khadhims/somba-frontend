@@ -23,6 +23,7 @@ import DatePicker from "@/components/DatePicker.vue";
 // import { useI18n } from "vue-i18n";
 import ApiService from "@/core/services/ApiService";
 import mockEventActivity from "@/assets/mockupData/dashboard/event_activity.json";
+import { formInputClass, badgeVariantClass } from "@/core/helpers/badge";
 import {
   toGMT8ISOString,
   formatDateTimeGMT8,
@@ -330,18 +331,18 @@ const normalizeStatusKey = (value) => {
 const detailStatusBadgeClass = (status) => {
   const key = normalizeStatusKey(status);
   if (key === "resolved" || key === "completed") {
-    return "badge-light-success";
+    return badgeVariantClass("success");
   }
   if (key === "notresolved" || key === "active") {
-    return "badge-light-danger";
+    return badgeVariantClass("danger");
   }
   if (key === "falsealarm") {
-    return "badge-light-info";
+    return badgeVariantClass("info");
   }
   if (key === "scheduled") {
-    return "badge-light-warning";
+    return badgeVariantClass("warning");
   }
-  return "badge-light-secondary";
+  return badgeVariantClass("secondary");
 };
 
 const detailStatusLabel = (status) => {
@@ -3197,102 +3198,111 @@ defineExpose({
 
 <template>
   <!-- Real Time Process Monitoring Dashboard -->
-  <div class="card card-flush">
+  <div class="rounded-lg bg-white dark:bg-gray-900">
     <!-- Header Section -->
-    <div class="card-header py-6">
+    <div class="p-6">
       <!-- 2x2 Grid Layout -->
-      <div class="container-fluid">
-        <div class="row g-4 d-flex align-items-center">
+      <div>
+        <div class="grid grid-cols-1 items-center gap-4 lg:grid-cols-2">
           <!-- Row 1: Title (Left) + Status Filters (Right) -->
-          <div class="col-12 col-lg-6 d-flex justify-content-between">
+          <div class="flex justify-between">
             <!-- Title Section -->
-            <div class="d-flex align-items-center">
-              <div class="symbol symbol-45px me-3">
-                <div class="symbol-label bg-light-primary">
-                  <i class="ki-duotone ki-chart-simple text-primary fs-2x">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                    <span class="path4"></span>
-                  </i>
-                </div>
+            <div class="flex items-center">
+              <div
+                class="mr-3 flex h-[45px] w-[45px] items-center justify-center rounded-full bg-primary-light"
+              >
+                <i class="ki-duotone ki-chart-simple text-primary fs-2x">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                </i>
               </div>
               <div>
-                <h2 class="fs-1 fw-bold text-gray-900 mb-1">{{ title }}</h2>
-                <p class="fs-6 text-muted mb-0">{{ subtitle }}</p>
+                <h2
+                  class="mb-1 text-2xl font-bold text-gray-900 dark:text-gray-100"
+                >
+                  {{ title }}
+                </h2>
+                <p class="mb-0 text-sm text-gray-500">{{ subtitle }}</p>
               </div>
             </div>
           </div>
-          <div class="col-12 col-lg-6" v-if="showFilters">
+          <div v-if="showFilters">
             <!-- Status Filters -->
-            <div
-              class="d-flex flex-wrap align-items-center justify-content-lg-end gap-2"
-            >
-              <span class="fs-7 fw-bold text-gray-700 me-2">Status:</span>
+            <div class="flex flex-wrap items-center gap-2 lg:justify-end">
+              <span
+                class="mr-2 text-xs font-bold text-gray-700 dark:text-gray-300"
+                >Status:</span
+              >
               <button
                 @click="toggleStatusFilter('active')"
                 :class="[
-                  'btn btn-sm d-flex align-items-center px-3 py-1',
+                  'inline-flex items-center gap-1 rounded-md px-3 py-1 text-xs font-semibold transition-all hover:-translate-y-px hover:shadow-md',
                   isStatusSelected('active')
-                    ? 'btn-primary'
-                    : 'btn-light-primary',
+                    ? 'bg-primary text-white'
+                    : 'bg-primary-light text-primary',
                 ]"
               >
                 <div
-                  class="rounded-circle me-2"
+                  class="mr-2 rounded-full"
                   :class="
                     isStatusSelected('active') ? 'bg-white' : 'bg-primary'
                   "
                   style="width: 8px; height: 8px"
                 ></div>
-                <span class="fw-medium">Aktif</span>
+                <span class="font-medium">Aktif</span>
               </button>
               <button
                 @click="toggleStatusFilter('completed')"
                 :class="[
-                  'btn btn-sm d-flex align-items-center px-3 py-1',
+                  'inline-flex items-center gap-1 rounded-md px-3 py-1 text-xs font-semibold transition-all hover:-translate-y-px hover:shadow-md',
                   isStatusSelected('completed')
-                    ? 'btn-success'
-                    : 'btn-light-success',
+                    ? 'bg-success text-white'
+                    : 'bg-success-light text-success',
                 ]"
               >
                 <div
-                  class="rounded-circle me-2"
+                  class="mr-2 rounded-full"
                   :class="
                     isStatusSelected('completed') ? 'bg-white' : 'bg-success'
                   "
                   style="width: 8px; height: 8px"
                 ></div>
-                <span class="fw-medium">Selesai</span>
+                <span class="font-medium">Selesai</span>
               </button>
               <button
                 @click="toggleStatusFilter('scheduled')"
                 :class="[
-                  'btn btn-sm d-flex align-items-center px-3 py-1',
+                  'inline-flex items-center gap-1 rounded-md px-3 py-1 text-xs font-semibold transition-all hover:-translate-y-px hover:shadow-md',
                   isStatusSelected('scheduled')
-                    ? 'btn-secondary'
-                    : 'btn-light-secondary',
+                    ? 'bg-gray-600 text-white'
+                    : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300',
                 ]"
               >
                 <div
-                  class="rounded-circle me-2"
+                  class="mr-2 rounded-full"
                   :class="
                     isStatusSelected('scheduled') ? 'bg-white' : 'bg-secondary'
                   "
                   style="width: 8px; height: 8px"
                 ></div>
-                <span class="fw-medium">Terjadwal</span>
+                <span class="font-medium">Terjadwal</span>
               </button>
-              <div class="badge badge-light-info ms-2">
+              <div
+                class="ml-2 inline-flex rounded px-2 py-1 text-xs font-semibold bg-info-light text-info"
+              >
                 {{ selectedStatuses.length }}/3
               </div>
             </div>
           </div>
           <!-- Row 2: Date Picker (Left) + Auto-play Controls (Right) -->
-          <div class="col-12 col-lg-6" v-if="showFilters">
+          <div v-if="showFilters">
             <!-- Date Picker Section -->
-            <div class="d-flex align-items-center gap-3">
-              <span class="fs-7 fw-bold text-gray-700">Tanggal:</span>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-bold text-gray-700 dark:text-gray-300"
+                >Tanggal:</span
+              >
               <div style="width: 160px">
                 <DatePicker
                   v-model="selectedDateValue"
@@ -3303,7 +3313,7 @@ defineExpose({
                 />
               </div>
               <button
-                class="btn btn-light-primary btn-sm d-flex align-items-center px-3 py-2"
+                class="inline-flex items-center gap-2 rounded-md bg-primary-light px-3 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
                 @click="fetchAlerts"
                 :disabled="isLoading"
               >
@@ -3315,13 +3325,15 @@ defineExpose({
               </button>
             </div>
           </div>
-          <div class="col-12 col-lg-6" v-if="showFilters">
+          <div v-if="showFilters">
             <!-- Auto-play Controls Section -->
-            <div class="d-flex align-items-center justify-content-lg-end gap-3">
-              <span class="fs-7 fw-bold text-gray-700">Kontrol:</span>
+            <div class="flex items-center gap-3 lg:justify-end">
+              <span class="text-xs font-bold text-gray-700 dark:text-gray-300"
+                >Kontrol:</span
+              >
               <select
                 v-model="playSpeed"
-                class="form-select form-select-sm"
+                :class="[formInputClass, 'py-1 text-xs w-auto']"
                 :disabled="isPlaying"
                 style="width: 140px; height: 30px"
               >
@@ -3332,8 +3344,8 @@ defineExpose({
               <button
                 @click="toggleAutoPlay"
                 :class="[
-                  'btn btn-sm d-flex align-items-center px-3 py-1',
-                  isPlaying ? 'btn-danger' : 'btn-success',
+                  'inline-flex items-center gap-1 rounded-md px-3 py-1 text-xs font-semibold transition-all hover:-translate-y-px hover:shadow-md',
+                  isPlaying ? 'bg-danger text-white' : 'bg-success text-white',
                 ]"
                 :disabled="!apiData || apiData.length === 0"
               >
@@ -3356,15 +3368,15 @@ defineExpose({
       </div>
     </div>
     <!-- Chart Area -->
-    <div class="card-body">
+    <div class="p-6">
       <!-- Auto-play indicator -->
       <div
         v-if="isPlaying"
-        class="position-absolute top-0 end-0 z-3 badge badge-danger badge-lg d-flex align-items-center"
+        class="absolute right-0 top-0 z-10 inline-flex items-center rounded-md bg-danger px-3 py-1.5 text-sm font-semibold text-white"
         style="margin: 1rem"
       >
         <div
-          class="badge badge-circle badge-light-danger pulse me-2"
+          class="mr-2 h-2 w-2 animate-pulse rounded-full bg-danger"
           style="width: 8px; height: 8px"
         ></div>
         AUTO PLAY AKTIF
@@ -3373,7 +3385,7 @@ defineExpose({
       <!-- Error & state messaging -->
       <div
         v-if="apiError"
-        class="alert alert-warning d-flex align-items-center mb-4"
+        class="mb-4 flex items-center rounded-md border border-warning/20 bg-warning-light p-4"
         role="alert"
       >
         <i class="ki-duotone ki-information fs-3 me-3 text-warning">
@@ -3381,45 +3393,51 @@ defineExpose({
           <span class="path2"></span>
           <span class="path3"></span>
         </i>
-        <span class="fw-semibold text-warning">{{ apiError }}</span>
+        <span class="font-semibold text-warning">{{ apiError }}</span>
       </div>
 
       <!-- Loading State -->
       <div
         v-if="isLoading"
-        class="d-flex flex-column align-items-center justify-content-center text-center"
+        class="flex flex-col items-center justify-center text-center"
         style="height: 400px"
       >
-        <div class="spinner-border text-primary mb-4" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        <p class="text-gray-600 fw-semibold mb-2">Memuat data aktivitas...</p>
-        <p class="fs-6 text-muted">Mohon tunggu sebentar</p>
+        <div
+          class="mb-4 h-10 w-10 animate-spin rounded-full border-4 border-primary/30 border-t-primary"
+          role="status"
+        ></div>
+        <p class="mb-2 font-semibold text-gray-600">Memuat data aktivitas...</p>
+        <p class="text-sm text-gray-500">Mohon tunggu sebentar</p>
       </div>
 
       <!-- Empty State -->
       <div
         v-else-if="!isLoading && apiData.length === 0"
-        class="d-flex flex-column align-items-center justify-content-center text-center bg-white rounded border border-dashed border-gray-300"
+        class="flex flex-col items-center justify-center rounded border border-dashed border-gray-300 bg-white text-center dark:bg-gray-900"
         style="height: 400px"
       >
-        <div class="symbol symbol-60px bg-light-gray-400 mb-4">
-          <div class="symbol-label">
-            <i class="ki-duotone ki-calendar-remove text-gray-400 fs-2x">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-            </i>
-          </div>
+        <div
+          class="mb-4 flex h-[60px] w-[60px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800"
+        >
+          <i class="ki-duotone ki-calendar-remove text-gray-400 fs-2x">
+            <span class="path1"></span>
+            <span class="path2"></span>
+            <span class="path3"></span>
+          </i>
         </div>
-        <h3 class="fs-4 fw-semibold text-gray-700 mb-2">Belum Ada Aktivitas</h3>
-        <p class="text-muted mb-1">
+        <h3 class="mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300">
+          Belum Ada Aktivitas
+        </h3>
+        <p class="mb-1 text-gray-500">
           Tidak ada data aktivitas untuk tanggal ini.
         </p>
-        <p class="fs-6 text-gray-400 mb-4">
+        <p class="mb-4 text-sm text-gray-400">
           Silakan pilih tanggal lain atau coba lagi nanti.
         </p>
-        <button @click="fetchAlerts" class="btn btn-primary btn-sm">
+        <button
+          @click="fetchAlerts"
+          class="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-primary-active"
+        >
           <i class="ki-duotone ki-arrows-circle fs-6 me-1">
             <span class="path1"></span>
             <span class="path2"></span>
@@ -3429,10 +3447,13 @@ defineExpose({
       </div>
 
       <!-- Chart Container -->
-      <div v-else class="bg-white rounded border p-4">
+      <div
+        v-else
+        class="rounded border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+      >
         <div
           id="process-tracking-chart"
-          class="w-100"
+          class="w-full"
           style="height: 400px"
         ></div>
       </div>
@@ -3444,19 +3465,20 @@ defineExpose({
     <!-- Detail Modal -->
     <div
       v-if="showDetailModal"
-      class="modal show d-block"
+      class="fixed inset-0 z-[2000] flex items-center justify-center backdrop-blur-sm"
       tabindex="-1"
-      style="z-index: 2000; background-color: rgba(0, 0, 0, 0.6)"
+      style="background-color: rgba(0, 0, 0, 0.6)"
       @click.self="closeDetailModal"
     >
-      <div
-        class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
-        style="max-width: 960px"
-      >
-        <div class="modal-content shadow-lg border-0">
+      <div class="w-full" style="max-width: 960px">
+        <div
+          class="flex max-h-[85vh] w-full flex-col overflow-hidden rounded-lg bg-white shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] dark:bg-gray-900"
+        >
           <!-- Modal Header -->
-          <div class="modal-header bg-primary position-relative">
-            <h1 class="modal-title fs-3 text-white fw-bold">
+          <div
+            class="relative flex items-center justify-between bg-primary p-6"
+          >
+            <h1 class="text-xl font-bold text-white">
               {{
                 modalDetailData?.process ||
                 modalDetailData?.name ||
@@ -3466,31 +3488,36 @@ defineExpose({
             <button
               @click="closeDetailModal"
               type="button"
-              class="btn-close btn-close-white"
+              class="flex h-8 w-8 items-center justify-center rounded-md text-white/80 transition-colors hover:bg-white/10 hover:text-white"
               aria-label="Close"
-            ></button>
+            >
+              <i class="ki-duotone ki-cross fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </button>
           </div>
 
           <!-- Modal Body -->
-          <div class="modal-body p-0" v-if="modalDetailData">
-            <div class="container-fluid p-6">
+          <div class="overflow-y-auto" v-if="modalDetailData">
+            <div class="p-6">
               <!-- Error State -->
               <div
                 v-if="modalDetailData.error"
-                class="alert alert-danger d-flex align-items-center mb-6"
+                class="mb-6 flex items-center rounded-md border border-danger/20 bg-danger-light p-4"
                 role="alert"
               >
-                <div class="symbol symbol-30px bg-light-danger me-4">
-                  <div class="symbol-label">
-                    <i class="ki-duotone ki-cross-circle text-danger fs-4">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                  </div>
+                <div
+                  class="mr-4 flex h-[30px] w-[30px] items-center justify-center rounded-full bg-danger-light"
+                >
+                  <i class="ki-duotone ki-cross-circle text-danger fs-4">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
                 </div>
                 <div>
                   <h5 class="mb-1">Terjadi Kesalahan</h5>
-                  <div class="fw-semibold">{{ modalDetailData.error }}</div>
+                  <div class="font-semibold">{{ modalDetailData.error }}</div>
                 </div>
               </div>
 
@@ -3498,10 +3525,10 @@ defineExpose({
               <div v-else>
                 <!-- Status Card -->
                 <div class="mb-4">
-                  <div class="d-flex align-items-start justify-content-start">
+                  <div class="flex items-start justify-start">
                     <span
                       :class="detailStatusBadgeClass(modalDetailData.status)"
-                      class="badge badge-lg fs-6 fw-bold"
+                      class="inline-flex rounded-md px-3 py-1.5 text-sm font-bold"
                     >
                       {{ detailStatusLabel(modalDetailData.status) }}
                     </span>
@@ -3510,13 +3537,11 @@ defineExpose({
 
                 <!-- Timing Information -->
                 <div
-                  class="text-start mb-4"
+                  class="mb-4 text-left"
                   v-if="modalDetailData.start || modalDetailData.end"
                 >
-                  <div
-                    class="d-flex justify-content-start align-items-start gap-3"
-                  >
-                    <div v-if="modalDetailData.start" class="text-muted">
+                  <div class="flex items-start justify-start gap-3">
+                    <div v-if="modalDetailData.start" class="text-gray-500">
                       <i class="ki-duotone ki-timer fs-6 me-1">
                         <span class="path1"></span>
                         <span class="path2"></span>
@@ -3526,22 +3551,22 @@ defineExpose({
                     </div>
                     <span
                       v-if="modalDetailData.start && modalDetailData.end"
-                      class="text-muted"
+                      class="text-gray-500"
                       >-</span
                     >
-                    <div v-if="modalDetailData.end" class="text-muted">
+                    <div v-if="modalDetailData.end" class="text-gray-500">
                       {{ formatTime(modalDetailData.end) }}
                     </div>
                   </div>
                 </div>
 
                 <!-- Combined Section: Visual Documentation and Status & Comment in one row -->
-                <div class="row g-4 mb-4">
+                <div class="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2">
                   <!-- Visual Documentation Column -->
-                  <div class="col-md-6">
-                    <div v-if="currentDetailImage" class="h-100">
+                  <div>
+                    <div v-if="currentDetailImage" class="h-full">
                       <h5
-                        class="fs-5 fw-bold text-gray-800 mb-3 d-flex align-items-center"
+                        class="mb-3 flex items-center text-base font-bold text-gray-800 dark:text-gray-100"
                       >
                         <i class="ki-duotone ki-picture text-primary fs-5 me-2">
                           <span class="path1"></span>
@@ -3550,12 +3575,10 @@ defineExpose({
                         Dokumentasi Visual
                       </h5>
 
-                      <div
-                        class="position-relative d-flex justify-content-center"
-                      >
+                      <div class="relative flex justify-center">
                         <img
                           :src="currentDetailImage"
-                          class="img-fluid rounded border cursor-pointer shadow-sm"
+                          class="h-auto max-w-full cursor-pointer rounded border border-gray-200 shadow-sm transition-transform hover:scale-[1.02] dark:border-gray-700"
                           @click="
                             openImageFromDetail(
                               currentDetailImage,
@@ -3572,7 +3595,7 @@ defineExpose({
 
                         <!-- Error fallback -->
                         <div
-                          class="d-none border border-dashed border-gray-300 rounded p-4 text-center bg-light"
+                          class="hidden rounded border border-dashed border-gray-300 bg-gray-50 p-4 text-center dark:bg-gray-800"
                         >
                           <i
                             class="ki-duotone ki-picture text-gray-400 fs-2x mb-2"
@@ -3580,7 +3603,7 @@ defineExpose({
                             <span class="path1"></span>
                             <span class="path2"></span>
                           </i>
-                          <p class="text-muted mb-0">
+                          <p class="text-gray-500 mb-0">
                             Gambar tidak dapat dimuat
                           </p>
                         </div>
@@ -3588,7 +3611,7 @@ defineExpose({
                         <button
                           v-if="hasMultipleDetailImages"
                           @click.stop="showPreviousDetailImage"
-                          class="btn btn-icon btn-sm btn-light-primary position-absolute top-50 start-0 translate-middle-y ms-2 shadow-sm"
+                          class="absolute left-0 top-1/2 ml-2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md bg-primary-light text-primary shadow-sm transition-colors hover:bg-primary hover:text-white"
                           title="Sebelumnya"
                         >
                           <i class="ki-duotone ki-left fs-6">
@@ -3600,7 +3623,7 @@ defineExpose({
                         <button
                           v-if="hasMultipleDetailImages"
                           @click.stop="showNextDetailImage"
-                          class="btn btn-icon btn-sm btn-light-primary position-absolute top-50 end-0 translate-middle-y me-2 shadow-sm"
+                          class="absolute right-0 top-1/2 mr-2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md bg-primary-light text-primary shadow-sm transition-colors hover:bg-primary hover:text-white"
                           title="Berikutnya"
                         >
                           <i class="ki-duotone ki-right fs-6">
@@ -3611,7 +3634,7 @@ defineExpose({
 
                         <div
                           v-if="hasMultipleDetailImages"
-                          class="position-absolute bottom-0 end-0 bg-dark bg-opacity-75 text-white px-2 py-1 m-2 rounded fs-7"
+                          class="absolute bottom-0 right-0 m-2 rounded bg-black/75 px-2 py-1 text-xs text-white"
                         >
                           {{ detailImageIndex + 1 }} /
                           {{ detailModalImages.length }}
@@ -3619,9 +3642,9 @@ defineExpose({
 
                         <!-- Hover Overlay -->
                         <div
-                          class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 opacity-0 d-flex align-items-end justify-content-center pb-3 hover-overlay"
+                          class="absolute left-0 top-0 flex h-full w-full items-end justify-center bg-black/50 pb-3 opacity-0 hover-overlay"
                         >
-                          <div class="d-flex">
+                          <div class="flex">
                             <button
                               @click="
                                 openImageFromDetail(
@@ -3629,7 +3652,7 @@ defineExpose({
                                   `Rekaman ${modalDetailData.name}`
                                 )
                               "
-                              class="btn btn-primary btn-sm me-2"
+                              class="mr-2 inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-primary-active"
                               title="Lihat ukuran penuh"
                             >
                               <i class="ki-duotone ki-resize fs-6 me-1">
@@ -3645,7 +3668,7 @@ defineExpose({
                                   `Rekaman ${modalDetailData.name}`
                                 )
                               "
-                              class="btn btn-success btn-sm"
+                              class="inline-flex items-center gap-1 rounded-md bg-success px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:opacity-90"
                               title="Download gambar"
                             >
                               <i class="ki-duotone ki-cloud-download fs-6">
@@ -3659,9 +3682,9 @@ defineExpose({
                     </div>
 
                     <!-- No Image Section -->
-                    <div v-else class="h-100">
+                    <div v-else class="h-full">
                       <h5
-                        class="fs-5 fw-bold text-gray-800 mb-3 d-flex align-items-center"
+                        class="mb-3 flex items-center text-base font-bold text-gray-800 dark:text-gray-100"
                       >
                         <i
                           class="ki-duotone ki-picture text-secondary fs-5 me-2"
@@ -3673,7 +3696,7 @@ defineExpose({
                       </h5>
 
                       <div
-                        class="p-4 text-center bg-light rounded border border-dashed border-gray-300"
+                        class="rounded border border-dashed border-gray-300 bg-gray-50 p-4 text-center dark:bg-gray-800"
                       >
                         <i
                           class="ki-duotone ki-picture text-secondary fs-2x mb-3"
@@ -3681,10 +3704,12 @@ defineExpose({
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
-                        <h6 class="fw-semibold text-gray-700 mb-1">
+                        <h6
+                          class="mb-1 font-semibold text-gray-700 dark:text-gray-300"
+                        >
                           Tidak Ada Dokumentasi
                         </h6>
-                        <p class="text-muted fs-7 mb-0">
+                        <p class="mb-0 text-xs text-gray-500">
                           Tidak ada rekaman visual
                         </p>
                       </div>
@@ -3692,9 +3717,9 @@ defineExpose({
                   </div>
 
                   <!-- Status & Comment Column -->
-                  <div class="col-md-6">
+                  <div class="">
                     <h5
-                      class="fs-5 fw-bold text-gray-800 mb-3 d-flex align-items-center"
+                      class="mb-3 flex items-center text-base font-bold text-gray-800 dark:text-gray-100"
                     >
                       <i class="ki-duotone ki-notepad-edit text-info fs-5 me-2">
                         <span class="path1"></span>
@@ -3703,8 +3728,8 @@ defineExpose({
                       Status & Komentar
                     </h5>
 
-                    <div class="bg-light rounded p-3 mb-3">
-                      <div class="d-flex align-items-center mb-2">
+                    <div class="mb-3 rounded bg-gray-50 p-3 dark:bg-gray-800">
+                      <div class="mb-2 flex items-center">
                         <i
                           class="ki-duotone ki-message-text text-secondary fs-6 me-2"
                         >
@@ -3712,18 +3737,19 @@ defineExpose({
                           <span class="path2"></span>
                           <span class="path3"></span>
                         </i>
-                        <span class="fw-semibold text-gray-700 fs-6"
+                        <span
+                          class="text-sm font-semibold text-gray-700 dark:text-gray-300"
                           >Komentar:</span
                         >
                       </div>
-                      <p class="text-gray-700 fs-6 mb-2">
+                      <p class="mb-2 text-sm text-gray-700 dark:text-gray-300">
                         {{
                           modalDetailData.comment ||
                           modalDetailData.description ||
                           "Tidak ada komentar tambahan untuk aktivitas ini."
                         }}
                       </p>
-                      <div class="fs-7 text-muted">
+                      <div class="text-xs text-gray-500">
                         <i class="ki-duotone ki-time fs-7 me-1">
                           <span class="path1"></span>
                           <span class="path2"></span>
@@ -3738,8 +3764,8 @@ defineExpose({
                     </div>
 
                     <!-- Help Section -->
-                    <div class="alert alert-primary py-2 mb-0">
-                      <div class="d-flex align-items-start">
+                    <div class="mb-0 rounded-md bg-primary-light px-4 py-2">
+                      <div class="flex items-start">
                         <i
                           class="ki-duotone ki-information text-primary fs-6 me-2 mt-1"
                         >
@@ -3747,9 +3773,11 @@ defineExpose({
                           <span class="path2"></span>
                           <span class="path3"></span>
                         </i>
-                        <div class="flex-grow-1">
-                          <h6 class="fw-bold text-primary mb-2 fs-6">Tips:</h6>
-                          <ul class="text-primary fs-7 mb-0 ps-3">
+                        <div class="flex-1">
+                          <h6 class="mb-2 text-sm font-bold text-primary">
+                            Tips:
+                          </h6>
+                          <ul class="mb-0 pl-3 text-xs text-primary">
                             <li>
                               Klik gambar untuk melihat dalam ukuran penuh
                             </li>
@@ -3773,19 +3801,15 @@ defineExpose({
     <!-- Image Modal -->
     <div
       v-if="showImageModal"
-      class="modal show d-block"
-      style="z-index: 2100; background-color: rgba(0, 0, 0, 0.95)"
+      class="fixed inset-0 z-[2100] flex items-center justify-center backdrop-blur-sm"
+      style="background-color: rgba(0, 0, 0, 0.95)"
       @click.self="closeImageModal"
     >
-      <div
-        class="modal-dialog modal-fullscreen d-flex align-items-center justify-content-center p-3"
-      >
-        <div
-          class="position-relative w-100 h-100 d-flex align-items-center justify-content-center"
-        >
+      <div class="flex h-full w-full items-center justify-center p-3">
+        <div class="relative flex h-full w-full items-center justify-center">
           <button
             @click="closeImageModal"
-            class="btn btn-sm btn-light position-absolute top-0 end-0 m-3 opacity-75 hover-opacity-100 rounded-circle"
+            class="absolute right-0 top-0 m-3 flex items-center justify-center rounded-full bg-white opacity-75 transition-opacity hover:opacity-100"
             style="z-index: 10; width: 40px; height: 40px"
           >
             <i class="ki-duotone ki-cross fs-3">
@@ -3796,7 +3820,7 @@ defineExpose({
           <img
             :src="modalImageSrc"
             :alt="modalImageAlt"
-            class="img-fluid rounded shadow-lg"
+            class="h-auto max-w-full rounded shadow-lg"
             style="max-height: 95vh; max-width: 95vw; object-fit: contain"
           />
         </div>
@@ -3805,32 +3829,20 @@ defineExpose({
   </teleport>
 </template>
 
-<style lang="scss" scoped>
-// Variables
-$transition-fast: 0.2s ease;
-$transition-normal: 0.3s ease;
-$shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.15);
-$shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-
-// Colors
-$primary-color: #3b82f6;
-$success-color: #10b981;
-$secondary-color: #6c757d;
-$info-color: #0dcaf0;
-
-// Hover effects
+<style scoped>
+/* Hover effects - reveals the image action-button overlay on hover/touch */
 .hover-overlay {
-  transition: all $transition-normal;
+  transition: all 0.3s ease;
   opacity: 0;
   visibility: hidden;
   z-index: 5;
   border-radius: inherit;
+}
 
-  &:hover,
-  &.active {
-    opacity: 1 !important;
-    visibility: visible;
-  }
+.hover-overlay:hover,
+.hover-overlay.active {
+  opacity: 1 !important;
+  visibility: visible;
 }
 
 *:hover > .hover-overlay {
@@ -3838,351 +3850,10 @@ $info-color: #0dcaf0;
   visibility: visible;
 }
 
-// Animations
-.pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-// Modal improvements
-.modal {
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-
-  &-content {
-    box-shadow: $shadow-modal;
-  }
-}
-
-// Image states
-.img-fluid {
-  transition: all $transition-normal;
-
-  &:hover {
-    transform: scale(1.02);
-  }
-}
-
-// Button improvements
-.btn {
-  transition: all $transition-fast;
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: $shadow-subtle;
-  }
-
-  // Button variants
-  &-light-primary {
-    background-color: rgba($primary-color, 0.1);
-    border-color: rgba($primary-color, 0.3);
-    color: $primary-color;
-  }
-
-  &-light-success {
-    background-color: rgba($success-color, 0.1);
-    border-color: rgba($success-color, 0.3);
-    color: $success-color;
-  }
-
-  &-light-secondary {
-    background-color: rgba($secondary-color, 0.1);
-    border-color: rgba($secondary-color, 0.3);
-    color: $secondary-color;
-  }
-}
-
-// Badge styles
-.badge-light-info {
-  background-color: rgba($info-color, 0.1);
-  color: $info-color;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-// Utility classes
-.w-8px {
-  width: 8px;
-}
-.h-8px {
-  height: 8px;
-}
-.w-10px {
-  width: 10px;
-}
-.h-10px {
-  height: 10px;
-}
-.w-15px {
-  width: 15px;
-}
-.h-15px {
-  height: 15px;
-}
-
-.rotate-180 {
-  transform: rotate(180deg);
-}
-
-.me-auto {
-  margin-right: auto;
-}
-
-// Grid and layout
-.card-header {
-  .container-fluid {
-    padding: 0;
-  }
-
-  .row {
-    align-items: center;
-  }
-}
-
-.row.g-1 > .col {
-  flex: 0 0 14.2857%;
-}
-
-// Status filter hover states
-.bg-light-primary:hover {
-  background-color: var(--bs-primary-bg-subtle) !important;
-}
-
-.bg-light-success:hover {
-  background-color: var(--bs-success-bg-subtle) !important;
-}
-
-.bg-light-secondary:hover {
-  background-color: var(--bs-secondary-bg-subtle) !important;
-}
-
-// Responsive design with SASS
-// Touch devices
 @media (hover: none) and (pointer: coarse) {
   .hover-overlay {
     opacity: 0.8;
     visibility: visible;
   }
-
-  .btn {
-    min-height: 44px;
-    min-width: 44px;
-
-    &:hover {
-      transform: none;
-      box-shadow: none;
-    }
-  }
-
-  .card:hover {
-    transform: none;
-    box-shadow: none;
-  }
-}
-
-// Desktop and large tablets
-@media (max-width: 1200px) {
-  .modal-dialog {
-    max-width: 90vw !important;
-    margin: 1rem;
-  }
-
-  .controls-section .row {
-    gap: 1rem;
-  }
-
-  .filter-group .d-flex {
-    justify-content: center;
-  }
-
-  .filter-stats {
-    justify-content: center;
-    margin-top: 1rem;
-    flex-basis: 100%;
-  }
-}
-
-// Tablets
-@media (max-width: 992px) {
-  .header-title-section {
-    .d-flex {
-      text-align: center;
-      justify-content: center;
-    }
-
-    h1 {
-      font-size: 1.75rem !important;
-    }
-  }
-
-  .status-filter-section .d-flex {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-  }
-
-  .filter-group {
-    order: 1;
-
-    .d-flex {
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-  }
-
-  .filter-stats {
-    order: 2;
-    justify-content: center;
-    margin-top: 0;
-  }
-
-  .controls-section {
-    .row {
-      flex-direction: column;
-    }
-
-    .col-12 {
-      margin-bottom: 1rem;
-    }
-  }
-
-  .modal-body {
-    .row {
-      flex-direction: column;
-    }
-
-    .col-md-6 {
-      width: 100%;
-      margin-bottom: 1.5rem;
-    }
-  }
-}
-
-// Small tablets and large phones
-@media (max-width: 768px) {
-  .card-header {
-    padding: 1.5rem 1rem;
-  }
-
-  .card-body {
-    padding: 1rem;
-  }
-
-  .header-title-section {
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-
-    .symbol-50px {
-      width: 40px !important;
-      height: 40px !important;
-    }
-
-    h1 {
-      font-size: 1.5rem !important;
-      margin-bottom: 0.5rem;
-    }
-
-    p {
-      font-size: 0.875rem !important;
-    }
-  }
-
-  .status-filter-section,
-  .controls-section {
-    margin-bottom: 1.5rem;
-
-    .bg-white {
-      padding: 1rem;
-    }
-  }
-
-  .btn-sm {
-    font-size: 0.75rem;
-    padding: 0.375rem 0.75rem;
-  }
-
-  .form-select-solid {
-    font-size: 0.875rem;
-    padding: 0.5rem 0.75rem;
-  }
-
-  .control-group .d-flex {
-    flex-direction: column;
-    gap: 0.75rem;
-
-    .btn {
-      width: 100%;
-      justify-content: center;
-    }
-  }
-
-  #process-tracking-chart {
-    height: 280px !important;
-  }
-
-  .badge {
-    font-size: 0.75rem;
-    padding: 0.375rem 0.75rem;
-  }
-}
-
-// Mobile phones
-@media (max-width: 576px) {
-  .modal-dialog {
-    margin: 0.5rem;
-    max-width: calc(100vw - 1rem) !important;
-  }
-
-  .modal-fullscreen .modal-dialog {
-    margin: 0;
-    max-width: 100vw !important;
-    height: 100vh;
-  }
-
-  .card-header .d-flex.justify-content-between {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .status-filters {
-    justify-content: center;
-    margin-top: 1rem;
-  }
-
-  .btn-group {
-    flex-wrap: wrap;
-    gap: 0.25rem;
-  }
-
-  .img-fluid {
-    max-width: 100%;
-    height: auto;
-  }
-
-  .position-absolute.top-0.end-0 {
-    position: fixed !important;
-    top: 1rem !important;
-    right: 1rem !important;
-  }
-}
-
-/* Global styles & transitions */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 </style>

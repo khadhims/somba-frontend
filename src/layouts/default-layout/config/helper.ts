@@ -83,6 +83,21 @@ export const asideMinimized = computed(() => {
 });
 
 /**
+ * Toggle the aside minimized state.
+ * Was Bootstrap's `data-kt-toggle` (ToggleComponent) toggling a
+ * `data-kt-aside-minimize` attribute on <body>, read by SCSS - that never
+ * touched this Pinia state at all, so clicking the toggle button visually
+ * collapsed the sidebar via CSS while `asideMinimized` silently stayed
+ * frozen at its initial value forever. Now the single source of truth.
+ */
+export const toggleAsideMinimized = () => {
+  useConfigStore().setLayoutConfigProperty(
+    "aside.minimized",
+    !asideMinimized.value
+  );
+};
+
+/**
  * Check if toolbar width is fluid
  * @returns {boolean}
  */

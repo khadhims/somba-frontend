@@ -1,23 +1,23 @@
 <template>
   <!--begin::Step 5-->
-  <div data-kt-stepper-element="content">
-    <div class="w-100 text-center">
+  <div v-show="active">
+    <div class="w-full text-center">
       <!--begin::Heading-->
-      <h1 class="fw-bold text-gray-900 mb-3">Release!</h1>
+      <h1 class="mb-3 font-bold text-gray-900 dark:text-gray-100">Release!</h1>
       <!--end::Heading-->
 
       <!--begin::Description-->
-      <div class="text-muted fw-semibold fs-3">
+      <div class="text-lg font-semibold text-gray-500">
         Submit your app to kickstart your project.
       </div>
       <!--end::Description-->
 
       <!--begin::Illustration-->
-      <div class="text-center px-4 py-15">
+      <div class="px-4 py-15 text-center">
         <img
           :src="getIllustrationsPath('9.png')"
           alt=""
-          class="mw-100 mh-300px"
+          class="mx-auto max-h-[300px] max-w-full"
         />
       </div>
       <!--end::Illustration-->
@@ -32,4 +32,6 @@ defineOptions({
 });
 
 import { getIllustrationsPath } from "@/core/helpers/assets";
+
+defineProps<{ active: boolean }>();
 </script>

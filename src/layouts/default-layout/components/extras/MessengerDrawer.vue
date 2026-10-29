@@ -1,37 +1,41 @@
 <template>
+  <!--begin::Chat drawer backdrop-->
+  <div
+    v-if="drawers.messengerOpen"
+    class="fixed inset-0 z-40 bg-black/50"
+    @click="drawers.messengerOpen = false"
+  ></div>
+  <!--end::Chat drawer backdrop-->
+
   <!--begin::Chat drawer-->
   <div
     id="kt_drawer_chat"
-    class="bg-body"
-    data-kt-drawer="true"
-    data-kt-drawer-name="chat"
-    data-kt-drawer-activate="true"
-    data-kt-drawer-overlay="true"
-    data-kt-drawer-width="{default:'300px', 'md': '500px'}"
-    data-kt-drawer-direction="end"
-    data-kt-drawer-toggle="#kt_drawer_chat_toggle"
-    data-kt-drawer-close="#kt_drawer_chat_close"
+    class="fixed inset-y-0 right-0 z-50 flex w-[300px] translate-x-full flex-col bg-white transition-transform duration-300 md:w-[500px] dark:bg-gray-900"
+    :class="{ 'translate-x-0': drawers.messengerOpen }"
   >
     <!--begin::Messenger-->
-    <div class="card w-100" id="kt_drawer_chat_messenger">
+    <div class="flex h-full w-full flex-col" id="kt_drawer_chat_messenger">
       <!--begin::Card header-->
-      <div class="card-header pe-5" id="kt_drawer_chat_messenger_header">
+      <div
+        class="flex items-center justify-between border-b border-gray-200 py-5 pl-6 pr-5 dark:border-gray-700"
+        id="kt_drawer_chat_messenger_header"
+      >
         <!--begin::Title-->
-        <div class="card-title">
+        <div>
           <!--begin::User-->
-          <div class="d-flex justify-content-center flex-column me-3">
+          <div class="mr-3 flex flex-col justify-center">
             <a
               href="#"
-              class="fs-4 fw-bold text-gray-900 text-hover-primary me-1 mb-2 lh-1"
+              class="mb-2 mr-1 text-lg font-bold leading-none text-gray-900 transition-colors hover:text-primary dark:text-gray-100"
               >Brian Cox</a
             >
 
             <!--begin::Info-->
-            <div class="mb-0 lh-1">
+            <div class="mb-0 flex items-center leading-none">
               <span
-                class="badge badge-success badge-circle w-10px h-10px me-1"
+                class="mr-1 h-[10px] w-[10px] rounded-full bg-success"
               ></span>
-              <span class="fs-7 fw-semibold text-gray-500">Active</span>
+              <span class="text-xs font-semibold text-gray-500">Active</span>
             </div>
             <!--end::Info-->
           </div>
@@ -40,28 +44,43 @@
         <!--end::Title-->
 
         <!--begin::Card toolbar-->
-        <div class="card-toolbar">
+        <div class="flex items-center">
           <!--begin::Menu-->
-          <div class="me-2">
+          <div
+            class="relative mr-2"
+            :ref="(el) => (menuDropdown.containerRef.value = el as HTMLElement | null)"
+          >
             <button
-              class="btn btn-sm btn-icon btn-active-icon-primary"
-              data-kt-menu-trigger="click"
-              data-kt-menu-placement="bottom-end"
-              data-kt-menu-flip="top-end"
+              class="flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary dark:hover:bg-gray-800"
+              @click="menuDropdown.toggle"
             >
-              <i class="bi bi-three-dots fs-3"></i>
+              <i class="ki-duotone ki-dots-horizontal fs-3">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
             </button>
-            <Dropdown4></Dropdown4>
+            <div
+              v-show="menuDropdown.isOpen.value"
+              class="absolute right-0 top-full z-20 mt-2"
+            >
+              <Dropdown4
+                @close="menuDropdown.close"
+                @invite-contacts="openInviteFriends"
+              ></Dropdown4>
+            </div>
           </div>
           <!--end::Menu-->
 
           <!--begin::Close-->
-          <div
-            class="btn btn-sm btn-icon btn-active-icon-primary"
+          <button
+            type="button"
+            class="flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary dark:hover:bg-gray-800"
             id="kt_drawer_chat_close"
+            @click="drawers.messengerOpen = false"
           >
             <KTIcon icon-name="cross" icon-class="fs-2x" />
-          </div>
+          </button>
           <!--end::Close-->
         </div>
         <!--end::Card toolbar-->
@@ -69,19 +88,12 @@
       <!--end::Card header-->
 
       <!--begin::Card body-->
-      <div class="card-body" id="kt_drawer_chat_messenger_body">
+      <div
+        class="flex-1 overflow-y-auto px-5 py-4"
+        id="kt_drawer_chat_messenger_body"
+      >
         <!--begin::Messages-->
-        <div
-          class="scroll-y me-n5 pe-5"
-          ref="messagesRef"
-          data-kt-element="messages"
-          data-kt-scroll="true"
-          data-kt-scroll-activate="true"
-          data-kt-scroll-height="auto"
-          data-kt-scroll-dependencies="#kt_drawer_chat_messenger_header, #kt_drawer_chat_messenger_footer"
-          data-kt-scroll-wrappers="#kt_drawer_chat_messenger_body"
-          data-kt-scroll-offset="0px"
-        >
+        <div ref="messagesRef" data-kt-element="messages">
           <template v-for="(item, index) in messages" :key="index">
             <MessageIn
               ref="messagesInRef"
@@ -105,10 +117,13 @@
       <!--end::Card body-->
 
       <!--begin::Card footer-->
-      <div class="card-footer pt-4" id="kt_drawer_chat_messenger_footer">
+      <div
+        class="border-t border-gray-200 px-5 pb-5 pt-4 dark:border-gray-700"
+        id="kt_drawer_chat_messenger_footer"
+      >
         <!--begin::Input-->
         <input
-          class="form-control form-control-flush mb-3"
+          class="mb-3 w-full border-0 border-b border-transparent bg-transparent px-0 py-2 text-sm focus:border-gray-300 focus:outline-none focus:ring-0 dark:text-gray-100"
           data-kt-element="input"
           placeholder="Type a message"
           v-model="newMessageText"
@@ -117,24 +132,29 @@
         <!--end::Input-->
 
         <!--begin:Toolbar-->
-        <div class="d-flex flex-stack">
+        <div class="flex items-center justify-between">
           <!--begin::Actions-->
-          <div class="d-flex align-items-center me-2">
+          <div class="mr-2 flex items-center">
             <button
-              class="btn btn-sm btn-icon btn-active-light-primary me-1"
+              class="mr-1 flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"
               type="button"
-              data-bs-toggle="tooltip"
               title="Coming soon"
             >
-              <i class="bi bi-paperclip fs-3"></i>
+              <i class="ki-duotone ki-paper-clip fs-3">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
             </button>
             <button
-              class="btn btn-sm btn-icon btn-active-light-primary me-1"
+              class="mr-1 flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"
               type="button"
-              data-bs-toggle="tooltip"
               title="Coming soon"
             >
-              <i class="bi bi-upload fs-3"></i>
+              <i class="ki-duotone ki-file-up fs-3">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
             </button>
           </div>
           <!--end::Actions-->
@@ -142,7 +162,7 @@
           <!--begin::Send-->
           <button
             @click="addNewMessage"
-            class="btn btn-primary"
+            class="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active"
             type="button"
             data-kt-element="send"
           >
@@ -165,6 +185,8 @@ import { defineComponent, ref } from "vue";
 import MessageIn from "@/components/messenger-parts/MessageIn.vue";
 import MessageOut from "@/components/messenger-parts/MessageOut.vue";
 import Dropdown4 from "@/components/dropdown/Dropdown4.vue";
+import { useDrawersStore } from "@/stores/drawers";
+import { useDropdown } from "@/composables/useDropdown";
 
 interface KTMessage {
   type: string;
@@ -182,6 +204,12 @@ export default defineComponent({
     Dropdown4,
   },
   setup() {
+    const drawers = useDrawersStore();
+    const menuDropdown = useDropdown();
+    const openInviteFriends = () => {
+      menuDropdown.close();
+      drawers.inviteFriendsOpen = true;
+    };
     const messagesRef = ref<null | HTMLElement>(null);
     const messagesInRef = ref<null | HTMLElement>(null);
     const messagesOutRef = ref<null | HTMLElement>(null);
@@ -273,6 +301,9 @@ export default defineComponent({
     };
 
     return {
+      drawers,
+      menuDropdown,
+      openInviteFriends,
       messages,
       messagesRef,
       newMessageText,

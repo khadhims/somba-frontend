@@ -1,6 +1,9 @@
 <template>
-  <div id="kt_header" class="header align-items-stretch">
-    <div class="header-brand">
+  <div
+    id="kt_header"
+    class="flex items-stretch border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
+  >
+    <div class="flex items-center px-4">
       <!--begin::Logo-->
       <router-link to="/dashboard">
         <img
@@ -12,49 +15,48 @@
       <!--end::Logo-->
 
       <!--begin::Aside minimize-->
-      <div
+      <button
         v-if="asideDisplay"
+        type="button"
         id="kt_aside_toggle"
-        class="btn btn-icon w-auto px-0 btn-active-color-primary aside-minimize"
-        :class="{ active: asideMinimized }"
-        data-kt-toggle="true"
-        data-kt-toggle-state="active"
-        data-kt-toggle-target="body"
-        data-kt-toggle-name="aside-minimize"
+        class="ml-4 hidden h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary lg:flex dark:hover:bg-gray-800"
+        @click="toggleAsideMinimized"
       >
         <KTIcon
+          v-if="!asideMinimized"
           icon-name="exit-left"
-          icon-class="fs-1 me-n1 minimize-default"
+          icon-class="fs-1"
         />
-
-        <KTIcon icon-name="entrance-left" icon-class="fs-1 minimize-active" />
-      </div>
+        <KTIcon v-else icon-name="entrance-left" icon-class="fs-1" />
+      </button>
       <!--end::Aside minimize-->
 
       <!--begin::Aside toggle-->
       <div
-        class="d-flex align-items-center d-lg-none ms-n3 me-1"
+        class="-ml-1 mr-1 flex items-center lg:hidden"
         title="Show aside menu"
       >
-        <div
-          class="btn btn-icon btn-active-color-primary w-30px h-30px"
+        <button
+          type="button"
+          class="flex h-[30px] w-[30px] items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary dark:hover:bg-gray-800"
           id="kt_aside_mobile_toggle"
+          @click="drawers.asideMobileOpen = true"
         >
           <KTIcon icon-name="abstract-14" icon-class="fs-1" />
-        </div>
+        </button>
       </div>
       <!--end::Aside toggle-->
     </div>
 
     <div
-      class="toolbar d-flex align-items-stretch"
+      class="flex flex-1 items-stretch"
       :class="{
         'container-fluid': headerWidthFluid,
-        'container-xxl': !headerWidthFluid,
+        'mx-auto max-w-[1320px] px-4': !headerWidthFluid,
       }"
     >
       <div
-        class="container-fluid py-6 py-lg-0 d-flex flex-column flex-lg-row align-items-lg-stretch justify-content-lg-between"
+        class="flex w-full flex-col items-stretch justify-between py-6 lg:flex-row lg:items-stretch lg:py-0"
         id="kt_toolbar_container"
       >
         <PageTitle></PageTitle>
@@ -75,7 +77,9 @@ import {
   asideMinimized,
   headerLeft,
   headerWidthFluid,
+  toggleAsideMinimized,
 } from "@/layouts/default-layout/config/helper";
+import { useDrawersStore } from "@/stores/drawers";
 
 export default defineComponent({
   name: "KTHeader",
@@ -84,11 +88,15 @@ export default defineComponent({
     PageTitle,
   },
   setup() {
+    const drawers = useDrawersStore();
+
     return {
       headerWidthFluid,
       headerLeft,
       asideDisplay,
       asideMinimized,
+      toggleAsideMinimized,
+      drawers,
       getAssetPath,
     };
   },

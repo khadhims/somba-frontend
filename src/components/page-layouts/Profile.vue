@@ -1,35 +1,35 @@
 <template>
   <!--begin::Navbar-->
-  <div class="card mb-5 mb-xxl-8">
-    <div class="card-body pt-9 pb-0">
+  <div class="mb-5 rounded-lg bg-white dark:bg-gray-900">
+    <div class="px-9 pb-0 pt-9">
       <!--begin::Details-->
-      <div class="d-flex flex-wrap flex-sm-nowrap mb-3">
+      <div class="mb-3 flex flex-wrap sm:flex-nowrap">
         <!--begin: Pic-->
-        <div class="me-7 mb-4">
-          <div
-            class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative"
-          >
-            <img :src="getAssetPath('media/avatars/300-1.jpg')" alt="image" />
+        <div class="mb-4 mr-7">
+          <div class="relative h-[100px] w-[100px] lg:h-[160px] lg:w-[160px]">
+            <img
+              :src="getAssetPath('media/avatars/300-1.jpg')"
+              alt="image"
+              class="h-full w-full rounded-md object-cover"
+            />
             <div
-              class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-white h-20px w-20px"
+              class="absolute bottom-0 right-0 h-5 w-5 -translate-y-1/4 translate-x-1/4 rounded-full border-4 border-white bg-success dark:border-gray-900"
             ></div>
           </div>
         </div>
         <!--end::Pic-->
 
         <!--begin::Info-->
-        <div class="flex-grow-1">
+        <div class="flex-grow">
           <!--begin::Title-->
-          <div
-            class="d-flex justify-content-between align-items-start flex-wrap mb-2"
-          >
+          <div class="mb-2 flex flex-wrap items-start justify-between">
             <!--begin::User-->
-            <div class="d-flex flex-column">
+            <div class="flex flex-col">
               <!--begin::Name-->
-              <div class="d-flex align-items-center mb-2">
+              <div class="mb-2 flex items-center">
                 <a
                   href="#"
-                  class="text-gray-800 text-hover-primary fs-2 fw-bold me-1"
+                  class="mr-1 text-2xl font-bold text-gray-800 transition-colors hover:text-primary dark:text-gray-100"
                   >Max Smith</a
                 >
                 <a href="#">
@@ -39,24 +39,24 @@
               <!--end::Name-->
 
               <!--begin::Info-->
-              <div class="d-flex flex-wrap fw-semibold fs-6 mb-4 pe-2">
+              <div class="mb-4 flex flex-wrap text-sm font-semibold">
                 <a
                   href="#"
-                  class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2"
+                  class="mb-2 mr-5 flex items-center text-gray-500 transition-colors hover:text-primary"
                 >
                   <KTIcon icon-name="profile-circle" icon-class="fs-4 me-1" />
                   Developer
                 </a>
                 <a
                   href="#"
-                  class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2"
+                  class="mb-2 mr-5 flex items-center text-gray-500 transition-colors hover:text-primary"
                 >
                   <KTIcon icon-name="geolocation" icon-class="fs-4 me-1" />
                   SF, Bay Area
                 </a>
                 <a
                   href="#"
-                  class="d-flex align-items-center text-gray-500 text-hover-primary mb-2"
+                  class="mb-2 flex items-center text-gray-500 transition-colors hover:text-primary"
                 >
                   <KTIcon icon-name="sms" icon-class="fs-4 me-1" />
                   max@kt.com
@@ -67,35 +67,41 @@
             <!--end::User-->
 
             <!--begin::Actions-->
-            <div class="d-flex my-4">
+            <div class="my-4 flex">
               <a
                 href="#"
-                class="btn btn-sm btn-light me-2"
+                class="mr-2 rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                 id="kt_user_follow_button"
               >
-                <KTIcon icon-name="check" icon-class="fs-3 d-none" />
                 Follow
               </a>
 
+              <!-- ponytail: original targeted a modal id (#kt_modal_offer_a_deal)
+              with no matching modal anywhere in the app - already a dead
+              link before this migration, left inert. -->
               <a
                 href="#"
-                class="btn btn-sm btn-primary me-3"
-                data-bs-toggle="modal"
-                data-bs-target="#kt_modal_offer_a_deal"
+                class="mr-3 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active"
                 >Hire Me</a
               >
 
               <!--begin::Menu-->
-              <div class="me-0">
+              <div
+                class="relative"
+                :ref="(el) => (menuDropdown.containerRef.value = el as HTMLElement | null)"
+              >
                 <button
-                  class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
-                  data-kt-menu-trigger="click"
-                  data-kt-menu-placement="bottom-end"
-                  data-kt-menu-flip="top-end"
+                  class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-500 transition-colors hover:text-primary dark:bg-gray-800"
+                  @click="menuDropdown.toggle"
                 >
-                  <i class="bi bi-three-dots fs-3"></i>
+                  <KTIcon icon-name="dots-horizontal" icon-class="fs-3" />
                 </button>
-                <Dropdown3></Dropdown3>
+                <div
+                  v-show="menuDropdown.isOpen.value"
+                  class="absolute right-0 top-full z-20 mt-2"
+                >
+                  <Dropdown3 @close="menuDropdown.close"></Dropdown3>
+                </div>
               </div>
               <!--end::Menu-->
             </div>
@@ -104,87 +110,73 @@
           <!--end::Title-->
 
           <!--begin::Stats-->
-          <div class="d-flex flex-wrap flex-stack">
+          <div class="flex flex-wrap items-center justify-between">
             <!--begin::Wrapper-->
-            <div class="d-flex flex-column flex-grow-1 pe-8">
+            <div class="flex flex-grow flex-col pr-8">
               <!--begin::Stats-->
-              <div class="d-flex flex-wrap">
+              <div class="flex flex-wrap">
                 <!--begin::Stat-->
                 <div
-                  class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3"
+                  class="mb-3 mr-6 min-w-[125px] rounded border border-dashed border-gray-300 px-4 py-3 dark:border-gray-700"
                 >
                   <!--begin::Number-->
-                  <div class="d-flex align-items-center">
+                  <div class="flex items-center">
                     <KTIcon
                       icon-name="arrow-up"
                       icon-class="fs-3 text-success me-2"
                     />
-                    <div
-                      class="fs-2 fw-bold"
-                      data-kt-countup="true"
-                      data-kt-countup-value="4500"
-                      data-kt-countup-prefix="$"
-                    >
-                      4,500$
-                    </div>
+                    <div class="text-2xl font-bold">4,500$</div>
                   </div>
                   <!--end::Number-->
 
                   <!--begin::Label-->
-                  <div class="fw-semibold fs-6 text-gray-500">Earnings</div>
+                  <div class="text-sm font-semibold text-gray-500">
+                    Earnings
+                  </div>
                   <!--end::Label-->
                 </div>
                 <!--end::Stat-->
 
                 <!--begin::Stat-->
                 <div
-                  class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3"
+                  class="mb-3 mr-6 min-w-[125px] rounded border border-dashed border-gray-300 px-4 py-3 dark:border-gray-700"
                 >
                   <!--begin::Number-->
-                  <div class="d-flex align-items-center">
+                  <div class="flex items-center">
                     <KTIcon
                       icon-name="arrow-down"
                       icon-class="fs-3 text-danger me-2"
                     />
-                    <div
-                      class="fs-2 fw-bold"
-                      data-kt-countup="true"
-                      data-kt-countup-value="75"
-                    >
-                      75
-                    </div>
+                    <div class="text-2xl font-bold">75</div>
                   </div>
                   <!--end::Number-->
 
                   <!--begin::Label-->
-                  <div class="fw-semibold fs-6 text-gray-500">Projects</div>
+                  <div class="text-sm font-semibold text-gray-500">
+                    Projects
+                  </div>
                   <!--end::Label-->
                 </div>
                 <!--end::Stat-->
 
                 <!--begin::Stat-->
                 <div
-                  class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3"
+                  class="mb-3 mr-6 min-w-[125px] rounded border border-dashed border-gray-300 px-4 py-3 dark:border-gray-700"
                 >
                   <!--begin::Number-->
-                  <div class="d-flex align-items-center">
+                  <div class="flex items-center">
                     <KTIcon
                       icon-name="arrow-up"
                       icon-class="fs-3 text-success me-2"
                     />
-                    <div
-                      class="fs-2 fw-bold"
-                      data-kt-countup="true"
-                      data-kt-countup-value="60"
-                      data-kt-countup-prefix="%"
-                    >
-                      60%
-                    </div>
+                    <div class="text-2xl font-bold">60%</div>
                   </div>
                   <!--end::Number-->
 
                   <!--begin::Label-->
-                  <div class="fw-semibold fs-6 text-gray-500">Success Rate</div>
+                  <div class="text-sm font-semibold text-gray-500">
+                    Success Rate
+                  </div>
                   <!--end::Label-->
                 </div>
                 <!--end::Stat-->
@@ -194,25 +186,18 @@
             <!--end::Wrapper-->
 
             <!--begin::Progress-->
-            <div
-              class="d-flex align-items-center w-200px w-sm-300px flex-column mt-3"
-            >
-              <div class="d-flex justify-content-between w-100 mt-auto mb-2">
-                <span class="fw-semibold fs-6 text-gray-500"
+            <div class="mt-3 flex w-[200px] flex-col items-center sm:w-[300px]">
+              <div class="mb-2 mt-auto flex w-full justify-between">
+                <span class="text-sm font-semibold text-gray-500"
                   >Profile Compleation</span
                 >
-                <span class="fw-bold fs-6">50%</span>
+                <span class="text-sm font-bold">50%</span>
               </div>
 
-              <div class="h-5px mx-3 w-100 bg-light mb-3">
-                <div
-                  class="bg-success rounded h-5px"
-                  role="progressbar"
-                  style="width: 50%"
-                  aria-valuenow="50"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                ></div>
+              <div
+                class="mb-3 h-[5px] w-full rounded bg-gray-100 dark:bg-gray-800"
+              >
+                <div class="h-[5px] w-1/2 rounded bg-success"></div>
               </div>
             </div>
             <!--end::Progress-->
@@ -224,71 +209,69 @@
       <!--end::Details-->
 
       <!--begin::Navs-->
-      <div class="d-flex overflow-auto h-55px">
-        <ul
-          class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold flex-nowrap"
-        >
+      <div class="flex h-[55px] overflow-auto">
+        <ul class="flex flex-nowrap gap-6 text-base font-bold">
           <!--begin::Nav item-->
-          <li class="nav-item">
+          <li>
             <router-link
               to="/controlplane/pages/profile/overview"
-              class="nav-link text-active-primary me-6"
-              active-class="active"
+              class="inline-block border-b-2 border-transparent py-4 text-gray-500 transition-colors hover:text-primary"
+              active-class="!border-primary !text-primary"
             >
               Overview
             </router-link>
           </li>
           <!--end::Nav item-->
           <!--begin::Nav item-->
-          <li class="nav-item">
+          <li>
             <router-link
-              class="nav-link text-active-primary me-6"
               to="/controlplane/pages/profile/projects"
-              active-class="active"
+              class="inline-block border-b-2 border-transparent py-4 text-gray-500 transition-colors hover:text-primary"
+              active-class="!border-primary !text-primary"
             >
               Projects
             </router-link>
           </li>
           <!--end::Nav item-->
           <!--begin::Nav item-->
-          <li class="nav-item">
+          <li>
             <router-link
-              class="nav-link text-active-primary me-6"
               to="/controlplane/pages/profile/campaigns"
-              active-class="active"
+              class="inline-block border-b-2 border-transparent py-4 text-gray-500 transition-colors hover:text-primary"
+              active-class="!border-primary !text-primary"
             >
               Campaigns
             </router-link>
           </li>
           <!--end::Nav item-->
           <!--begin::Nav item-->
-          <li class="nav-item">
+          <li>
             <router-link
-              class="nav-link text-active-primary me-6"
               to="/controlplane/pages/profile/documents"
-              active-class="active"
+              class="inline-block border-b-2 border-transparent py-4 text-gray-500 transition-colors hover:text-primary"
+              active-class="!border-primary !text-primary"
             >
               Documents
             </router-link>
           </li>
           <!--end::Nav item-->
           <!--begin::Nav item-->
-          <li class="nav-item">
+          <li>
             <router-link
-              class="nav-link text-active-primary me-6"
               to="/controlplane/pages/profile/connections"
-              active-class="active"
+              class="inline-block border-b-2 border-transparent py-4 text-gray-500 transition-colors hover:text-primary"
+              active-class="!border-primary !text-primary"
             >
               Connections
             </router-link>
           </li>
           <!--end::Nav item-->
           <!--begin::Nav item-->
-          <li class="nav-item">
+          <li>
             <router-link
-              class="nav-link text-active-primary me-6"
               to="/controlplane/pages/profile/activity"
-              active-class="active"
+              class="inline-block border-b-2 border-transparent py-4 text-gray-500 transition-colors hover:text-primary"
+              active-class="!border-primary !text-primary"
             >
               Activity
             </router-link>
@@ -307,6 +290,7 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent } from "vue";
 import Dropdown3 from "@/components/dropdown/Dropdown3.vue";
+import { useDropdown } from "@/composables/useDropdown";
 
 export default defineComponent({
   name: "profile-page-layout",
@@ -314,8 +298,10 @@ export default defineComponent({
     Dropdown3,
   },
   setup() {
+    const menuDropdown = useDropdown();
     return {
       getAssetPath,
+      menuDropdown,
     };
   },
 });

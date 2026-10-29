@@ -1,69 +1,44 @@
 <template>
   <!--begin::Timeline-->
-  <div class="card">
+  <div
+    class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900"
+  >
     <!--begin::Card head-->
-    <div class="card-header card-header-stretch">
+    <div
+      class="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 p-6 dark:border-gray-700"
+    >
       <!--begin::Title-->
-      <div class="card-title d-flex align-items-center">
+      <div class="flex items-center">
         <KTIcon
           icon-name="calendar-8"
-          icon-class="fs-1 text-primary me-3 lh-0"
+          icon-class="fs-1 text-primary me-3 leading-none"
         />
 
-        <h3 class="fw-bold m-0 text-gray-800">Jan 23, 2021</h3>
+        <h3 class="m-0 font-bold text-gray-800 dark:text-gray-100">
+          Jan 23, 2021
+        </h3>
       </div>
       <!--end::Title-->
 
       <!--begin::Toolbar-->
-      <div class="card-toolbar m-0">
+      <div>
         <!--begin::Tab nav-->
-        <ul
-          class="nav nav-tabs nav-line-tabs nav-stretch fs-6 border-0 fw-bold"
-          role="tablist"
-        >
-          <li class="nav-item" role="presentation">
-            <a
-              id="kt_activity_today_tab"
-              class="nav-link justify-content-center text-active-gray-800 active"
-              data-bs-toggle="tab"
+        <ul class="flex gap-6 text-sm font-bold" role="tablist">
+          <li v-for="tab in tabs" :key="tab.key" role="presentation">
+            <button
+              type="button"
+              class="border-b-2 pb-3 transition-colors"
+              :class="
+                activeTab === tab.key
+                  ? 'border-primary text-gray-800 dark:text-gray-100'
+                  : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-100'
+              "
               role="tab"
-              href="#kt_activity_today"
+              :aria-selected="activeTab === tab.key"
+              @click="activeTab = tab.key"
             >
-              Today
-            </a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a
-              id="kt_activity_week_tab"
-              class="nav-link justify-content-center text-active-gray-800"
-              data-bs-toggle="tab"
-              role="tab"
-              href="#kt_activity_week"
-            >
-              Week
-            </a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a
-              id="kt_activity_month_tab"
-              class="nav-link justify-content-center text-active-gray-800"
-              data-bs-toggle="tab"
-              role="tab"
-              href="#kt_activity_month"
-            >
-              Month
-            </a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a
-              id="kt_activity_year_tab"
-              class="nav-link justify-content-center text-active-gray-800 text-hover-gray-800"
-              data-bs-toggle="tab"
-              role="tab"
-              href="#kt_activity_year"
-            >
-              2021
-            </a>
+              {{ tab.label }}
+            </button>
           </li>
         </ul>
         <!--end::Tab nav-->
@@ -73,16 +48,11 @@
     <!--end::Card head-->
 
     <!--begin::Card body-->
-    <div class="card-body">
+    <div class="p-6">
       <!--begin::Tab Content-->
-      <div class="tab-content">
+      <div>
         <!--begin::Tab panel-->
-        <div
-          id="kt_activity_today"
-          class="card-body p-0 tab-pane fade show active"
-          role="tabpanel"
-          aria-labelledby="kt_activity_today_tab"
-        >
+        <div v-show="activeTab === 'today'" role="tabpanel">
           <!--begin::Timeline-->
           <div class="timeline">
             <KTActivityItem1></KTActivityItem1>
@@ -99,12 +69,7 @@
         <!--end::Tab panel-->
 
         <!--begin::Tab panel-->
-        <div
-          id="kt_activity_week"
-          class="card-body p-0 tab-pane fade show"
-          role="tabpanel"
-          aria-labelledby="kt_activity_week_tab"
-        >
+        <div v-show="activeTab === 'week'" role="tabpanel">
           <!--begin::Timeline-->
           <div class="timeline">
             <KTActivityItem2></KTActivityItem2>
@@ -118,12 +83,7 @@
         <!--end::Tab panel-->
 
         <!--begin::Tab panel-->
-        <div
-          id="kt_activity_month"
-          class="card-body p-0 tab-pane fade show"
-          role="tabpanel"
-          aria-labelledby="kt_activity_month_tab"
-        >
+        <div v-show="activeTab === 'month'" role="tabpanel">
           <!--begin::Timeline-->
           <div class="timeline">
             <KTActivityItem5></KTActivityItem5>
@@ -138,12 +98,7 @@
         <!--end::Tab panel-->
 
         <!--begin::Tab panel-->
-        <div
-          id="kt_activity_year"
-          class="card-body p-0 tab-pane fade show"
-          role="tabpanel"
-          aria-labelledby="kt_activity_year_tab"
-        >
+        <div v-show="activeTab === 'year'" role="tabpanel">
           <!--begin::Timeline-->
           <div class="timeline">
             <KTActivityItem3></KTActivityItem3>
@@ -164,7 +119,7 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import KTActivityItem1 from "@/components/activity-timeline-items/Item1.vue";
 import KTActivityItem2 from "@/components/activity-timeline-items/Item2.vue";
 import KTActivityItem3 from "@/components/activity-timeline-items/Item3.vue";
@@ -187,8 +142,21 @@ export default defineComponent({
     KTActivityItem8,
   },
   setup() {
+    // Was Bootstrap's data-bs-toggle="tab" nav, riding on the global
+    // Tab data-api side effect registered by importing `bootstrap`
+    // anywhere in the app (see main.ts). Plain Vue ref + v-show instead.
+    const activeTab = ref<"today" | "week" | "month" | "year">("today");
+    const tabs = [
+      { key: "today" as const, label: "Today" },
+      { key: "week" as const, label: "Week" },
+      { key: "month" as const, label: "Month" },
+      { key: "year" as const, label: "2021" },
+    ];
+
     return {
       getAssetPath,
+      activeTab,
+      tabs,
     };
   },
 });

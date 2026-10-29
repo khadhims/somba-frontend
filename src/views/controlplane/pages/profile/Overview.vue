@@ -1,20 +1,20 @@
 <template>
-  <div class="row g-5 g-xxl-8">
-    <div class="col-xl-6">
-      <KTWidget1 widget-classes="mb-5 mb-xxl-8"></KTWidget1>
-      <KTWidget2 widget-classes="mb-5 mb-xxl-8"></KTWidget2>
-      <KTWidget3 widget-classes="mb-5 mb-xxl-8"></KTWidget3>
-      <KTWidget4 widget-classes="mb-5 mb-xxl-8"></KTWidget4>
-      <KTWidget5 widget-classes="mb-5 mb-xxl-8"></KTWidget5>
-      <KTWidget6 widget-classes="mb-5 mb-xxl-8"></KTWidget6>
+  <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
+    <div>
+      <KTWidget1 widget-classes="mb-5"></KTWidget1>
+      <KTWidget2 widget-classes="mb-5"></KTWidget2>
+      <KTWidget3 widget-classes="mb-5"></KTWidget3>
+      <KTWidget4 widget-classes="mb-5"></KTWidget4>
+      <KTWidget5 widget-classes="mb-5"></KTWidget5>
+      <KTWidget6 widget-classes="mb-5"></KTWidget6>
     </div>
 
-    <div class="col-xl-6">
-      <KTChartWidget1 widget-classes="mb-5 mb-xxl-8"></KTChartWidget1>
+    <div>
+      <KTChartWidget1 widget-classes="mb-5"></KTChartWidget1>
 
-      <KTListWidget5 widget-classes="mb-5 mb-xxl-8"></KTListWidget5>
+      <KTListWidget5 widget-classes="mb-5"></KTListWidget5>
 
-      <KTEngageWidget1 widget-classes="mb-5 mb-xxl-8"></KTEngageWidget1>
+      <KTEngageWidget1 widget-classes="mb-5"></KTEngageWidget1>
     </div>
   </div>
 </template>

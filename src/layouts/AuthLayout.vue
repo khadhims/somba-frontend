@@ -1,8 +1,10 @@
 <template>
   <!--begin::Authentication Layout -->
-  <div class="d-flex flex-column flex-center flex-column-fluid auth-layout-bg">
+  <div
+    class="flex min-h-screen flex-col items-center justify-center auth-layout-bg"
+  >
     <!--begin::Content-->
-    <div class="d-flex flex-center w-100 p-10">
+    <div class="flex w-full items-center justify-center p-10">
       <router-view></router-view>
     </div>
     <!--end::Content-->

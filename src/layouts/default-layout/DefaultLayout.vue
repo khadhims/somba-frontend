@@ -1,6 +1,6 @@
 <template>
   <!-- begin:: Body -->
-  <div class="page d-flex flex-row flex-column-fluid">
+  <div class="flex min-h-screen w-full flex-row">
     <!-- begin:: Aside Left -->
     <KTAside
       v-if="asideEnabled"
@@ -9,19 +9,20 @@
     />
     <!-- end:: Aside Left -->
 
-    <div id="kt_wrapper" class="d-flex flex-column flex-row-fluid wrapper">
+    <div id="kt_wrapper" class="flex w-full flex-1 flex-col">
       <KTHeader />
 
       <!-- begin:: Content -->
-      <div id="kt_content" class="content d-flex flex-column flex-column-fluid">
+      <div
+        id="kt_content"
+        class="flex flex-1 flex-col bg-gray-100 dark:bg-gray-950"
+      >
         <!-- begin:: Content Body -->
-        <div class="post d-flex flex-column-fluid">
+        <div class="flex flex-1 flex-col">
           <div
             id="kt_content_container"
-            :class="{
-              'container-fluid': contentWidthFluid,
-              'container-xxl': !contentWidthFluid,
-            }"
+            class="w-full px-4 py-6"
+            :class="contentWidthFluid ? '' : 'mx-auto max-w-[1320px]'"
           >
             <router-view />
           </div>
@@ -47,14 +48,7 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  nextTick,
-  onBeforeMount,
-  onMounted,
-  watch,
-} from "vue";
-import { useRoute } from "vue-router";
+import { defineComponent, onBeforeMount } from "vue";
 import KTAside from "@/layouts/default-layout/components/aside/Aside.vue";
 import KTHeader from "@/layouts/default-layout/components/header/Header.vue";
 import KTFooter from "@/layouts/default-layout/components/footer/Footer.vue";
@@ -66,7 +60,6 @@ import KTHelpDrawer from "@/layouts/default-layout/components/extras/HelpDrawer.
 import KTToolButtons from "@/layouts/default-layout/components/extras/ToolButtons.vue";
 import KTDrawerMessenger from "@/layouts/default-layout/components/extras/MessengerDrawer.vue";
 import GlobalSearch from "@/components/GlobalSearch.vue";
-import { reinitializeComponents } from "@/core/plugins/keenthemes";
 import {
   asideEnabled,
   contentWidthFluid,
@@ -95,26 +88,9 @@ export default defineComponent({
     GlobalSearch,
   },
   setup() {
-    const route = useRoute();
-
     onBeforeMount(() => {
       LayoutService.init();
     });
-
-    onMounted(() => {
-      nextTick(() => {
-        reinitializeComponents();
-      });
-    });
-
-    watch(
-      () => route.path,
-      () => {
-        nextTick(() => {
-          reinitializeComponents();
-        });
-      }
-    );
 
     return {
       toolbarDisplay,

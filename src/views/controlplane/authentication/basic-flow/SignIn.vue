@@ -8,6 +8,7 @@
 
     <!-- Main Card -->
     <div class="login-card" ref="cardRef">
+      
       <!-- Floating Logo -->
       <div class="brand-logo">
         <img src="/logo-somba-2.png" alt="Somba Logo" />
@@ -34,9 +35,9 @@
           <!-- Holographic Cone -->
           <div class="hologram-cone"></div>
         </div>
-
+        
         <div class="image-text">
-          <h2 class="welcome-text">WELCOME<br />BACK</h2>
+          <h2 class="welcome-text">WELCOME<br>BACK</h2>
           <p class="sub-text">Enter the gateway to SOMBA.</p>
         </div>
       </div>
@@ -58,10 +59,10 @@
           <div class="input-group-custom mb-6">
             <label class="custom-label">Email Address</label>
             <div class="input-wrapper">
-              <i class="bi bi-envelope input-icon"></i>
+              <i class="fas fa-envelope input-icon"></i>
               <Field
                 tabindex="1"
-                class="form-control custom-input"
+                class="custom-input"
                 type="text"
                 name="username"
                 autocomplete="off"
@@ -77,17 +78,15 @@
 
           <!-- Password Input -->
           <div class="input-group-custom mb-6">
-            <div class="d-flex justify-content-between align-items-center mb-1">
+            <div class="flex items-center justify-between mb-1">
               <label class="custom-label">Password</label>
-              <router-link to="/password-reset" class="forgot-link"
-                >Forgot?</router-link
-              >
+              <router-link to="/password-reset" class="forgot-link">Forgot?</router-link>
             </div>
             <div class="input-wrapper">
-              <i class="bi bi-lock input-icon"></i>
+              <i class="fas fa-lock input-icon"></i>
               <Field
                 tabindex="2"
-                class="form-control custom-input"
+                class="custom-input"
                 type="password"
                 name="password"
                 autocomplete="off"
@@ -107,14 +106,13 @@
             type="submit"
             ref="submitButton"
             id="kt_sign_in_submit"
-            class="btn btn-neon w-100 mb-6"
+            class="btn-neon mb-6 w-full"
+            :disabled="submitting"
           >
-            <span class="indicator-label">SIGN IN</span>
-            <span class="indicator-progress">
+            <span v-if="!submitting">SIGN IN</span>
+            <span v-else class="inline-flex items-center justify-center gap-2">
               AUTHENTICATING...
-              <span
-                class="spinner-border spinner-border-sm align-middle ms-2"
-              ></span>
+              <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
             </span>
           </button>
 
@@ -122,23 +120,15 @@
           <div class="social-login text-center">
             <div class="divider"><span>OR CONNECT WITH</span></div>
             <div class="social-icons">
-              <a href="#" class="social-icon google"
-                ><i class="bi bi-google"></i
-              ></a>
-              <a href="#" class="social-icon apple"
-                ><i class="bi bi-apple"></i
-              ></a>
-              <a href="#" class="social-icon facebook"
-                ><i class="bi bi-facebook"></i
-              ></a>
+              <a href="#" class="social-icon google"><i class="fab fa-google"></i></a>
+              <a href="#" class="social-icon apple"><i class="fab fa-apple"></i></a>
+              <a href="#" class="social-icon facebook"><i class="fab fa-facebook"></i></a>
             </div>
           </div>
 
           <div class="text-center mt-8">
             <span class="text-muted">New to Somba? </span>
-            <router-link to="/sign-up" class="link-accent"
-              >Create Account</router-link
-            >
+            <router-link to="/sign-up" class="link-accent">Create Account</router-link>
           </div>
         </VForm>
       </div>
@@ -153,6 +143,7 @@ import { useAuthStore, type User } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import * as Yup from "yup";
+import { swalDangerButtonClass } from "@/core/helpers/badge";
 
 export default defineComponent({
   name: "sign-in",
@@ -165,6 +156,7 @@ export default defineComponent({
     const store = useAuthStore();
     const router = useRouter();
     const submitButton = ref<HTMLButtonElement | null>(null);
+    const submitting = ref(false);
     const cardRef = ref<HTMLElement | null>(null);
     const cameraHeadRef = ref<HTMLElement | null>(null);
     const containerRef = ref<HTMLElement | null>(null);
@@ -177,37 +169,37 @@ export default defineComponent({
     // Clean up any leftover transition classes from signup page
     onMounted(() => {
       try {
-        document.body.classList.remove("transitioning-to-dashboard");
+        document.body.classList.remove('transitioning-to-dashboard');
       } catch (e) {
-        console.warn("Failed to remove transition class:", e);
+        console.warn('Failed to remove transition class:', e);
       }
     });
 
     // Parallax & Camera Tracking Effect
     const handleMouseMove = (e: MouseEvent) => {
       if (!cardRef.value) return;
-
+      
       const { innerWidth, innerHeight } = window;
       const x = (e.clientX - innerWidth / 2) / 40;
       const y = (e.clientY - innerHeight / 2) / 40;
 
       // Rotate card slightly
       cardRef.value.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
-
+      
       // Camera Head Tracking
       if (cameraHeadRef.value) {
         const rect = cameraHeadRef.value.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
-
+        
         // Calculate angle to mouse
         const deltaX = e.clientX - centerX;
         const deltaY = e.clientY - centerY;
-
+        
         // Limit rotation angles (max 50 degrees)
         const rotateY = Math.max(-50, Math.min(50, deltaX / 10));
         const rotateX = Math.max(-50, Math.min(50, -deltaY / 10)); // Invert Y for CSS rotateX
-
+        
         cameraHeadRef.value.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
       }
     };
@@ -216,10 +208,7 @@ export default defineComponent({
       values = values as User;
       store.logout();
 
-      if (submitButton.value) {
-        submitButton.value!.disabled = true;
-        submitButton.value.setAttribute("data-kt-indicator", "on");
-      }
+      submitting.value = true;
 
       try {
         await store.login(values);
@@ -230,12 +219,8 @@ export default defineComponent({
 
         if (error.length === 0) {
           // Fade/blur the background for a smoother transition
-          try {
-            document.body.classList.add("transitioning-to-dashboard");
-          } catch {
-            /* empty */
-          }
-          if (containerRef.value) containerRef.value.classList.add("fade-bg");
+          try { document.body.classList.add('transitioning-to-dashboard'); } catch {}
+          if (containerRef.value) containerRef.value.classList.add('fade-bg');
 
           // Play a dramatic "crumple/fold away" animation on the login card
           // then navigate to the dashboard. This replaces the success popup.
@@ -265,17 +250,14 @@ export default defineComponent({
             confirmButtonText: "Retry",
             heightAuto: false,
             customClass: {
-              confirmButton: "btn fw-semibold btn-light-danger",
+              confirmButton: swalDangerButtonClass,
             },
           }).then(() => {
-            store.errors = {
-              /* empty */
-            };
+            store.errors = {};
           });
         }
 
-        submitButton.value?.removeAttribute("data-kt-indicator");
-        submitButton.value!.disabled = false;
+        submitting.value = false;
       }
     };
 
@@ -283,9 +265,10 @@ export default defineComponent({
       onSubmitLogin,
       login,
       submitButton,
+      submitting,
       handleMouseMove,
       cardRef,
-      cameraHeadRef,
+      cameraHeadRef
     };
   },
 });
@@ -311,11 +294,7 @@ export default defineComponent({
   left: 50%;
   width: 100vw;
   height: 100vh;
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(37, 99, 235, 0.15),
-    transparent 60%
-  );
+  background: radial-gradient(circle at 50% 50%, rgba(27, 132, 255, 0.15), transparent 60%);
   transform: translate(-50%, -50%);
   z-index: 0;
   pointer-events: none;
@@ -328,36 +307,14 @@ export default defineComponent({
   animation: floatUp linear infinite;
 }
 /* Generate random particles */
-.particle:nth-child(1) {
-  width: 4px;
-  height: 4px;
-  left: 10%;
-  animation-duration: 15s;
-  opacity: 0.3;
-}
-.particle:nth-child(2) {
-  width: 6px;
-  height: 6px;
-  left: 20%;
-  animation-duration: 25s;
-  opacity: 0.2;
-}
-.particle:nth-child(3) {
-  width: 3px;
-  height: 3px;
-  left: 80%;
-  animation-duration: 20s;
-  opacity: 0.4;
-}
+.particle:nth-child(1) { width: 4px; height: 4px; left: 10%; animation-duration: 15s; opacity: 0.3; }
+.particle:nth-child(2) { width: 6px; height: 6px; left: 20%; animation-duration: 25s; opacity: 0.2; }
+.particle:nth-child(3) { width: 3px; height: 3px; left: 80%; animation-duration: 20s; opacity: 0.4; }
 /* ... more particles could be added via SCSS loop but keeping it simple */
 
 @keyframes floatUp {
-  0% {
-    transform: translateY(100vh);
-  }
-  100% {
-    transform: translateY(-100vh);
-  }
+  0% { transform: translateY(100vh); }
+  100% { transform: translateY(-100vh); }
 }
 
 /* Card Layout */
@@ -378,14 +335,8 @@ export default defineComponent({
 }
 
 @keyframes cardEntrance {
-  from {
-    opacity: 0;
-    transform: translateY(50px) scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(50px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* Crumple / Fold-away animation for successful login */
@@ -424,30 +375,24 @@ export default defineComponent({
   z-index: 60;
   animation: logoFloat 4s ease-in-out infinite;
   /* make a soft rounded backdrop so the logo contrasts on any background */
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.03),
-    rgba(255, 255, 255, 0.01)
-  );
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
   padding: 10px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 8px 30px rgba(14, 165, 233, 0.06), 0 2px 6px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 8px 30px rgba(27, 132, 255, 0.06), 0 2px 6px rgba(0,0,0,0.6);
   backdrop-filter: blur(6px);
 }
 
 .brand-logo img {
   height: 56px;
   display: block;
-  filter: drop-shadow(0 10px 30px rgba(14, 165, 233, 0.22)) saturate(1.15)
-    contrast(1.15);
-  -webkit-filter: drop-shadow(0 10px 30px rgba(14, 165, 233, 0.22))
-    saturate(1.15) contrast(1.15);
+  filter: drop-shadow(0 10px 30px rgba(27, 132, 255, 0.22)) saturate(1.15) contrast(1.15);
+  -webkit-filter: drop-shadow(0 10px 30px rgba(27, 132, 255, 0.22)) saturate(1.15) contrast(1.15);
 }
 
 .brand-logo::after {
   /* subtle halo to further improve visibility */
-  content: "";
+  content: '';
   position: absolute;
   top: 50%;
   left: 50%;
@@ -455,23 +400,14 @@ export default defineComponent({
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(14, 165, 233, 0.08),
-    transparent 40%
-  );
+  background: radial-gradient(circle, rgba(27, 132, 255, 0.08), transparent 40%);
   z-index: 10;
   pointer-events: none;
 }
 
 @keyframes logoFloat {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 /* Left Side - Image Section */
@@ -504,10 +440,12 @@ export default defineComponent({
 .camera-mount {
   width: 140px;
   height: 140px;
-  background: #0f172a;
+  background: var(--color-dark-active);
   border-radius: 50%;
-  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9), 0 0 0 2px #334155,
-    0 0 0 10px #1e293b;
+  box-shadow: 
+    inset 0 0 30px rgba(0,0,0,0.9),
+    0 0 0 2px var(--color-gray-700),
+    0 0 0 10px var(--color-dark);
   position: absolute;
   top: 50%;
   left: 50%;
@@ -517,11 +455,12 @@ export default defineComponent({
 .camera-head {
   width: 160px;
   height: 160px;
-  background: radial-gradient(circle at 30% 30%, #475569, #0f172a);
+  background: radial-gradient(circle at 30% 30%, var(--color-gray-600), var(--color-dark-active));
   border-radius: 50%;
   position: relative;
-  box-shadow: -15px 15px 40px rgba(0, 0, 0, 0.6),
-    inset 2px 2px 5px rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    -15px 15px 40px rgba(0,0,0,0.6),
+    inset 2px 2px 5px rgba(255,255,255,0.15);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -534,26 +473,21 @@ export default defineComponent({
   height: 100px;
   background: #000;
   border-radius: 50%;
-  border: 5px solid #334155;
+  border: 5px solid var(--color-gray-700);
   display: flex;
   justify-content: center;
   align-items: center;
   transform: translateZ(25px);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 0 20px rgba(0,0,0,0.9);
 }
 
 .camera-lens-glass {
   width: 60px;
   height: 60px;
-  background: radial-gradient(
-    circle at 50% 50%,
-    #0ea5e9,
-    #1e3a8a 60%,
-    #000 100%
-  );
+  background: radial-gradient(circle at 50% 50%, var(--color-primary), var(--color-primary-active) 60%, #000 100%);
   border-radius: 50%;
   position: relative;
-  box-shadow: 0 0 25px #0ea5e9;
+  box-shadow: 0 0 25px var(--color-primary);
   overflow: hidden;
 }
 
@@ -563,7 +497,7 @@ export default defineComponent({
   left: 12px;
   width: 18px;
   height: 18px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255,255,255,0.5);
   border-radius: 50%;
   filter: blur(3px);
 }
@@ -575,7 +509,7 @@ export default defineComponent({
   transform: translate(-50%, -50%);
   width: 20px;
   height: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: 50%;
 }
 
@@ -585,9 +519,9 @@ export default defineComponent({
   right: 30px;
   width: 8px;
   height: 8px;
-  background: #ef4444;
+  background: var(--color-danger);
   border-radius: 50%;
-  box-shadow: 0 0 10px #ef4444;
+  box-shadow: 0 0 10px var(--color-danger);
   animation: blink 2s infinite;
   transform: translateZ(20px);
 }
@@ -596,31 +530,17 @@ export default defineComponent({
   position: absolute;
   width: 4px;
   height: 4px;
-  background: #334155;
+  background: var(--color-gray-700);
   border-radius: 50%;
-  box-shadow: 0 0 2px #ef4444;
+  box-shadow: 0 0 2px var(--color-danger);
 }
-.ir-sensors span:nth-child(1) {
-  bottom: 25px;
-  left: 50%;
-}
-.ir-sensors span:nth-child(2) {
-  bottom: 35px;
-  left: 35%;
-}
-.ir-sensors span:nth-child(3) {
-  bottom: 35px;
-  right: 35%;
-}
+.ir-sensors span:nth-child(1) { bottom: 25px; left: 50%; }
+.ir-sensors span:nth-child(2) { bottom: 35px; left: 35%; }
+.ir-sensors span:nth-child(3) { bottom: 35px; right: 35%; }
 
 @keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.3;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 
 /* Holographic Cone */
@@ -630,12 +550,10 @@ export default defineComponent({
   left: 50%;
   width: 400px;
   height: 400px;
-  background: conic-gradient(
-    from 180deg at 50% 50%,
-    rgba(14, 165, 233, 0) 0deg,
-    rgba(14, 165, 233, 0.05) 20deg,
-    rgba(14, 165, 233, 0) 40deg
-  );
+  background: conic-gradient(from 180deg at 50% 50%, 
+    rgba(27, 132, 255, 0) 0deg, 
+    rgba(27, 132, 255, 0.05) 20deg, 
+    rgba(27, 132, 255, 0) 40deg);
   transform-origin: center;
   transform: translate(-50%, -50%) rotate(180deg);
   pointer-events: none;
@@ -645,12 +563,8 @@ export default defineComponent({
 }
 
 @keyframes scanRotate {
-  0% {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 .image-text {
@@ -659,7 +573,7 @@ export default defineComponent({
   left: 50px;
   color: white;
   z-index: 6;
-  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 4px 8px rgba(0,0,0,0.8);
 }
 
 .welcome-text {
@@ -667,7 +581,7 @@ export default defineComponent({
   font-weight: 900;
   line-height: 1;
   margin-bottom: 10px;
-  background: linear-gradient(to right, #fff, #94a3b8);
+  background: linear-gradient(to right, #fff, var(--color-gray-400));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -678,7 +592,7 @@ export default defineComponent({
 
 .sub-text {
   font-size: 1rem;
-  color: #0ea5e9;
+  color: var(--color-primary);
   font-family: monospace;
   letter-spacing: 2px;
   animation: textSlideIn 1s ease-out 0.7s forwards;
@@ -687,10 +601,7 @@ export default defineComponent({
 }
 
 @keyframes textSlideIn {
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 /* Right Side - Form Section */
@@ -702,11 +613,7 @@ export default defineComponent({
   justify-content: center;
   position: relative;
   z-index: 1;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.03) 0%,
-    transparent 100%
-  );
+  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%);
   border-radius: 0 20px 20px 0;
 }
 
@@ -725,7 +632,7 @@ export default defineComponent({
 }
 
 .custom-label {
-  color: #94a3b8;
+  color: var(--color-gray-400);
   font-size: 0.85rem;
   margin-bottom: 8px;
   display: block;
@@ -742,14 +649,14 @@ export default defineComponent({
   left: 15px;
   top: 50%;
   transform: translateY(-50%);
-  color: #64748b;
+  color: var(--color-gray-500);
   font-size: 1.1rem;
   transition: color 0.3s;
 }
 
 .custom-input {
-  background: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid #334155 !important;
+  background: rgba(30, 33, 41, 0.6) !important;
+  border: 1px solid var(--color-gray-700) !important;
   color: white !important;
   border-radius: 12px !important;
   padding: 14px 14px 14px 45px !important;
@@ -758,31 +665,31 @@ export default defineComponent({
 }
 
 .custom-input:focus {
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
-  background: rgba(15, 23, 42, 0.9) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 4px rgba(27, 132, 255, 0.15) !important;
+  background: rgba(30, 33, 41, 0.9) !important;
 }
 
 .custom-input:focus + .input-icon,
 .input-wrapper:focus-within .input-icon {
-  color: #3b82f6;
+  color: var(--color-primary);
 }
 
 .forgot-link {
-  color: #3b82f6;
+  color: var(--color-primary);
   font-size: 0.85rem;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .forgot-link:hover {
-  color: #60a5fa;
+  color: var(--color-primary-light);
   text-decoration: underline;
 }
 
 /* Neon Button */
 .btn-neon {
-  background: linear-gradient(90deg, #2563eb, #4f46e5);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-info));
   color: white;
   border: none;
   border-radius: 12px;
@@ -793,28 +700,23 @@ export default defineComponent({
   position: relative;
   overflow: hidden;
   transition: all 0.3s;
-  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 4px 20px rgba(27, 132, 255, 0.4);
 }
 
 .btn-neon:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(37, 99, 235, 0.6);
-  background: linear-gradient(90deg, #1d4ed8, #4338ca);
+  box-shadow: 0 8px 30px rgba(27, 132, 255, 0.6);
+  background: linear-gradient(90deg, var(--color-primary-active), var(--color-info-active));
 }
 
 .btn-neon::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
   transition: 0.5s;
 }
 
@@ -828,15 +730,15 @@ export default defineComponent({
   align-items: center;
   text-align: center;
   margin: 30px 0;
-  color: #64748b;
+  color: var(--color-gray-500);
   font-size: 0.8rem;
 }
 
 .divider::before,
 .divider::after {
-  content: "";
+  content: '';
   flex: 1;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--color-gray-700);
 }
 
 .divider span {
@@ -853,9 +755,9 @@ export default defineComponent({
   width: 45px;
   height: 45px;
   border-radius: 12px;
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid #334155;
-  color: #94a3b8;
+  background: rgba(30, 33, 41, 0.8);
+  border: 1px solid var(--color-gray-700);
+  color: var(--color-gray-400);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -865,36 +767,27 @@ export default defineComponent({
 }
 
 .social-icon:hover {
-  background: #334155;
+  background: var(--color-gray-700);
   color: white;
   transform: translateY(-3px);
 }
 
-.social-icon.google:hover {
-  color: #ea4335;
-  border-color: #ea4335;
-}
-.social-icon.apple:hover {
-  color: #fff;
-  border-color: #fff;
-}
-.social-icon.facebook:hover {
-  color: #1877f2;
-  border-color: #1877f2;
-}
+.social-icon.google:hover { color: #ea4335; border-color: #ea4335; }
+.social-icon.apple:hover { color: #fff; border-color: #fff; }
+.social-icon.facebook:hover { color: #1877f2; border-color: #1877f2; }
 
 .text-muted {
-  color: #64748b;
+  color: var(--color-gray-500);
 }
 
 .link-accent {
-  color: #3b82f6;
+  color: var(--color-primary);
   font-weight: 600;
   text-decoration: none;
 }
 
 .link-accent:hover {
-  color: #60a5fa;
+  color: var(--color-primary-light);
 }
 
 /* Responsive rules */
@@ -1043,9 +936,7 @@ export default defineComponent({
     width: 96%;
   }
 
-  .particles {
-    display: none;
-  }
+  .particles { display: none; }
 }
 </style>
 
@@ -1068,3 +959,5 @@ export default defineComponent({
   transition: opacity 1s ease;
 }
 </style>
+
+

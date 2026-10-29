@@ -1,16 +1,26 @@
 <template>
   <Teleport to="body">
     <Transition name="modal-fade">
-      <div v-if="isOpen" class="camera-modal-overlay" @click="closeModal">
-        <div class="camera-modal-container" @click.stop>
+      <div 
+        v-if="isOpen" 
+        class="camera-modal-overlay"
+        @click="closeModal"
+      >
+        <div 
+          class="camera-modal-container"
+          @click.stop
+        >
           <!-- Modal Header -->
           <div class="camera-modal-header">
             <div class="camera-info">
-              <h3 class="camera-title">{{ camera?.room || "Camera" }}</h3>
+              <h3 class="camera-title">{{ camera?.room || 'Camera' }}</h3>
               <p class="camera-subtitle">{{ camera?.name }}</p>
             </div>
             <button class="btn-close-modal" @click="closeModal">
-              <i class="bi bi-x-lg"></i>
+              <i class="ki-duotone ki-cross fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
             </button>
           </div>
 
@@ -25,23 +35,34 @@
                 playsinline
                 muted
               ></video>
-
+              
               <!-- Loading Spinner -->
               <div v-if="isLoading" class="video-loading">
-                <div class="spinner-border text-light" role="status">
-                  <span class="visually-hidden">Loading...</span>
-                </div>
+                <div
+                  class="h-10 w-10 animate-spin rounded-full border-4 border-white/30 border-t-white"
+                  role="status"
+                  aria-label="Loading"
+                ></div>
                 <p class="text-white mt-3">Loading stream...</p>
               </div>
 
               <!-- Error State -->
               <div v-if="hasError" class="video-error">
-                <i
-                  class="bi bi-exclamation-triangle fs-1 text-warning mb-3"
-                ></i>
+                <i class="ki-duotone ki-information fs-1 text-warning mb-3">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                </i>
                 <p class="text-white">Failed to load camera stream</p>
-                <button class="btn btn-sm btn-light mt-2" @click="retryStream">
-                  <i class="bi bi-arrow-clockwise me-2"></i>Retry
+                <button
+                  class="mt-2 inline-flex items-center gap-1 rounded-md bg-white/10 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+                  @click="retryStream"
+                >
+                  <i class="ki-duotone ki-arrows-circle me-1">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Retry
                 </button>
               </div>
             </div>
@@ -49,15 +70,19 @@
 
           <!-- Modal Footer -->
           <div class="camera-modal-footer">
-            <div class="d-flex align-items-center gap-3">
-              <span v-if="camera?.model" class="badge badge-light-info">
-                <i class="bi bi-camera-video me-1"></i>{{ camera.model }}
+            <div class="flex items-center gap-3">
+              <span v-if="camera?.model" class="inline-flex rounded px-2 py-1 text-xs font-semibold bg-info-light text-info">
+                {{ camera.model }}
               </span>
-              <span class="text-muted fs-7">
-                <i class="bi bi-broadcast me-1"></i>Live Stream
+              <span class="flex items-center gap-1.5 text-sm text-gray-400">
+                <span class="h-2 w-2 animate-pulse rounded-full bg-danger"></span>
+                Live Stream
               </span>
             </div>
-            <button class="btn btn-sm btn-secondary" @click="closeModal">
+            <button
+              class="rounded-md bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20"
+              @click="closeModal"
+            >
               Close
             </button>
           </div>
@@ -68,11 +93,7 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({
-  name: "CameraPlaybackModalComponent",
-});
-
-import { ref, nextTick } from "vue";
+import { ref, nextTick } from 'vue';
 
 interface Camera {
   uid: string;
@@ -80,6 +101,7 @@ interface Camera {
   room: string;
   recording: boolean;
   site_uid: string;
+  nvr_uid?: string;
   public_endpoint_url?: string;
   model?: string;
 }
@@ -96,7 +118,7 @@ const openModal = (cam: Camera) => {
   isOpen.value = true;
   hasError.value = false;
   isLoading.value = true;
-
+  
   nextTick(() => {
     initializePlayer();
   });
@@ -111,29 +133,21 @@ const closeModal = () => {
 };
 
 // Helper function to snap video to live edge
-const snapToLiveEdge = (
-  videoEl: HTMLVideoElement,
-  targetBuffer: number,
-  minBuffer: number
-) => {
+const snapToLiveEdge = (videoEl: HTMLVideoElement, targetBuffer: number, minBuffer: number) => {
   try {
     const buffered = videoEl.buffered;
     if (!buffered.length) return;
-
+    
     const end = buffered.end(buffered.length - 1);
     const current = videoEl.currentTime;
     const bufferLength = end - current;
-
+    
     if (bufferLength > targetBuffer) {
       videoEl.currentTime = end - minBuffer;
-      console.log(
-        `[Modal HLS] Snapped to live edge: ${bufferLength.toFixed(
-          2
-        )}s -> ${minBuffer}s`
-      );
+      console.log(`[Modal HLS] Snapped to live edge: ${bufferLength.toFixed(2)}s -> ${minBuffer}s`);
     }
   } catch (err) {
-    console.warn("[Modal HLS] Error snapping to live edge:", err);
+    console.warn('[Modal HLS] Error snapping to live edge:', err);
   }
 };
 
@@ -152,9 +166,9 @@ const initializePlayer = () => {
       // Optimized configuration for live streaming (from LiveView.vue)
       lowLatencyMode: true,
       backBufferLength: 30,
-      maxBufferLength: 60, // Reduced from 300
-      maxMaxBufferLength: 120, // Reduced from 600
-      liveSyncDurationCount: 3, // Reduced from 16
+      maxBufferLength: 60,        // Reduced from 300
+      maxMaxBufferLength: 120,    // Reduced from 600
+      liveSyncDurationCount: 3,   // Reduced from 16
       liveMaxLatencyDurationCount: 5, // Reduced from 20
 
       // Fragment loading optimization
@@ -182,7 +196,7 @@ const initializePlayer = () => {
     // Level loaded event
     hlsInstance.on(HlsGlobal.Events.LEVEL_LOADED, (_evt: any, data: any) => {
       if ((import.meta as any)?.env?.DEV) {
-        console.log("[Modal HLS] level loaded:", {
+        console.log('[Modal HLS] level loaded:', {
           live: data?.details?.live,
           targetduration: data?.details?.targetduration,
         });
@@ -192,7 +206,7 @@ const initializePlayer = () => {
     // Buffer appended - snap to live edge
     hlsInstance.on(HlsGlobal.Events.BUFFER_APPENDED, () => {
       snapToLiveEdge(videoPlayer.value!, 12, 2);
-
+      
       if ((import.meta as any)?.env?.DEV) {
         try {
           const b = videoPlayer.value!.buffered;
@@ -200,54 +214,45 @@ const initializePlayer = () => {
             const len = b.end(b.length - 1) - videoPlayer.value!.currentTime;
             console.log(`[Modal HLS] buffer=${len.toFixed(2)}s`);
           }
-        } catch {
-          /* empty */
-        }
+        } catch {}
       }
     });
 
     hlsInstance.on(HlsGlobal.Events.MANIFEST_PARSED, () => {
       isLoading.value = false;
       videoPlayer.value?.play().catch((err) => {
-        console.error("Autoplay failed:", err);
+        console.error('Autoplay failed:', err);
       });
     });
 
     hlsInstance.on(HlsGlobal.Events.ERROR, (_evt: any, data: any) => {
       if (data && data.fatal === false) {
-        const details = (data.details || data.error || data.reason || "")
-          .toString()
-          .toLowerCase();
-
-        if (
-          details.includes("buffer_stalled") ||
-          details.includes("buffer-stalled")
-        ) {
-          console.warn("[Modal HLS] Buffer stalled, snapping to live edge");
+        const details = (data.details || data.error || data.reason || '').toString().toLowerCase();
+        
+        if (details.includes('buffer_stalled') || details.includes('buffer-stalled')) {
+          console.warn('[Modal HLS] Buffer stalled, snapping to live edge');
           snapToLiveEdge(videoPlayer.value!, 6, 1.5);
-          videoPlayer.value?.play().catch(() => {
-            /* empty */
-          });
+          videoPlayer.value?.play().catch(() => {});
         }
         return;
       }
 
-      if (!data || !("fatal" in data)) return;
-
-      console.error("[Modal HLS] Fatal error:", data);
-
+      if (!data || !('fatal' in data)) return;
+      
+      console.error('[Modal HLS] Fatal error:', data);
+      
       if (data.fatal) {
         switch (data.type) {
           case HlsGlobal.ErrorTypes.NETWORK_ERROR:
-            console.log("[Modal HLS] Network error, trying to recover...");
+            console.log('[Modal HLS] Network error, trying to recover...');
             hlsInstance.startLoad();
             break;
           case HlsGlobal.ErrorTypes.MEDIA_ERROR:
-            console.log("[Modal HLS] Media error, trying to recover...");
+            console.log('[Modal HLS] Media error, trying to recover...');
             hlsInstance.recoverMediaError();
             break;
           default:
-            console.log("[Modal HLS] Fatal error, cannot recover");
+            console.log('[Modal HLS] Fatal error, cannot recover');
             hasError.value = true;
             isLoading.value = false;
             hlsInstance.destroy();
@@ -258,32 +263,24 @@ const initializePlayer = () => {
 
     hlsInstance.loadSource(url);
     hlsInstance.attachMedia(videoPlayer.value);
-  } else if (videoPlayer.value.canPlayType("application/vnd.apple.mpegurl")) {
+  } else if (videoPlayer.value.canPlayType('application/vnd.apple.mpegurl')) {
     // Native HLS support (Safari)
     videoPlayer.value.src = url;
-    videoPlayer.value.addEventListener(
-      "loadeddata",
-      () => {
-        isLoading.value = false;
-        videoPlayer.value?.play().catch((err) => {
-          console.error("Autoplay failed:", err);
-        });
-      },
-      { once: true }
-    );
-
-    videoPlayer.value.addEventListener(
-      "error",
-      () => {
-        hasError.value = true;
-        isLoading.value = false;
-      },
-      { once: true }
-    );
+    videoPlayer.value.addEventListener('loadeddata', () => {
+      isLoading.value = false;
+      videoPlayer.value?.play().catch((err) => {
+        console.error('Autoplay failed:', err);
+      });
+    }, { once: true });
+    
+    videoPlayer.value.addEventListener('error', () => {
+      hasError.value = true;
+      isLoading.value = false;
+    }, { once: true });
   } else {
     hasError.value = true;
     isLoading.value = false;
-    console.error("HLS is not supported in this browser");
+    console.error('HLS is not supported in this browser');
   }
 };
 
@@ -292,13 +289,13 @@ const destroyPlayer = () => {
     try {
       hlsInstance.destroy();
     } catch (err) {
-      console.error("Error destroying HLS instance:", err);
+      console.error('Error destroying HLS instance:', err);
     }
     hlsInstance = null;
   }
-
+  
   if (videoPlayer.value) {
-    videoPlayer.value.src = "";
+    videoPlayer.value.src = '';
     videoPlayer.value.load();
   }
 };
@@ -315,7 +312,7 @@ const retryStream = () => {
 // Expose methods for parent component
 defineExpose({
   openModal,
-  closeModal,
+  closeModal
 });
 </script>
 

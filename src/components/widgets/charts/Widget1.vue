@@ -1,31 +1,39 @@
 <template>
   <!--begin::Charts Widget 1-->
-  <div class="card" :class="widgetClasses">
+  <div class="rounded-lg bg-white dark:bg-gray-900" :class="widgetClasses">
     <!--begin::Header-->
-    <div class="card-header border-0 pt-5">
+    <div class="flex items-start justify-between p-6 pb-0">
       <!--begin::Title-->
-      <h3 class="card-title align-items-start flex-column">
-        <span class="card-label fw-bold fs-3 mb-1">Recent Statistics</span>
+      <h3 class="flex flex-col">
+        <span class="mb-1 text-lg font-bold text-gray-900 dark:text-gray-100"
+          >Recent Statistics</span
+        >
 
-        <span class="text-muted fw-semibold fs-7"
+        <span class="text-sm font-semibold text-gray-500"
           >More than 400 new members</span
         >
       </h3>
       <!--end::Title-->
 
       <!--begin::Toolbar-->
-      <div class="card-toolbar">
+      <div
+        class="relative"
+        :ref="(el) => (menuDropdown.containerRef.value = el as HTMLElement | null)"
+      >
         <!--begin::Menu-->
         <button
           type="button"
-          class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary"
-          data-kt-menu-trigger="click"
-          data-kt-menu-placement="bottom-end"
-          data-kt-menu-flip="top-end"
+          class="flex h-8 w-8 items-center justify-center rounded-md text-primary transition-colors hover:bg-primary-light"
+          @click="menuDropdown.toggle"
         >
           <KTIcon icon-name="category" icon-class="fs-2" />
         </button>
-        <Dropdown1></Dropdown1>
+        <div
+          v-show="menuDropdown.isOpen.value"
+          class="absolute right-0 top-full z-20 mt-2"
+        >
+          <Dropdown1 @close="menuDropdown.close"></Dropdown1>
+        </div>
         <!--end::Menu-->
       </div>
       <!--end::Toolbar-->
@@ -33,7 +41,7 @@
     <!--end::Header-->
 
     <!--begin::Body-->
-    <div class="card-body">
+    <div class="p-6">
       <!--begin::Chart-->
       <apexchart
         ref="chartRef"
@@ -57,6 +65,7 @@ import type { ApexOptions } from "apexcharts";
 import Dropdown1 from "@/components/dropdown/Dropdown1.vue";
 import { getCSSVariableValue } from "@/assets/ts/_utils";
 import type VueApexCharts from "vue3-apexcharts";
+import { useDropdown } from "@/composables/useDropdown";
 
 export default defineComponent({
   name: "widget-1",
@@ -73,6 +82,7 @@ export default defineComponent({
       /* empty */
     });
     const store = useThemeStore();
+    const menuDropdown = useDropdown();
 
     const series = [
       {
@@ -109,6 +119,7 @@ export default defineComponent({
       chart,
       series,
       chartRef,
+      menuDropdown,
       getAssetPath,
     };
   },

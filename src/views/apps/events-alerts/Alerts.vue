@@ -1,171 +1,176 @@
 <template>
   <!-- Overview Card -->
-  <div class="card mb-5">
-    <div class="card-body py-4">
-      <div class="row align-items-center gy-3">
-        <div class="col-12 col-md-4">
-          <h4 class="card-title mb-0">
-            {{ t("appsEventsAlerts.alerts.title") }}
-          </h4>
-          <p class="text-muted mb-0">
-            {{
-              currentSite
-                ? t("appsEventsAlerts.alerts.subtitleSite", {
-                    site: currentSite.name,
-                  })
-                : t("appsEventsAlerts.alerts.subtitleAll")
-            }}
-          </p>
-        </div>
-        <div class="col-12 col-md-8">
-          <div
-            class="d-flex flex-column flex-md-row justify-content-md-end align-items-start align-items-md-center gap-3"
+  <div class="mb-5 p-4" :class="cardClass">
+    <div
+      class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+    >
+      <div>
+        <h4 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {{ t("appsEventsAlerts.alerts.title") }}
+        </h4>
+        <p class="m-0 text-gray-500">
+          {{
+            currentSite
+              ? t("appsEventsAlerts.alerts.subtitleSite", {
+                  site: currentSite.name,
+                })
+              : t("appsEventsAlerts.alerts.subtitleAll")
+          }}
+        </p>
+      </div>
+      <div
+        class="flex flex-col items-start gap-3 md:flex-row md:items-center md:justify-end"
+      >
+        <div class="flex w-full items-center md:w-auto">
+          <label
+            class="mr-3 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300"
           >
-            <div class="d-flex align-items-center w-100 w-md-auto mb-2 mb-md-0">
-              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{
-                t("appsEventsAlerts.alertsFilters.siteLabel")
-              }}</label>
-              <select
-                v-model="tempSelectedSiteFilter"
-                class="form-select form-select-solid w-100 w-md-200px"
-                :disabled="loadingSites"
-                @change="onTempFilterSiteChange"
-              >
-                <option value="">
-                  {{ t("appsEventsAlerts.alertsFilters.siteAll") }}
-                </option>
-                <option v-for="site in sites" :key="site.uid" :value="site.uid">
-                  {{ site.name }}
-                </option>
-              </select>
-            </div>
-            <div class="d-flex align-items-center w-100 w-md-auto">
-              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{
-                t("appsEventsAlerts.alertsFilters.cameraLabel") || "Camera"
-              }}</label>
-              <select
-                v-model="tempSelectedCameraFilter"
-                class="form-select form-select-solid w-100 w-md-200px"
-                :disabled="loadingCameras || !tempSelectedSiteFilter"
-                @change="onTempFilterCameraChange"
-              >
-                <option value="">
-                  {{
-                    t("appsEventsAlerts.alertsFilters.cameraAll") ||
-                    "All Cameras"
-                  }}
-                </option>
-                <option
-                  v-for="camera in cameras"
-                  :key="camera.uid"
-                  :value="camera.uid"
-                >
-                  {{ camera.name }}
-                </option>
-              </select>
-            </div>
-            <button
-              @click="applyFilters"
-              class="btn btn-md btn-primary py-3 px-2"
-              title="Apply All Filters"
-            >
-              <i class="ki-duotone ki-check fs-2"
-                ><span class="path1"></span><span class="path2"></span
-              ></i>
-              {{ t("common.apply") || "Apply" }}
-            </button>
-          </div>
+            {{ t("appsEventsAlerts.alertsFilters.siteLabel") }}
+          </label>
+          <select
+            v-model="tempSelectedSiteFilter"
+            :disabled="loadingSites"
+            @change="onTempFilterSiteChange"
+            class="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 md:w-[200px] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          >
+            <option value="">
+              {{ t("appsEventsAlerts.alertsFilters.siteAll") }}
+            </option>
+            <option v-for="site in sites" :key="site.uid" :value="site.uid">
+              {{ site.name }}
+            </option>
+          </select>
         </div>
+        <div class="flex w-full items-center md:w-auto">
+          <label
+            class="mr-3 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300"
+          >
+            {{ t("appsEventsAlerts.alertsFilters.cameraLabel") || "Camera" }}
+          </label>
+          <select
+            v-model="tempSelectedCameraFilter"
+            :disabled="loadingCameras || !tempSelectedSiteFilter"
+            @change="onTempFilterCameraChange"
+            class="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 md:w-[200px] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          >
+            <option value="">
+              {{
+                t("appsEventsAlerts.alertsFilters.cameraAll") || "All Cameras"
+              }}
+            </option>
+            <option
+              v-for="camera in cameras"
+              :key="camera.uid"
+              :value="camera.uid"
+            >
+              {{ camera.name }}
+            </option>
+          </select>
+        </div>
+        <button
+          @click="applyFilters"
+          title="Apply All Filters"
+          class="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98]"
+        >
+          <i class="ki-duotone ki-check fs-2">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          {{ t("common.apply") || "Apply" }}
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Alerts List -->
-  <div class="card">
-    <div class="card-header border-0 pt-5">
-      <div class="card-title">
-        <h3 class="fw-bold m-0">{{ t("appsEventsAlerts.alerts.title") }}</h3>
-      </div>
+  <div :class="cardClass">
+    <div
+      class="flex flex-col gap-4 p-6 pb-0 xl:flex-row xl:items-center xl:justify-between"
+    >
+      <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {{ t("appsEventsAlerts.alerts.title") }}
+      </h3>
       <div
-        class="card-toolbar d-flex flex-column flex-xl-row justify-content-between align-items-start align-items-xl-center w-100 gap-3"
+        class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between xl:gap-3"
       >
-        <div class="d-flex flex-wrap align-items-center gap-2 w-100 w-xl-auto">
-          <div
-            class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center me-0 me-sm-2 w-100 w-sm-auto gap-2"
-          >
-            <div class="d-flex align-items-center w-100 w-sm-auto">
-              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{
-                t("appsEventsAlerts.alertsFilters.fromDateLabel")
-              }}</label>
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div class="flex items-center">
+              <label
+                class="mr-2 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{ t("appsEventsAlerts.alertsFilters.fromDateLabel") }}
+              </label>
               <DatePicker
                 ref="dateFromPicker"
                 v-model="tempDateFrom"
                 size="sm"
                 :clearable="true"
                 style="width: 100%; min-width: 140px"
-                class="w-100 w-sm-auto"
               />
             </div>
-            <div class="d-flex align-items-center w-100 w-sm-auto">
-              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{
-                t("appsEventsAlerts.alertsFilters.toDateLabel")
-              }}</label>
+            <div class="flex items-center">
+              <label
+                class="mr-2 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{ t("appsEventsAlerts.alertsFilters.toDateLabel") }}
+              </label>
               <DatePicker
                 ref="dateToPicker"
                 v-model="tempDateTo"
                 size="sm"
                 :clearable="true"
                 style="width: 100%; min-width: 140px"
-                class="w-100 w-sm-auto"
               />
             </div>
           </div>
 
-          <div class="d-flex flex-wrap gap-2 mt-2 mt-sm-0">
-            <button
-              @click="resetFilters"
-              class="btn btn-sm btn-light py-1 px-2"
-              title="Reset to Applied Filters"
-            >
-              <i class="ki-duotone ki-arrows-circle fs-2"
-                ><span class="path1"></span><span class="path2"></span
-              ></i>
-              {{ t("common.reset") || "Reset" }}
-            </button>
-          </div>
+          <button
+            @click="resetFilters"
+            title="Reset to Applied Filters"
+            class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-2 py-1 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+          >
+            <i class="ki-duotone ki-arrows-circle fs-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            {{ t("common.reset") || "Reset" }}
+          </button>
         </div>
 
-        <div class="d-flex align-items-center w-100 w-xl-auto gap-2">
-          <div
-            class="d-flex align-items-center position-relative my-1 flex-grow-1 flex-xl-grow-0"
-          >
-            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4"
-              ><span class="path1"></span><span class="path2"></span
-            ></i>
+        <div class="flex items-center gap-2">
+          <div class="relative flex flex-1 items-center xl:flex-none">
+            <i
+              class="ki-duotone ki-magnifier fs-3 pointer-events-none absolute left-4"
+            >
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
             <input
               type="text"
               v-model="searchQuery"
-              class="form-control form-control-sm form-control-solid w-100 w-xl-200px ps-12"
               :placeholder="
                 t('appsEventsAlerts.alertsFilters.searchPlaceholder') ||
                 'Search'
               "
+              class="w-full rounded-md border border-gray-300 bg-gray-100 py-1.5 pr-3 pl-12 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none xl:w-[200px] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
             />
           </div>
           <button
             @click="refreshAlerts"
-            class="btn btn-sm btn-light-primary btn-icon"
             title="Refresh"
+            class="flex h-8 w-8 items-center justify-center rounded-md bg-primary-light text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.95]"
           >
-            <i class="ki-duotone ki-arrows-circle fs-2"
-              ><span class="path1"></span><span class="path2"></span
-            ></i>
+            <i class="ki-duotone ki-arrows-circle fs-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
           </button>
         </div>
       </div>
     </div>
-    <div class="card-body py-3">
-      <div class="table-responsive">
+    <div class="p-6">
+      <div class="overflow-x-auto">
         <AlertsTable
           :alerts="filteredAndSortedAlerts"
           :header="tableHeader"
@@ -179,7 +184,7 @@
         />
       </div>
       <div
-        class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3"
+        class="mt-4 flex flex-col items-center justify-between gap-3 md:flex-row"
       >
         <ItemPerPage
           :model-value="pagination.per_page"
@@ -213,10 +218,7 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({
-  name: "AlertsComponent",
-});
-
+import { cardClass } from "@/core/helpers/badge";
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
 import AlertsTable from "@/components/apps/events-alerts/AlertsTable.vue";
@@ -621,15 +623,15 @@ const fetchAlerts = async () => {
 // Removed remote detail fetch; list data already has needed fields.
 
 // Filter alerts
-// const filterAlerts = () => {
-// Filtering is handled in computed property
-// };
+const filterAlerts = () => {
+  // Filtering is handled in computed property
+};
 
-// const applyDateFilter = () => {
-// Reset to first page when applying date filter
-//   pagination.value.page = 1;
-//   debouncedFetchAlerts();
-// };
+const applyDateFilter = () => {
+  // Reset to first page when applying date filter
+  pagination.value.page = 1;
+  debouncedFetchAlerts();
+};
 
 // Refresh alerts
 const refreshAlerts = () => {
@@ -706,117 +708,117 @@ const resetFilters = () => {
 };
 
 // Reset filters to default values (clear site/camera, reset dates to yesterday-today)
-// const resetToDefaults = () => {
-// Reset site and camera filters
-//   tempSelectedSiteFilter.value = "";
-//   tempSelectedCameraFilter.value = "";
-//
-// Reset dates to default range (yesterday to today)
-//   const today = new Date();
-//   const yesterday = new Date(today);
-//   yesterday.setDate(today.getDate() - 1);
-//
-//   const formatDate = (date: Date) => {
-//     const year = date.getFullYear();
-//     const month = String(date.getMonth() + 1).padStart(2, "0");
-//     const day = String(date.getDate()).padStart(2, "0");
-//     return `${year}-${month}-${day}`;
-//   };
-//
-//   const defaultFromDate = formatDate(yesterday);
-//   const defaultToDate = formatDate(today);
-//
-//   tempDateFrom.value = defaultFromDate;
-//   tempDateTo.value = defaultToDate;
-//
-// Update localStorage with new defaults
-//   localStorage.setItem(FROM_DATE_STORAGE_KEY, defaultFromDate);
-//   localStorage.setItem(TO_DATE_STORAGE_KEY, defaultToDate);
-//   localStorage.removeItem(LEGACY_FROM_DATE_STORAGE_KEY);
-//   localStorage.removeItem(LEGACY_TO_DATE_STORAGE_KEY);
-// };
+const resetToDefaults = () => {
+  // Reset site and camera filters
+  tempSelectedSiteFilter.value = "";
+  tempSelectedCameraFilter.value = "";
+
+  // Reset dates to default range (yesterday to today)
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const defaultFromDate = formatDate(yesterday);
+  const defaultToDate = formatDate(today);
+
+  tempDateFrom.value = defaultFromDate;
+  tempDateTo.value = defaultToDate;
+
+  // Update localStorage with new defaults
+  localStorage.setItem(FROM_DATE_STORAGE_KEY, defaultFromDate);
+  localStorage.setItem(TO_DATE_STORAGE_KEY, defaultToDate);
+  localStorage.removeItem(LEGACY_FROM_DATE_STORAGE_KEY);
+  localStorage.removeItem(LEGACY_TO_DATE_STORAGE_KEY);
+};
 
 // Helpers for badge styling and translated labels
-// const normalizeKey = (value?: string) =>
-//   (value ?? "").toLowerCase().replace(/[\s_-]/g, "");
+const normalizeKey = (value?: string) =>
+  (value ?? "").toLowerCase().replace(/[\s_-]/g, "");
 
-// const statusKeyMap: Record<string, string> = {
-//   notresolved: "notResolved",
-//   resolved: "resolved",
-//   falsealarm: "falseAlarm",
-// };
+const statusKeyMap: Record<string, string> = {
+  notresolved: "notResolved",
+  resolved: "resolved",
+  falsealarm: "falseAlarm",
+};
 
-// const severityKeyMap: Record<string, string> = {
-//   low: "low",
-//   medium: "medium",
-//   high: "high",
-//   critical: "critical",
-// };
+const severityKeyMap: Record<string, string> = {
+  low: "low",
+  medium: "medium",
+  high: "high",
+  critical: "critical",
+};
 
-// const typeKeyMap: Record<string, string> = {
-//   motion: "motion",
-//   intrusion: "intrusion",
-//   system: "system",
-//   cameraoffline: "cameraOffline",
-// };
+const typeKeyMap: Record<string, string> = {
+  motion: "motion",
+  intrusion: "intrusion",
+  system: "system",
+  cameraoffline: "cameraOffline",
+};
 
-// const getAlertTypeBadgeClass = (type: string) => {
-//   switch (normalizeKey(type)) {
-//     case "motion":
-//       return "badge-light-primary";
-//     case "intrusion":
-//       return "badge-light-danger";
-//     case "system":
-//       return "badge-light-info";
-//     case "cameraoffline":
-//       return "badge-light-warning";
-//     default:
-//       return "badge-light-secondary";
-//   }
-// };
+const getAlertTypeBadgeClass = (type: string) => {
+  switch (normalizeKey(type)) {
+    case "motion":
+      return "badge-light-primary";
+    case "intrusion":
+      return "badge-light-danger";
+    case "system":
+      return "badge-light-info";
+    case "cameraoffline":
+      return "badge-light-warning";
+    default:
+      return "badge-light-secondary";
+  }
+};
 
-// const getSeverityBadgeClass = (severity: string) => {
-//   switch (normalizeKey(severity)) {
-//     case "critical":
-//       return "badge-danger";
-//     case "high":
-//       return "badge-warning";
-//     case "medium":
-//       return "badge-primary";
-//     case "low":
-//       return "badge-success";
-//     default:
-//       return "badge-secondary";
-//   }
-// };
+const getSeverityBadgeClass = (severity: string) => {
+  switch (normalizeKey(severity)) {
+    case "critical":
+      return "badge-danger";
+    case "high":
+      return "badge-warning";
+    case "medium":
+      return "badge-primary";
+    case "low":
+      return "badge-success";
+    default:
+      return "badge-secondary";
+  }
+};
 
-// const getStatusBadgeClass = (status: string) => {
-//   const normalized = normalizeKey(status);
-//   if (normalized === "notresolved") return "badge-light-danger";
-//   if (normalized === "resolved") return "badge-light-success";
-//   if (normalized === "falsealarm") return "badge-light-info";
-//   if (!status || status === "No Status") return "badge-light-secondary";
-//   return "badge-light-secondary"; // Default return
-// };
+const getStatusBadgeClass = (status: string) => {
+  const normalized = normalizeKey(status);
+  if (normalized === "notresolved") return "badge-light-danger";
+  if (normalized === "resolved") return "badge-light-success";
+  if (normalized === "falsealarm") return "badge-light-info";
+  if (!status || status === "No Status") return "badge-light-secondary";
+  return "badge-light-secondary"; // Default return
+};
 
-// const getStatusLabel = (status: string) => {
-// Handle fallback values directly
-//   if (!status || status === "No Status") {
-//     return status || "No Status";
-//   }
-//   const key = statusKeyMap[normalizeKey(status)];
-//   return key ? t(`appsEventsAlerts.alertsTable.status.${key}`) : status;
-// };
+const getStatusLabel = (status: string) => {
+  // Handle fallback values directly
+  if (!status || status === "No Status") {
+    return status || "No Status";
+  }
+  const key = statusKeyMap[normalizeKey(status)];
+  return key ? t(`appsEventsAlerts.alertsTable.status.${key}`) : status;
+};
 
-// const getSeverityLabel = (severity: string) => {
-//   const key = severityKeyMap[normalizeKey(severity)];
-//   return key ? t(`appsEventsAlerts.alertsTable.severity.${key}`) : severity;
-// };
+const getSeverityLabel = (severity: string) => {
+  const key = severityKeyMap[normalizeKey(severity)];
+  return key ? t(`appsEventsAlerts.alertsTable.severity.${key}`) : severity;
+};
 
-// const getAlertTypeLabel = (type: string) => {
-//   const key = typeKeyMap[normalizeKey(type)];
-//   return key ? t(`appsEventsAlerts.alertsTable.types.${key}`) : type;
-// };
+const getAlertTypeLabel = (type: string) => {
+  const key = typeKeyMap[normalizeKey(type)];
+  return key ? t(`appsEventsAlerts.alertsTable.types.${key}`) : type;
+};
 
 const formatNumber = (value: number, maximumFractionDigits = 1) =>
   new Intl.NumberFormat(undefined, {
@@ -824,44 +826,44 @@ const formatNumber = (value: number, maximumFractionDigits = 1) =>
     minimumFractionDigits: 0,
   }).format(value);
 
-// const formatMinutesShort = (minutes?: number | null) => {
-//   if (minutes === undefined || minutes === null || Number.isNaN(minutes)) {
-//     return t("appsEventsAlerts.format.notAvailable");
-//   }
-//   return t("appsEventsAlerts.format.minutesShort", {
-//     value: formatNumber(Math.max(0, minutes), 1),
-//   });
-// };
+const formatMinutesShort = (minutes?: number | null) => {
+  if (minutes === undefined || minutes === null || Number.isNaN(minutes)) {
+    return t("appsEventsAlerts.format.notAvailable");
+  }
+  return t("appsEventsAlerts.format.minutesShort", {
+    value: formatNumber(Math.max(0, minutes), 1),
+  });
+};
 
-// const formatSecondsShort = (seconds?: number | null) => {
-//   if (seconds === undefined || seconds === null || Number.isNaN(seconds)) {
-//     return t("appsEventsAlerts.format.notAvailable");
-//   }
-//   return t("appsEventsAlerts.format.secondsShort", {
-//     value: formatNumber(Math.max(0, seconds), 1),
-//   });
-// };
+const formatSecondsShort = (seconds?: number | null) => {
+  if (seconds === undefined || seconds === null || Number.isNaN(seconds)) {
+    return t("appsEventsAlerts.format.notAvailable");
+  }
+  return t("appsEventsAlerts.format.secondsShort", {
+    value: formatNumber(Math.max(0, seconds), 1),
+  });
+};
 
-// const formatSecondsLong = (seconds?: number | null) => {
-//   if (seconds === undefined || seconds === null || Number.isNaN(seconds)) {
-//     return t("appsEventsAlerts.format.notAvailable");
-//   }
-//   return t("appsEventsAlerts.format.secondsLong", {
-//     value: formatNumber(Math.max(0, seconds), 2),
-//   });
-// };
+const formatSecondsLong = (seconds?: number | null) => {
+  if (seconds === undefined || seconds === null || Number.isNaN(seconds)) {
+    return t("appsEventsAlerts.format.notAvailable");
+  }
+  return t("appsEventsAlerts.format.secondsLong", {
+    value: formatNumber(Math.max(0, seconds), 2),
+  });
+};
 
-// const formatDuration = (minutes?: number | null) => {
-//   if (minutes === undefined || minutes === null || Number.isNaN(minutes)) {
-//     return t("appsEventsAlerts.format.notAvailable");
-//   }
-//   if (minutes < 1) {
-//     return formatSecondsLong(minutes * 60);
-//   }
-//   return t("appsEventsAlerts.format.minutesLong", {
-//     value: formatNumber(Math.max(0, minutes), 2),
-//   });
-// };
+const formatDuration = (minutes?: number | null) => {
+  if (minutes === undefined || minutes === null || Number.isNaN(minutes)) {
+    return t("appsEventsAlerts.format.notAvailable");
+  }
+  if (minutes < 1) {
+    return formatSecondsLong(minutes * 60);
+  }
+  return t("appsEventsAlerts.format.minutesLong", {
+    value: formatNumber(Math.max(0, minutes), 2),
+  });
+};
 
 const filteredAndSortedAlerts = computed(() => {
   let filtered = alerts.value;
@@ -926,21 +928,21 @@ const handleSort = (sort: { label: string; order: "asc" | "desc" }) => {
   sortOrder.value = sort.order;
 };
 
-// const handleImageError = (event: Event) => {
-//   const target = event.target as HTMLImageElement;
-//   target.style.display = "none";
-//   const parent = target.parentElement;
-//   if (parent) {
-//     parent.innerHTML = `
-//       <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-//         <i class="ki-duotone ki-picture fs-2x text-muted">
-//           <span class="path1"></span>
-//           <span class="path2"></span>
-//         </i>
-//       </div>
-//     `;
-//   }
-// };
+const handleImageError = (event: Event) => {
+  const target = event.target as HTMLImageElement;
+  target.style.display = "none";
+  const parent = target.parentElement;
+  if (parent) {
+    parent.innerHTML = `
+      <div class="flex items-center justify-center rounded bg-gray-100" style="width: 60px; height: 60px;">
+        <i class="ki-duotone ki-picture fs-2x text-gray-400">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </div>
+    `;
+  }
+};
 
 const viewAlertDetail = (alert: Alert) => {
   selectedAlertDetail.value = {

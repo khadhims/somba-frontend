@@ -1,54 +1,40 @@
 <template>
   <!--begin::Menu-->
   <div
-    class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-title-gray-700 menu-icon-muted menu-active-bg menu-state-primary fw-semibold py-4 fs-base w-175px"
-    data-kt-menu="true"
-    data-kt-element="theme-mode-menu"
+    class="w-[175px] rounded-lg bg-white py-4 text-sm font-semibold text-gray-700 shadow-lg dark:bg-gray-900 dark:text-gray-300"
   >
     <!--begin::Menu item-->
-    <div class="menu-item px-3 my-0">
-      <router-link
-        :to="path"
-        :class="{ active: themeMode === 'light' }"
-        class="menu-link px-3 py-2"
-        @click="setMode('light')"
-      >
-        <span class="menu-icon" data-kt-element="icon">
-          <KTIcon icon-name="night-day" icon-class="fs-2" />
-        </span>
-        <span class="menu-title">Light</span>
-      </router-link>
-    </div>
+    <router-link
+      :to="path"
+      class="flex items-center gap-2 px-6 py-2 hover:bg-primary-light hover:text-primary"
+      :class="{ 'bg-primary-light text-primary': themeMode === 'light' }"
+      @click="select('light')"
+    >
+      <KTIcon icon-name="night-day" icon-class="fs-3" />
+      Light
+    </router-link>
     <!--end::Menu item-->
     <!--begin::Menu item-->
-    <div class="menu-item px-3 my-0">
-      <router-link
-        :to="path"
-        :class="{ active: themeMode === 'dark' }"
-        class="menu-link px-3 py-2"
-        @click="setMode('dark')"
-      >
-        <span class="menu-icon" data-kt-element="icon">
-          <KTIcon icon-name="moon" icon-class="fs-2" />
-        </span>
-        <span class="menu-title">Dark</span>
-      </router-link>
-    </div>
+    <router-link
+      :to="path"
+      class="flex items-center gap-2 px-6 py-2 hover:bg-primary-light hover:text-primary"
+      :class="{ 'bg-primary-light text-primary': themeMode === 'dark' }"
+      @click="select('dark')"
+    >
+      <KTIcon icon-name="moon" icon-class="fs-3" />
+      Dark
+    </router-link>
     <!--end::Menu item-->
     <!--begin::Menu item-->
-    <div class="menu-item px-3 my-0">
-      <router-link
-        :to="path"
-        :class="{ active: themeMode === 'system' }"
-        class="menu-link px-3 py-2"
-        @click="setMode('system')"
-      >
-        <span class="menu-icon" data-kt-element="icon">
-          <KTIcon icon-name="screen" icon-class="fs-2" />
-        </span>
-        <span class="menu-title">System</span>
-      </router-link>
-    </div>
+    <router-link
+      :to="path"
+      class="flex items-center gap-2 px-6 py-2 hover:bg-primary-light hover:text-primary"
+      :class="{ 'bg-primary-light text-primary': themeMode === 'system' }"
+      @click="select('system')"
+    >
+      <KTIcon icon-name="screen" icon-class="fs-3" />
+      System
+    </router-link>
     <!--end::Menu item-->
   </div>
   <!--end::Menu-->
@@ -63,10 +49,9 @@ import { useRoute } from "vue-router";
 
 export default defineComponent({
   name: "kt-theme-switcher",
-  component: {
-    /* empty */
-  },
-  setup() {
+  component: {},
+  emits: ["close"],
+  setup(_, { emit }) {
     const storeTheme = useThemeStore();
     const storeConfig = useConfigStore();
     const route = useRoute();
@@ -85,9 +70,15 @@ export default defineComponent({
       storeTheme.setThemeMode(configMode);
     };
 
+    const select = (mode: "dark" | "light" | "system") => {
+      setMode(mode);
+      emit("close");
+    };
+
     return {
       themeMode,
       setMode,
+      select,
       path,
       getAssetPath,
     };

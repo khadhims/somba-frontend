@@ -1,46 +1,31 @@
 <template>
   <!--begin::Stepper-->
-  <div
-    class="stepper stepper-links d-flex flex-column"
-    id="kt_create_account_stepper"
-    ref="createAccountStepperRef"
-  >
+  <div class="flex flex-col" id="kt_create_account_stepper">
     <!--begin::Nav-->
-    <div class="stepper-nav py-5 mt-5">
-      <!--begin::Step 1-->
-      <div class="stepper-item current" data-kt-stepper-element="nav">
-        <h3 class="stepper-title">Account Type</h3>
+    <div
+      class="flex gap-8 border-b border-gray-200 py-5 mt-5 dark:border-gray-700"
+    >
+      <!--begin::Step-->
+      <div v-for="(title, index) in stepTitles" :key="title" class="pb-3">
+        <h3
+          class="border-b-2 pb-3 text-sm font-semibold transition-colors"
+          :class="
+            stepper.stepState(index) === 'current'
+              ? 'border-primary text-gray-900 dark:text-gray-100'
+              : stepper.stepState(index) === 'completed'
+              ? 'border-transparent text-primary'
+              : 'border-transparent text-gray-400'
+          "
+        >
+          {{ title }}
+        </h3>
       </div>
-      <!--end::Step 1-->
-
-      <!--begin::Step 2-->
-      <div class="stepper-item" data-kt-stepper-element="nav">
-        <h3 class="stepper-title">Account Info</h3>
-      </div>
-      <!--end::Step 2-->
-
-      <!--begin::Step 3-->
-      <div class="stepper-item" data-kt-stepper-element="nav">
-        <h3 class="stepper-title">Business Info</h3>
-      </div>
-      <!--end::Step 3-->
-
-      <!--begin::Step 4-->
-      <div class="stepper-item" data-kt-stepper-element="nav">
-        <h3 class="stepper-title">Billing Details</h3>
-      </div>
-      <!--end::Step 4-->
-
-      <!--begin::Step 5-->
-      <div class="stepper-item" data-kt-stepper-element="nav">
-        <h3 class="stepper-title">Completed</h3>
-      </div>
-      <!--end::Step 5-->
+      <!--end::Step-->
     </div>
     <!--end::Nav-->
 
     <CreateAccountWizardForm
-      :stepper-el="createAccountStepperRef"
+      :stepper="stepper"
       :close-hadler="props.closeHadler"
     />
   </div>
@@ -48,11 +33,7 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({
-  name: "CreateAccountHorizontalWizardStepperComponent",
-});
-
-import { ref } from "vue";
+import { useStepper } from "@/composables/useStepper";
 import CreateAccountWizardForm from "@/components/wizards/create-account-wizard/CreateAccountWizardForm.vue";
 
 interface Props {
@@ -61,5 +42,13 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const createAccountStepperRef = ref<HTMLElement | null>(null);
+const stepTitles = [
+  "Account Type",
+  "Account Info",
+  "Business Info",
+  "Billing Details",
+  "Completed",
+];
+
+const stepper = useStepper(stepTitles.length);
 </script>

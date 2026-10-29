@@ -1,24 +1,26 @@
 <template>
   <!--begin::Step 1-->
-  <div class="current" data-kt-stepper-element="content">
-    <div class="w-100">
+  <div v-show="active">
+    <div class="w-full">
       <!--begin::Input group-->
       <div class="fv-row mb-10">
         <!--begin::Label-->
-        <label class="d-flex align-items-center fs-5 fw-semibold mb-2">
-          <span class="required">App Name</span>
-          <i
-            class="fas fa-exclamation-circle ms-2 fs-7"
-            v-tooltip
+        <label class="mb-2 flex items-center text-base font-semibold">
+          <span class="after:content-['*'] after:ml-0.5 after:text-danger"
+            >App Name</span
+          >
+          <KTIcon
+            icon-name="information"
+            icon-class="ms-2 fs-7"
             title="Specify your unique app name"
-          ></i>
+          />
         </label>
         <!--end::Label-->
 
         <!--begin::Input-->
         <Field
           type="text"
-          class="form-control form-control-lg form-control-solid"
+          :class="formInputClass"
           name="appName"
           placeholder=""
         />
@@ -33,36 +35,38 @@
       <!--begin::Input group-->
       <div class="fv-row">
         <!--begin::Label-->
-        <label class="d-flex align-items-center fs-5 fw-semibold mb-4">
-          <span class="required">Category</span>
+        <label class="mb-4 flex items-center text-base font-semibold">
+          <span class="after:content-['*'] after:ml-0.5 after:text-danger"
+            >Category</span
+          >
 
-          <i
-            class="fas fa-exclamation-circle ms-2 fs-7"
-            v-tooltip
+          <KTIcon
+            icon-name="information"
+            icon-class="ms-2 fs-7"
             title="Select your app category"
-          ></i>
+          />
         </label>
         <!--end::Label-->
 
         <!--begin:Options-->
         <div class="fv-row">
           <!--begin:Option-->
-          <label class="d-flex flex-stack mb-5 cursor-pointer">
+          <label class="mb-5 flex cursor-pointer items-center justify-between">
             <!--begin:Label-->
-            <span class="d-flex align-items-center me-2">
+            <span class="mr-2 flex items-center">
               <!--begin:Icon-->
-              <span class="symbol symbol-50px me-6">
-                <span class="symbol-label bg-light-primary">
-                  <KTIcon icon-name="compass" icon-class="fs-1 text-primary" />
-                </span>
+              <span
+                class="mr-6 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-primary-light"
+              >
+                <KTIcon icon-name="compass" icon-class="fs-1 text-primary" />
               </span>
               <!--end:Icon-->
 
               <!--begin:Info-->
-              <span class="d-flex flex-column">
-                <span class="fw-bold fs-6">Quick Online Courses</span>
+              <span class="flex flex-col">
+                <span class="text-sm font-bold">Quick Online Courses</span>
 
-                <span class="fs-7 text-muted"
+                <span class="text-xs text-gray-500"
                   >Creating a clear text structure is just one SEO</span
                 >
               </span>
@@ -71,9 +75,9 @@
             <!--end:Label-->
 
             <!--begin:Input-->
-            <span class="form-check form-check-custom form-check-solid">
+            <span class="flex items-center">
               <Field
-                class="form-check-input"
+                class="h-4 w-4 cursor-pointer rounded-full border-gray-300 accent-primary dark:border-gray-600"
                 type="radio"
                 name="category"
                 value="1"
@@ -84,22 +88,22 @@
           <!--end::Option-->
 
           <!--begin:Option-->
-          <label class="d-flex flex-stack mb-5 cursor-pointer">
+          <label class="mb-5 flex cursor-pointer items-center justify-between">
             <!--begin:Label-->
-            <span class="d-flex align-items-center me-2">
+            <span class="mr-2 flex items-center">
               <!--begin:Icon-->
-              <span class="symbol symbol-50px me-6">
-                <span class="symbol-label bg-light-danger">
-                  <KTIcon icon-name="category" icon-class="fs-1 text-danger" />
-                </span>
+              <span
+                class="mr-6 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-danger-light"
+              >
+                <KTIcon icon-name="category" icon-class="fs-1 text-danger" />
               </span>
               <!--end:Icon-->
 
               <!--begin:Info-->
-              <span class="d-flex flex-column">
-                <span class="fw-bold fs-6">Face to Face Discussions</span>
+              <span class="flex flex-col">
+                <span class="text-sm font-bold">Face to Face Discussions</span>
 
-                <span class="fs-7 text-muted"
+                <span class="text-xs text-gray-500"
                   >Creating a clear text structure is just one aspect</span
                 >
               </span>
@@ -108,9 +112,9 @@
             <!--end:Label-->
 
             <!--begin:Input-->
-            <span class="form-check form-check-custom form-check-solid">
+            <span class="flex items-center">
               <Field
-                class="form-check-input"
+                class="h-4 w-4 cursor-pointer rounded-full border-gray-300 accent-primary dark:border-gray-600"
                 type="radio"
                 name="category"
                 value="2"
@@ -121,22 +125,22 @@
           <!--end::Option-->
 
           <!--begin:Option-->
-          <label class="d-flex flex-stack cursor-pointer">
+          <label class="flex cursor-pointer items-center justify-between">
             <!--begin:Label-->
-            <span class="d-flex align-items-center me-2">
+            <span class="mr-2 flex items-center">
               <!--begin:Icon-->
-              <span class="symbol symbol-50px me-6">
-                <span class="symbol-label bg-light-success">
-                  <KTIcon icon-name="timer" icon-class="fs-1 text-success" />
-                </span>
+              <span
+                class="mr-6 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-success-light"
+              >
+                <KTIcon icon-name="timer" icon-class="fs-1 text-success" />
               </span>
               <!--end:Icon-->
 
               <!--begin:Info-->
-              <span class="d-flex flex-column">
-                <span class="fw-bold fs-6">Full Intro Training</span>
+              <span class="flex flex-col">
+                <span class="text-sm font-bold">Full Intro Training</span>
 
-                <span class="fs-7 text-muted"
+                <span class="text-xs text-gray-500"
                   >Creating a clear text structure copywriting</span
                 >
               </span>
@@ -145,9 +149,9 @@
             <!--end:Label-->
 
             <!--begin:Input-->
-            <span class="form-check form-check-custom form-check-solid">
+            <span class="flex items-center">
               <Field
-                class="form-check-input"
+                class="h-4 w-4 cursor-pointer rounded-full border-gray-300 accent-primary dark:border-gray-600"
                 type="radio"
                 name="category"
                 value="3"
@@ -175,4 +179,7 @@ defineOptions({
 });
 
 import { ErrorMessage, Field } from "vee-validate";
+import { formInputClass } from "@/core/helpers/badge";
+
+defineProps<{ active: boolean }>();
 </script>

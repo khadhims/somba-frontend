@@ -1,8 +1,6 @@
 <template>
   <!--begin::VMS Control Panel-->
-  <div
-    class="d-flex align-items-center justify-content-between overflow-auto pt-3 pt-lg-0"
-  >
+  <div class="flex items-center justify-between overflow-auto pt-3 lg:pt-0">
     <!--begin::System Status-->
     <!-- <div class="d-flex align-items-center">
       <div class="d-flex align-items-center me-5">
@@ -64,35 +62,47 @@
     <!--end::Real-time Info-->
 
     <!--begin::Actions-->
-    <div class="d-flex align-items-center">
+    <div class="flex items-center">
       <!--begin::Notifications-->
-      <div class="d-flex align-items-center me-4">
-        <div
-          class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px position-relative"
-          data-kt-menu-trigger="{default: 'click'}"
-          data-kt-menu-attach="parent"
-          data-kt-menu-placement="bottom-end"
-          id="kt_menu_notifications"
+      <div
+        class="relative mr-4 flex items-center"
+        :ref="(el) => (notificationsDropdown.containerRef.value = el as HTMLElement | null)"
+      >
+        <button
+          type="button"
+          class="flex h-[35px] w-[35px] items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"
+          @click="notificationsDropdown.toggle"
         >
           <KTIcon icon-name="notification-bing" icon-class="fs-2" />
+        </button>
+        <div
+          v-show="notificationsDropdown.isOpen.value"
+          class="absolute right-0 top-full z-20 mt-2"
+        >
+          <NotificationsMenu />
         </div>
-        <NotificationsMenu />
       </div>
       <!--end::Notifications-->
 
       <!--begin::Theme mode-->
-      <div class="d-flex align-items-center me-4">
-        <div
-          class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px"
-          data-kt-menu-trigger="{default:'click', lg: 'hover'}"
-          data-kt-menu-attach="parent"
-          data-kt-menu-placement="bottom-end"
-          id="kt_menu_theme"
+      <div
+        class="relative mr-4 flex items-center"
+        :ref="(el) => (themeDropdown.containerRef.value = el as HTMLElement | null)"
+      >
+        <button
+          type="button"
+          class="flex h-[35px] w-[35px] items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"
+          @click="themeDropdown.toggle"
         >
           <KTIcon icon-name="night-day" icon-class="theme-light-show fs-2" />
           <KTIcon icon-name="moon" icon-class="theme-dark-show fs-2" />
+        </button>
+        <div
+          v-show="themeDropdown.isOpen.value"
+          class="absolute right-0 top-full z-20 mt-2"
+        >
+          <KTThemeModeSwitcher @close="themeDropdown.close" />
         </div>
-        <KTThemeModeSwitcher />
       </div>
       <!--end::Theme mode-->
 
@@ -101,80 +111,94 @@
       <!--end::Language-->
 
       <!--begin::User Profile-->
-      <div class="d-flex align-items-center">
+      <div
+        class="relative flex items-center"
+        :ref="(el) => (userDropdown.containerRef.value = el as HTMLElement | null)"
+      >
         <div
-          class="cursor-pointer symbol symbol-35px symbol-md-40px"
-          data-kt-menu-trigger="click"
-          data-kt-menu-attach="parent"
-          data-kt-menu-placement="bottom-end"
-          id="kt_menu_user"
+          class="h-[35px] w-[35px] cursor-pointer overflow-hidden rounded-full md:h-10 md:w-10"
+          @click="userDropdown.toggle"
         >
-          <img src="/media/avatars/300-1.jpg" alt="user" />
+          <img
+            src="/media/avatars/300-1.jpg"
+            alt="user"
+            class="h-full w-full object-cover"
+          />
         </div>
 
         <!--begin::User account menu-->
         <div
-          class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
-          data-kt-menu="true"
+          v-show="userDropdown.isOpen.value"
+          class="absolute right-0 top-full z-20 mt-2"
         >
-          <!--begin::Menu item-->
-          <div class="menu-item px-3">
-            <div class="menu-content d-flex align-items-center px-3">
+          <div
+            class="w-[275px] rounded-md bg-white py-4 text-sm font-semibold text-gray-600 shadow-lg dark:bg-gray-900 dark:text-gray-300"
+          >
+            <!--begin::Menu item-->
+            <div class="flex items-center px-6 py-2">
               <!--begin::Avatar-->
-              <div class="symbol symbol-50px me-5">
-                <img alt="Avatar" src="/media/avatars/300-1.jpg" />
+              <div class="mr-5 h-[50px] w-[50px] shrink-0">
+                <img
+                  alt="Avatar"
+                  src="/media/avatars/300-1.jpg"
+                  class="h-full w-full rounded-full object-cover"
+                />
               </div>
               <!--end::Avatar-->
 
               <!--begin::Username-->
-              <div class="d-flex flex-column">
-                <div class="fw-bold d-flex align-items-center fs-5">
+              <div class="flex flex-col">
+                <div
+                  class="flex items-center text-base font-bold text-gray-900 dark:text-gray-100"
+                >
                   {{ userName }}
                 </div>
-                <span class="fw-semibold text-muted fs-7">{{ userRole }}</span>
+                <span class="text-xs font-semibold text-gray-500">{{
+                  userRole
+                }}</span>
               </div>
               <!--end::Username-->
             </div>
-          </div>
-          <!--end::Menu item-->
+            <!--end::Menu item-->
 
-          <!--begin::Menu separator-->
-          <div class="separator my-2"></div>
-          <!--end::Menu separator-->
+            <div
+              class="my-2 border-t border-gray-200 dark:border-gray-700"
+            ></div>
 
-          <!--begin::Menu item-->
-          <div class="menu-item px-5">
+            <!--begin::Menu item-->
             <router-link
               to="/controlplane/account/overview"
-              class="menu-link px-5"
+              class="block px-6 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+              @click="userDropdown.close"
             >
               {{ t("profile") }}
             </router-link>
-          </div>
-          <!--end::Menu item-->
+            <!--end::Menu item-->
 
-          <!--begin::Menu item-->
-          <div class="menu-item px-5">
+            <!--begin::Menu item-->
             <router-link
               to="/controlplane/account/settings"
-              class="menu-link px-5"
+              class="block px-6 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+              @click="userDropdown.close"
             >
               {{ t("account") }} {{ t("settings") }}
             </router-link>
-          </div>
-          <!--end::Menu item-->
+            <!--end::Menu item-->
 
-          <!--begin::Menu separator-->
-          <div class="separator my-2"></div>
-          <!--end::Menu separator-->
+            <div
+              class="my-2 border-t border-gray-200 dark:border-gray-700"
+            ></div>
 
-          <!--begin::Menu item-->
-          <div class="menu-item px-5">
-            <a href="#" class="menu-link px-5" @click.prevent="logout">
+            <!--begin::Menu item-->
+            <a
+              href="#"
+              class="block px-6 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+              @click.prevent="logout"
+            >
               {{ t("signOut") }}
             </a>
+            <!--end::Menu item-->
           </div>
-          <!--end::Menu item-->
         </div>
         <!--end::User account menu-->
       </div>
@@ -194,6 +218,7 @@ import LanguageSwitcher from "@/layouts/default-layout/components/header/Languag
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { useDropdown } from "@/composables/useDropdown";
 
 export default defineComponent({
   name: "layout-topbar",
@@ -206,6 +231,9 @@ export default defineComponent({
     const { t } = useI18n();
     const authStore = useAuthStore();
     const router = useRouter();
+    const notificationsDropdown = useDropdown();
+    const themeDropdown = useDropdown();
+    const userDropdown = useDropdown();
 
     // Reactive data for VMS
     const currentTime = ref(new Date().toLocaleString());
@@ -284,6 +312,9 @@ export default defineComponent({
     return {
       getAssetPath,
       t,
+      notificationsDropdown,
+      themeDropdown,
+      userDropdown,
       currentTime,
       alertCount,
       connectedCameras,

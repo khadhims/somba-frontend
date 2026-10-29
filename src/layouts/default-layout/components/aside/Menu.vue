@@ -1,30 +1,14 @@
 <template>
   <!--begin::Menu wrapper-->
-  <div
-    id="kt_aside_menu_wrapper"
-    ref="scrollElRef"
-    class="hover-scroll-overlay-y px-2 my-5 my-lg-5"
-    data-kt-scroll="true"
-    data-kt-scroll-height="auto"
-    data-kt-scroll-dependencies="{default: '#kt_aside_toolbar, #kt_aside_footer', lg: '#kt_header, #kt_aside_toolbar, #kt_aside_footer'}"
-    data-kt-scroll-wrappers="#kt_aside_menu"
-    data-kt-scroll-offset="5px"
-  >
-    <!-- Panah scroll atas -->
-    <span
-      v-if="isScrollActive && !isAtTop"
-      class="scroll-arrow scroll-arrow-up"
-    ></span>
+  <div id="kt_aside_menu_wrapper" class="my-5 px-2">
     <!--begin::Menu-->
-    <div
-      id="#kt_aside_menu"
-      class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
-      data-kt-menu="true"
-    >
+    <div id="kt_aside_menu" class="flex flex-col gap-1">
       <template v-for="(item, i) in menu" :key="i">
-        <div v-if="item.heading" class="menu-item">
-          <div class="menu-content pt-8 pb-2">
-            <span class="menu-section text-muted text-uppercase fs-8 ls-1">
+        <div v-if="item.heading">
+          <div class="pb-2 pt-8">
+            <span
+              class="text-xs font-semibold uppercase tracking-wider text-gray-400"
+            >
               <!-- {{ translate(item.heading) }} -->
               {{ item.heading.toUpperCase().replace(/_/g, " ") }}
             </span>
@@ -32,45 +16,15 @@
         </div>
         <template v-for="(menuItem, j) in item.pages" :key="j">
           <template v-if="menuItem.heading">
-            <div class="menu-item">
-              <router-link
-                v-if="menuItem.route"
-                class="menu-link"
-                active-class="active"
-                :to="menuItem.route"
-              >
-                <span
-                  v-if="menuItem.keenthemesIcon || menuItem.bootstrapIcon"
-                  class="menu-icon"
-                >
-                  <i
-                    v-if="asideMenuIcons === 'bootstrap'"
-                    :class="menuItem.bootstrapIcon"
-                    class="bi fs-3"
-                  ></i>
-                  <KTIcon
-                    v-else-if="asideMenuIcons === 'keenthemes'"
-                    :icon-name="menuItem.keenthemesIcon"
-                    icon-class="fs-2"
-                  />
-                </span>
-                <span class="menu-title">{{
-                  translate(menuItem.heading)
-                }}</span>
-              </router-link>
-            </div>
-          </template>
-          <div
-            v-if="menuItem.sectionTitle && menuItem.route"
-            :class="{ show: hasActiveChildren(menuItem.route) }"
-            class="menu-item menu-accordion"
-            data-kt-menu-sub="accordion"
-            data-kt-menu-trigger="click"
-          >
-            <span class="menu-link">
+            <router-link
+              v-if="menuItem.route"
+              class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold text-gray-800 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800/60"
+              active-class="!bg-primary-light !text-primary"
+              :to="menuItem.route"
+            >
               <span
                 v-if="menuItem.keenthemesIcon || menuItem.bootstrapIcon"
-                class="menu-icon"
+                class="text-gray-500"
               >
                 <i
                   v-if="asideMenuIcons === 'bootstrap'"
@@ -83,68 +37,82 @@
                   icon-class="fs-2"
                 />
               </span>
-              <span class="menu-title">{{
-                translate(menuItem.sectionTitle)
-              }}</span>
-              <span class="menu-arrow"></span>
-            </span>
+              <span>{{ translate(menuItem.heading) }}</span>
+            </router-link>
+          </template>
+          <div v-if="menuItem.sectionTitle && menuItem.route">
+            <button
+              type="button"
+              class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm font-semibold text-gray-800 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800/60"
+              @click="toggle(menuItem.route)"
+            >
+              <span
+                v-if="menuItem.keenthemesIcon || menuItem.bootstrapIcon"
+                class="text-gray-500"
+              >
+                <i
+                  v-if="asideMenuIcons === 'bootstrap'"
+                  :class="menuItem.bootstrapIcon"
+                  class="bi fs-3"
+                ></i>
+                <KTIcon
+                  v-else-if="asideMenuIcons === 'keenthemes'"
+                  :icon-name="menuItem.keenthemesIcon"
+                  icon-class="fs-2"
+                />
+              </span>
+              <span class="flex-1">{{ translate(menuItem.sectionTitle) }}</span>
+              <KTIcon
+                icon-name="right"
+                icon-class="fs-5 text-gray-400 transition-transform"
+                :class="{ 'rotate-90': isExpanded(menuItem.route) }"
+              />
+            </button>
             <div
               v-if="menuItem.route"
-              :class="{ show: hasActiveChildren(menuItem.route) }"
-              class="menu-sub menu-sub-accordion"
+              v-show="isExpanded(menuItem.route)"
+              class="ml-4 flex flex-col gap-1 border-l border-gray-200 pl-3 dark:border-gray-700"
             >
               <template v-for="(item2, k) in menuItem.sub" :key="k">
-                <div v-if="item2.heading" class="menu-item">
-                  <router-link
-                    v-if="item2.route"
-                    class="menu-link"
-                    active-class="active"
-                    :to="item2.route"
-                  >
-                    <span class="menu-bullet">
-                      <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">{{
-                      translate(item2.heading)
-                    }}</span>
-                  </router-link>
-                </div>
-                <div
-                  v-if="item2.sectionTitle && item2.route"
-                  :class="{ show: hasActiveChildren(item2.route) }"
-                  class="menu-item menu-accordion"
-                  data-kt-menu-sub="accordion"
-                  data-kt-menu-trigger="click"
+                <router-link
+                  v-if="item2.heading && item2.route"
+                  class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800/60"
+                  active-class="!bg-primary-light !text-primary"
+                  :to="item2.route"
                 >
-                  <span class="menu-link">
-                    <span class="menu-bullet">
-                      <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">{{
+                  <span class="h-1 w-1 rounded-full bg-current"></span>
+                  <span>{{ translate(item2.heading) }}</span>
+                </router-link>
+                <div v-if="item2.sectionTitle && item2.route">
+                  <button
+                    type="button"
+                    class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800/60"
+                    @click="toggle(item2.route)"
+                  >
+                    <span class="h-1 w-1 rounded-full bg-current"></span>
+                    <span class="flex-1">{{
                       translate(item2.sectionTitle)
                     }}</span>
-                    <span class="menu-arrow"></span>
-                  </span>
+                    <KTIcon
+                      icon-name="right"
+                      icon-class="fs-6 text-gray-400 transition-transform"
+                      :class="{ 'rotate-90': isExpanded(item2.route) }"
+                    />
+                  </button>
                   <div
-                    :class="{ show: hasActiveChildren(item2.route) }"
-                    class="menu-sub menu-sub-accordion"
+                    v-show="isExpanded(item2.route)"
+                    class="ml-4 flex flex-col gap-1 border-l border-gray-200 pl-3 dark:border-gray-700"
                   >
                     <template v-for="(item3, k) in item2.sub" :key="k">
-                      <div v-if="item3.heading" class="menu-item">
-                        <router-link
-                          v-if="item3.route"
-                          class="menu-link"
-                          active-class="active"
-                          :to="item3.route"
-                        >
-                          <span class="menu-bullet">
-                            <span class="bullet bullet-dot"></span>
-                          </span>
-                          <span class="menu-title">{{
-                            translate(item3.heading)
-                          }}</span>
-                        </router-link>
-                      </div>
+                      <router-link
+                        v-if="item3.heading && item3.route"
+                        class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800/60"
+                        active-class="!bg-primary-light !text-primary"
+                        :to="item3.route"
+                      >
+                        <span class="h-1 w-1 rounded-full bg-current"></span>
+                        <span>{{ translate(item3.heading) }}</span>
+                      </router-link>
                     </template>
                   </div>
                 </div>
@@ -161,7 +129,7 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, reactive } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import router from "@/router";
@@ -188,6 +156,11 @@ function pruneDisabled(items: MenuItem[]): MenuItem[] {
     });
 }
 
+// Replaces Metronic's MenuComponent "accordion" submenu type
+// (data-kt-menu-sub="accordion") for this nav tree. Sections default open
+// when a descendant route is active (same as before); a manual click
+// override is tracked per section route so toggling one section doesn't
+// affect siblings still following the route-based default.
 export default defineComponent({
   name: "kt-menu",
   components: {
@@ -196,29 +169,7 @@ export default defineComponent({
   setup() {
     const { t, te } = useI18n();
     const route = useRoute();
-    const scrollElRef = ref<null | HTMLElement>(null);
-    const isScrollActive = ref(false);
-    const isAtTop = ref(true);
-    const isAtBottom = ref(false);
-
-    const checkScroll = () => {
-      const el = scrollElRef.value;
-      if (el) {
-        isScrollActive.value = el.scrollHeight > el.clientHeight;
-        isAtTop.value = el.scrollTop === 0;
-        isAtBottom.value = el.scrollTop + el.clientHeight >= el.scrollHeight;
-      }
-    };
-
-    onMounted(() => {
-      const el = scrollElRef.value;
-      if (el) {
-        el.scrollTop = 0;
-        checkScroll();
-        el.addEventListener("scroll", checkScroll);
-        window.addEventListener("resize", checkScroll);
-      }
-    });
+    const manualToggle = reactive<Record<string, boolean>>({});
 
     const translate = (text: string) => {
       if (te(text)) {
@@ -234,16 +185,21 @@ export default defineComponent({
 
     const menu = computed(() => pruneDisabled(MainMenuConfig));
 
+    const isExpanded = (key: string) =>
+      key in manualToggle ? manualToggle[key] : hasActiveChildren(key);
+
+    const toggle = (key: string) => {
+      manualToggle[key] = !isExpanded(key);
+    };
+
     return {
       hasActiveChildren,
       menu,
+      isExpanded,
+      toggle,
       asideMenuIcons,
       version,
       translate,
-      scrollElRef,
-      isScrollActive,
-      isAtTop,
-      isAtBottom,
       getAssetPath,
     };
   },

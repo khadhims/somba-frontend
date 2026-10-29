@@ -1,434 +1,442 @@
 <template>
-  <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
+  <div class="app-root flex flex-col" id="kt_app_root">
     <!-- App page -->
-    <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
+    <div class="app-page flex flex-1 flex-col" id="kt_app_page">
       <!-- App main -->
-      <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+      <div class="app-main flex flex-1 flex-col" id="kt_app_main">
         <!-- Content wrapper -->
-        <div class="d-flex flex-column flex-column-fluid">
+        <div class="flex flex-1 flex-col">
           <!-- Content -->
-          <div id="kt_app_content" class="app-content flex-column-fluid">
+          <div id="kt_app_content" class="app-content flex-1">
             <div
               id="kt_app_content_container"
-              class="app-container container-xxl"
+              class="app-container mx-auto max-w-[1320px]"
             >
               <!-- Main Dashboard Card - Gabungan 3 Section -->
-              <div class="row g-3 g-xl-4 mb-3">
-                <div class="col-12">
-                  <div class="card dashboard-main-card">
-                    <!-- Section 1: Proses Pelaksanaan Harian -->
-                    <div
-                      class="card-header border-0 pt-3 pb-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 dashboard-section-header"
-                    >
-                      <div class="card-title flex-grow-1">
-                        <div class="d-flex flex-column gap-2">
-                          <h3
-                            class="fw-bold text-dark text-white-dark fs-5 mb-0"
+              <div class="mb-3">
+                <div
+                  class="rounded-xl bg-white shadow-sm dark:bg-gray-900 dark:shadow-none"
+                >
+                  <!-- Section 1: Proses Pelaksanaan Harian -->
+                  <div
+                    class="dashboard-section-header flex flex-col items-start justify-between gap-3 border-b-0 p-4 pt-3 pb-3 md:flex-row md:items-center"
+                  >
+                    <div class="flex-1">
+                      <div class="flex flex-col gap-2">
+                        <h3
+                          class="m-0 text-base font-bold text-gray-900 dark:text-gray-100"
+                        >
+                          {{ t("dashboard.sections.dailyProcess.title") }}
+                        </h3>
+                        <div class="flex flex-wrap items-center gap-2">
+                          <span
+                            class="inline-flex rounded bg-primary-light px-2 py-1 text-xs font-semibold text-primary"
                           >
-                            {{ t("dashboard.sections.dailyProcess.title") }}
-                          </h3>
-                          <div
-                            class="header-meta d-flex flex-wrap align-items-center gap-2"
+                            Data per: {{ currentDate }}
+                          </span>
+                          <span
+                            class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400"
                           >
-                            <span class="badge badge-light-primary fs-8">
-                              Data per: {{ currentDate }}
+                            <span
+                              class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-primary-light text-primary transition-all hover:scale-105 hover:bg-primary/20 active:scale-95 dark:bg-primary/20"
+                              @click="handleManualRefresh"
+                              title="Klik untuk refresh manual"
+                            >
+                              <KTIcon
+                                icon-name="arrows-circle"
+                                icon-class="fs-6"
+                              />
                             </span>
                             <span
-                              class="header-meta-item fs-8 d-flex align-items-center gap-1"
+                              >Otomatis update tiap
+                              {{ autoUpdateInterval }} menit</span
                             >
-                              <span
-                                class="icon-wrapper"
-                                @click="handleManualRefresh"
-                                style="cursor: pointer"
-                                title="Klik untuk refresh manual"
-                              >
-                                <i class="pi pi-sync"></i>
-                              </span>
-                              <span class="meta-text"
-                                >Otomatis update tiap
-                                {{ autoUpdateInterval }} menit</span
-                              >
-                            </span>
-                          </div>
+                          </span>
                         </div>
-                      </div>
-                      <div
-                        class="card-toolbar d-flex flex-wrap align-items-center gap-2 w-100 w-md-auto"
-                      >
-                        <!-- Tombol Simpan Laporan -->
-                        <button
-                          class="btn btn-sm btn-primary d-flex align-items-center gap-2"
-                          @click="handleShowReport"
-                          :disabled="loadingReport"
-                        >
-                          <span
-                            v-if="loadingReport"
-                            class="spinner-border spinner-border-sm"
-                          ></span>
-                          <i v-else class="fas fa-file-pdf"></i>
-                          <span class="d-none d-sm-inline">{{
-                            loadingReport
-                              ? t("dashboard.report.loading")
-                              : t("dashboard.report.save")
-                          }}</span>
-                        </button>
-
-                        <div
-                          class="vr mx-2 d-none d-md-block h-20px my-auto bg-gray-300"
-                        ></div>
-
-                        <label
-                          class="fw-semibold fs-7 text-muted mb-0 d-none d-md-block"
-                        >
-                          {{ t("controlplane.site.camera.filters.siteLabel") }}
-                        </label>
-                        <!-- Dropdown Pemilihan Lokasi -->
-                        <select
-                          v-model="selectedSite"
-                          class="form-select form-select-sm w-100 w-md-auto"
-                          style="min-width: 200px"
-                        >
-                          <option value="">
-                            {{
-                              t(
-                                "controlplane.site.camera.form.fields.site.placeholder"
-                              )
-                            }}
-                          </option>
-                          <option
-                            v-for="site in sites"
-                            :key="site.uid"
-                            :value="site.uid"
-                          >
-                            {{ site.name }}
-                          </option>
-                        </select>
                       </div>
                     </div>
                     <div
-                      class="card-body position-relative"
-                      style="padding: 1rem 1rem 1.5rem 1rem"
+                      class="flex w-full flex-wrap items-center gap-2 md:w-auto"
                     >
-                      <!-- Loading state: skeleton cards -->
-                      <div v-if="loading" class="row g-3">
-                        <div
-                          class="col-6 col-md-4 col-xl-3"
-                          v-for="n in 6"
-                          :key="`lac-${n}`"
-                        >
-                          <SkeletonCard :lines="2" />
-                        </div>
-                      </div>
-
-                      <!-- Error state -->
-                      <div
-                        v-else-if="error"
-                        class="alert alert-warning"
-                        role="alert"
+                      <!-- Tombol Simpan Laporan -->
+                      <button
+                        class="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                        @click="handleShowReport"
+                        :disabled="loadingReport"
                       >
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        {{ t("dashboard.general.errorLoading") }}: {{ error }}
-                        <button
-                          class="btn btn-sm btn-outline-primary ms-3"
-                          @click="loadLiveActivities"
-                        >
-                          <i class="fas fa-refresh me-1"></i
-                          >{{ t("dashboard.general.retry") }}
-                        </button>
-                      </div>
+                        <span
+                          v-if="loadingReport"
+                          class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                        ></span>
+                        <i v-else class="fas fa-file-pdf"></i>
+                        <span class="hidden sm:inline">{{
+                          loadingReport
+                            ? t("dashboard.report.loading")
+                            : t("dashboard.report.save")
+                        }}</span>
+                      </button>
 
-                      <!-- Activities carousel with Swiper -->
-                      <div v-else class="activities-carousel-wrapper">
-                        <Swiper
-                          :modules="[Pagination]"
-                          :slides-per-view="1"
-                          :space-between="10"
-                          :pagination="swiperPaginationConfig"
-                          :centered-slides="true"
-                          :breakpoints="{
-                            640: {
-                              slidesPerView: 5,
-                              spaceBetween: 12,
-                              centeredSlides: false,
-                            },
-                            1024: {
-                              slidesPerView: 5,
-                              spaceBetween: 14,
-                              centeredSlides: false,
-                            },
-                            1280: {
-                              slidesPerView: 6,
-                              spaceBetween: 4,
-                              centeredSlides: false,
-                            },
-                          }"
-                          class="live-activity-swiper"
-                        >
-                          <SwiperSlide
-                            v-for="activity in liveActivities"
-                            :key="activity.activity_uid"
-                          >
-                            <div class="swiper-slide-content">
-                              <Card5
-                                :activity-name="
-                                  getTranslatedActivityName(
-                                    activity.activity_name
-                                  )
-                                "
-                                :last-activity-timestamp="
-                                  activity.last_activity_timestamp
-                                "
-                                :currently-active="activity.currently_active"
-                                :icon="
-                                  getActivityConfig(activity.activity_name).icon
-                                "
-                                :bg-color="
-                                  getActivityConfig(activity.activity_name)
-                                    .bgColor
-                                "
-                              />
-                            </div>
-                          </SwiperSlide>
-                        </Swiper>
-                      </div>
-                    </div>
-                    <!-- Divider -->
-                    <div class="separator separator-dashed my-0"></div>
+                      <div
+                        class="mx-2 hidden h-5 self-stretch border-l border-gray-300 md:block"
+                      ></div>
 
-                    <!-- Section 2: Recent Alerts -->
-                    <div class="card-header border-0 pt-3 pb-2">
-                      <div class="card-title">
-                        <h3 class="fw-bold m-0 d-flex align-items-center gap-2">
-                          <i
-                            class="pi pi-exclamation-triangle fs-2 text-danger"
-                          ></i>
+                      <label
+                        class="hidden mb-0 text-sm font-semibold text-gray-500 md:block"
+                      >
+                        {{ t("controlplane.site.camera.filters.siteLabel") }}
+                      </label>
+                      <!-- Dropdown Pemilihan Lokasi -->
+                      <select
+                        v-model="selectedSite"
+                        class="w-full min-w-[200px] rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none md:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                      >
+                        <option value="">
                           {{
-                            t("dashboard.alerts.summary.title") ||
-                            "Pelanggaran Terbaru"
+                            t(
+                              "controlplane.site.camera.form.fields.site.placeholder"
+                            )
                           }}
-                        </h3>
+                        </option>
+                        <option
+                          v-for="site in sites"
+                          :key="site.uid"
+                          :value="site.uid"
+                        >
+                          {{ site.name }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="relative p-4 pt-4 pb-6">
+                    <!-- Loading state: skeleton cards -->
+                    <div
+                      v-if="loading"
+                      class="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-6"
+                    >
+                      <div v-for="n in 6" :key="`lac-${n}`">
+                        <SkeletonCard :lines="2" />
                       </div>
                     </div>
-                    <div class="card-body py-3">
-                      <div class="row g-4">
-                        <!-- Left Column: Alerts Table -->
-                        <div class="col-lg-8">
-                          <!-- Desktop View: Table -->
-                          <div class="table-responsive d-none d-md-block">
-                            <table
-                              class="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3"
-                            >
-                              <thead>
-                                <tr class="fw-bold text-muted">
-                                  <th class="min-w-150px text-center">
-                                    {{
-                                      t("dashboard.alerts.table.violation") ||
-                                      "Nama Pelanggaran"
-                                    }}
-                                  </th>
-                                  <th class="min-w-100px text-center">
-                                    {{
-                                      t("dashboard.alerts.table.duration") ||
-                                      "Durasi"
-                                    }}
-                                  </th>
-                                  <th class="min-w-80px text-center">
-                                    {{
-                                      t("dashboard.alerts.table.detection") ||
-                                      "Deteksi"
-                                    }}
-                                  </th>
-                                  <th class="min-w-140px text-center">
-                                    {{
-                                      t("dashboard.alerts.table.time") ||
-                                      "Waktu"
-                                    }}
-                                  </th>
-                                  <th class="min-w-100px text-center">
-                                    {{
-                                      t("dashboard.alerts.table.status") ||
-                                      "Status"
-                                    }}
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <template v-if="loadingAlerts">
-                                  <SkeletonTableRow
-                                    v-for="n in 5"
-                                    :key="`tblsk-${n}`"
-                                    :columns="5"
-                                  />
-                                </template>
-                                <tr v-else-if="!alerts.length">
-                                  <td
-                                    colspan="5"
-                                    class="text-center py-8 text-muted"
-                                  >
-                                    <i class="pi pi-info-circle fs-2x mb-2"></i>
-                                    <div>
-                                      {{
-                                        t("dashboard.alerts.table.empty") ||
-                                        "Tidak ada data pelanggaran"
-                                      }}
-                                    </div>
-                                  </td>
-                                </tr>
-                                <tr
-                                  v-else
-                                  v-for="alert in recentAlerts"
-                                  :key="alert.event_id"
-                                  class="alert-row cursor-pointer"
-                                  @click="openAlertDetail(alert)"
+
+                    <!-- Error state -->
+                    <div
+                      v-else-if="error"
+                      role="alert"
+                      class="rounded-lg border border-warning-light bg-warning-light p-4 text-warning"
+                    >
+                      <i class="fas fa-exclamation-triangle mr-2"></i>
+                      {{ t("dashboard.general.errorLoading") }}: {{ error }}
+                      <button
+                        class="ml-3 rounded-md border border-primary px-2 py-1 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
+                        @click="loadLiveActivities"
+                      >
+                        <i class="fas fa-refresh mr-1"></i
+                        >{{ t("dashboard.general.retry") }}
+                      </button>
+                    </div>
+
+                    <!-- Activities carousel with Swiper -->
+                    <div v-else class="activities-carousel-wrapper">
+                      <Swiper
+                        :modules="[Pagination]"
+                        :slides-per-view="1"
+                        :space-between="10"
+                        :pagination="swiperPaginationConfig"
+                        :centered-slides="true"
+                        :breakpoints="{
+                          640: {
+                            slidesPerView: 5,
+                            spaceBetween: 12,
+                            centeredSlides: false,
+                          },
+                          1024: {
+                            slidesPerView: 5,
+                            spaceBetween: 14,
+                            centeredSlides: false,
+                          },
+                          1280: {
+                            slidesPerView: 6,
+                            spaceBetween: 4,
+                            centeredSlides: false,
+                          },
+                        }"
+                        class="live-activity-swiper"
+                      >
+                        <SwiperSlide
+                          v-for="activity in liveActivities"
+                          :key="activity.activity_uid"
+                        >
+                          <div class="swiper-slide-content">
+                            <Card5
+                              :activity-name="
+                                getTranslatedActivityName(
+                                  activity.activity_name
+                                )
+                              "
+                              :last-activity-timestamp="
+                                activity.last_activity_timestamp
+                              "
+                              :currently-active="activity.currently_active"
+                              :icon="
+                                getActivityConfig(activity.activity_name).icon
+                              "
+                              :bg-color="
+                                getActivityConfig(activity.activity_name)
+                                  .bgColor
+                              "
+                            />
+                          </div>
+                        </SwiperSlide>
+                      </Swiper>
+                    </div>
+                  </div>
+                  <!-- Divider -->
+                  <div
+                    class="border-t border-dashed border-gray-200 dark:border-gray-700"
+                  ></div>
+
+                  <!-- Section 2: Recent Alerts -->
+                  <div class="p-4 pt-3 pb-2">
+                    <div>
+                      <h3
+                        class="m-0 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100"
+                      >
+                        <KTIcon
+                          icon-name="triangle"
+                          icon-class="fs-2x text-danger"
+                        />
+                        {{
+                          t("dashboard.alerts.summary.title") ||
+                          "Pelanggaran Terbaru"
+                        }}
+                      </h3>
+                    </div>
+                  </div>
+                  <div class="p-4 py-3">
+                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
+                      <!-- Left Column: Alerts Table -->
+                      <div class="lg:col-span-8">
+                        <!-- Desktop View: Table -->
+                        <div class="hidden overflow-x-auto md:block">
+                          <table class="w-full">
+                            <thead>
+                              <tr
+                                class="border-b border-gray-100 font-bold text-gray-500 dark:border-gray-800"
+                              >
+                                <th class="min-w-[150px] py-3 text-center">
+                                  {{
+                                    t("dashboard.alerts.table.violation") ||
+                                    "Nama Pelanggaran"
+                                  }}
+                                </th>
+                                <th class="min-w-[100px] py-3 text-center">
+                                  {{
+                                    t("dashboard.alerts.table.duration") ||
+                                    "Durasi"
+                                  }}
+                                </th>
+                                <th class="min-w-[80px] py-3 text-center">
+                                  {{
+                                    t("dashboard.alerts.table.detection") ||
+                                    "Deteksi"
+                                  }}
+                                </th>
+                                <th class="min-w-[140px] py-3 text-center">
+                                  {{
+                                    t("dashboard.alerts.table.time") || "Waktu"
+                                  }}
+                                </th>
+                                <th class="min-w-[100px] py-3 text-center">
+                                  {{
+                                    t("dashboard.alerts.table.status") ||
+                                    "Status"
+                                  }}
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <template v-if="loadingAlerts">
+                                <SkeletonTableRow
+                                  v-for="n in 5"
+                                  :key="`tblsk-${n}`"
+                                  :columns="5"
+                                />
+                              </template>
+                              <tr v-else-if="!alerts.length">
+                                <td
+                                  colspan="5"
+                                  class="py-8 text-center text-gray-500"
                                 >
-                                  <td>
-                                    <div class="d-flex align-items-center">
-                                      <div>
-                                        <div class="fw-bold text-dark">
-                                          {{ alert.alert_type }}
-                                        </div>
-                                        <div class="text-muted fs-7">
-                                          {{ alert.camera_name }}
-                                        </div>
+                                  <KTIcon
+                                    icon-name="information"
+                                    icon-class="fs-2x mb-2 text-gray-400"
+                                  />
+                                  <div>
+                                    {{
+                                      t("dashboard.alerts.table.empty") ||
+                                      "Tidak ada data pelanggaran"
+                                    }}
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr
+                                v-else
+                                v-for="alert in recentAlerts"
+                                :key="alert.event_id"
+                                class="alert-row cursor-pointer border-b border-gray-100 last:border-b-0 dark:border-gray-800"
+                                @click="openAlertDetail(alert)"
+                              >
+                                <td class="py-3">
+                                  <div class="flex items-center">
+                                    <div>
+                                      <div
+                                        class="font-bold text-gray-900 dark:text-gray-100"
+                                      >
+                                        {{ alert.alert_type }}
+                                      </div>
+                                      <div class="text-sm text-gray-500">
+                                        {{ alert.camera_name }}
                                       </div>
                                     </div>
-                                  </td>
-                                  <td class="text-center">
-                                    <span class="text-dark fw-semibold">
+                                  </div>
+                                </td>
+                                <td class="py-3 text-center">
+                                  <span
+                                    class="font-semibold text-gray-900 dark:text-gray-100"
+                                  >
+                                    {{ formatDuration(alert.duration_minutes) }}
+                                  </span>
+                                </td>
+                                <td class="py-3 text-center">
+                                  <span
+                                    class="inline-flex rounded px-2 py-1 text-xs font-semibold"
+                                    :class="badgeVariantClass('primary')"
+                                    >{{ alert.detection_count }}x</span
+                                  >
+                                </td>
+                                <td class="py-3 text-center">
+                                  <span
+                                    class="text-gray-900 dark:text-gray-100"
+                                    >{{
+                                      formatDateTime(alert.event_start)
+                                    }}</span
+                                  >
+                                </td>
+                                <td class="py-3 text-center">
+                                  <span :class="statusBadge(alert.status)">
+                                    {{ statusLabel(alert.status) }}
+                                  </span>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <!-- Mobile View: Cards -->
+                        <div class="md:hidden">
+                          <div v-if="loadingAlerts" class="flex flex-col gap-3">
+                            <SkeletonCard
+                              v-for="n in 3"
+                              :key="`mobsk-${n}`"
+                              :lines="2"
+                              :compact="true"
+                            />
+                          </div>
+                          <div
+                            v-else-if="!alerts.length"
+                            class="py-8 text-center text-gray-500"
+                          >
+                            <KTIcon
+                              icon-name="information"
+                              icon-class="fs-2x mb-2 text-gray-400"
+                            />
+                            <div>
+                              {{
+                                t("dashboard.alerts.table.empty") ||
+                                "Tidak ada data pelanggaran"
+                              }}
+                            </div>
+                          </div>
+                          <div v-else class="flex flex-col gap-3">
+                            <div
+                              v-for="alert in recentAlerts"
+                              :key="`mobile-${alert.event_id}`"
+                              class="cursor-pointer rounded-lg bg-gray-100 shadow-sm dark:bg-gray-800"
+                              @click="openAlertDetail(alert)"
+                            >
+                              <div class="p-3">
+                                <div
+                                  class="mb-2 flex items-start justify-between"
+                                >
+                                  <div class="flex items-center gap-2">
+                                    <div
+                                      class="flex h-[35px] w-[35px] items-center justify-center rounded-full bg-white text-primary"
+                                    >
+                                      <KTIcon
+                                        icon-name="triangle"
+                                        icon-class="fs-4"
+                                      />
+                                    </div>
+                                    <div>
+                                      <div
+                                        class="text-sm font-bold text-gray-900 dark:text-gray-100"
+                                      >
+                                        {{ alert.alert_type }}
+                                      </div>
+                                      <div class="text-xs text-gray-500">
+                                        {{ alert.camera_name }}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <span :class="statusBadge(alert.status)">
+                                    {{ statusLabel(alert.status) }}
+                                  </span>
+                                </div>
+
+                                <div
+                                  class="my-2 border-t border-dashed border-gray-300 dark:border-gray-600"
+                                ></div>
+
+                                <div class="grid grid-cols-2 gap-2 text-sm">
+                                  <div>
+                                    <div class="text-gray-500">
+                                      {{
+                                        t("dashboard.alerts.table.duration") ||
+                                        "Durasi"
+                                      }}
+                                    </div>
+                                    <div
+                                      class="font-bold text-gray-900 dark:text-gray-100"
+                                    >
                                       {{
                                         formatDuration(alert.duration_minutes)
                                       }}
-                                    </span>
-                                  </td>
-                                  <td class="text-center">
-                                    <span class="badge badge-light-primary"
-                                      >{{ alert.detection_count }}x</span
-                                    >
-                                  </td>
-                                  <td class="text-center">
-                                    <span class="text-dark">{{
-                                      formatDateTime(alert.event_start)
-                                    }}</span>
-                                  </td>
-                                  <td class="text-center">
-                                    <span
-                                      class="badge"
-                                      :class="statusBadge(alert.status)"
-                                    >
-                                      {{ statusLabel(alert.status) }}
-                                    </span>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-
-                          <!-- Mobile View: Cards -->
-                          <div class="d-md-none">
-                            <div
-                              v-if="loadingAlerts"
-                              class="d-flex flex-column gap-3"
-                            >
-                              <SkeletonCard
-                                v-for="n in 3"
-                                :key="`mobsk-${n}`"
-                                :lines="2"
-                                :compact="true"
-                              />
-                            </div>
-                            <div
-                              v-else-if="!alerts.length"
-                              class="text-center py-8 text-muted"
-                            >
-                              <i class="pi pi-info-circle fs-2x mb-2"></i>
-                              <div>
-                                {{
-                                  t("dashboard.alerts.table.empty") ||
-                                  "Tidak ada data pelanggaran"
-                                }}
-                              </div>
-                            </div>
-                            <div v-else class="d-flex flex-column gap-3">
-                              <div
-                                v-for="alert in recentAlerts"
-                                :key="`mobile-${alert.event_id}`"
-                                class="card bg-light border-0 cursor-pointer shadow-sm"
-                                @click="openAlertDetail(alert)"
-                              >
-                                <div class="card-body p-3">
-                                  <div
-                                    class="d-flex justify-content-between align-items-start mb-2"
-                                  >
-                                    <div
-                                      class="d-flex align-items-center gap-2"
-                                    >
-                                      <div class="symbol symbol-35px">
-                                        <div
-                                          class="symbol-label bg-white text-primary"
-                                        >
-                                          <i
-                                            class="pi pi-exclamation-triangle fs-4"
-                                          ></i>
-                                        </div>
-                                      </div>
-                                      <div>
-                                        <div class="fw-bold text-dark fs-6">
-                                          {{ alert.alert_type }}
-                                        </div>
-                                        <div class="text-muted fs-8">
-                                          {{ alert.camera_name }}
-                                        </div>
-                                      </div>
                                     </div>
-                                    <span
-                                      class="badge"
-                                      :class="statusBadge(alert.status)"
-                                    >
-                                      {{ statusLabel(alert.status) }}
-                                    </span>
                                   </div>
-
-                                  <div
-                                    class="separator separator-dashed my-2"
-                                  ></div>
-
-                                  <div class="row g-2 fs-7">
-                                    <div class="col-6">
-                                      <div class="text-muted">
-                                        {{
-                                          t(
-                                            "dashboard.alerts.table.duration"
-                                          ) || "Durasi"
-                                        }}
-                                      </div>
-                                      <div class="fw-bold text-dark">
-                                        {{
-                                          formatDuration(alert.duration_minutes)
-                                        }}
-                                      </div>
+                                  <div>
+                                    <div class="text-gray-500">
+                                      {{
+                                        t("dashboard.alerts.table.detection") ||
+                                        "Deteksi"
+                                      }}
                                     </div>
-                                    <div class="col-6">
-                                      <div class="text-muted">
-                                        {{
-                                          t(
-                                            "dashboard.alerts.table.detection"
-                                          ) || "Deteksi"
-                                        }}
-                                      </div>
-                                      <div class="fw-bold text-dark">
-                                        {{ alert.detection_count }}x
-                                      </div>
+                                    <div
+                                      class="font-bold text-gray-900 dark:text-gray-100"
+                                    >
+                                      {{ alert.detection_count }}x
                                     </div>
-                                    <div class="col-12 mt-2">
-                                      <div class="text-muted">
-                                        {{
-                                          t("dashboard.alerts.table.time") ||
-                                          "Waktu"
-                                        }}
-                                      </div>
-                                      <div class="fw-bold text-dark">
-                                        {{ formatDateTime(alert.event_start) }}
-                                      </div>
+                                  </div>
+                                  <div class="col-span-2 mt-2">
+                                    <div class="text-gray-500">
+                                      {{
+                                        t("dashboard.alerts.table.time") ||
+                                        "Waktu"
+                                      }}
+                                    </div>
+                                    <div
+                                      class="font-bold text-gray-900 dark:text-gray-100"
+                                    >
+                                      {{ formatDateTime(alert.event_start) }}
                                     </div>
                                   </div>
                                 </div>
@@ -436,267 +444,242 @@
                             </div>
                           </div>
                         </div>
-                        <!-- Right Column: Summary Cards -->
-                        <div class="col-lg-4">
-                          <div class="d-flex flex-column gap-2">
-                            <div class="card bg-light-primary border-0">
-                              <div class="card-body p-3">
-                                <div class="d-flex align-items-center">
-                                  <div
-                                    class="symbol symbol-50px flex-shrink-0 me-4"
-                                  >
-                                    <div class="symbol-label bg-primary">
-                                      <i
-                                        class="pi pi-exclamation-circle fs-2 text-white"
-                                      ></i>
-                                    </div>
-                                  </div>
-                                  <div class="flex-grow-1 text-end">
-                                    <div
-                                      class="text-gray-600 fw-semibold fs-7 mb-1"
-                                    >
-                                      {{
-                                        t(
-                                          "dashboard.alerts.summary.totalToday.title"
-                                        ) || "Total Hari Ini"
-                                      }}
-                                    </div>
-                                    <div
-                                      class="d-flex align-items-baseline gap-2 justify-content-end"
-                                    >
-                                      <div
-                                        class="fs-2 fw-bolder text-primary"
-                                        v-if="!loadingSummaryAlerts"
-                                      >
-                                        {{ totalAlertsToday }}
-                                      </div>
-                                      <div
-                                        v-else
-                                        class="d-flex justify-content-end"
-                                      >
-                                        <SkeletonBlock
-                                          :width="60"
-                                          :height="22"
-                                        />
-                                      </div>
-                                    </div>
-                                  </div>
+                      </div>
+                      <!-- Right Column: Summary Cards -->
+                      <div class="lg:col-span-4">
+                        <div class="flex flex-col gap-2">
+                          <div class="rounded-lg bg-primary-light">
+                            <div class="p-3">
+                              <div class="flex items-center">
+                                <div
+                                  class="mr-4 flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-primary"
+                                >
+                                  <KTIcon
+                                    icon-name="information-5"
+                                    icon-class="fs-3 text-white"
+                                  />
                                 </div>
-                              </div>
-                            </div>
-                            <div class="card bg-light-danger border-0">
-                              <div class="card-body p-3">
-                                <div class="d-flex align-items-center">
+                                <div class="flex-1 text-right">
                                   <div
-                                    class="symbol symbol-50px flex-shrink-0 me-4"
+                                    class="mb-1 text-sm font-semibold text-gray-600"
                                   >
-                                    <div class="symbol-label bg-danger">
-                                      <i
-                                        class="pi pi-flag-fill fs-2 text-white"
-                                      ></i>
-                                    </div>
+                                    {{
+                                      t(
+                                        "dashboard.alerts.summary.totalToday.title"
+                                      ) || "Total Hari Ini"
+                                    }}
                                   </div>
-                                  <div class="flex-grow-1 text-end">
+                                  <div
+                                    class="flex items-baseline justify-end gap-2"
+                                  >
                                     <div
-                                      class="text-gray-600 fw-semibold fs-7 mb-1"
-                                    >
-                                      {{
-                                        t(
-                                          "dashboard.alerts.summary.unresolvedToday.title"
-                                        ) || "Belum Selesai"
-                                      }}
-                                    </div>
-                                    <div
-                                      class="fs-2 fw-bolder text-danger"
+                                      class="text-2xl font-extrabold text-primary"
                                       v-if="!loadingSummaryAlerts"
                                     >
-                                      {{ unresolvedAlertsToday }}
+                                      {{ totalAlertsToday }}
                                     </div>
-                                    <div
-                                      v-else
-                                      class="d-flex justify-content-end"
-                                    >
+                                    <div v-else class="flex justify-end">
                                       <SkeletonBlock :width="60" :height="22" />
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div class="card bg-light-success border-0">
-                              <div class="card-body p-3">
-                                <div class="d-flex align-items-center">
+                          </div>
+                          <div class="rounded-lg bg-danger-light">
+                            <div class="p-3">
+                              <div class="flex items-center">
+                                <div
+                                  class="mr-4 flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-danger"
+                                >
+                                  <KTIcon
+                                    icon-name="flag"
+                                    icon-class="fs-3 text-white"
+                                  />
+                                </div>
+                                <div class="flex-1 text-right">
                                   <div
-                                    class="symbol symbol-50px flex-shrink-0 me-4"
+                                    class="mb-1 text-sm font-semibold text-gray-600"
                                   >
-                                    <div class="symbol-label bg-success">
-                                      <i
-                                        class="pi pi-check-circle fs-2 text-white"
-                                      ></i>
-                                    </div>
+                                    {{
+                                      t(
+                                        "dashboard.alerts.summary.unresolvedToday.title"
+                                      ) || "Belum Selesai"
+                                    }}
                                   </div>
-                                  <div class="flex-grow-1 text-end">
+                                  <div
+                                    class="text-2xl font-extrabold text-danger"
+                                    v-if="!loadingSummaryAlerts"
+                                  >
+                                    {{ unresolvedAlertsToday }}
+                                  </div>
+                                  <div v-else class="flex justify-end">
+                                    <SkeletonBlock :width="60" :height="22" />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="rounded-lg bg-success-light">
+                            <div class="p-3">
+                              <div class="flex items-center">
+                                <div
+                                  class="mr-4 flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-success"
+                                >
+                                  <KTIcon
+                                    icon-name="check-circle"
+                                    icon-class="fs-3 text-white"
+                                  />
+                                </div>
+                                <div class="flex-1 text-right">
+                                  <div
+                                    class="mb-1 text-sm font-semibold text-gray-600"
+                                  >
+                                    {{
+                                      t(
+                                        "dashboard.alerts.summary.resolvedToday.title"
+                                      ) || "Selesai"
+                                    }}
+                                  </div>
+                                  <div
+                                    class="flex items-baseline justify-end gap-2"
+                                  >
                                     <div
-                                      class="text-gray-600 fw-semibold fs-7 mb-1"
+                                      class="text-2xl font-extrabold text-success"
+                                      v-if="!loadingSummaryAlerts"
                                     >
-                                      {{
-                                        t(
-                                          "dashboard.alerts.summary.resolvedToday.title"
-                                        ) || "Selesai"
-                                      }}
+                                      {{ resolvedAlertsToday }}
                                     </div>
-                                    <div
-                                      class="d-flex align-items-baseline gap-2 justify-content-end"
-                                    >
-                                      <div
-                                        class="fs-2 fw-bolder text-success"
-                                        v-if="!loadingSummaryAlerts"
-                                      >
-                                        {{ resolvedAlertsToday }}
-                                      </div>
-                                      <div
-                                        v-else
-                                        class="d-flex justify-content-end"
-                                      >
-                                        <SkeletonBlock
-                                          :width="60"
-                                          :height="22"
-                                        />
-                                      </div>
+                                    <div v-else class="flex justify-end">
+                                      <SkeletonBlock :width="60" :height="22" />
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
                           </div>
+                        </div>
 
-                          <!-- Activity Summary Carousel -->
-                          <div class="mt-3">
-                            <h6 class="fw-bold text-dark mb-3">
+                        <!-- Activity Summary Carousel -->
+                        <div class="mt-3">
+                          <h6
+                            class="mb-3 font-bold text-gray-900 dark:text-gray-100"
+                          >
+                            {{
+                              t("dashboard.activities.summary.title") ||
+                              "Aktivitas"
+                            }}
+                          </h6>
+
+                          <!-- Loading State: skeletons -->
+                          <div
+                            v-if="loadingSummaryActivities"
+                            class="flex flex-col gap-2"
+                          >
+                            <SkeletonCard
+                              :lines="2"
+                              :compact="true"
+                              v-for="n in 3"
+                              :key="`sumsk-${n}`"
+                            />
+                          </div>
+
+                          <!-- Empty State -->
+                          <div
+                            v-else-if="!summaryActivities.length"
+                            class="py-3 text-center"
+                          >
+                            <i
+                              class="fas fa-inbox mb-2 text-lg text-gray-500"
+                            ></i>
+                            <p class="m-0 text-xs text-gray-500">
                               {{
-                                t("dashboard.activities.summary.title") ||
-                                "Aktivitas"
+                                t("dashboard.activities.summary.empty") ||
+                                "Tidak ada data aktivitas"
                               }}
-                            </h6>
+                            </p>
+                          </div>
 
-                            <!-- Loading State: skeletons -->
-                            <div
-                              v-if="loadingSummaryActivities"
-                              class="d-flex flex-column gap-2"
+                          <!-- Activities Carousel with Swiper -->
+                          <div
+                            v-else
+                            class="activities-summary-carousel-wrapper"
+                          >
+                            <Swiper
+                              :modules="[Pagination]"
+                              :slides-per-view="1"
+                              :space-between="10"
+                              :pagination="swiperPaginationConfig"
+                              :centered-slides="true"
+                              class="activity-swiper"
                             >
-                              <SkeletonCard
-                                :lines="2"
-                                :compact="true"
-                                v-for="n in 3"
-                                :key="`sumsk-${n}`"
-                              />
-                            </div>
-
-                            <!-- Empty State -->
-                            <div
-                              v-else-if="!summaryActivities.length"
-                              class="text-center py-3"
-                            >
-                              <i class="fas fa-inbox fs-4 text-muted mb-2"></i>
-                              <p class="text-muted fs-8 mb-0">
-                                {{
-                                  t("dashboard.activities.summary.empty") ||
-                                  "Tidak ada data aktivitas"
-                                }}
-                              </p>
-                            </div>
-
-                            <!-- Activities Carousel with Swiper -->
-                            <div
-                              v-else
-                              class="activities-summary-carousel-wrapper"
-                            >
-                              <Swiper
-                                :modules="[Pagination]"
-                                :slides-per-view="1"
-                                :space-between="10"
-                                :pagination="swiperPaginationConfig"
-                                :centered-slides="true"
-                                class="activity-swiper"
+                              <SwiperSlide
+                                v-for="activity in summaryActivities"
+                                :key="activity.activity_uid"
                               >
-                                <SwiperSlide
-                                  v-for="activity in summaryActivities"
-                                  :key="activity.activity_uid"
-                                >
-                                  <div class="swiper-slide-content">
-                                    <ActivitySummaryCard
-                                      :activity-name="
-                                        getTranslatedActivityName(
-                                          activity.activity_name
-                                        )
-                                      "
-                                      :earliest-active="
-                                        activity.earliest_active
-                                      "
-                                      :latest-active="activity.latest_active"
-                                      :icon="
-                                        getActivityConfig(
-                                          activity.activity_name
-                                        ).icon
-                                      "
-                                      :bg-color="
-                                        getActivityConfig(
-                                          activity.activity_name
-                                        ).bgColor
-                                      "
-                                    />
-                                  </div>
-                                </SwiperSlide>
-                              </Swiper>
-                            </div>
+                                <div class="swiper-slide-content">
+                                  <ActivitySummaryCard
+                                    :activity-name="
+                                      getTranslatedActivityName(
+                                        activity.activity_name
+                                      )
+                                    "
+                                    :earliest-active="activity.earliest_active"
+                                    :latest-active="activity.latest_active"
+                                    :icon="
+                                      getActivityConfig(activity.activity_name)
+                                        .icon
+                                    "
+                                    :bg-color="
+                                      getActivityConfig(activity.activity_name)
+                                        .bgColor
+                                    "
+                                  />
+                                </div>
+                              </SwiperSlide>
+                            </Swiper>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div class="separator separator-dashed my-0"></div>
-                    <!-- Section 3: Real Time Report -->
-                    <div
-                      class="card-header border-0 pt-5 pb-2"
-                      style="margin-top: -1px"
-                    >
-                      <div class="card-title">
-                        <div
-                          class="d-flex align-items-center position-relative my-0"
-                        >
-                          <i
-                            class="ki-duotone ki-chart-line fs-4 position-absolute ms-3 text-primary text-white-dark"
-                          >
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <h3
-                            class="fw-bold ms-10 text-dark text-white-dark fs-5 mb-0"
-                          >
-                            {{ t("dashboard.sections.realTimeReport.title") }}
-                          </h3>
-                        </div>
-                      </div>
-                      <div class="card-toolbar">
-                        <span class="text-muted fs-8">{{
-                          t("dashboard.sections.realTimeReport.subtitle")
-                        }}</span>
-                      </div>
+                  </div>
+                  <div
+                    class="border-t border-dashed border-gray-200 dark:border-gray-700"
+                  ></div>
+                  <!-- Section 3: Real Time Report -->
+                  <div
+                    class="flex flex-wrap items-center justify-between gap-2 p-4 pt-5 pb-2 -mt-px"
+                  >
+                    <div class="relative flex items-center">
+                      <i
+                        class="ki-duotone ki-chart-line absolute left-3 text-lg text-primary"
+                      >
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <h3
+                        class="m-0 ml-10 text-base font-bold text-gray-900 dark:text-gray-100"
+                      >
+                        {{ t("dashboard.sections.realTimeReport.title") }}
+                      </h3>
                     </div>
-                    <div class="card-body py-3">
-                      <!-- Real Time Report Component -->
-                      <RealTimeReport
-                        ref="realTimeReportRef"
-                        :title="
-                          t('dashboard.sections.realTimeReport.componentTitle')
-                        "
-                        :subtitle="
-                          t(
-                            'dashboard.sections.realTimeReport.componentSubtitle'
-                          )
-                        "
-                        :showFilters="true"
-                        :site-uid="selectedSite"
-                      />
-                    </div>
+                    <span class="text-xs text-gray-500">{{
+                      t("dashboard.sections.realTimeReport.subtitle")
+                    }}</span>
+                  </div>
+                  <div class="p-4 py-3">
+                    <!-- Real Time Report Component -->
+                    <RealTimeReport
+                      ref="realTimeReportRef"
+                      :title="
+                        t('dashboard.sections.realTimeReport.componentTitle')
+                      "
+                      :subtitle="
+                        t('dashboard.sections.realTimeReport.componentSubtitle')
+                      "
+                      :showFilters="true"
+                      :site-uid="selectedSite"
+                    />
                   </div>
                 </div>
               </div>
@@ -768,6 +751,7 @@ import {
   getCurrentDateTimeGMT8,
   toMomentGMT8,
 } from "@/core/helpers/timezone";
+import { badgeVariantClass } from "@/core/helpers/badge";
 
 interface Site {
   uid: string;
@@ -1560,10 +1544,11 @@ const formatDuration = (minutes?: number | null) => {
 
 const statusBadge = (status: string) => {
   const k = normalizeKey(status);
-  if (k === "notresolved") return "badge-light-danger";
-  if (k === "resolved") return "badge-light-success";
-  if (k === "falsealarm") return "badge-light-info";
-  return "badge-light-secondary";
+  const base = "inline-flex rounded px-2 py-1 text-xs font-semibold";
+  if (k === "notresolved") return `${base} ${badgeVariantClass("danger")}`;
+  if (k === "resolved") return `${base} ${badgeVariantClass("success")}`;
+  if (k === "falsealarm") return `${base} ${badgeVariantClass("info")}`;
+  return `${base} ${badgeVariantClass("secondary")}`;
 };
 
 const statusLabel = (status: string) => {
@@ -1646,811 +1631,97 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* Global rendering improvements */
-* {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-/* Optimize SVG and icon rendering */
-svg,
-img {
-  shape-rendering: geometricPrecision;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
-
-i,
-.ki-duotone,
-.fas,
-.far,
-.fab {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-.card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-  will-change: transform;
-  position: relative;
-  z-index: 1;
-}
-
-.card:hover {
-  transform: translateY(-4px) translateZ(0);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-  z-index: 10;
-}
-
-.symbol {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-  position: relative;
-  z-index: 1;
-}
-
-.card:hover .symbol {
-  transform: scale(1.08) translateZ(0);
-}
-
-/* Prevent hover effects on touch devices */
-@media (hover: none) {
-  .card:hover {
-    transform: translateZ(0);
-    box-shadow: none;
-  }
-
-  .card:hover .symbol {
-    transform: scale(1) translateZ(0);
-  }
-}
-
-.dashboard-section-header {
-  background: transparent;
-}
-
-.dashboard-section-header .header-meta {
-  gap: 0.75rem;
-}
-
-.dashboard-section-header .header-meta-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #64748b;
-}
-
-.dashboard-section-header .header-meta-item .icon-wrapper {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 999px;
-  background: rgba(59, 130, 246, 0.12);
-  transition: all 0.2s ease;
-}
-
-.dashboard-section-header .header-meta-item .icon-wrapper:hover {
-  background: rgba(59, 130, 246, 0.2);
-  transform: scale(1.05);
-}
-
-.dashboard-section-header .header-meta-item .icon-wrapper:active {
-  transform: scale(0.95);
-}
-
-.dashboard-section-header .header-meta-item .icon-wrapper i {
-  color: #3b82f6;
-}
-
-.dashboard-section-header .header-meta-item .meta-text {
-  line-height: 1.4;
-}
-
-[data-bs-theme="dark"] .dashboard-section-header .header-meta-item,
-.dark .dashboard-section-header .header-meta-item,
-.app-dark .dashboard-section-header .header-meta-item {
-  color: #cbd5f5;
-}
-
-[data-bs-theme="dark"]
-  .dashboard-section-header
-  .header-meta-item
-  .icon-wrapper,
-.dark .dashboard-section-header .header-meta-item .icon-wrapper,
-.app-dark .dashboard-section-header .header-meta-item .icon-wrapper {
-  background: rgba(59, 130, 246, 0.2);
-}
-
-[data-bs-theme="dark"]
-  .dashboard-section-header
-  .header-meta-item
-  .icon-wrapper
-  i,
-.dark .dashboard-section-header .header-meta-item .icon-wrapper i,
-.app-dark .dashboard-section-header .header-meta-item .icon-wrapper i {
-  color: #60a5fa;
-}
-
-.dashboard-section-header .card-toolbar {
-  justify-content: flex-end;
-}
-
-.dashboard-section-header .card-toolbar label {
-  min-width: max-content;
-}
-
-/* Site Selection Dropdown */
-.form-select-sm {
-  padding: 0.375rem 2rem 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  border-radius: 0.375rem;
-  border: 1px solid #e4e6ef;
-  background-color: #f9fafb;
-  transition: all 0.2s ease;
-}
-
-.form-select-sm:hover {
-  border-color: #3b82f6;
-  background-color: #ffffff;
-}
-
-.form-select-sm:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
-  background-color: #ffffff;
-}
-
-[data-bs-theme="dark"] .form-select-sm,
-.dark .form-select-sm,
-.app-dark .form-select-sm {
-  background-color: #1e293b;
-  border-color: #3f4254;
-  color: #ffffff;
-}
-
-[data-bs-theme="dark"] .form-select-sm:hover,
-.dark .form-select-sm:hover,
-.app-dark .form-select-sm:hover {
-  background-color: #2d3748;
-  border-color: #3b82f6;
-}
-
-/* Badge styling */
-.badge-light-primary {
-  background-color: #eff6ff;
-  color: #3b82f6;
-  padding: 0.35rem 0.65rem;
-  font-weight: 500;
-}
-
-[data-bs-theme="dark"] .badge-light-primary,
-.dark .badge-light-primary,
-.app-dark .badge-light-primary {
-  background-color: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
-}
-
-/* Carousel Styles */
-.activities-carousel-wrapper {
-  position: relative;
-  padding: 0.5rem;
-  margin: -0.5rem;
-  overflow: hidden;
-}
-
-.activities-carousel {
-  overflow: hidden;
-  cursor: grab;
-  user-select: none;
-  padding: 0.5rem 0;
-  position: relative;
-}
-
-.activities-carousel:active {
-  cursor: grabbing;
-}
-
-.activities-carousel-track {
-  display: flex;
-  gap: 20px;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
-}
-
-.carousel-item-wrapper {
-  flex: 0 0 calc(25% - 15px);
-  min-width: 0;
-  position: relative;
-  z-index: 1;
-}
-
-/* Pagination Dots */
-.carousel-pagination {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 1rem;
-}
-
-.pagination-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #cbd5e1;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 0;
-}
-
-.pagination-dot:hover {
-  background: #94a3b8;
-  transform: scale(1.2);
-}
-
-.pagination-dot.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  width: 18px;
-  border-radius: 3px;
-}
-
-/* Daily Process Card Enhancement */
-.daily-process-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-  border: 1px solid rgba(102, 126, 234, 0.1);
-}
-
-[data-bs-theme="dark"] .daily-process-card,
-.dark .daily-process-card,
-.app-dark .daily-process-card {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  border: 1px solid rgba(102, 126, 234, 0.2);
-}
-
-/* Dashboard Main Card - Gabungan 3 Section */
-.dashboard-main-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-  border: 1px solid rgba(102, 126, 234, 0.1);
-}
-
-[data-bs-theme="dark"] .dashboard-main-card,
-.dark .dashboard-main-card,
-.app-dark .dashboard-main-card {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  border: 1px solid rgba(102, 126, 234, 0.2);
-}
-
-/* Separator styling */
-.separator.separator-dashed {
-  border-top: 1px dashed #e4e6ef;
-  transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-[data-bs-theme="dark"] .separator.separator-dashed,
-.dark .separator.separator-dashed,
-.app-dark .separator.separator-dashed {
-  border-top: 1px dashed #3f4254;
-}
-
-/* Responsive Carousel */
-/* Extra large screens - 7 cards */
-@media (min-width: 1400px) {
-  .carousel-item-wrapper {
-    flex: 0 0 calc((100% - 120px) / 7);
-  }
-}
-
-/* Large screens - 5 cards */
-@media (max-width: 1399px) and (min-width: 1200px) {
-  .carousel-item-wrapper {
-    flex: 0 0 calc(20% - 16px);
-  }
-}
-
-/* Medium-large screens - 4 cards */
-@media (max-width: 1199px) and (min-width: 993px) {
-  .carousel-item-wrapper {
-    flex: 0 0 calc(25% - 15px);
-  }
-
-  .activities-carousel-wrapper {
-    padding: 0 0.5rem;
-  }
-}
-
-/* Medium screens - 3 cards */
-@media (max-width: 992px) and (min-width: 577px) {
-  .carousel-item-wrapper {
-    flex: 0 0 calc(33.333% - 13.333px);
-  }
-
-  .activities-carousel-wrapper {
-    padding: 0 0.5rem;
-  }
-}
-
-/* Small screens - 1 card */
-@media (max-width: 576px) {
-  .carousel-item-wrapper {
-    flex: 0 0 100%;
-  }
-
-  .activities-carousel-wrapper {
-    padding: 0 0.5rem;
-    margin: 0;
-  }
-
-  .activities-carousel-track {
-    gap: 10px;
-  }
-
-  .dashboard-section-header {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 1rem;
-  }
-
-  .dashboard-section-header .card-toolbar {
-    width: 100%;
-    justify-content: space-between;
-    margin-top: 1rem;
-  }
-
-  .dashboard-section-header .header-meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .dashboard-section-header .header-meta-item {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .card-body {
-    padding: 1rem;
-  }
-
-  .row {
-    margin: 0;
-  }
-
-  .col-6 {
-    padding: 0.25rem;
-  }
-
-  /* Stack columns vertically on mobile */
-  .row > [class*="col-"] {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-}
-
-/* Responsive grid adjustments */
-@media (max-width: 1400px) {
-  .col-xxl-4 {
-    flex: 0 0 auto;
-    width: 33.33333333%;
-  }
-}
-
-@media (max-width: 1200px) {
-  .col-xl-2 {
-    flex: 0 0 auto;
-    width: 20%;
-  }
-}
-
-@media (max-width: 992px) {
-  .col-lg-2 {
-    flex: 0 0 auto;
-    width: 20%;
-  }
-  .col-lg-3 {
-    flex: 0 0 auto;
-    width: 25%;
-  }
-}
-
-@media (max-width: 768px) {
-  .col-md-4 {
-    flex: 0 0 auto;
-    width: 50%;
-  }
-}
-
-@media (max-width: 576px) {
-  .col-6 {
-    flex: 0 0 auto;
-    width: 100%;
-  }
-
-  .app-page {
-    padding: 0.5rem;
-  }
-
-  .container-fluid {
-    padding: 0.5rem;
-  }
-
-  /* Improve button spacing on mobile */
-  .btn-group {
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  /* Better form controls */
-  .form-select-sm {
-    font-size: 0.875rem;
-    padding: 0.5rem;
-  }
-
-  /* Optimize text sizes */
-  .fs-1 {
-    font-size: 1.75rem !important;
-  }
-
-  .fs-2 {
-    font-size: 1.5rem !important;
-  }
-
-  /* Better touch targets */
-  .btn {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  .pagination-dot {
-    width: 12px;
-    height: 12px;
-    margin: 0 2px;
-  }
-
-  .pagination-dot.active {
-    width: 24px;
-  }
-}
-
-/* Tablet optimization */
-@media (max-width: 768px) and (min-width: 577px) {
-  .carousel-item-wrapper {
-    flex: 0 0 calc(50% - 10px);
-  }
-
-  .activities-carousel-track {
-    gap: 15px;
-  }
-
-  .dashboard-section-header {
-    padding: 1.25rem;
-  }
-
-  .card {
-    margin-bottom: 1rem;
-  }
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Loading animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.card {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-/* Dark theme support */
-[data-bs-theme="dark"] .text-white-dark,
-.dark .text-white-dark,
-.app-dark .text-white-dark {
-  color: #ffffff !important;
-}
-
-/* Ensure icons are bright in dark theme */
-[data-bs-theme="dark"] .text-primary,
-.dark .text-primary,
-.app-dark .text-primary {
-  color: #3b82f6 !important;
-}
-
-[data-bs-theme="dark"] .text-info,
-.dark .text-info,
-.app-dark .text-info {
-  color: #06b6d4 !important;
-}
-
-[data-bs-theme="dark"] .text-warning,
-.dark .text-warning,
-.app-dark .text-warning {
-  color: #f59e0b !important;
-}
-
-[data-bs-theme="dark"] .text-success,
-.dark .text-success,
-.app-dark .text-success {
-  color: #10b981 !important;
-}
-
-[data-bs-theme="dark"] .text-danger,
-.dark .text-danger,
-.app-dark .text-danger {
-  color: #ef4444 !important;
-}
-
-/* Alerts Section Styles */
-.alert-row {
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.alert-row:hover {
-  background-color: rgba(59, 130, 246, 0.05);
-  transform: translateY(-1px);
-}
-
-[data-bs-theme="dark"] .alert-row:hover,
-.dark .alert-row:hover,
-.app-dark .alert-row:hover {
-  background-color: rgba(59, 130, 246, 0.1);
-}
-
+/*
+ * This block used to be ~800 lines: a pre-Swiper hand-rolled carousel
+ * system nothing in the template uses anymore, Bootstrap-grid remnants
+ * (.col-xxl-4, .row, .container-fluid, ...) matching zero live classes,
+ * a `[data-bs-theme="dark"], .dark, .app-dark` triple-selector on every
+ * dark-mode rule where only the first ever matches anything, and - the
+ * one genuine bug - a `.text-primary { color: #3b82f6 !important }`
+ * override that made this page's dark-mode blue not match the rest of
+ * the app's real --color-primary token. Rewritten down to only the rules
+ * that target classes actually present in this template, using the
+ * app's real design tokens via CSS var() instead of hardcoded hex, and a
+ * single [data-bs-theme="dark"] selector (the only one that ever
+ * matched). Also dropped the .dashboard-main-card gradient/border, which
+ * was overriding the plain bg-white every other card in the app uses -
+ * this page's main card was inconsistent with the rest of the app.
+ */
+
+/* Alert table rows: vertical-centering isn't a Tailwind per-cell prop
+   worth adding to 5 <td>s - hover/cursor are handled by Tailwind classes
+   directly on the <tr>. */
 .alert-row td {
   vertical-align: middle;
 }
 
-.alert-row .symbol img {
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-/* Summary Cards Animation */
-.card.bg-light-primary,
-.card.bg-light-danger,
-.card.bg-light-success {
-  transition: all 0.3s ease;
-}
-
-.card.bg-light-primary:hover,
-.card.bg-light-danger:hover,
-.card.bg-light-success:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-}
-
-/* Badge styles for dark mode */
-[data-bs-theme="dark"] .badge-light-danger,
-.dark .badge-light-danger,
-.app-dark .badge-light-danger {
-  background-color: rgba(239, 68, 68, 0.2);
-  color: #f87171;
-}
-
-[data-bs-theme="dark"] .badge-light-success,
-.dark .badge-light-success,
-.app-dark .badge-light-success {
-  background-color: rgba(16, 185, 129, 0.2);
-  color: #34d399;
-}
-
-[data-bs-theme="dark"] .badge-light-info,
-.dark .badge-light-info,
-.app-dark .badge-light-info {
-  background-color: rgba(6, 182, 212, 0.2);
-  color: #22d3ee;
-}
-
-/* Responsive table on mobile */
-@media (max-width: 992px) {
-  .table-responsive {
-    font-size: 0.875rem;
-  }
-
-  .min-w-150px {
-    min-width: 120px !important;
-  }
-
-  .min-w-100px {
-    min-width: 80px !important;
-  }
-
-  .min-w-80px {
-    min-width: 60px !important;
-  }
-
-  .min-w-140px {
-    min-width: 100px !important;
-  }
-}
-
-@media (max-width: 576px) {
-  .alert-row .symbol {
-    width: 35px !important;
-    height: 35px !important;
-  }
-
-  .alert-row .fs-7 {
-    font-size: 0.75rem !important;
-  }
-
-  .card.bg-light-primary .card-body,
-  .card.bg-light-danger .card-body,
-  .card.bg-light-success .card-body {
-    padding: 1rem !important;
-  }
-
-  .symbol-50px {
-    width: 40px !important;
-    height: 40px !important;
-  }
-
-  .fs-2x {
-    font-size: 1.5rem !important;
-  }
-}
-
-/* Force Center daily process on mobile */
-@media (max-width: 768px) {
-  .activities-carousel-track.justify-content-center .carousel-item-wrapper {
-    margin: 0 auto;
-    flex: 0 0 85% !important; /* Ensure consistent width */
-  }
-
-  /* If justified center is active (single item), ensure track takes full width and*/
-  .activities-carousel-track.justify-content-center {
-    width: 100% !important;
-  }
-}
-
-.text-center {
-  text-align: center;
-}
-
-.items-center {
-  align-items: center;
-}
-
-/* Activity Summary Swiper Carousel Styling */
+/* Swiper carousels (live-activity + activity-summary): padding-bottom
+   reserves room for the pagination dots, and bullet colors are pulled
+   from the app's real tokens instead of hardcoded hex. */
+.activities-carousel-wrapper,
 .activities-summary-carousel-wrapper {
   position: relative;
   width: 100%;
 }
 
+.live-activity-swiper,
 .activity-swiper {
-  width: 100%;
-  padding-bottom: 35px !important;
-}
-
-.activity-swiper .swiper-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.activity-swiper .swiper-slide-content {
-  width: 100%;
-  padding: 0 5px;
-  box-sizing: border-box;
-}
-
-.activity-swiper .swiper-pagination {
-  bottom: 0 !important;
-}
-
-.activity-swiper .swiper-pagination-bullet {
-  background: #3f4254;
-  opacity: 0.4;
-}
-
-.activity-swiper .swiper-pagination-bullet-active {
-  background: #009ef7;
-  opacity: 1;
-}
-
-.activity-summary-card {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid #e4e6ef;
-  width: 100%;
-}
-
-.activity-summary-card .card-body {
-  padding: 1rem !important;
-}
-
-/* Live Activity Swiper Carousel Styling */
-.activities-carousel-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.live-activity-swiper {
   width: 100%;
   padding-bottom: 35px !important;
 }
 
 .live-activity-swiper .swiper-slide {
   display: flex;
-  justify-content: center;
   align-items: stretch;
+  justify-content: center;
   height: auto;
 }
 
-.live-activity-swiper .swiper-slide-content {
-  width: 100%;
-  height: 100%;
+.activity-swiper .swiper-slide {
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.live-activity-swiper .swiper-pagination {
+.live-activity-swiper .swiper-slide-content {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.activity-swiper .swiper-slide-content {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 5px;
+}
+
+.live-activity-swiper .swiper-pagination,
+.activity-swiper .swiper-pagination {
   bottom: 0 !important;
 }
 
-.live-activity-swiper .swiper-pagination-bullet {
-  background: #3f4254;
-  opacity: 0.4;
+.live-activity-swiper .swiper-pagination-bullet,
+.activity-swiper .swiper-pagination-bullet {
+  background: var(--color-gray-400);
+  opacity: 0.5;
 }
 
-.live-activity-swiper .swiper-pagination-bullet-active {
-  background: #009ef7;
+.live-activity-swiper .swiper-pagination-bullet-active,
+.activity-swiper .swiper-pagination-bullet-active {
+  background: var(--color-primary);
   opacity: 1;
 }
 
-/* Mobile centering fix */
 @media (max-width: 639px) {
   .live-activity-swiper .swiper-slide {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
   }
 
   .live-activity-swiper .swiper-slide-content {
-    max-width: 200px;
     width: 100%;
+    max-width: 200px;
   }
 }
 </style>

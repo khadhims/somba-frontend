@@ -1,86 +1,98 @@
 <template>
   <!--begin::Menu 2-->
   <div
-    class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold w-200px"
-    data-kt-menu="true"
+    class="w-[200px] rounded-lg bg-white text-sm font-semibold text-gray-600 shadow-lg dark:bg-gray-900 dark:text-gray-300"
   >
     <!--begin::Menu item-->
-    <div class="menu-item px-3">
-      <div class="menu-content fs-6 text-gray-900 fw-bold px-3 py-4">
-        Quick Actions
-      </div>
+    <div class="px-6 py-4 text-base font-bold text-gray-900 dark:text-gray-100">
+      Quick Actions
     </div>
     <!--end::Menu item-->
 
-    <!--begin::Menu separator-->
-    <div class="separator mb-3 opacity-75"></div>
-    <!--end::Menu separator-->
+    <div class="mb-3 border-t border-gray-200 dark:border-gray-700"></div>
 
     <!--begin::Menu item-->
-    <div class="menu-item px-3">
-      <a href="#" class="menu-link px-3"> New Ticket </a>
-    </div>
-    <!--end::Menu item-->
-
-    <!--begin::Menu item-->
-    <div class="menu-item px-3">
-      <a href="#" class="menu-link px-3"> New Customer </a>
-    </div>
-    <!--end::Menu item-->
-
-    <!--begin::Menu item-->
-    <div
-      class="menu-item px-3"
-      data-kt-menu-trigger="hover"
-      data-kt-menu-placement="right-start"
-      data-kt-menu-flip="left-start, top"
+    <a
+      href="#"
+      class="block px-6 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+      @click.prevent="$emit('close')"
     >
-      <!--begin::Menu item-->
-      <a href="#" class="menu-link px-3">
-        <span class="menu-title">New Group</span>
-        <span class="menu-arrow"></span>
+      New Ticket
+    </a>
+    <!--end::Menu item-->
+
+    <!--begin::Menu item-->
+    <a
+      href="#"
+      class="block px-6 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+      @click.prevent="$emit('close')"
+    >
+      New Customer
+    </a>
+    <!--end::Menu item-->
+
+    <!--begin::Menu item with submenu-->
+    <div class="group relative">
+      <a
+        href="#"
+        class="flex items-center justify-between px-6 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+        @click.prevent
+      >
+        <span>New Group</span>
+        <KTIcon icon-name="right" icon-class="fs-4 text-gray-400" />
       </a>
-      <!--end::Menu item-->
 
       <!--begin::Menu sub-->
-      <div class="menu-sub menu-sub-dropdown w-175px py-4">
-        <!--begin::Menu item-->
-        <div class="menu-item px-3">
-          <a href="#" class="menu-link px-3"> Admin Group </a>
-        </div>
-        <!--end::Menu item-->
-
-        <!--begin::Menu item-->
-        <div class="menu-item px-3">
-          <a href="#" class="menu-link px-3"> Staff Group </a>
-        </div>
-        <!--end::Menu item-->
-
-        <!--begin::Menu item-->
-        <div class="menu-item px-3">
-          <a href="#" class="menu-link px-3"> Member Group </a>
-        </div>
-        <!--end::Menu item-->
+      <div
+        class="invisible absolute left-full top-0 z-10 w-[175px] rounded-lg bg-white py-4 opacity-0 shadow-lg transition-opacity group-hover:visible group-hover:opacity-100 dark:bg-gray-900"
+      >
+        <a
+          href="#"
+          class="block px-6 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+          @click.prevent="$emit('close')"
+        >
+          Admin Group
+        </a>
+        <a
+          href="#"
+          class="block px-6 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+          @click.prevent="$emit('close')"
+        >
+          Staff Group
+        </a>
+        <a
+          href="#"
+          class="block px-6 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+          @click.prevent="$emit('close')"
+        >
+          Member Group
+        </a>
       </div>
       <!--end::Menu sub-->
     </div>
-    <!--end::Menu item-->
+    <!--end::Menu item with submenu-->
 
     <!--begin::Menu item-->
-    <div class="menu-item px-3">
-      <a href="#" class="menu-link px-3"> New Contact </a>
-    </div>
+    <a
+      href="#"
+      class="block px-6 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+      @click.prevent="$emit('close')"
+    >
+      New Contact
+    </a>
     <!--end::Menu item-->
 
-    <!--begin::Menu separator-->
-    <div class="separator mt-3 opacity-75"></div>
-    <!--end::Menu separator-->
+    <div class="mt-3 border-t border-gray-200 dark:border-gray-700"></div>
 
     <!--begin::Menu item-->
-    <div class="menu-item px-3">
-      <div class="menu-content px-3 py-3">
-        <a class="btn btn-primary btn-sm px-4" href="#"> Generate Reports </a>
-      </div>
+    <div class="px-6 py-3">
+      <a
+        href="#"
+        class="inline-block rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active"
+        @click.prevent="$emit('close')"
+      >
+        Generate Reports
+      </a>
     </div>
     <!--end::Menu item-->
   </div>
@@ -92,8 +104,7 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "dropdown-2",
-  components: {
-    /* empty */
-  },
+  components: {},
+  emits: ["close"],
 });
 </script>

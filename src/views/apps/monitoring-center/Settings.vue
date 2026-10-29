@@ -1,43 +1,41 @@
 <template>
   <!--begin::Monitoring Center Settings-->
-  <div class="card mb-5">
-    <div class="card-body py-4">
-      <div class="row align-items-center">
-        <div class="col-md-4">
-          <h4 class="card-title mb-0">
-            {{ t("appsMonitoringCenter.settings.header.title") }}
-          </h4>
-          <p class="text-muted mb-0">
-            {{ t("appsMonitoringCenter.settings.header.subtitle") }}
-          </p>
-        </div>
-      </div>
-    </div>
+  <div class="mb-5 p-4" :class="cardClass">
+    <h4 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
+      {{ t("appsMonitoringCenter.settings.header.title") }}
+    </h4>
+    <p class="m-0 text-gray-500">
+      {{ t("appsMonitoringCenter.settings.header.subtitle") }}
+    </p>
   </div>
 
-  <div class="row g-5 g-xl-8">
+  <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
     <!--begin::Monitoring Thresholds-->
-    <div class="col-xl-6">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <h3 class="fw-bold">
-              {{ t("appsMonitoringCenter.settings.monitoring.title") }}
-            </h3>
-          </div>
+    <div>
+      <div :class="cardClass">
+        <div class="p-6 pb-0">
+          <h3
+            class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100"
+          >
+            {{ t("appsMonitoringCenter.settings.monitoring.title") }}
+          </h3>
         </div>
-        <div class="card-body">
+        <div class="p-6">
           <form @submit.prevent="saveMonitoringSettings">
             <!--begin::CPU Threshold-->
             <div class="mb-7">
-              <label class="form-label">{{
-                t(
-                  "appsMonitoringCenter.settings.monitoring.thresholds.cpu.label"
-                )
-              }}</label>
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="text-muted fs-7">
+              <label
+                class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{
+                  t(
+                    "appsMonitoringCenter.settings.monitoring.thresholds.cpu.label"
+                  )
+                }}
+              </label>
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <div class="mb-1 text-sm text-gray-500">
                     {{
                       t(
                         "appsMonitoringCenter.settings.monitoring.thresholds.cpu.warning"
@@ -46,7 +44,6 @@
                   </div>
                   <input
                     type="number"
-                    class="form-control form-control-solid"
                     v-model="monitoringSettings.thresholds.cpu.warning"
                     min="1"
                     max="100"
@@ -55,10 +52,11 @@
                         'appsMonitoringCenter.settings.monitoring.thresholds.cpu.warning'
                       )
                     "
+                    :class="formInputClass"
                   />
                 </div>
-                <div class="col-md-6">
-                  <div class="text-muted fs-7">
+                <div>
+                  <div class="mb-1 text-sm text-gray-500">
                     {{
                       t(
                         "appsMonitoringCenter.settings.monitoring.thresholds.cpu.critical"
@@ -67,7 +65,6 @@
                   </div>
                   <input
                     type="number"
-                    class="form-control form-control-solid"
                     v-model="monitoringSettings.thresholds.cpu.critical"
                     min="1"
                     max="100"
@@ -76,6 +73,7 @@
                         'appsMonitoringCenter.settings.monitoring.thresholds.cpu.critical'
                       )
                     "
+                    :class="formInputClass"
                   />
                 </div>
               </div>
@@ -84,14 +82,18 @@
 
             <!--begin::Memory Threshold-->
             <div class="mb-7">
-              <label class="form-label">{{
-                t(
-                  "appsMonitoringCenter.settings.monitoring.thresholds.memory.label"
-                )
-              }}</label>
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="text-muted fs-7">
+              <label
+                class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{
+                  t(
+                    "appsMonitoringCenter.settings.monitoring.thresholds.memory.label"
+                  )
+                }}
+              </label>
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <div class="mb-1 text-sm text-gray-500">
                     {{
                       t(
                         "appsMonitoringCenter.settings.monitoring.thresholds.memory.warning"
@@ -100,7 +102,6 @@
                   </div>
                   <input
                     type="number"
-                    class="form-control form-control-solid"
                     v-model="monitoringSettings.thresholds.memory.warning"
                     min="1"
                     max="100"
@@ -109,10 +110,11 @@
                         'appsMonitoringCenter.settings.monitoring.thresholds.memory.warning'
                       )
                     "
+                    :class="formInputClass"
                   />
                 </div>
-                <div class="col-md-6">
-                  <div class="text-muted fs-7">
+                <div>
+                  <div class="mb-1 text-sm text-gray-500">
                     {{
                       t(
                         "appsMonitoringCenter.settings.monitoring.thresholds.memory.critical"
@@ -121,7 +123,6 @@
                   </div>
                   <input
                     type="number"
-                    class="form-control form-control-solid"
                     v-model="monitoringSettings.thresholds.memory.critical"
                     min="1"
                     max="100"
@@ -130,6 +131,7 @@
                         'appsMonitoringCenter.settings.monitoring.thresholds.memory.critical'
                       )
                     "
+                    :class="formInputClass"
                   />
                 </div>
               </div>
@@ -138,14 +140,18 @@
 
             <!--begin::Storage Threshold-->
             <div class="mb-7">
-              <label class="form-label">{{
-                t(
-                  "appsMonitoringCenter.settings.monitoring.thresholds.storage.label"
-                )
-              }}</label>
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="text-muted fs-7">
+              <label
+                class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{
+                  t(
+                    "appsMonitoringCenter.settings.monitoring.thresholds.storage.label"
+                  )
+                }}
+              </label>
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <div class="mb-1 text-sm text-gray-500">
                     {{
                       t(
                         "appsMonitoringCenter.settings.monitoring.thresholds.storage.warning"
@@ -154,7 +160,6 @@
                   </div>
                   <input
                     type="number"
-                    class="form-control form-control-solid"
                     v-model="monitoringSettings.thresholds.storage.warning"
                     min="1"
                     max="100"
@@ -163,10 +168,11 @@
                         'appsMonitoringCenter.settings.monitoring.thresholds.storage.warning'
                       )
                     "
+                    :class="formInputClass"
                   />
                 </div>
-                <div class="col-md-6">
-                  <div class="text-muted fs-7">
+                <div>
+                  <div class="mb-1 text-sm text-gray-500">
                     {{
                       t(
                         "appsMonitoringCenter.settings.monitoring.thresholds.storage.critical"
@@ -175,7 +181,6 @@
                   </div>
                   <input
                     type="number"
-                    class="form-control form-control-solid"
                     v-model="monitoringSettings.thresholds.storage.critical"
                     min="1"
                     max="100"
@@ -184,6 +189,7 @@
                         'appsMonitoringCenter.settings.monitoring.thresholds.storage.critical'
                       )
                     "
+                    :class="formInputClass"
                   />
                 </div>
               </div>
@@ -192,14 +198,18 @@
 
             <!--begin::Network Threshold-->
             <div class="mb-7">
-              <label class="form-label">{{
-                t(
-                  "appsMonitoringCenter.settings.monitoring.thresholds.bandwidth.label"
-                )
-              }}</label>
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="text-muted fs-7">
+              <label
+                class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{
+                  t(
+                    "appsMonitoringCenter.settings.monitoring.thresholds.bandwidth.label"
+                  )
+                }}
+              </label>
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <div class="mb-1 text-sm text-gray-500">
                     {{
                       t(
                         "appsMonitoringCenter.settings.monitoring.thresholds.bandwidth.warning"
@@ -208,7 +218,6 @@
                   </div>
                   <input
                     type="number"
-                    class="form-control form-control-solid"
                     v-model="monitoringSettings.thresholds.bandwidth.warning"
                     min="1"
                     max="100"
@@ -217,10 +226,11 @@
                         'appsMonitoringCenter.settings.monitoring.thresholds.bandwidth.warning'
                       )
                     "
+                    :class="formInputClass"
                   />
                 </div>
-                <div class="col-md-6">
-                  <div class="text-muted fs-7">
+                <div>
+                  <div class="mb-1 text-sm text-gray-500">
                     {{
                       t(
                         "appsMonitoringCenter.settings.monitoring.thresholds.bandwidth.critical"
@@ -229,7 +239,6 @@
                   </div>
                   <input
                     type="number"
-                    class="form-control form-control-solid"
                     v-model="monitoringSettings.thresholds.bandwidth.critical"
                     min="1"
                     max="100"
@@ -238,6 +247,7 @@
                         'appsMonitoringCenter.settings.monitoring.thresholds.bandwidth.critical'
                       )
                     "
+                    :class="formInputClass"
                   />
                 </div>
               </div>
@@ -246,22 +256,26 @@
 
             <!--begin::Device Monitoring-->
             <div class="mb-7">
-              <label class="form-label">{{
-                t(
-                  "appsMonitoringCenter.settings.monitoring.deviceMonitoring.title"
-                )
-              }}</label>
+              <label
+                class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{
+                  t(
+                    "appsMonitoringCenter.settings.monitoring.deviceMonitoring.title"
+                  )
+                }}
+              </label>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="
                       monitoringSettings.deviceMonitoring.cameraOfflineAlert
                     "
                   />
-                  <span class="form-check-label">{{
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{
                     t(
                       "appsMonitoringCenter.settings.monitoring.deviceMonitoring.cameraOfflineAlert"
                     )
@@ -270,19 +284,38 @@
               </div>
 
               <div class="mb-4">
-                <label class="form-label">{{
-                  t(
-                    "appsMonitoringCenter.settings.monitoring.deviceMonitoring.offlineTimeout.label"
-                  )
-                }}</label>
+                <label class="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
+                    v-model="monitoringSettings.deviceMonitoring.nvrHealthCheck"
+                  />
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{
+                    t(
+                      "appsMonitoringCenter.settings.monitoring.deviceMonitoring.nvrHealthCheck"
+                    )
+                  }}</span>
+                </label>
+              </div>
+
+              <div class="mb-4">
+                <label
+                  class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
+                  {{
+                    t(
+                      "appsMonitoringCenter.settings.monitoring.deviceMonitoring.offlineTimeout.label"
+                    )
+                  }}
+                </label>
                 <input
                   type="number"
-                  class="form-control form-control-solid"
                   v-model="monitoringSettings.deviceMonitoring.offlineTimeout"
                   min="1"
                   max="60"
+                  :class="formInputClass"
                 />
-                <div class="text-muted fs-7">
+                <div class="mt-1 text-sm text-gray-500">
                   {{
                     t(
                       "appsMonitoringCenter.settings.monitoring.deviceMonitoring.offlineTimeout.help"
@@ -293,15 +326,16 @@
             </div>
             <!--end::Device Monitoring-->
 
-            <div class="d-flex justify-content-end">
+            <div class="flex justify-end">
               <button
                 type="submit"
-                class="btn btn-primary"
                 :disabled="savingMonitoringSettings"
+                class="inline-flex items-center gap-2"
+                :class="primaryButtonClass"
               >
                 <span
                   v-if="savingMonitoringSettings"
-                  class="spinner-border spinner-border-sm me-2"
+                  class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                 ></span>
                 {{
                   savingMonitoringSettings
@@ -319,27 +353,31 @@
     <!--end::Monitoring Thresholds-->
 
     <!--begin::Dashboard Preferences-->
-    <div class="col-xl-6">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <h3 class="fw-bold">
-              {{ t("appsMonitoringCenter.settings.dashboard.title") }}
-            </h3>
-          </div>
+    <div>
+      <div :class="cardClass">
+        <div class="p-6 pb-0">
+          <h3
+            class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100"
+          >
+            {{ t("appsMonitoringCenter.settings.dashboard.title") }}
+          </h3>
         </div>
-        <div class="card-body">
+        <div class="p-6">
           <form @submit.prevent="saveDashboardSettings">
             <!--begin::Refresh Interval-->
             <div class="mb-7">
-              <label class="form-label">{{
-                t(
-                  "appsMonitoringCenter.settings.dashboard.refreshInterval.label"
-                )
-              }}</label>
+              <label
+                class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{
+                  t(
+                    "appsMonitoringCenter.settings.dashboard.refreshInterval.label"
+                  )
+                }}
+              </label>
               <select
                 v-model="dashboardSettings.refreshInterval"
-                class="form-select form-select-solid"
+                :class="formInputClass"
               >
                 <option value="5">
                   {{
@@ -384,7 +422,7 @@
                   }}
                 </option>
               </select>
-              <div class="text-muted fs-7">
+              <div class="mt-1 text-sm text-gray-500">
                 {{
                   t(
                     "appsMonitoringCenter.settings.dashboard.refreshInterval.help"
@@ -396,14 +434,18 @@
 
             <!--begin::Default Time Range-->
             <div class="mb-7">
-              <label class="form-label">{{
-                t(
-                  "appsMonitoringCenter.settings.dashboard.defaultTimeRange.label"
-                )
-              }}</label>
+              <label
+                class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{
+                  t(
+                    "appsMonitoringCenter.settings.dashboard.defaultTimeRange.label"
+                  )
+                }}
+              </label>
               <select
                 v-model="dashboardSettings.defaultTimeRange"
-                class="form-select form-select-solid"
+                :class="formInputClass"
               >
                 <option value="1h">
                   {{
@@ -434,7 +476,7 @@
                   }}
                 </option>
               </select>
-              <div class="text-muted fs-7">
+              <div class="mt-1 text-sm text-gray-500">
                 {{
                   t(
                     "appsMonitoringCenter.settings.dashboard.defaultTimeRange.help"
@@ -446,18 +488,20 @@
 
             <!--begin::Widget Preferences-->
             <div class="mb-7">
-              <label class="form-label">{{
-                t("appsMonitoringCenter.settings.dashboard.widgets.title")
-              }}</label>
+              <label
+                class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{ t("appsMonitoringCenter.settings.dashboard.widgets.title") }}
+              </label>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="dashboardSettings.widgets.systemHealth"
                   />
-                  <span class="form-check-label">{{
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{
                     t(
                       "appsMonitoringCenter.settings.dashboard.widgets.systemHealth"
                     )
@@ -466,13 +510,13 @@
               </div>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="dashboardSettings.widgets.performanceCharts"
                   />
-                  <span class="form-check-label">{{
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{
                     t(
                       "appsMonitoringCenter.settings.dashboard.widgets.performanceCharts"
                     )
@@ -481,13 +525,13 @@
               </div>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="dashboardSettings.widgets.deviceStatus"
                   />
-                  <span class="form-check-label">{{
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{
                     t(
                       "appsMonitoringCenter.settings.dashboard.widgets.deviceStatus"
                     )
@@ -496,13 +540,13 @@
               </div>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="dashboardSettings.widgets.alertSummary"
                   />
-                  <span class="form-check-label">{{
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{
                     t(
                       "appsMonitoringCenter.settings.dashboard.widgets.alertSummary"
                     )
@@ -511,13 +555,13 @@
               </div>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="dashboardSettings.widgets.recentActivities"
                   />
-                  <span class="form-check-label">{{
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{
                     t(
                       "appsMonitoringCenter.settings.dashboard.widgets.recentActivities"
                     )
@@ -529,19 +573,29 @@
 
             <!--begin::Chart Preferences-->
             <div class="mb-7">
-              <label class="form-label">{{
-                t("appsMonitoringCenter.settings.dashboard.chartSettings.title")
-              }}</label>
+              <label
+                class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{
+                  t(
+                    "appsMonitoringCenter.settings.dashboard.chartSettings.title"
+                  )
+                }}
+              </label>
 
               <div class="mb-4">
-                <label class="form-label">{{
-                  t(
-                    "appsMonitoringCenter.settings.dashboard.chartSettings.defaultType.label"
-                  )
-                }}</label>
+                <label
+                  class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
+                  {{
+                    t(
+                      "appsMonitoringCenter.settings.dashboard.chartSettings.defaultType.label"
+                    )
+                  }}
+                </label>
                 <select
                   v-model="dashboardSettings.chartSettings.defaultType"
-                  class="form-select form-select-solid"
+                  :class="formInputClass"
                 >
                   <option value="line">
                     {{
@@ -568,14 +622,18 @@
               </div>
 
               <div class="mb-4">
-                <label class="form-label">{{
-                  t(
-                    "appsMonitoringCenter.settings.dashboard.chartSettings.dataPoints.label"
-                  )
-                }}</label>
+                <label
+                  class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
+                  {{
+                    t(
+                      "appsMonitoringCenter.settings.dashboard.chartSettings.dataPoints.label"
+                    )
+                  }}
+                </label>
                 <select
                   v-model="dashboardSettings.chartSettings.dataPoints"
-                  class="form-select form-select-solid"
+                  :class="formInputClass"
                 >
                   <option value="20">
                     {{
@@ -609,13 +667,13 @@
               </div>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="dashboardSettings.chartSettings.showGridLines"
                   />
-                  <span class="form-check-label">{{
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{
                     t(
                       "appsMonitoringCenter.settings.dashboard.chartSettings.showGridLines"
                     )
@@ -624,13 +682,13 @@
               </div>
 
               <div class="mb-4">
-                <label class="form-check form-check-custom form-check-solid">
+                <label class="flex items-center gap-2">
                   <input
-                    class="form-check-input"
                     type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
                     v-model="dashboardSettings.chartSettings.animateOnLoad"
                   />
-                  <span class="form-check-label">{{
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{
                     t(
                       "appsMonitoringCenter.settings.dashboard.chartSettings.animateOnLoad"
                     )
@@ -640,15 +698,16 @@
             </div>
             <!--end::Chart Preferences-->
 
-            <div class="d-flex justify-content-end">
+            <div class="flex justify-end">
               <button
                 type="submit"
-                class="btn btn-primary"
                 :disabled="savingDashboardSettings"
+                class="inline-flex items-center gap-2"
+                :class="primaryButtonClass"
               >
                 <span
                   v-if="savingDashboardSettings"
-                  class="spinner-border spinner-border-sm me-2"
+                  class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                 ></span>
                 {{
                   savingDashboardSettings
@@ -667,393 +726,394 @@
   </div>
 
   <!--begin::Data Export & Reporting-->
-  <div class="row g-5 mt-5">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <h3 class="fw-bold">
-              {{ t("appsMonitoringCenter.settings.reporting.title") }}
-            </h3>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <!--begin::Automated Reports-->
-            <div class="col-md-6">
-              <h5 class="mb-4">
+  <div class="mt-5">
+    <div :class="cardClass">
+      <div class="p-6 pb-0">
+        <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {{ t("appsMonitoringCenter.settings.reporting.title") }}
+        </h3>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <!--begin::Automated Reports-->
+          <div>
+            <h5 class="mb-4 text-gray-900 dark:text-gray-100">
+              {{ t("appsMonitoringCenter.settings.reporting.automated.title") }}
+            </h5>
+
+            <div class="mb-7">
+              <ToggleSwitch v-model="reportingSettings.automated.enabled">
                 {{
-                  t("appsMonitoringCenter.settings.reporting.automated.title")
+                  t("appsMonitoringCenter.settings.reporting.automated.enabled")
                 }}
-              </h5>
-
-              <div class="mb-7">
-                <label
-                  class="form-check form-switch form-check-custom form-check-solid"
-                >
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    v-model="reportingSettings.automated.enabled"
-                  />
-                  <span class="form-check-label fw-semibold text-gray-800">
-                    {{
-                      t(
-                        "appsMonitoringCenter.settings.reporting.automated.enabled"
-                      )
-                    }}
-                  </span>
-                </label>
-                <div class="text-muted fs-7">
-                  {{
-                    t(
-                      "appsMonitoringCenter.settings.reporting.automated.enabledHelp"
-                    )
-                  }}
-                </div>
+              </ToggleSwitch>
+              <div class="mt-1 text-sm text-gray-500">
+                {{
+                  t(
+                    "appsMonitoringCenter.settings.reporting.automated.enabledHelp"
+                  )
+                }}
               </div>
+            </div>
 
-              <div v-if="reportingSettings.automated.enabled">
-                <div class="mb-4">
-                  <label class="form-label">{{
+            <div v-if="reportingSettings.automated.enabled">
+              <div class="mb-4">
+                <label
+                  class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
+                  {{
                     t(
                       "appsMonitoringCenter.settings.reporting.automated.frequency.label"
                     )
-                  }}</label>
-                  <select
-                    v-model="reportingSettings.automated.frequency"
-                    class="form-select form-select-solid"
-                  >
-                    <option value="daily">
-                      {{
-                        t(
-                          "appsMonitoringCenter.settings.reporting.automated.frequency.options.daily"
-                        )
-                      }}
-                    </option>
-                    <option value="weekly">
-                      {{
-                        t(
-                          "appsMonitoringCenter.settings.reporting.automated.frequency.options.weekly"
-                        )
-                      }}
-                    </option>
-                    <option value="monthly">
-                      {{
-                        t(
-                          "appsMonitoringCenter.settings.reporting.automated.frequency.options.monthly"
-                        )
-                      }}
-                    </option>
-                  </select>
-                </div>
+                  }}
+                </label>
+                <select
+                  v-model="reportingSettings.automated.frequency"
+                  :class="formInputClass"
+                >
+                  <option value="daily">
+                    {{
+                      t(
+                        "appsMonitoringCenter.settings.reporting.automated.frequency.options.daily"
+                      )
+                    }}
+                  </option>
+                  <option value="weekly">
+                    {{
+                      t(
+                        "appsMonitoringCenter.settings.reporting.automated.frequency.options.weekly"
+                      )
+                    }}
+                  </option>
+                  <option value="monthly">
+                    {{
+                      t(
+                        "appsMonitoringCenter.settings.reporting.automated.frequency.options.monthly"
+                      )
+                    }}
+                  </option>
+                </select>
+              </div>
 
-                <div class="mb-4">
-                  <label class="form-label">{{
+              <div class="mb-4">
+                <label
+                  class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
+                  {{
                     t(
                       "appsMonitoringCenter.settings.reporting.automated.reportTypes.label"
                     )
-                  }}</label>
-                  <div class="d-flex flex-column gap-2">
-                    <label
-                      class="form-check form-check-custom form-check-solid"
-                    >
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        v-model="
-                          reportingSettings.automated.includeSystemHealth
-                        "
-                      />
-                      <span class="form-check-label">{{
-                        t(
-                          "appsMonitoringCenter.settings.reporting.automated.reportTypes.systemHealth"
-                        )
-                      }}</span>
-                    </label>
-                    <label
-                      class="form-check form-check-custom form-check-solid"
-                    >
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        v-model="
-                          reportingSettings.automated.includeAlertSummary
-                        "
-                      />
-                      <span class="form-check-label">{{
-                        t(
-                          "appsMonitoringCenter.settings.reporting.automated.reportTypes.alertSummary"
-                        )
-                      }}</span>
-                    </label>
-                    <label
-                      class="form-check form-check-custom form-check-solid"
-                    >
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        v-model="
-                          reportingSettings.automated.includeDeviceStatus
-                        "
-                      />
-                      <span class="form-check-label">{{
-                        t(
-                          "appsMonitoringCenter.settings.reporting.automated.reportTypes.deviceStatus"
-                        )
-                      }}</span>
-                    </label>
-                  </div>
+                  }}
+                </label>
+                <div class="flex flex-col gap-2">
+                  <label class="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
+                      v-model="reportingSettings.automated.includeSystemHealth"
+                    />
+                    <span class="text-sm text-gray-800 dark:text-gray-300">{{
+                      t(
+                        "appsMonitoringCenter.settings.reporting.automated.reportTypes.systemHealth"
+                      )
+                    }}</span>
+                  </label>
+                  <label class="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
+                      v-model="reportingSettings.automated.includeAlertSummary"
+                    />
+                    <span class="text-sm text-gray-800 dark:text-gray-300">{{
+                      t(
+                        "appsMonitoringCenter.settings.reporting.automated.reportTypes.alertSummary"
+                      )
+                    }}</span>
+                  </label>
+                  <label class="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
+                      v-model="reportingSettings.automated.includeDeviceStatus"
+                    />
+                    <span class="text-sm text-gray-800 dark:text-gray-300">{{
+                      t(
+                        "appsMonitoringCenter.settings.reporting.automated.reportTypes.deviceStatus"
+                      )
+                    }}</span>
+                  </label>
                 </div>
+              </div>
 
-                <div class="mb-4">
-                  <label class="form-label">{{
+              <div class="mb-4">
+                <label
+                  class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
+                  {{
                     t(
                       "appsMonitoringCenter.settings.reporting.automated.emailRecipients.label"
                     )
-                  }}</label>
-                  <textarea
-                    v-model="emailRecipientsText"
-                    class="form-control form-control-solid"
-                    rows="3"
-                    :placeholder="
-                      t(
-                        'appsMonitoringCenter.settings.reporting.automated.emailRecipients.placeholder'
-                      )
-                    "
-                  ></textarea>
-                </div>
+                  }}
+                </label>
+                <textarea
+                  v-model="emailRecipientsText"
+                  rows="3"
+                  :placeholder="
+                    t(
+                      'appsMonitoringCenter.settings.reporting.automated.emailRecipients.placeholder'
+                    )
+                  "
+                  :class="formInputClass"
+                ></textarea>
               </div>
             </div>
-            <!--end::Automated Reports-->
+          </div>
+          <!--end::Automated Reports-->
 
-            <!--begin::Manual Export-->
-            <div class="col-md-6">
-              <h5 class="mb-4">
-                {{ t("appsMonitoringCenter.settings.reporting.manual.title") }}
-              </h5>
+          <!--begin::Manual Export-->
+          <div>
+            <h5 class="mb-4 text-gray-900 dark:text-gray-100">
+              {{ t("appsMonitoringCenter.settings.reporting.manual.title") }}
+            </h5>
 
-              <div class="mb-4">
-                <label class="form-label">{{
+            <div class="mb-4">
+              <label
+                class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{
                   t(
                     "appsMonitoringCenter.settings.reporting.manual.format.label"
                   )
-                }}</label>
-                <select
-                  v-model="exportSettings.format"
-                  class="form-select form-select-solid"
-                >
-                  <option value="pdf">
-                    {{
-                      t(
-                        "appsMonitoringCenter.settings.reporting.manual.format.options.pdf"
-                      )
-                    }}
-                  </option>
-                  <option value="excel">
-                    {{
-                      t(
-                        "appsMonitoringCenter.settings.reporting.manual.format.options.excel"
-                      )
-                    }}
-                  </option>
-                  <option value="csv">
-                    {{
-                      t(
-                        "appsMonitoringCenter.settings.reporting.manual.format.options.csv"
-                      )
-                    }}
-                  </option>
-                  <option value="json">
-                    {{
-                      t(
-                        "appsMonitoringCenter.settings.reporting.manual.format.options.json"
-                      )
-                    }}
-                  </option>
-                </select>
-              </div>
+                }}
+              </label>
+              <select v-model="exportSettings.format" :class="formInputClass">
+                <option value="pdf">
+                  {{
+                    t(
+                      "appsMonitoringCenter.settings.reporting.manual.format.options.pdf"
+                    )
+                  }}
+                </option>
+                <option value="excel">
+                  {{
+                    t(
+                      "appsMonitoringCenter.settings.reporting.manual.format.options.excel"
+                    )
+                  }}
+                </option>
+                <option value="csv">
+                  {{
+                    t(
+                      "appsMonitoringCenter.settings.reporting.manual.format.options.csv"
+                    )
+                  }}
+                </option>
+                <option value="json">
+                  {{
+                    t(
+                      "appsMonitoringCenter.settings.reporting.manual.format.options.json"
+                    )
+                  }}
+                </option>
+              </select>
+            </div>
 
-              <div class="mb-4">
-                <label class="form-label">{{
+            <div class="mb-4">
+              <label
+                class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{
                   t(
                     "appsMonitoringCenter.settings.reporting.manual.dateRange.label"
                   )
-                }}</label>
-                <select
-                  v-model="exportSettings.dateRange"
-                  class="form-select form-select-solid"
-                >
-                  <option value="24h">
-                    {{
-                      t(
-                        "appsMonitoringCenter.settings.reporting.manual.dateRange.options.24h"
-                      )
-                    }}
-                  </option>
-                  <option value="7d">
-                    {{
-                      t(
-                        "appsMonitoringCenter.settings.reporting.manual.dateRange.options.7d"
-                      )
-                    }}
-                  </option>
-                  <option value="30d">
-                    {{
-                      t(
-                        "appsMonitoringCenter.settings.reporting.manual.dateRange.options.30d"
-                      )
-                    }}
-                  </option>
-                  <option value="custom">
-                    {{
-                      t(
-                        "appsMonitoringCenter.settings.reporting.manual.dateRange.options.custom"
-                      )
-                    }}
-                  </option>
-                </select>
-              </div>
-
-              <div
-                v-if="exportSettings.dateRange === 'custom'"
-                class="row mb-4"
+                }}
+              </label>
+              <select
+                v-model="exportSettings.dateRange"
+                :class="formInputClass"
               >
-                <div class="col-6">
-                  <label class="form-label">{{
+                <option value="24h">
+                  {{
+                    t(
+                      "appsMonitoringCenter.settings.reporting.manual.dateRange.options.24h"
+                    )
+                  }}
+                </option>
+                <option value="7d">
+                  {{
+                    t(
+                      "appsMonitoringCenter.settings.reporting.manual.dateRange.options.7d"
+                    )
+                  }}
+                </option>
+                <option value="30d">
+                  {{
+                    t(
+                      "appsMonitoringCenter.settings.reporting.manual.dateRange.options.30d"
+                    )
+                  }}
+                </option>
+                <option value="custom">
+                  {{
+                    t(
+                      "appsMonitoringCenter.settings.reporting.manual.dateRange.options.custom"
+                    )
+                  }}
+                </option>
+              </select>
+            </div>
+
+            <div
+              v-if="exportSettings.dateRange === 'custom'"
+              class="mb-4 grid grid-cols-2 gap-4"
+            >
+              <div>
+                <label
+                  class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
+                  {{
                     t(
                       "appsMonitoringCenter.settings.reporting.manual.customRange.startDate"
                     )
-                  }}</label>
-                  <input
-                    type="date"
-                    v-model="exportSettings.customStartDate"
-                    class="form-control form-control-solid"
-                  />
-                </div>
-                <div class="col-6">
-                  <label class="form-label">{{
+                  }}
+                </label>
+                <input
+                  type="date"
+                  v-model="exportSettings.customStartDate"
+                  :class="formInputClass"
+                />
+              </div>
+              <div>
+                <label
+                  class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
+                  {{
                     t(
                       "appsMonitoringCenter.settings.reporting.manual.customRange.endDate"
                     )
-                  }}</label>
-                  <input
-                    type="date"
-                    v-model="exportSettings.customEndDate"
-                    class="form-control form-control-solid"
-                  />
-                </div>
+                  }}
+                </label>
+                <input
+                  type="date"
+                  v-model="exportSettings.customEndDate"
+                  :class="formInputClass"
+                />
               </div>
+            </div>
 
-              <div class="mb-4">
-                <label class="form-label">{{
+            <div class="mb-4">
+              <label
+                class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{
                   t(
                     "appsMonitoringCenter.settings.reporting.manual.includeData.label"
                   )
-                }}</label>
-                <div class="d-flex flex-column gap-2">
-                  <label class="form-check form-check-custom form-check-solid">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      v-model="exportSettings.includePerformanceData"
-                    />
-                    <span class="form-check-label">{{
-                      t(
-                        "appsMonitoringCenter.settings.reporting.manual.includeData.performanceMetrics"
-                      )
-                    }}</span>
-                  </label>
-                  <label class="form-check form-check-custom form-check-solid">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      v-model="exportSettings.includeAlertData"
-                    />
-                    <span class="form-check-label">{{
-                      t(
-                        "appsMonitoringCenter.settings.reporting.manual.includeData.alertHistory"
-                      )
-                    }}</span>
-                  </label>
-                  <label class="form-check form-check-custom form-check-solid">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      v-model="exportSettings.includeDeviceData"
-                    />
-                    <span class="form-check-label">{{
-                      t(
-                        "appsMonitoringCenter.settings.reporting.manual.includeData.deviceLogs"
-                      )
-                    }}</span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="d-flex gap-2">
-                <button
-                  type="button"
-                  @click="exportData"
-                  class="btn btn-success"
-                  :disabled="exporting"
-                >
-                  <span
-                    v-if="exporting"
-                    class="spinner-border spinner-border-sm me-2"
-                  ></span>
-                  <i v-else class="ki-duotone ki-download fs-6 me-2">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                  </i>
-                  {{
-                    exporting
-                      ? t(
-                          "appsMonitoringCenter.settings.reporting.manual.actions.exporting"
-                        )
-                      : t(
-                          "appsMonitoringCenter.settings.reporting.manual.actions.export"
-                        )
-                  }}
-                </button>
-                <button
-                  type="button"
-                  @click="previewReport"
-                  class="btn btn-light-primary"
-                >
-                  <i class="ki-duotone ki-eye fs-6 me-2">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                  </i>
-                  {{
+                }}
+              </label>
+              <div class="flex flex-col gap-2">
+                <label class="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
+                    v-model="exportSettings.includePerformanceData"
+                  />
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{
                     t(
-                      "appsMonitoringCenter.settings.reporting.manual.actions.preview"
+                      "appsMonitoringCenter.settings.reporting.manual.includeData.performanceMetrics"
                     )
-                  }}
-                </button>
+                  }}</span>
+                </label>
+                <label class="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
+                    v-model="exportSettings.includeAlertData"
+                  />
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{
+                    t(
+                      "appsMonitoringCenter.settings.reporting.manual.includeData.alertHistory"
+                    )
+                  }}</span>
+                </label>
+                <label class="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"
+                    v-model="exportSettings.includeDeviceData"
+                  />
+                  <span class="text-sm text-gray-800 dark:text-gray-300">{{
+                    t(
+                      "appsMonitoringCenter.settings.reporting.manual.includeData.deviceLogs"
+                    )
+                  }}</span>
+                </label>
               </div>
             </div>
-            <!--end::Manual Export-->
-          </div>
 
-          <div class="d-flex justify-content-end mt-5">
-            <button
-              type="button"
-              @click="saveReportingSettings"
-              class="btn btn-primary"
-              :disabled="savingReportingSettings"
-            >
-              <span
-                v-if="savingReportingSettings"
-                class="spinner-border spinner-border-sm me-2"
-              ></span>
-              {{
-                savingReportingSettings
-                  ? t("appsMonitoringCenter.settings.reporting.actions.saving")
-                  : t("appsMonitoringCenter.settings.reporting.actions.save")
-              }}
-            </button>
+            <div class="flex gap-2">
+              <button
+                type="button"
+                @click="exportData"
+                :disabled="exporting"
+                class="inline-flex items-center gap-2 rounded-md bg-success px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-success-active active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <span
+                  v-if="exporting"
+                  class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                ></span>
+                <i v-else class="ki-duotone ki-download fs-6 mr-1">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                {{
+                  exporting
+                    ? t(
+                        "appsMonitoringCenter.settings.reporting.manual.actions.exporting"
+                      )
+                    : t(
+                        "appsMonitoringCenter.settings.reporting.manual.actions.export"
+                      )
+                }}
+              </button>
+              <button
+                type="button"
+                @click="previewReport"
+                class="inline-flex items-center gap-2 rounded-md bg-primary-light px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.98]"
+              >
+                <i class="ki-duotone ki-eye fs-6 mr-1">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                {{
+                  t(
+                    "appsMonitoringCenter.settings.reporting.manual.actions.preview"
+                  )
+                }}
+              </button>
+            </div>
           </div>
+          <!--end::Manual Export-->
+        </div>
+
+        <div class="mt-5 flex justify-end">
+          <button
+            type="button"
+            @click="saveReportingSettings"
+            :disabled="savingReportingSettings"
+            class="inline-flex items-center gap-2"
+            :class="primaryButtonClass"
+          >
+            <span
+              v-if="savingReportingSettings"
+              class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+            ></span>
+            {{
+              savingReportingSettings
+                ? t("appsMonitoringCenter.settings.reporting.actions.saving")
+                : t("appsMonitoringCenter.settings.reporting.actions.save")
+            }}
+          </button>
         </div>
       </div>
     </div>
@@ -1062,13 +1122,15 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({
-  name: "SettingsComponent",
-});
-
 import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-// import ApiService from "@/core/services/ApiService";
+import ApiService from "@/core/services/ApiService";
+import {
+  formInputClass,
+  cardClass,
+  primaryButtonClass,
+} from "@/core/helpers/badge";
+import ToggleSwitch from "@/components/common/ToggleSwitch.vue";
 
 const { t } = useI18n();
 
@@ -1082,6 +1144,7 @@ interface MonitoringSettings {
   };
   deviceMonitoring: {
     cameraOfflineAlert: boolean;
+    nvrHealthCheck: boolean;
     offlineTimeout: number;
   };
 }
@@ -1135,6 +1198,7 @@ const monitoringSettings = ref<MonitoringSettings>({
   },
   deviceMonitoring: {
     cameraOfflineAlert: true,
+    nvrHealthCheck: true,
     offlineTimeout: 5,
   },
 });

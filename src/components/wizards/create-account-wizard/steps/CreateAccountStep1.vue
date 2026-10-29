@@ -1,25 +1,29 @@
 <template>
   <!--begin::Step 1-->
-  <div class="current" data-kt-stepper-element="content">
+  <div v-show="active">
     <!--begin::Wrapper-->
-    <div class="w-100">
+    <div class="w-full">
       <!--begin::Heading-->
-      <div class="pb-10 pb-lg-15">
+      <div class="pb-10 lg:pb-15">
         <!--begin::Title-->
-        <h2 class="fw-bold d-flex align-items-center text-gray-900">
+        <h2
+          class="flex items-center font-bold text-gray-900 dark:text-gray-100"
+        >
           Choose Account Type
-          <i
-            class="fas fa-exclamation-circle ms-2 fs-7"
-            v-tooltip
+          <KTIcon
+            icon-name="information"
+            icon-class="ms-2 fs-7"
             title="Billing is issued based on your selected account type"
-          ></i>
+          />
         </h2>
         <!--end::Title-->
 
         <!--begin::Notice-->
-        <div class="text-gray-500 fw-semibold fs-6">
+        <div class="text-sm font-semibold text-gray-500">
           If you need more info, please check out
-          <a href="#" class="link-primary fw-bold">Help Page</a>.
+          <a href="#" class="font-bold text-primary hover:underline"
+            >Help Page</a
+          >.
         </div>
         <!--end::Notice-->
       </div>
@@ -28,29 +32,31 @@
       <!--begin::Input group-->
       <div class="fv-row">
         <!--begin::Row-->
-        <div class="row">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <!--begin::Col-->
-          <div class="col-lg-6">
+          <div>
             <!--begin::Option-->
             <Field
               type="radio"
-              class="btn-check"
+              class="peer sr-only"
               name="accountType"
               value="personal"
               id="kt_create_account_form_account_type_personal"
             />
             <label
-              class="btn btn-outline btn-outline-dashed btn-outline-default p-7 d-flex align-items-center mb-10"
+              class="flex cursor-pointer items-center rounded-md border border-dashed border-gray-300 p-7 transition-colors peer-checked:border-primary peer-checked:bg-primary-light dark:border-gray-700"
               for="kt_create_account_form_account_type_personal"
             >
               <KTIcon icon-name="address-book" icon-class="fs-3x me-5" />
 
               <!--begin::Info-->
-              <span class="d-block fw-semibold text-start">
-                <span class="text-gray-900 fw-bold d-block fs-4 mb-2">
+              <span class="block text-left font-semibold">
+                <span
+                  class="mb-2 block text-lg font-bold text-gray-900 dark:text-gray-100"
+                >
                   Personal Account
                 </span>
-                <span class="text-gray-500 fw-semibold fs-6"
+                <span class="text-sm font-semibold text-gray-500"
                   >If you need more info, please check it out</span
                 >
               </span>
@@ -61,27 +67,28 @@
           <!--end::Col-->
 
           <!--begin::Col-->
-          <div class="col-lg-6">
+          <div>
             <!--begin::Option-->
             <Field
               type="radio"
-              class="btn-check"
+              class="peer sr-only"
               name="accountType"
               value="corporate"
               id="kt_create_account_form_account_type_corporate"
             />
             <label
-              class="btn btn-outline btn-outline-dashed btn-outline-default p-7 d-flex align-items-center"
+              class="flex cursor-pointer items-center rounded-md border border-dashed border-gray-300 p-7 transition-colors peer-checked:border-primary peer-checked:bg-primary-light dark:border-gray-700"
               for="kt_create_account_form_account_type_corporate"
             >
               <KTIcon icon-name="briefcase" icon-class="fs-3x me-5" />
 
               <!--begin::Info-->
-              <span class="d-block fw-semibold text-start">
-                <span class="text-gray-900 fw-bold d-block fs-4 mb-2"
+              <span class="block text-left font-semibold">
+                <span
+                  class="mb-2 block text-lg font-bold text-gray-900 dark:text-gray-100"
                   >Corporate Account</span
                 >
-                <span class="text-gray-500 fw-semibold fs-6"
+                <span class="text-sm font-semibold text-gray-500"
                   >Create corporate account to mane users</span
                 >
               </span>
@@ -111,4 +118,6 @@ defineOptions({
 });
 
 import { ErrorMessage, Field } from "vee-validate";
+
+defineProps<{ active: boolean }>();
 </script>

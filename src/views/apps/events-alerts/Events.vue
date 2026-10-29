@@ -1,177 +1,170 @@
 <template>
   <!--begin::Events & Alerts Overview-->
-  <div class="card mb-5">
-    <div class="card-body py-4">
-      <div class="row align-items-center gy-3">
-        <div class="col-12 col-md-4">
-          <h4 class="card-title mb-0">
-            {{ t("appsEventsAlerts.events.title") }}
-          </h4>
-          <p class="text-muted mb-0">
-            {{
-              currentSite
-                ? t("appsEventsAlerts.events.subtitleSite", {
-                    site: currentSite.name,
-                  })
-                : t("appsEventsAlerts.events.subtitleAll")
-            }}
-          </p>
-        </div>
-        <div class="col-12 col-md-8">
-          <div
-            class="d-flex flex-column flex-md-row justify-content-md-end align-items-start align-items-md-center gap-3"
-          >
-            <!-- Site Filter -->
-            <div class="d-flex align-items-center w-100 w-md-auto mb-2 mb-md-0">
-              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{
-                t("appsEventsAlerts.eventsFilters.siteLabel")
-              }}</label>
-              <select
-                v-model="tempSelectedSiteFilter"
-                class="form-select form-select-solid w-100 w-md-200px"
-                :disabled="loadingSites"
-                @change="onTempFilterSiteChange"
-              >
-                <option value="">
-                  {{ t("appsEventsAlerts.eventsFilters.siteAll") }}
-                </option>
-                <option v-for="site in sites" :key="site.uid" :value="site.uid">
-                  {{ site.name }}
-                </option>
-              </select>
-            </div>
+  <div class="mb-5 p-4" :class="cardClass">
+    <div
+      class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+    >
+      <div>
+        <h4 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {{ t("appsEventsAlerts.events.title") }}
+        </h4>
+        <p class="m-0 text-gray-500">
+          {{
+            currentSite
+              ? t("appsEventsAlerts.events.subtitleSite", {
+                  site: currentSite.name,
+                })
+              : t("appsEventsAlerts.events.subtitleAll")
+          }}
+        </p>
+      </div>
 
-            <!-- Camera Filter -->
-            <div class="d-flex align-items-center w-100 w-md-auto">
-              <label class="form-label me-3 mb-0 fw-semibold text-nowrap">{{
-                t("appsEventsAlerts.eventsFilters.cameraLabel") || "Camera"
-              }}</label>
-              <select
-                v-model="tempSelectedCameraFilter"
-                class="form-select form-select-solid w-100 w-md-200px"
-                :disabled="loadingCameras || !tempSelectedSiteFilter"
-                @change="onTempFilterCameraChange"
-              >
-                <option value="">
-                  {{
-                    t("appsEventsAlerts.eventsFilters.cameraAll") ||
-                    "All Cameras"
-                  }}
-                </option>
-                <option
-                  v-for="camera in cameras"
-                  :key="camera.uuid"
-                  :value="camera.uuid"
-                  :title="`ID: ${camera.uuid} | Model: ${
-                    camera.model || 'N/A'
-                  }`"
-                >
-                  {{ camera.name }}
-                  {{ camera.model ? `(${camera.model})` : "" }}
-                </option>
-              </select>
-            </div>
-            <button
-              @click="applyFilters"
-              class="btn btn-md btn-primary py-3 px-2"
-              title="Apply All Filters"
-            >
-              <i class="ki-duotone ki-check fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              {{ t("common.apply") || "Apply" }}
-            </button>
-          </div>
+      <div
+        class="flex flex-col items-start gap-3 md:flex-row md:items-center md:justify-end"
+      >
+        <!-- Site Filter -->
+        <div class="flex w-full items-center md:w-auto">
+          <label
+            class="mr-3 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300"
+          >
+            {{ t("appsEventsAlerts.eventsFilters.siteLabel") }}
+          </label>
+          <select
+            v-model="tempSelectedSiteFilter"
+            :disabled="loadingSites"
+            @change="onTempFilterSiteChange"
+            class="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 md:w-[200px] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          >
+            <option value="">
+              {{ t("appsEventsAlerts.eventsFilters.siteAll") }}
+            </option>
+            <option v-for="site in sites" :key="site.uid" :value="site.uid">
+              {{ site.name }}
+            </option>
+          </select>
         </div>
+
+        <!-- Camera Filter -->
+        <div class="flex w-full items-center md:w-auto">
+          <label
+            class="mr-3 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300"
+          >
+            {{ t("appsEventsAlerts.eventsFilters.cameraLabel") || "Camera" }}
+          </label>
+          <select
+            v-model="tempSelectedCameraFilter"
+            :disabled="loadingCameras || !tempSelectedSiteFilter"
+            @change="onTempFilterCameraChange"
+            class="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 md:w-[200px] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+          >
+            <option value="">
+              {{
+                t("appsEventsAlerts.eventsFilters.cameraAll") || "All Cameras"
+              }}
+            </option>
+            <option
+              v-for="camera in cameras"
+              :key="camera.uuid"
+              :value="camera.uuid"
+              :title="`ID: ${camera.uuid} | Model: ${camera.model || 'N/A'}`"
+            >
+              {{ camera.name }} {{ camera.model ? `(${camera.model})` : "" }}
+            </option>
+          </select>
+        </div>
+        <button
+          @click="applyFilters"
+          title="Apply All Filters"
+          class="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active active:scale-[0.98]"
+        >
+          <i class="ki-duotone ki-check fs-2">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          {{ t("common.apply") || "Apply" }}
+        </button>
       </div>
     </div>
   </div>
 
   <!--begin::Events List-->
-  <div class="card">
+  <div :class="cardClass">
     <!--begin::Card header-->
-    <div class="card-header border-0 pt-5">
-      <!--begin::Card title-->
-      <div class="card-title">
-        <h3 class="fw-bold m-0">{{ t("appsEventsAlerts.events.title") }}</h3>
-      </div>
-      <!--end::Card title-->
+    <div
+      class="flex flex-col gap-4 p-6 pb-0 xl:flex-row xl:items-center xl:justify-between"
+    >
+      <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {{ t("appsEventsAlerts.events.title") }}
+      </h3>
 
-      <!--begin::Card toolbar-->
       <div
-        class="card-toolbar d-flex flex-column flex-xl-row justify-content-between align-items-start align-items-xl-center w-100 gap-3"
+        class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between xl:gap-3"
       >
-        <!-- Date Range Filters - Start -->
-        <div class="d-flex flex-wrap align-items-center gap-2 w-100 w-xl-auto">
-          <div
-            class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center me-0 me-sm-2 w-100 w-sm-auto gap-2"
-          >
-            <div class="d-flex align-items-center w-100 w-sm-auto">
-              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{
-                t("appsEventsAlerts.eventsFilters.fromDateLabel")
-              }}</label>
+        <!-- Date Range Filters -->
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div class="flex items-center">
+              <label
+                class="mr-2 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{ t("appsEventsAlerts.eventsFilters.fromDateLabel") }}
+              </label>
               <DatePicker
                 v-model="tempDateFrom"
                 size="sm"
                 :clearable="true"
                 style="width: 100%; min-width: 140px"
-                class="w-100 w-sm-auto"
               />
             </div>
-            <div class="d-flex align-items-center w-100 w-sm-auto">
-              <label class="form-label me-2 mb-0 text-nowrap fw-semibold">{{
-                t("appsEventsAlerts.eventsFilters.toDateLabel")
-              }}</label>
+            <div class="flex items-center">
+              <label
+                class="mr-2 mb-0 shrink-0 font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {{ t("appsEventsAlerts.eventsFilters.toDateLabel") }}
+              </label>
               <DatePicker
                 v-model="tempDateTo"
                 size="sm"
                 :clearable="true"
                 style="width: 100%; min-width: 140px"
-                class="w-100 w-sm-auto"
               />
             </div>
           </div>
 
-          <!-- Apply/Reset Buttons -->
-          <div class="d-flex flex-wrap gap-2 mt-2 mt-sm-0">
-            <button
-              @click="resetFilters"
-              class="btn btn-sm btn-light py-1 px-2"
-              title="Reset to Applied Filters"
-            >
-              <i class="ki-duotone ki-arrows-circle fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              Reset
-            </button>
-          </div>
+          <button
+            @click="resetFilters"
+            title="Reset to Applied Filters"
+            class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-2 py-1 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-300"
+          >
+            <i class="ki-duotone ki-arrows-circle fs-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            Reset
+          </button>
         </div>
 
-        <!-- Other Filters - End -->
-        <div class="d-flex align-items-center w-100 w-xl-auto gap-2">
-          <!--begin::Search-->
-          <div
-            class="d-flex align-items-center position-relative my-1 flex-grow-1 flex-xl-grow-0"
-          >
-            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+        <!-- Search + Refresh -->
+        <div class="flex items-center gap-2">
+          <div class="relative flex flex-1 items-center xl:flex-none">
+            <i
+              class="ki-duotone ki-magnifier fs-3 pointer-events-none absolute left-4"
+            >
               <span class="path1"></span>
               <span class="path2"></span>
             </i>
             <input
               type="text"
               v-model="searchQuery"
-              class="form-control form-control-sm form-control-solid w-100 w-xl-200px ps-12"
               placeholder="Search"
+              class="w-full rounded-md border border-gray-300 bg-gray-100 py-1.5 pr-3 pl-12 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none xl:w-[200px] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
             />
           </div>
-          <!--end::Search-->
 
           <button
             @click="refreshEvents"
-            class="btn btn-sm btn-light-primary btn-icon"
             title="Refresh"
+            class="flex h-8 w-8 items-center justify-center rounded-md bg-primary-light text-primary transition-colors hover:bg-primary hover:text-white active:scale-[0.95]"
           >
             <i class="ki-duotone ki-arrows-circle fs-2">
               <span class="path1"></span>
@@ -180,12 +173,11 @@
           </button>
         </div>
       </div>
-      <!--end::Card toolbar-->
     </div>
     <!--end::Card header-->
 
     <!--begin::Card body-->
-    <div class="card-body py-3">
+    <div class="p-6">
       <EventsTable
         :events="filteredAndSortedEvents"
         :header="tableHeader"
@@ -204,7 +196,7 @@
 
       <!--begin::Pagination-->
       <div
-        class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3"
+        class="mt-4 flex flex-col items-center justify-between gap-3 md:flex-row"
       >
         <ItemPerPage
           :model-value="itemsPerPage"
@@ -239,15 +231,9 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({
-  name: "EventsComponent",
-});
-
+import { cardClass } from "@/core/helpers/badge";
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import { useI18n } from "vue-i18n";
-// import { Modal } from "bootstrap";
-// import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
-// import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import Pagination from "@/components/common/Pagination.vue";
 import ItemPerPage from "@/components/ItemPerPage.vue";
 import DatePicker from "@/components/DatePicker.vue";

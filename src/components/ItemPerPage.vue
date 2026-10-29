@@ -1,6 +1,6 @@
 <template>
-  <div class="items-per-page-container d-flex align-items-center">
-    <span v-if="label" class="form-label me-3 mb-0">{{ label }}</span>
+  <div class="flex items-center whitespace-nowrap">
+    <span v-if="label" class="mr-3 text-sm font-medium text-gray-700 dark:text-gray-300">{{ label }}</span>
     <select
       :id="id"
       v-model="localValue"
@@ -16,136 +16,96 @@
         {{ option.label }}
       </option>
     </select>
-    <span v-if="showItemsText" class="text-muted ms-2">
+    <span v-if="showItemsText" class="ml-2 text-sm text-gray-500">
       {{ itemsText }}
     </span>
   </div>
 </template>
 
 <script setup lang="ts">
-defineOptions({
-  name: "ItemPerPageComponent",
-});
-
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch } from 'vue'
+import { formInputClass } from '@/core/helpers/badge'
 
 interface Option {
-  value: number;
-  label: string;
+  value: number
+  label: string
 }
 
 interface Props {
-  modelValue?: number;
-  label?: string;
-  id?: string;
-  disabled?: boolean;
-  options?: number[];
-  customOptions?: Option[];
-  size?: "sm" | "md" | "lg";
-  variant?: "solid" | "outline";
-  showItemsText?: boolean;
-  itemsText?: string;
+  modelValue?: number
+  label?: string
+  id?: string
+  disabled?: boolean
+  options?: number[]
+  customOptions?: Option[]
+  size?: 'sm' | 'md' | 'lg'
+  variant?: 'solid' | 'outline'
+  showItemsText?: boolean
+  itemsText?: string
 }
 
 interface Emits {
-  (e: "update:modelValue", value: number): void;
-  (e: "change", value: number): void;
+  (e: 'update:modelValue', value: number): void
+  (e: 'change', value: number): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: 10,
-  label: "Items per page:",
+  label: 'Items per page:',
   options: () => [10, 20, 30, 50],
-  size: "sm",
-  variant: "solid",
+  size: 'sm',
+  variant: 'solid',
   showItemsText: true,
-  itemsText: "items",
-});
+  itemsText: 'items'
+})
 
-const emit = defineEmits<Emits>();
+const emit = defineEmits<Emits>()
 
-const localValue = ref(props.modelValue);
+const localValue = ref(props.modelValue)
 
 // Computed properties
 const availableOptions = computed(() => {
   if (props.customOptions && props.customOptions.length > 0) {
-    return props.customOptions;
+    return props.customOptions
   }
-
-  return props.options.map((value) => ({
+  
+  return props.options.map(value => ({
     value,
-    label: value.toString(),
-  }));
-});
+    label: value.toString()
+  }))
+})
 
 const selectClasses = computed(() => {
-  const classes = ["form-select"];
-
-  if (props.size === "sm") classes.push("form-select-sm");
-  if (props.size === "lg") classes.push("form-select-lg");
-
-  if (props.variant === "outline") classes.push("form-select-outline");
-
-  return classes.join(" ");
-});
+  const classes = [formInputClass, 'w-auto']
+  if (props.size === 'sm') classes.push('py-1 text-xs')
+  if (props.size === 'lg') classes.push('py-3 text-base')
+  return classes.join(' ')
+})
 
 // Watchers
-watch(
-  () => props.modelValue,
-  (newValue) => {
-    localValue.value = newValue;
-  }
-);
+watch(() => props.modelValue, (newValue) => {
+  localValue.value = newValue
+})
 
 // Methods
 const handleChange = (event: Event) => {
-  const target = event.target as HTMLSelectElement;
-  const value = parseInt(target.value);
-  localValue.value = value;
-  emit("update:modelValue", value);
-  emit("change", value);
-};
+  const target = event.target as HTMLSelectElement
+  const value = parseInt(target.value)
+  localValue.value = value
+  emit('update:modelValue', value)
+  emit('change', value)
+}
 
 // Validate initial value
-if (
-  !props.options.includes(props.modelValue) &&
-  !props.customOptions?.some((opt) => opt.value === props.modelValue)
-) {
-  const firstOption = props.customOptions?.[0]?.value ?? props.options[0];
-  localValue.value = firstOption;
-  emit("update:modelValue", firstOption);
+if (!props.options.includes(props.modelValue) && !props.customOptions?.some(opt => opt.value === props.modelValue)) {
+  const firstOption = props.customOptions?.[0]?.value ?? props.options[0]
+  localValue.value = firstOption
+  emit('update:modelValue', firstOption)
 }
 </script>
 
 <style scoped>
-.items-per-page-container {
-  white-space: nowrap;
-}
-
-.form-select {
-  width: auto;
+select {
   min-width: 80px;
-}
-
-.form-select-sm {
-  min-width: 70px;
-}
-
-.form-select-lg {
-  min-width: 90px;
-}
-
-.form-label {
-  font-weight: 500;
-  color: var(--bs-gray-700);
-}
-
-.text-muted {
-  font-size: 0.875rem;
-}
-
-.form-select:focus {
-  border-color: var(--bs-primary);
-  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
 }
 </style>
