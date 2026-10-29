@@ -271,10 +271,12 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/apps/report/daily-report",
         name: "apps-report-daily-report",
-        component: () => import("@/views/apps/report/daily-report/DailyReport.vue"),
+        component: () =>
+          import("@/views/apps/report/daily-report/DailyReport.vue"),
         meta: {
           pageTitle: "Report Harian",
           breadcrumbs: ["Apps", "Report"],
+          disabled: true,
         },
       },
       {
@@ -294,6 +296,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           pageTitle: "Recording & Playback Overview",
           breadcrumbs: ["Apps", "Recording & Playback"],
+          disabled: true,
         },
       },
       {
@@ -303,6 +306,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           pageTitle: "Recording & Playback Settings",
           breadcrumbs: ["Apps", "Recording & Playback"],
+          disabled: true,
         },
       },
       {
@@ -312,6 +316,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           pageTitle: "Monitoring Center Overview",
           breadcrumbs: ["Apps", "Monitoring Center"],
+          disabled: true,
         },
       },
       {
@@ -321,6 +326,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           pageTitle: "Monitoring Center Settings",
           breadcrumbs: ["Apps", "Monitoring Center"],
+          disabled: true,
         },
       },
     ],
@@ -383,6 +389,15 @@ const routes: Array<RouteRecordRaw> = [
           pageTitle: "Error 500",
         },
       },
+      {
+        path: "/503",
+        name: "503",
+        component: () =>
+          import("@/views/controlplane/authentication/Error503.vue"),
+        meta: {
+          pageTitle: "Error 503",
+        },
+      },
     ],
   },
   {
@@ -415,14 +430,25 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
   const configStore = useConfigStore();
-  console.debug('[router] beforeEach', { to: to.fullPath, from: from.fullPath });
+  console.debug("[router] beforeEach", {
+    to: to.fullPath,
+    from: from.fullPath,
+  });
 
   // current page view title
-  const translatedTitle = to.meta.pageTitle ? i18n.global.t(to.meta.pageTitle as string) : to.meta.pageTitle;
+  const translatedTitle = to.meta.pageTitle
+    ? i18n.global.t(to.meta.pageTitle as string)
+    : to.meta.pageTitle;
   document.title = `${translatedTitle} - ${import.meta.env.VITE_APP_NAME}`;
 
   // reset config to initial state
   configStore.resetLayoutConfig();
+
+  // Feature-flagged route: redirect to the "under development" page
+  if (to.meta.disabled) {
+    next({ name: "503" });
+    return;
+  }
 
   // If the route requires authentication, verify the token and wait for the result
   if (to.meta.middleware == "auth") {
@@ -430,16 +456,21 @@ router.beforeEach(async (to, from, next) => {
     try {
       const disableLoader = !!to.meta?.disableGlobalLoader;
       if (!disableLoader) {
-        try { window.dispatchEvent(new CustomEvent('loading:start')); } catch (e) {}
+        try {
+          window.dispatchEvent(new CustomEvent("loading:start"));
+        } catch (e) {}
       }
 
       try {
         await authStore.verifyAuth();
       } catch (e) {
-        console.debug('[router] verifyAuth threw', e);
+        console.debug("[router] verifyAuth threw", e);
       }
 
-      console.debug('[router] after verifyAuth isAuthenticated=', authStore.isAuthenticated);
+      console.debug(
+        "[router] after verifyAuth isAuthenticated=",
+        authStore.isAuthenticated
+      );
 
       if (authStore.isAuthenticated) {
         next();
@@ -452,7 +483,9 @@ router.beforeEach(async (to, from, next) => {
     } finally {
       const disableLoader = !!to.meta?.disableGlobalLoader;
       if (!disableLoader) {
-        try { window.dispatchEvent(new CustomEvent('loading:stop')); } catch (e) {}
+        try {
+          window.dispatchEvent(new CustomEvent("loading:stop"));
+        } catch (e) {}
       }
     }
   } else {

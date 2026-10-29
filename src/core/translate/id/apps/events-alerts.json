@@ -1,461 +1,461 @@
 {
-	"events": {
-		"title": "Manajemen Aktifitas",
-		"subtitleAll": "Pantau dan kelola Aktifitas keamanan di semua Lokasi",
-		"subtitleSite": "Pantau dan kelola Aktifitas keamanan untuk {site}"
-	},
-	"alerts": {
-		"title": "Manajemen Pelanggaran",
-		"subtitleAll": "Pantau dan kelola Pelanggaran keamanan di semua Lokasi",
-		"subtitleSite": "Pantau dan kelola Pelanggaran keamanan untuk {site}"
-	},
-	"eventsFilters": {
-		"fromDateLabel": "Dari:",
-		"toDateLabel": "Ke:",
-		"siteLabel": "Lokasi:",
-		"cameraLabel": "Kamera:",
-		"cameraAll": "Semua Kamera",
-		"siteAll": "Semua Lokasi",
-		"sampleSite": "Lokasi A",
-		"searchPlaceholder": "Cari Aktifitas...",
-		"typeLabel": "Tipe:",
-		"typeAll": "Semua Tipe",
-		"severityLabel": "Level:",
-		"severityAll": "Semua Level",
-		"statusLabel": "Status:",
-		"statusAll": "Semua Status",
-		"refresh": "Refresh"
-	},
-	"alertsFilters": {
-		"fromDateLabel": "Dari:",
-		"toDateLabel": "Ke:",
-		"siteLabel": "Lokasi:",
-		"cameraLabel": "Kamera:",
-		"cameraAll": "Semua Kamera",
-		"siteAll": "Semua Lokasi",
-		"sampleSite": "Lokasi A",
-		"searchPlaceholder": "Cari Pelanggaran...",
-		"typeLabel": "Tipe:",
-		"typeAll": "Semua Tipe",
-		"severityLabel": "Level Keparahan:",
-		"severityAll": "Semua Level",
-		"statusLabel": "Status:",
-		"statusAll": "Semua Status",
-		"selectStatus": "Pilih Status",
-		"assigneeLabel": "Petugas:",
-		"assigneeAll": "Semua Petugas",
-		"priorityLabel": "Prioritas:",
-		"priorityAll": "Semua Prioritas",
-		"refresh": "Refresh"
-	},
-	"eventsCards": {
-		"totalEvents": {
-			"title": "Total Event",
-			"progress": "{count} Event"
-		},
-		"motionEvents": {
-			"title": "Event Gerakan",
-			"progress": "24 jam terakhir"
-		},
-		"resolvedToday": {
-			"title": "Selesai Hari Ini",
-			"progress": "{count} Total"
-		},
-		"avgDuration": {
-			"title": "Durasi Rata-rata",
-			"progress": "{minutes} Menit"
-		}
-	},
-	"alertsCards": {
-		"activeAlerts": {
-			"title": "Pelanggaran Aktif",
-			"progress": "{count} Kritis"
-		},
-		"criticalAlerts": {
-			"title": "Pelanggaran Kritis",
-			"progress": "Perlu Tindakan"
-		},
-		"acknowledgedAlerts": {
-			"title": "Pelanggaran Diakui",
-			"progress": "{count} Tertangani"
-		},
-		"responseTime": {
-			"title": "Waktu Respon",
-			"progress": "Rata-rata"
-		}
-	},
-	"eventsTable": {
-		"title": "Event Terbaru",
-		"columns": {
-			"event": "Nama Event",
-			"camera": "Nama Kamera",
-			"timestamp": "Waktu",
-			"duration": "Durasi (menit)",
-			"avgDetection": "Rata-rata Inferensi",
-			"status": "Status",
-			"actions": "Aksi"
-		},
-		"empty": "Tidak ada event",
-		"noLocation": "Tanpa lokasi",
-		"generatedDescription": "Aktivitas terdeteksi - rata-rata {seconds} dtk",
-		"pagination": {
-			"info": "Menampilkan {start} sampai {end} dari {total} entri",
-			"itemsLabel": "Item"
-		},
-		"actions": {
-			"view": "Lihat Detail",
-			"acknowledge": "Tandai Diketahui",
-			"resolve": "Selesaikan",
-			"edit": "Ubah"
-		},
-		"status": {
-			"active": "Aktif",
-			"acknowledged": "Diakui",
-			"resolved": "Selesai",
-			"unresolved": "Belum Selesai",
-			"notResolved": "Belum Selesai",
-			"falseDetection": "Deteksi Salah",
-			"unknown": "Tidak diketahui"
-		},
-		"types": {
-			"motion": "Gerakan",
-			"intrusion": "Intrusi",
-			"system": "Sistem",
-			"cameraOffline": "Kamera Offline",
-			"unknown": "Tidak diketahui"
-		},
-		"severity": {
-			"low": "Rendah",
-			"medium": "Sedang",
-			"high": "Tinggi",
-			"critical": "Kritis",
-			"unknown": "Tidak diketahui"
-		}
-	},
-	"alertsTable": {
-		"title": "Pelanggaran Terbaru",
-		"columns": {
-			"alert": "Nama Pelanggaran",
-			"camera": "Nama Kamera",
-			"timestamp": "Waktu",
-			"activities": "Aktivitas",
-			"severity": "Level Keparahan",
-			"status": "Status",
-			"duration": "Durasi",
-			"detections": "Deteksi",
-			"responseTime": "Waktu Respon",
-			"actions": "Aksi"
-		},
-		"empty": "Tidak ada Pelanggaran",
-		"noLocation": "Tanpa lokasi",
-		"generatedDescription": "Pelanggaran dipicu - level {severity}",
-		"pagination": {
-			"info": "Menampilkan {start} sampai {end} dari {total} entri",
-			"itemsLabel": "Item"
-		},
-		"actions": {
-			"view": "Lihat Detail",
-			"acknowledge": "Tandai Diketahui",
-			"resolve": "Selesaikan",
-			"escalate": "Eskalasi"
-		},
-		"status": {
-			"active": "Aktif",
-			"acknowledged": "Diakui",
-			"resolved": "Selesai Ditangani",
-			"unresolved": "Belum Ditangani",
-			"falseAlarm": "Alarm Palsu",
-			"escalated": "Dieskalasi",
-			"dismissed": "Diabaikan",
-			"unknown": "Tidak diketahui"
-		},
-		"types": {
-			"security": "Keamanan",
-			"technical": "Teknis",
-			"system": "Sistem",
-			"maintenance": "Pemeliharaan",
-			"unknown": "Tidak diketahui"
-		},
-		"severity": {
-			"low": "Rendah",
-			"medium": "Sedang",
-			"high": "Tinggi",
-			"critical": "Kritis",
-			"unknown": "Tidak diketahui"
-		}
-	},
-	"actions": {
-		"close": "Tutup",
-		"acknowledge": "Tandai Diketahui",
-		"resolve": "Selesaikan",
-		"cancel": "Batal",
-		"save": "Simpan Perubahan",
-		"saving": "Menyimpan...",
-		"update": "Perbarui"
-	},
-	"table": {
-		"actions": {
-			"viewEdit": "Lihat & Ubah"
-		}
-	},
-	"form": {
-		"selectStatus": "Pilih status..."
-	},
-	"eventsModals": {
-		"details": {
-			"title": "Detail Aktifitas",
-			"image": "Gambar Aktifitas:",
-			"eventName": "Nama Aktifitas:",
-			"cameraName": "Nama Kamera:",
-			"status": "Status:",
-			"description": "Deskripsi:",
-			"startTime": "Waktu Mulai:",
-			"endTime": "Waktu Selesai:",
-			"duration": "Durasi (menit):",
-			"totalMinutes": "Total Menit:",
-			"avgDetection": "Rata-rata Inferensi:",
-			"activities": "Aktivitas:",
-			"comments": "Komentar:",
-			"comment": "Komentar",
-			"commentPlaceholder": "Tulis catatan untuk Aktifitas ini...",
-			"eventIdHint": "ID Aktifitas:",
-			"imageFallback": "Gambar tidak tersedia",
-			"noData": "Data event tidak tersedia"
-		},
-		"edit": {
-			"title": "Ubah Aktifitas",
-			"eventType": "Tipe Aktifitas:",
-			"severity": "Level:",
-			"currentStatus": "Status Saat Ini:",
-			"process": "Proses:",
-			"startTime": "Waktu Mulai:",
-			"endTime": "Waktu Selesai:",
-			"duration": "Durasi:",
-			"camera": "Kamera:",
-			"location": "Lokasi:",
-			"updateStatus": "Perbarui Status:",
-			"selectStatus": "Pilih status baru...",
-			"comment": "Komentar:",
-			"commentPlaceholder": "Tulis catatan untuk Aktifitas ini...",
-			"eventId": "ID Aktifitas:"
-		}
-	},
-	"alertDetail": {
-		"title": "Detail Pelanggaran",
-		"basicInfo": "Informasi Dasar",
-		"eventDetails": "Detail Event",
-		"detectedObjects": "Objek Terdeteksi",
-		"activities": "Aktivitas",
-		"comment": "Komentar",
-		"images": "Gambar",
-		"editTitle": "Ubah Status & Komentar",
-		"eventId": "ID Event",
-		"cameraName": "Nama Kamera",
-		"status": "Status",
-		"duration": "Durasi",
-		"eventStart": "Waktu Mulai",
-		"eventEnd": "Waktu Selesai",
-		"totalDetections": "Total Deteksi",
-		"objectType": "Tipe Objek",
-		"detectionCount": "Jumlah Deteksi",
-		"noComment": "Tidak ada komentar",
-		"commentPlaceholder": "Masukkan komentar...",
-		"noData": "Data pelanggaran tidak tersedia",
-		"updateSuccess": "Status dan komentar berhasil diperbarui"
-	},
-	"alertsModals": {
-		"details": {
-			"title": "Detail Pelanggaran",
-			"image": "Gambar Pelanggaran:",
-			"alertName": "Nama Pelanggaran:",
-			"cameraUuid": "UUID Kamera:",
-			"status": "Status:",
-			"description": "Deskripsi:",
-			"triggeredTime": "Waktu Dipicu:",
-			"acknowledgedTime": "Waktu Diakui:",
-			"resolvedTime": "Waktu Selesai:",
-			"severity": "Level Keparahan:",
-			"responseTime": "Waktu Respon (detik):",
-			"assignedTo": "Ditugaskan Ke:",
-			"comments": "Komentar:",
-			"comment": "Komentar",
-			"commentPlaceholder": "Tulis catatan untuk Pelanggaran ini...",
-			"alertIdHint": "ID Pelanggaran:",
-			"imageFallback": "Gambar tidak tersedia"
-		},
-		"edit": {
-			"title": "Ubah Pelanggaran",
-			"alertType": "Tipe Pelanggaran:",
-			"severity": "Level Keparahan:",
-			"currentStatus": "Status Saat Ini:",
-			"assignedTo": "Ditugaskan Ke:",
-			"priority": "Prioritas:",
-			"camera": "Kamera:",
-			"location": "Lokasi:",
-			"updateStatus": "Perbarui Status:",
-			"selectStatus": "Pilih status baru...",
-			"selectAssignee": "Pilih petugas...",
-			"comment": "Komentar:",
-			"commentPlaceholder": "Tulis catatan untuk Pelanggaran ini...",
-			"alertId": "ID Pelanggaran:"
-		}
-	},
-	"eventsForm": {
-		"statusOptions": {
-			"resolved": "Selesai",
-			"notResolved": "Belum Selesai",
-			"falseDetection": "Deteksi Salah"
-		}
-	},
-	"alertsForm": {
-		"statusOptions": {
-			"acknowledged": "Diakui",
-			"resolved": "Selesai",
-			"escalated": "Dieskalasi",
-			"dismissed": "Diabaikan"
-		},
-		"priorityOptions": {
-			"low": "Rendah",
-			"medium": "Sedang",
-			"high": "Tinggi",
-			"critical": "Kritis"
-		}
-	},
-	"eventsBulkActions": {
-		"selectedItems": "{{count}} event dipilih",
-		"deleteSelected": "Hapus Event Yang Dipilih",
-		"markAsResolved": "Tandai Sebagai Selesai",
-		"markAsUnresolved": "Tandai Sebagai Belum Selesai",
-		"exportSelected": "Ekspor Event Yang Dipilih",
-		"batchProcess": "Proses Batch Event"
-	},
-	"alertsBulkActions": {
-		"selectedItems": "{{count}} Pelanggaran dipilih",
-		"deleteSelected": "Hapus Pelanggaran Yang Dipilih",
-		"markAsAcknowledged": "Tandai Sebagai Diakui",
-		"markAsResolved": "Tandai Sebagai Selesai",
-		"escalateSelected": "Eskalasi Yang Dipilih",
-		"assignTo": "Tugaskan Ke",
-		"exportSelected": "Ekspor Pelanggaran Yang Dipilih"
-	},
-	"eventsToast": {
-		"success": {
-			"created": "Event berhasil dibuat",
-			"updated": "Event berhasil diperbarui",
-			"deleted": "Event berhasil dihapus",
-			"bulkDeleted": "{{count}} event berhasil dihapus",
-			"statusUpdated": "Status event berhasil diperbarui",
-			"exported": "{{count}} event berhasil diekspor"
-		},
-		"error": {
-			"createFailed": "Gagal membuat event",
-			"updateFailed": "Gagal memperbarui event",
-			"deleteFailed": "Gagal menghapus event",
-			"loadFailed": "Gagal memuat data event",
-			"exportFailed": "Gagal mengekspor event"
-		}
-	},
-	"alertsToast": {
-		"success": {
-			"acknowledged": "Pelanggaran berhasil diakui",
-			"resolved": "Pelanggaran berhasil diselesaikan",
-			"escalated": "Pelanggaran berhasil dieskalasi",
-			"assigned": "Pelanggaran berhasil ditugaskan",
-			"deleted": "Pelanggaran berhasil dihapus",
-			"bulkDeleted": "{{count}} Pelanggaran berhasil dihapus",
-			"statusUpdated": "Status Pelanggaran berhasil diperbarui",
-			"exported": "{{count}} Pelanggaran berhasil diekspor"
-		},
-		"error": {
-			"acknowledgeFailed": "Gagal mengakui Pelanggaran",
-			"resolveFailed": "Gagal menyelesaikan Pelanggaran",
-			"escalateFailed": "Gagal mengeskaloasi Pelanggaran",
-			"assignFailed": "Gagal menugaskan Pelanggaran",
-			"deleteFailed": "Gagal menghapus Pelanggaran",
-			"loadFailed": "Gagal memuat data Pelanggaran",
-			"exportFailed": "Gagal mengekspor Pelanggaran"
-		}
-	},
-	"format": {
-		"notAvailable": "Tidak tersedia",
-		"minutesShort": "{value} mnt",
-		"secondsShort": "{value} dtk",
-		"minutesLong": "{value} menit",
-		"secondsLong": "{value} detik"
-	},
-	"settings": {
-		"header": {
-			"title": "Pengaturan Kegiatan & Pelanggaran",
-			"description": "Atur deteksi kegiatan dan notifikasi Pelanggaran"
-		},
-		"eventDetection": {
-			"title": "Deteksi Event",
-			"motion": {
-				"label": "Deteksi Gerakan",
-				"description": "Deteksi gerakan pada feed kamera dan buat kegiatan",
-				"sensitivity": "Level Sensitivitas",
-				"minArea": "Area Deteksi Minimum (%)"
-			},
-			"intrusion": {
-				"label": "Deteksi Intrusi",
-				"description": "Deteksi akses tidak sah di area terbatas",
-				"zones": "Zona Deteksi",
-				"configure": "Atur Zona"
-			},
-			"system": {
-				"label": "Pemantauan Sistem",
-				"description": "Pantau kesehatan kamera dan NVR",
-				"cameraOffline": "Deteksi Kamera Offline",
-				"lowDiskSpace": "Pelanggaran Ruang Disk Rendah",
-				"networkIssues": "Deteksi Gangguan Jaringan"
-			},
-			"saveButton": "Simpan Pengaturan Event"
-		},
-		"notifications": {
-			"title": "Notifikasi Pelanggaran",
-			"email": {
-				"label": "Notifikasi Email",
-				"description": "Kirim notifikasi Pelanggaran melalui email",
-				"recipients": "Penerima Email",
-				"placeholder": "Masukkan alamat email, satu per baris",
-				"threshold": "Ambang Level Pelanggaran",
-				"options": {
-					"low": "Rendah",
-					"medium": "Sedang",
-					"high": "Tinggi",
-					"critical": "Kritis"
-				}
-			},
-			"sms": {
-				"label": "Notifikasi SMS",
-				"description": "Kirim Pelanggaran kritis melalui SMS",
-				"numbers": "Nomor Telepon",
-				"placeholder": "Masukkan nomor telepon, satu per baris",
-				"threshold": "Ambang Pelanggaran SMS",
-				"options": {
-					"high": "Tinggi",
-					"critical": "Kritis"
-				}
-			},
-			"push": {
-				"label": "Notifikasi Push",
-				"description": "Kirim notifikasi push browser/mobile",
-				"threshold": "Ambang Notifikasi Push",
-				"sound": "Putar suara notifikasi"
-			},
-			"saveButton": "Simpan Pengaturan Notifikasi"
-		},
-		"advanced": {
-			"title": "Pengaturan Lanjutan",
-			"eventRetention": {
-				"label": "Periode Penyimpanan Event (hari)",
-				"help": "Berapa lama riwayat event disimpan"
-			},
-			"autoResolution": {
-				"label": "Batas Waktu Penyelesaian Otomatis (jam)",
-				"help": "Selesaikan otomatis event yang diakui setelah batas waktu"
-			},
-			"saveButton": "Simpan Pengaturan Lanjutan"
-		}
-	}
+  "events": {
+    "title": "Manajemen Aktifitas",
+    "subtitleAll": "Pantau dan kelola Aktifitas keamanan di semua Lokasi",
+    "subtitleSite": "Pantau dan kelola Aktifitas keamanan untuk {site}"
+  },
+  "alerts": {
+    "title": "Manajemen Pelanggaran",
+    "subtitleAll": "Pantau dan kelola Pelanggaran keamanan di semua Lokasi",
+    "subtitleSite": "Pantau dan kelola Pelanggaran keamanan untuk {site}"
+  },
+  "eventsFilters": {
+    "fromDateLabel": "Dari:",
+    "toDateLabel": "Ke:",
+    "siteLabel": "Lokasi:",
+    "cameraLabel": "Kamera:",
+    "cameraAll": "Semua Kamera",
+    "siteAll": "Semua Lokasi",
+    "sampleSite": "Lokasi A",
+    "searchPlaceholder": "Cari Aktifitas...",
+    "typeLabel": "Tipe:",
+    "typeAll": "Semua Tipe",
+    "severityLabel": "Level:",
+    "severityAll": "Semua Level",
+    "statusLabel": "Status:",
+    "statusAll": "Semua Status",
+    "refresh": "Refresh"
+  },
+  "alertsFilters": {
+    "fromDateLabel": "Dari:",
+    "toDateLabel": "Ke:",
+    "siteLabel": "Lokasi:",
+    "cameraLabel": "Kamera:",
+    "cameraAll": "Semua Kamera",
+    "siteAll": "Semua Lokasi",
+    "sampleSite": "Lokasi A",
+    "searchPlaceholder": "Cari Pelanggaran...",
+    "typeLabel": "Tipe:",
+    "typeAll": "Semua Tipe",
+    "severityLabel": "Level Keparahan:",
+    "severityAll": "Semua Level",
+    "statusLabel": "Status:",
+    "statusAll": "Semua Status",
+    "selectStatus": "Pilih Status",
+    "assigneeLabel": "Petugas:",
+    "assigneeAll": "Semua Petugas",
+    "priorityLabel": "Prioritas:",
+    "priorityAll": "Semua Prioritas",
+    "refresh": "Refresh"
+  },
+  "eventsCards": {
+    "totalEvents": {
+      "title": "Total Event",
+      "progress": "{count} Event"
+    },
+    "motionEvents": {
+      "title": "Event Gerakan",
+      "progress": "24 jam terakhir"
+    },
+    "resolvedToday": {
+      "title": "Selesai Hari Ini",
+      "progress": "{count} Total"
+    },
+    "avgDuration": {
+      "title": "Durasi Rata-rata",
+      "progress": "{minutes} Menit"
+    }
+  },
+  "alertsCards": {
+    "activeAlerts": {
+      "title": "Pelanggaran Aktif",
+      "progress": "{count} Kritis"
+    },
+    "criticalAlerts": {
+      "title": "Pelanggaran Kritis",
+      "progress": "Perlu Tindakan"
+    },
+    "acknowledgedAlerts": {
+      "title": "Pelanggaran Diakui",
+      "progress": "{count} Tertangani"
+    },
+    "responseTime": {
+      "title": "Waktu Respon",
+      "progress": "Rata-rata"
+    }
+  },
+  "eventsTable": {
+    "title": "Event Terbaru",
+    "columns": {
+      "event": "Nama Event",
+      "camera": "Nama Kamera",
+      "timestamp": "Waktu",
+      "duration": "Durasi (menit)",
+      "avgDetection": "Rata-rata Inferensi",
+      "status": "Status",
+      "actions": "Aksi"
+    },
+    "empty": "Tidak ada event",
+    "noLocation": "Tanpa lokasi",
+    "generatedDescription": "Aktivitas terdeteksi - rata-rata {seconds} dtk",
+    "pagination": {
+      "info": "Menampilkan {start} sampai {end} dari {total} entri",
+      "itemsLabel": "Item"
+    },
+    "actions": {
+      "view": "Lihat Detail",
+      "acknowledge": "Tandai Diketahui",
+      "resolve": "Selesaikan",
+      "edit": "Ubah"
+    },
+    "status": {
+      "active": "Aktif",
+      "acknowledged": "Diakui",
+      "resolved": "Selesai",
+      "unresolved": "Belum Selesai",
+      "notResolved": "Belum Selesai",
+      "falseDetection": "Deteksi Salah",
+      "unknown": "Tidak diketahui"
+    },
+    "types": {
+      "motion": "Gerakan",
+      "intrusion": "Intrusi",
+      "system": "Sistem",
+      "cameraOffline": "Kamera Offline",
+      "unknown": "Tidak diketahui"
+    },
+    "severity": {
+      "low": "Rendah",
+      "medium": "Sedang",
+      "high": "Tinggi",
+      "critical": "Kritis",
+      "unknown": "Tidak diketahui"
+    }
+  },
+  "alertsTable": {
+    "title": "Pelanggaran Terbaru",
+    "columns": {
+      "alert": "Nama Pelanggaran",
+      "camera": "Nama Kamera",
+      "timestamp": "Waktu",
+      "activities": "Aktivitas",
+      "severity": "Level Keparahan",
+      "status": "Status",
+      "duration": "Durasi",
+      "detections": "Deteksi",
+      "responseTime": "Waktu Respon",
+      "actions": "Aksi"
+    },
+    "empty": "Tidak ada Pelanggaran",
+    "noLocation": "Tanpa lokasi",
+    "generatedDescription": "Pelanggaran dipicu - level {severity}",
+    "pagination": {
+      "info": "Menampilkan {start} sampai {end} dari {total} entri",
+      "itemsLabel": "Item"
+    },
+    "actions": {
+      "view": "Lihat Detail",
+      "acknowledge": "Tandai Diketahui",
+      "resolve": "Selesaikan",
+      "escalate": "Eskalasi"
+    },
+    "status": {
+      "active": "Aktif",
+      "acknowledged": "Diakui",
+      "resolved": "Selesai Ditangani",
+      "unresolved": "Belum Ditangani",
+      "falseAlarm": "Alarm Palsu",
+      "escalated": "Dieskalasi",
+      "dismissed": "Diabaikan",
+      "unknown": "Tidak diketahui"
+    },
+    "types": {
+      "security": "Keamanan",
+      "technical": "Teknis",
+      "system": "Sistem",
+      "maintenance": "Pemeliharaan",
+      "unknown": "Tidak diketahui"
+    },
+    "severity": {
+      "low": "Rendah",
+      "medium": "Sedang",
+      "high": "Tinggi",
+      "critical": "Kritis",
+      "unknown": "Tidak diketahui"
+    }
+  },
+  "actions": {
+    "close": "Tutup",
+    "acknowledge": "Tandai Diketahui",
+    "resolve": "Selesaikan",
+    "cancel": "Batal",
+    "save": "Simpan Perubahan",
+    "saving": "Menyimpan...",
+    "update": "Perbarui"
+  },
+  "table": {
+    "actions": {
+      "viewEdit": "Lihat & Ubah"
+    }
+  },
+  "form": {
+    "selectStatus": "Pilih status..."
+  },
+  "eventsModals": {
+    "details": {
+      "title": "Detail Aktifitas",
+      "image": "Gambar Aktifitas:",
+      "eventName": "Nama Aktifitas:",
+      "cameraName": "Nama Kamera:",
+      "status": "Status:",
+      "description": "Deskripsi:",
+      "startTime": "Waktu Mulai:",
+      "endTime": "Waktu Selesai:",
+      "duration": "Durasi (menit):",
+      "totalMinutes": "Total Menit:",
+      "avgDetection": "Rata-rata Inferensi:",
+      "activities": "Aktivitas:",
+      "comments": "Komentar:",
+      "comment": "Komentar",
+      "commentPlaceholder": "Tulis catatan untuk Aktifitas ini...",
+      "eventIdHint": "ID Aktifitas:",
+      "imageFallback": "Gambar tidak tersedia",
+      "noData": "Data event tidak tersedia"
+    },
+    "edit": {
+      "title": "Ubah Aktifitas",
+      "eventType": "Tipe Aktifitas:",
+      "severity": "Level:",
+      "currentStatus": "Status Saat Ini:",
+      "process": "Proses:",
+      "startTime": "Waktu Mulai:",
+      "endTime": "Waktu Selesai:",
+      "duration": "Durasi:",
+      "camera": "Kamera:",
+      "location": "Lokasi:",
+      "updateStatus": "Perbarui Status:",
+      "selectStatus": "Pilih status baru...",
+      "comment": "Komentar:",
+      "commentPlaceholder": "Tulis catatan untuk Aktifitas ini...",
+      "eventId": "ID Aktifitas:"
+    }
+  },
+  "alertDetail": {
+    "title": "Detail Pelanggaran",
+    "basicInfo": "Informasi Dasar",
+    "eventDetails": "Detail Event",
+    "detectedObjects": "Objek Terdeteksi",
+    "activities": "Aktivitas",
+    "comment": "Komentar",
+    "images": "Gambar",
+    "editTitle": "Ubah Status & Komentar",
+    "eventId": "ID Event",
+    "cameraName": "Nama Kamera",
+    "status": "Status",
+    "duration": "Durasi",
+    "eventStart": "Waktu Mulai",
+    "eventEnd": "Waktu Selesai",
+    "totalDetections": "Total Deteksi",
+    "objectType": "Tipe Objek",
+    "detectionCount": "Jumlah Deteksi",
+    "noComment": "Tidak ada komentar",
+    "commentPlaceholder": "Masukkan komentar...",
+    "noData": "Data pelanggaran tidak tersedia",
+    "updateSuccess": "Status dan komentar berhasil diperbarui"
+  },
+  "alertsModals": {
+    "details": {
+      "title": "Detail Pelanggaran",
+      "image": "Gambar Pelanggaran:",
+      "alertName": "Nama Pelanggaran:",
+      "cameraUuid": "UUID Kamera:",
+      "status": "Status:",
+      "description": "Deskripsi:",
+      "triggeredTime": "Waktu Dipicu:",
+      "acknowledgedTime": "Waktu Diakui:",
+      "resolvedTime": "Waktu Selesai:",
+      "severity": "Level Keparahan:",
+      "responseTime": "Waktu Respon (detik):",
+      "assignedTo": "Ditugaskan Ke:",
+      "comments": "Komentar:",
+      "comment": "Komentar",
+      "commentPlaceholder": "Tulis catatan untuk Pelanggaran ini...",
+      "alertIdHint": "ID Pelanggaran:",
+      "imageFallback": "Gambar tidak tersedia"
+    },
+    "edit": {
+      "title": "Ubah Pelanggaran",
+      "alertType": "Tipe Pelanggaran:",
+      "severity": "Level Keparahan:",
+      "currentStatus": "Status Saat Ini:",
+      "assignedTo": "Ditugaskan Ke:",
+      "priority": "Prioritas:",
+      "camera": "Kamera:",
+      "location": "Lokasi:",
+      "updateStatus": "Perbarui Status:",
+      "selectStatus": "Pilih status baru...",
+      "selectAssignee": "Pilih petugas...",
+      "comment": "Komentar:",
+      "commentPlaceholder": "Tulis catatan untuk Pelanggaran ini...",
+      "alertId": "ID Pelanggaran:"
+    }
+  },
+  "eventsForm": {
+    "statusOptions": {
+      "resolved": "Selesai",
+      "notResolved": "Belum Selesai",
+      "falseDetection": "Deteksi Salah"
+    }
+  },
+  "alertsForm": {
+    "statusOptions": {
+      "acknowledged": "Diakui",
+      "resolved": "Selesai",
+      "escalated": "Dieskalasi",
+      "dismissed": "Diabaikan"
+    },
+    "priorityOptions": {
+      "low": "Rendah",
+      "medium": "Sedang",
+      "high": "Tinggi",
+      "critical": "Kritis"
+    }
+  },
+  "eventsBulkActions": {
+    "selectedItems": "{{count}} event dipilih",
+    "deleteSelected": "Hapus Event Yang Dipilih",
+    "markAsResolved": "Tandai Sebagai Selesai",
+    "markAsUnresolved": "Tandai Sebagai Belum Selesai",
+    "exportSelected": "Ekspor Event Yang Dipilih",
+    "batchProcess": "Proses Batch Event"
+  },
+  "alertsBulkActions": {
+    "selectedItems": "{{count}} Pelanggaran dipilih",
+    "deleteSelected": "Hapus Pelanggaran Yang Dipilih",
+    "markAsAcknowledged": "Tandai Sebagai Diakui",
+    "markAsResolved": "Tandai Sebagai Selesai",
+    "escalateSelected": "Eskalasi Yang Dipilih",
+    "assignTo": "Tugaskan Ke",
+    "exportSelected": "Ekspor Pelanggaran Yang Dipilih"
+  },
+  "eventsToast": {
+    "success": {
+      "created": "Event berhasil dibuat",
+      "updated": "Event berhasil diperbarui",
+      "deleted": "Event berhasil dihapus",
+      "bulkDeleted": "{{count}} event berhasil dihapus",
+      "statusUpdated": "Status event berhasil diperbarui",
+      "exported": "{{count}} event berhasil diekspor"
+    },
+    "error": {
+      "createFailed": "Gagal membuat event",
+      "updateFailed": "Gagal memperbarui event",
+      "deleteFailed": "Gagal menghapus event",
+      "loadFailed": "Gagal memuat data event",
+      "exportFailed": "Gagal mengekspor event"
+    }
+  },
+  "alertsToast": {
+    "success": {
+      "acknowledged": "Pelanggaran berhasil diakui",
+      "resolved": "Pelanggaran berhasil diselesaikan",
+      "escalated": "Pelanggaran berhasil dieskalasi",
+      "assigned": "Pelanggaran berhasil ditugaskan",
+      "deleted": "Pelanggaran berhasil dihapus",
+      "bulkDeleted": "{{count}} Pelanggaran berhasil dihapus",
+      "statusUpdated": "Status Pelanggaran berhasil diperbarui",
+      "exported": "{{count}} Pelanggaran berhasil diekspor"
+    },
+    "error": {
+      "acknowledgeFailed": "Gagal mengakui Pelanggaran",
+      "resolveFailed": "Gagal menyelesaikan Pelanggaran",
+      "escalateFailed": "Gagal mengeskaloasi Pelanggaran",
+      "assignFailed": "Gagal menugaskan Pelanggaran",
+      "deleteFailed": "Gagal menghapus Pelanggaran",
+      "loadFailed": "Gagal memuat data Pelanggaran",
+      "exportFailed": "Gagal mengekspor Pelanggaran"
+    }
+  },
+  "format": {
+    "notAvailable": "Tidak tersedia",
+    "minutesShort": "{value} mnt",
+    "secondsShort": "{value} dtk",
+    "minutesLong": "{value} menit",
+    "secondsLong": "{value} detik"
+  },
+  "settings": {
+    "header": {
+      "title": "Pengaturan Kegiatan & Pelanggaran",
+      "description": "Atur deteksi kegiatan dan notifikasi Pelanggaran"
+    },
+    "eventDetection": {
+      "title": "Deteksi Event",
+      "motion": {
+        "label": "Deteksi Gerakan",
+        "description": "Deteksi gerakan pada feed kamera dan buat kegiatan",
+        "sensitivity": "Level Sensitivitas",
+        "minArea": "Area Deteksi Minimum (%)"
+      },
+      "intrusion": {
+        "label": "Deteksi Intrusi",
+        "description": "Deteksi akses tidak sah di area terbatas",
+        "zones": "Zona Deteksi",
+        "configure": "Atur Zona"
+      },
+      "system": {
+        "label": "Pemantauan Sistem",
+        "description": "Pantau kesehatan kamera dan NVR",
+        "cameraOffline": "Deteksi Kamera Offline",
+        "lowDiskSpace": "Pelanggaran Ruang Disk Rendah",
+        "networkIssues": "Deteksi Gangguan Jaringan"
+      },
+      "saveButton": "Simpan Pengaturan Event"
+    },
+    "notifications": {
+      "title": "Notifikasi Pelanggaran",
+      "email": {
+        "label": "Notifikasi Email",
+        "description": "Kirim notifikasi Pelanggaran melalui email",
+        "recipients": "Penerima Email",
+        "placeholder": "Masukkan alamat email, satu per baris",
+        "threshold": "Ambang Level Pelanggaran",
+        "options": {
+          "low": "Rendah",
+          "medium": "Sedang",
+          "high": "Tinggi",
+          "critical": "Kritis"
+        }
+      },
+      "sms": {
+        "label": "Notifikasi SMS",
+        "description": "Kirim Pelanggaran kritis melalui SMS",
+        "numbers": "Nomor Telepon",
+        "placeholder": "Masukkan nomor telepon, satu per baris",
+        "threshold": "Ambang Pelanggaran SMS",
+        "options": {
+          "high": "Tinggi",
+          "critical": "Kritis"
+        }
+      },
+      "push": {
+        "label": "Notifikasi Push",
+        "description": "Kirim notifikasi push browser/mobile",
+        "threshold": "Ambang Notifikasi Push",
+        "sound": "Putar suara notifikasi"
+      },
+      "saveButton": "Simpan Pengaturan Notifikasi"
+    },
+    "advanced": {
+      "title": "Pengaturan Lanjutan",
+      "eventRetention": {
+        "label": "Periode Penyimpanan Event (hari)",
+        "help": "Berapa lama riwayat event disimpan"
+      },
+      "autoResolution": {
+        "label": "Batas Waktu Penyelesaian Otomatis (jam)",
+        "help": "Selesaikan otomatis event yang diakui setelah batas waktu"
+      },
+      "saveButton": "Simpan Pengaturan Lanjutan"
+    }
+  }
 }

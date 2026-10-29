@@ -93,8 +93,8 @@ app.config.errorHandler = (err, instance, info) => {
   console.error("[Global Error Handler]", err, info);
 };
 
-// Mount the app immediately. 
-// The router guard (src/router/index.ts) handles authentication verification 
+// Mount the app immediately.
+// The router guard (src/router/index.ts) handles authentication verification
 // and redirection to sign-in for protected routes.
 try {
   app.mount("#app");

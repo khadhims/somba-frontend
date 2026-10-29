@@ -44,7 +44,10 @@ export const useConfigStore = defineStore("config", () => {
         parsedConfig
       );
     } catch (e) {
-      console.warn("[config] Failed to override layout config from localStorage", e);
+      console.warn(
+        "[config] Failed to override layout config from localStorage",
+        e
+      );
       // Fallback to initial config on error
       config.value = initial.value;
     }

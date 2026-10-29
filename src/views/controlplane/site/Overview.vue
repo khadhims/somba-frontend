@@ -162,7 +162,7 @@
     </div>
   </div>
   <!--end::Organization, Account & Team Switcher-->
-  <!-- 
+  <!--
   <div class="row g-5 g-xl-8 mb-8">
     <div class="col-xl-3">
       <Widget1
@@ -302,9 +302,6 @@
               <span class="text-dark fw-bold text-hover-primary fs-6">{{
                 row.name
               }}</span>
-              <span class="text-muted fw-semibold text-muted d-block fs-7">{{
-                row.description || t("controlplane.site.common.noDescription")
-              }}</span>
             </div>
           </div>
         </template>
@@ -318,7 +315,8 @@
         <template v-slot:created_by="{ row }">
           <span class="text-dark fw-bold d-block fs-6">
             {{
-              row.created_by?.username || t("controlplane.site.common.unknown")
+              `${row.created_by?.first_name} ${row.created_by?.last_name}` ||
+              t("controlplane.site.common.unknown")
             }}
           </span>
           <span class="text-muted fw-semibold text-muted d-block fs-7">
@@ -333,7 +331,7 @@
         </template>
 
         <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end flex-shrink-0">
+          <div class="d-flex justify-content-start shrink-0">
             <button
               class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
               @click="viewSiteDetails(row)"

@@ -12,7 +12,7 @@
               <i :class="icon || 'fas fa-tasks'" class="fs-2 activity-icon"></i>
             </span>
           </div>
-          <div class="flex-grow-1">
+          <div class="grow">
             <h5 class="fw-bold text-dark mb-0 fs-6">{{ activityName }}</h5>
           </div>
         </div>

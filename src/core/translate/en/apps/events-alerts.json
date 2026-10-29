@@ -1,458 +1,458 @@
 {
-	"events": {
-		"title": "Events Management",
-		"subtitleAll": "Monitor and manage security events across all sites",
-		"subtitleSite": "Monitor and manage security events for {site}"
-	},
-	"alerts": {
-		"title": "Alerts Management",
-		"subtitleAll": "Monitor and manage security alerts across all sites",
-		"subtitleSite": "Monitor and manage security alerts for {site}"
-	},
-	"eventsFilters": {
-		"fromDateLabel": "From:",
-		"toDateLabel": "To:",
-		"siteLabel": "Site:",
-		"cameraLabel": "Camera:",
-		"cameraAll": "All Cameras",
-		"siteAll": "All Sites",
-		"sampleSite": "Site A",
-		"searchPlaceholder": "Search events...",
-		"typeLabel": "Type:",
-		"typeAll": "All Types",
-		"severityLabel": "Level:",
-		"severityAll": "All Levels",
-		"statusLabel": "Status:",
-		"statusAll": "All Status",
-		"refresh": "Refresh"
-	},
-	"alertsFilters": {
-		"fromDateLabel": "From:",
-		"toDateLabel": "To:",
-		"siteLabel": "Site:",
-		"cameraLabel": "Camera:",
-		"cameraAll": "All Cameras",
-		"siteAll": "All Sites",
-		"sampleSite": "Site A",
-		"searchPlaceholder": "Search alerts...",
-		"typeLabel": "Type:",
-		"typeAll": "All Types",
-		"severityLabel": "Severity Level:",
-		"severityAll": "All Levels",
-		"statusLabel": "Status:",
-		"statusAll": "All Status",
-		"assigneeLabel": "Assignee:",
-		"assigneeAll": "All Assignees",
-		"priorityLabel": "Priority:",
-		"priorityAll": "All Priorities",
-		"refresh": "Refresh"
-	},
-	"eventsCards": {
-		"totalEvents": {
-			"title": "Total Events",
-			"progress": "Last 24h"
-		},
-		"motionEvents": {
-			"title": "Motion Events",
-			"progress": "Last 24h"
-		},
-		"resolvedToday": {
-			"title": "Resolved Today",
-			"progress": "{count} Total"
-		},
-		"avgDuration": {
-			"title": "Avg Duration",
-			"progress": "Minutes"
-		}
-	},
-	"alertsCards": {
-		"activeAlerts": {
-			"title": "Active Alerts",
-			"progress": "{count} Critical"
-		},
-		"highPriority": {
-			"title": "High Priority",
-			"progress": "Needs Action"
-		},
-		"acknowledgedToday": {
-			"title": "Acknowledged Today",
-			"progress": "{count} Total"
-		},
-		"responseTime": {
-			"title": "Response Time",
-			"progress": "Average"
-		}
-	},
-	"eventsTable": {
-		"title": "Recent Events",
-		"columns": {
-			"event": "Event Name",
-			"camera": "Camera Name",
-			"timestamp": "Timestamp",
-			"duration": "Duration (min)",
-			"avgDetection": "Avg Detection (s)",
-			"status": "Status",
-			"actions": "Actions"
-		},
-		"empty": "No events found",
-		"noLocation": "No location",
-		"generatedDescription": "Activity detected - {seconds}s avg detection",
-		"pagination": {
-			"info": "Showing {start} to {end} of {total} entries",
-			"itemsLabel": "Items per page"
-		},
-		"actions": {
-			"view": "View Details",
-			"resolve": "Resolve",
-			"edit": "Edit"
-		},
-		"status": {
-			"active": "Active",
-			"resolved": "Resolved",
-			"unresolved": "Unresolved",
-			"notResolved": "Not Resolved",
-			"falseDetection": "False Detection",
-			"unknown": "Unknown"
-		},
-		"types": {
-			"motion": "Motion",
-			"intrusion": "Intrusion",
-			"system": "System",
-			"cameraOffline": "Camera Offline",
-			"unknown": "Unknown"
-		},
-		"severity": {
-			"low": "Low",
-			"medium": "Medium",
-			"high": "High",
-			"critical": "Critical",
-			"unknown": "Unknown"
-		}
-	},
-	"alertsTable": {
-		"title": "Active Alerts",
-		"columns": {
-			"alert": "Alert Name",
-			"camera": "Camera Name",
-			"timestamp": "Triggered Time",
-			"activities": "Activities",
-			"severity": "Severity",
-			"responseTime": "Response Time",
-			"assignedTo": "Assigned To",
-			"status": "Status",
-			"actions": "Actions"
-		},
-		"alertDetail": {
-			"title": "Alert Details",
-			"basicInfo": "Basic Information",
-			"eventDetails": "Event Details",
-			"detectedObjects": "Detected Objects",
-			"activities": "Activities",
-			"comment": "Comment",
-			"images": "Images",
-			"editTitle": "Edit Status & Comment",
-			"eventId": "Event ID",
-			"cameraName": "Camera Name",
-			"status": "Status",
-			"duration": "Duration",
-			"eventStart": "Start Time",
-			"eventEnd": "End Time",
-			"totalDetections": "Total Detections",
-			"objectType": "Object Type",
-			"detectionCount": "Detection Count",
-			"noComment": "No comment",
-			"commentPlaceholder": "Enter comment...",
-			"noData": "No alert detail available",
-			"updateSuccess": "Status and comment updated successfully"
-		},
-		"empty": "No alerts found",
-		"noAssignee": "Unassigned",
-		"generatedDescription": "Alert triggered - {severity} severity",
-		"pagination": {
-			"info": "Showing {start} to {end} of {total} entries",
-			"itemsLabel": "Items per page"
-		},
-		"actions": {
-			"view": "View Details",
-			"acknowledge": "Acknowledge",
-			"resolve": "Resolve",
-			"escalate": "Escalate",
-			"assign": "Assign"
-		},
-		"status": {
-			"active": "Active",
-			"acknowledged": "Acknowledged",
-			"resolved": "Resolved",
-			"unresolved": "Unresolved",
-			"escalated": "Escalated",
-			"dismissed": "Dismissed",
-			"unknown": "Unknown"
-		},
-		"types": {
-			"security": "Security",
-			"technical": "Technical",
-			"system": "System",
-			"maintenance": "Maintenance",
-			"unknown": "Unknown"
-		},
-		"severity": {
-			"low": "Low",
-			"medium": "Medium",
-			"high": "High",
-			"critical": "Critical",
-			"unknown": "Unknown"
-		}
-	},
-	"actions": {
-		"close": "Close",
-		"acknowledge": "Acknowledge",
-		"resolve": "Resolve",
-		"cancel": "Cancel",
-		"save": "Save Changes",
-		"saving": "Saving...",
-		"update": "Update"
-	},
-	"table": {
-		"actions": {
-			"viewEdit": "View & Edit"
-		}
-	},
-	"form": {
-		"selectStatus": "Select status..."
-	},
-	"eventsModals": {
-		"details": {
-			"title": "Event Details",
-			"image": "Event Image:",
-			"eventId": "Event ID:",
-			"eventName": "Event Name:",
-			"cameraName": "Camera Name:",
-			"status": "Status:",
-			"description": "Description:",
-			"startTime": "Start Time:",
-			"endTime": "End Time:",
-			"duration": "Duration:",
-			"totalMinutes": "Total Minutes:",
-			"avgDetection": "Average Detection Time:",
-			"activities": "Activities:",
-			"comments": "Comments:",
-			"comment": "Comment",
-			"commentPlaceholder": "Leave a comment about this event...",
-			"eventIdHint": "Event ID:",
-			"imageFallback": "Image not available",
-			"noData": "Event data not available"
-		},
-		"edit": {
-			"title": "Edit Event",
-			"eventType": "Event Type:",
-			"severity": "Severity:",
-			"currentStatus": "Current Status:",
-			"process": "Process:",
-			"startTime": "Start Time:",
-			"endTime": "End Time:",
-			"duration": "Duration:",
-			"camera": "Camera:",
-			"location": "Location:",
-			"updateStatus": "Update Status:",
-			"selectStatus": "Select new status...",
-			"comment": "Comment:",
-			"commentPlaceholder": "Leave a comment about this event...",
-			"eventId": "Event ID:"
-		}
-	},
-	"alertsModals": {
-		"details": {
-			"title": "Alert Details",
-			"image": "Alert Image:",
-			"alertId": "Alert ID:",
-			"cameraUuid": "Camera UUID:",
-			"status": "Status:",
-			"description": "Description:",
-			"triggeredTime": "Triggered Time:",
-			"acknowledgedTime": "Acknowledged Time:",
-			"resolvedTime": "Resolved Time:",
-			"severity": "Severity:",
-			"responseTime": "Response Time:",
-			"assignedTo": "Assigned To:",
-			"comments": "Comments:",
-			"comment": "Comment",
-			"commentPlaceholder": "Leave a comment about this alert...",
-			"alertIdHint": "Alert ID:",
-			"imageFallback": "Image not available"
-		},
-		"edit": {
-			"title": "Edit Alert",
-			"alertType": "Alert Type:",
-			"severity": "Severity Level:",
-			"currentStatus": "Current Status:",
-			"assignedTo": "Assigned To:",
-			"priority": "Priority:",
-			"camera": "Camera:",
-			"location": "Location:",
-			"updateStatus": "Update Status:",
-			"selectStatus": "Select new status...",
-			"selectAssignee": "Select assignee...",
-			"comment": "Comment:",
-			"commentPlaceholder": "Leave a comment about this alert...",
-			"alertId": "Alert ID:"
-		}
-	},
-	"eventsForm": {
-		"statusOptions": {
-			"resolved": "Resolved",
-			"notResolved": "Not Resolved",
-			"falseDetection": "False Detection"
-		}
-	},
-	"alertsForm": {
-		"statusOptions": {
-			"acknowledged": "Acknowledged",
-			"resolved": "Resolved",
-			"escalated": "Escalated",
-			"dismissed": "Dismissed"
-		},
-		"priorityOptions": {
-			"low": "Low",
-			"medium": "Medium",
-			"high": "High",
-			"critical": "Critical"
-		}
-	},
-	"eventsBulkActions": {
-		"selectedItems": "{{count}} events selected",
-		"deleteSelected": "Delete Selected Events",
-		"markAsResolved": "Mark as Resolved",
-		"markAsUnresolved": "Mark as Unresolved",
-		"exportSelected": "Export Selected Events",
-		"batchProcess": "Batch Process Events"
-	},
-	"alertsBulkActions": {
-		"selectedItems": "{{count}} alerts selected",
-		"deleteSelected": "Delete Selected Alerts",
-		"markAsAcknowledged": "Mark as Acknowledged",
-		"markAsResolved": "Mark as Resolved",
-		"escalateSelected": "Escalate Selected",
-		"assignTo": "Assign To",
-		"exportSelected": "Export Selected Alerts"
-	},
-	"eventsToast": {
-		"success": {
-			"created": "Event created successfully",
-			"updated": "Event updated successfully",
-			"deleted": "Event deleted successfully",
-			"bulkDeleted": "{{count}} events deleted successfully",
-			"statusUpdated": "Event status updated successfully",
-			"exported": "{{count}} events exported successfully"
-		},
-		"error": {
-			"createFailed": "Failed to create event",
-			"updateFailed": "Failed to update event",
-			"deleteFailed": "Failed to delete event",
-			"loadFailed": "Failed to load event data",
-			"exportFailed": "Failed to export events"
-		}
-	},
-	"alertsToast": {
-		"success": {
-			"acknowledged": "Alert acknowledged successfully",
-			"resolved": "Alert resolved successfully",
-			"escalated": "Alert escalated successfully",
-			"assigned": "Alert assigned successfully",
-			"deleted": "Alert deleted successfully",
-			"bulkDeleted": "{{count}} alerts deleted successfully",
-			"statusUpdated": "Alert status updated successfully",
-			"exported": "{{count}} alerts exported successfully"
-		},
-		"error": {
-			"acknowledgeFailed": "Failed to acknowledge alert",
-			"resolveFailed": "Failed to resolve alert",
-			"escalateFailed": "Failed to escalate alert",
-			"assignFailed": "Failed to assign alert",
-			"deleteFailed": "Failed to delete alert",
-			"loadFailed": "Failed to load alert data",
-			"exportFailed": "Failed to export alerts"
-		}
-	},
-	"format": {
-		"notAvailable": "N/A",
-		"minutesShort": "{value} min",
-		"secondsShort": "{value} sec",
-		"minutesLong": "{value} minutes",
-		"secondsLong": "{value} seconds"
-	},
-	"settings": {
-		"header": {
-			"title": "Events & Alerts Settings",
-			"description": "Configure event detection and alert notifications"
-		},
-		"eventDetection": {
-			"title": "Event Detection",
-			"motion": {
-				"label": "Motion Detection",
-				"description": "Detect motion in camera feeds and trigger events",
-				"sensitivity": "Sensitivity Level",
-				"minArea": "Minimum Detection Area (%)"
-			},
-			"intrusion": {
-				"label": "Intrusion Detection",
-				"description": "Detect unauthorized access in restricted areas",
-				"zones": "Detection Zones",
-				"configure": "Configure Zones"
-			},
-			"system": {
-				"label": "System Monitoring",
-				"description": "Monitor camera and NVR system health",
-				"cameraOffline": "Camera Offline Detection",
-				"lowDiskSpace": "Low Disk Space Warning",
-				"networkIssues": "Network Issues Detection"
-			},
-			"saveButton": "Save Event Settings"
-		},
-		"notifications": {
-			"title": "Alert Notifications",
-			"email": {
-				"label": "Email Notifications",
-				"description": "Send alert notifications via email",
-				"recipients": "Email Recipients",
-				"placeholder": "Enter email addresses, one per line",
-				"threshold": "Alert Severity Threshold",
-				"options": {
-					"low": "All Alerts (Low and above)",
-					"medium": "Medium and above",
-					"high": "High and above",
-					"critical": "Critical only"
-				}
-			},
-			"sms": {
-				"label": "SMS Notifications",
-				"description": "Send critical alerts via SMS",
-				"numbers": "Phone Numbers",
-				"placeholder": "Enter phone numbers, one per line",
-				"threshold": "SMS Alert Threshold",
-				"options": {
-					"high": "High and above",
-					"critical": "Critical only"
-				}
-			},
-			"push": {
-				"label": "Push Notifications",
-				"description": "Send browser/mobile push notifications",
-				"threshold": "Push Alert Threshold",
-				"sound": "Play notification sound"
-			},
-			"saveButton": "Save Notification Settings"
-		},
-		"advanced": {
-			"title": "Advanced Settings",
-			"eventRetention": {
-				"label": "Event Retention Period (days)",
-				"help": "How long to keep event history"
-			},
-			"autoResolution": {
-				"label": "Auto-resolution Timeout (hours)",
-				"help": "Auto-resolve acknowledged events after timeout"
-			},
-			"saveButton": "Save Advanced Settings"
-		}
-	}
+  "events": {
+    "title": "Events Management",
+    "subtitleAll": "Monitor and manage security events across all sites",
+    "subtitleSite": "Monitor and manage security events for {site}"
+  },
+  "alerts": {
+    "title": "Alerts Management",
+    "subtitleAll": "Monitor and manage security alerts across all sites",
+    "subtitleSite": "Monitor and manage security alerts for {site}"
+  },
+  "eventsFilters": {
+    "fromDateLabel": "From:",
+    "toDateLabel": "To:",
+    "siteLabel": "Site:",
+    "cameraLabel": "Camera:",
+    "cameraAll": "All Cameras",
+    "siteAll": "All Sites",
+    "sampleSite": "Site A",
+    "searchPlaceholder": "Search events...",
+    "typeLabel": "Type:",
+    "typeAll": "All Types",
+    "severityLabel": "Level:",
+    "severityAll": "All Levels",
+    "statusLabel": "Status:",
+    "statusAll": "All Status",
+    "refresh": "Refresh"
+  },
+  "alertsFilters": {
+    "fromDateLabel": "From:",
+    "toDateLabel": "To:",
+    "siteLabel": "Site:",
+    "cameraLabel": "Camera:",
+    "cameraAll": "All Cameras",
+    "siteAll": "All Sites",
+    "sampleSite": "Site A",
+    "searchPlaceholder": "Search alerts...",
+    "typeLabel": "Type:",
+    "typeAll": "All Types",
+    "severityLabel": "Severity Level:",
+    "severityAll": "All Levels",
+    "statusLabel": "Status:",
+    "statusAll": "All Status",
+    "assigneeLabel": "Assignee:",
+    "assigneeAll": "All Assignees",
+    "priorityLabel": "Priority:",
+    "priorityAll": "All Priorities",
+    "refresh": "Refresh"
+  },
+  "eventsCards": {
+    "totalEvents": {
+      "title": "Total Events",
+      "progress": "Last 24h"
+    },
+    "motionEvents": {
+      "title": "Motion Events",
+      "progress": "Last 24h"
+    },
+    "resolvedToday": {
+      "title": "Resolved Today",
+      "progress": "{count} Total"
+    },
+    "avgDuration": {
+      "title": "Avg Duration",
+      "progress": "Minutes"
+    }
+  },
+  "alertsCards": {
+    "activeAlerts": {
+      "title": "Active Alerts",
+      "progress": "{count} Critical"
+    },
+    "highPriority": {
+      "title": "High Priority",
+      "progress": "Needs Action"
+    },
+    "acknowledgedToday": {
+      "title": "Acknowledged Today",
+      "progress": "{count} Total"
+    },
+    "responseTime": {
+      "title": "Response Time",
+      "progress": "Average"
+    }
+  },
+  "eventsTable": {
+    "title": "Recent Events",
+    "columns": {
+      "event": "Event Name",
+      "camera": "Camera Name",
+      "timestamp": "Timestamp",
+      "duration": "Duration (min)",
+      "avgDetection": "Avg Detection (s)",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": "No events found",
+    "noLocation": "No location",
+    "generatedDescription": "Activity detected - {seconds}s avg detection",
+    "pagination": {
+      "info": "Showing {start} to {end} of {total} entries",
+      "itemsLabel": "Items per page"
+    },
+    "actions": {
+      "view": "View Details",
+      "resolve": "Resolve",
+      "edit": "Edit"
+    },
+    "status": {
+      "active": "Active",
+      "resolved": "Resolved",
+      "unresolved": "Unresolved",
+      "notResolved": "Not Resolved",
+      "falseDetection": "False Detection",
+      "unknown": "Unknown"
+    },
+    "types": {
+      "motion": "Motion",
+      "intrusion": "Intrusion",
+      "system": "System",
+      "cameraOffline": "Camera Offline",
+      "unknown": "Unknown"
+    },
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical",
+      "unknown": "Unknown"
+    }
+  },
+  "alertsTable": {
+    "title": "Active Alerts",
+    "columns": {
+      "alert": "Alert Name",
+      "camera": "Camera Name",
+      "timestamp": "Triggered Time",
+      "activities": "Activities",
+      "severity": "Severity",
+      "responseTime": "Response Time",
+      "assignedTo": "Assigned To",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "alertDetail": {
+      "title": "Alert Details",
+      "basicInfo": "Basic Information",
+      "eventDetails": "Event Details",
+      "detectedObjects": "Detected Objects",
+      "activities": "Activities",
+      "comment": "Comment",
+      "images": "Images",
+      "editTitle": "Edit Status & Comment",
+      "eventId": "Event ID",
+      "cameraName": "Camera Name",
+      "status": "Status",
+      "duration": "Duration",
+      "eventStart": "Start Time",
+      "eventEnd": "End Time",
+      "totalDetections": "Total Detections",
+      "objectType": "Object Type",
+      "detectionCount": "Detection Count",
+      "noComment": "No comment",
+      "commentPlaceholder": "Enter comment...",
+      "noData": "No alert detail available",
+      "updateSuccess": "Status and comment updated successfully"
+    },
+    "empty": "No alerts found",
+    "noAssignee": "Unassigned",
+    "generatedDescription": "Alert triggered - {severity} severity",
+    "pagination": {
+      "info": "Showing {start} to {end} of {total} entries",
+      "itemsLabel": "Items per page"
+    },
+    "actions": {
+      "view": "View Details",
+      "acknowledge": "Acknowledge",
+      "resolve": "Resolve",
+      "escalate": "Escalate",
+      "assign": "Assign"
+    },
+    "status": {
+      "active": "Active",
+      "acknowledged": "Acknowledged",
+      "resolved": "Resolved",
+      "unresolved": "Unresolved",
+      "escalated": "Escalated",
+      "dismissed": "Dismissed",
+      "unknown": "Unknown"
+    },
+    "types": {
+      "security": "Security",
+      "technical": "Technical",
+      "system": "System",
+      "maintenance": "Maintenance",
+      "unknown": "Unknown"
+    },
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical",
+      "unknown": "Unknown"
+    }
+  },
+  "actions": {
+    "close": "Close",
+    "acknowledge": "Acknowledge",
+    "resolve": "Resolve",
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "update": "Update"
+  },
+  "table": {
+    "actions": {
+      "viewEdit": "View & Edit"
+    }
+  },
+  "form": {
+    "selectStatus": "Select status..."
+  },
+  "eventsModals": {
+    "details": {
+      "title": "Event Details",
+      "image": "Event Image:",
+      "eventId": "Event ID:",
+      "eventName": "Event Name:",
+      "cameraName": "Camera Name:",
+      "status": "Status:",
+      "description": "Description:",
+      "startTime": "Start Time:",
+      "endTime": "End Time:",
+      "duration": "Duration:",
+      "totalMinutes": "Total Minutes:",
+      "avgDetection": "Average Detection Time:",
+      "activities": "Activities:",
+      "comments": "Comments:",
+      "comment": "Comment",
+      "commentPlaceholder": "Leave a comment about this event...",
+      "eventIdHint": "Event ID:",
+      "imageFallback": "Image not available",
+      "noData": "Event data not available"
+    },
+    "edit": {
+      "title": "Edit Event",
+      "eventType": "Event Type:",
+      "severity": "Severity:",
+      "currentStatus": "Current Status:",
+      "process": "Process:",
+      "startTime": "Start Time:",
+      "endTime": "End Time:",
+      "duration": "Duration:",
+      "camera": "Camera:",
+      "location": "Location:",
+      "updateStatus": "Update Status:",
+      "selectStatus": "Select new status...",
+      "comment": "Comment:",
+      "commentPlaceholder": "Leave a comment about this event...",
+      "eventId": "Event ID:"
+    }
+  },
+  "alertsModals": {
+    "details": {
+      "title": "Alert Details",
+      "image": "Alert Image:",
+      "alertId": "Alert ID:",
+      "cameraUuid": "Camera UUID:",
+      "status": "Status:",
+      "description": "Description:",
+      "triggeredTime": "Triggered Time:",
+      "acknowledgedTime": "Acknowledged Time:",
+      "resolvedTime": "Resolved Time:",
+      "severity": "Severity:",
+      "responseTime": "Response Time:",
+      "assignedTo": "Assigned To:",
+      "comments": "Comments:",
+      "comment": "Comment",
+      "commentPlaceholder": "Leave a comment about this alert...",
+      "alertIdHint": "Alert ID:",
+      "imageFallback": "Image not available"
+    },
+    "edit": {
+      "title": "Edit Alert",
+      "alertType": "Alert Type:",
+      "severity": "Severity Level:",
+      "currentStatus": "Current Status:",
+      "assignedTo": "Assigned To:",
+      "priority": "Priority:",
+      "camera": "Camera:",
+      "location": "Location:",
+      "updateStatus": "Update Status:",
+      "selectStatus": "Select new status...",
+      "selectAssignee": "Select assignee...",
+      "comment": "Comment:",
+      "commentPlaceholder": "Leave a comment about this alert...",
+      "alertId": "Alert ID:"
+    }
+  },
+  "eventsForm": {
+    "statusOptions": {
+      "resolved": "Resolved",
+      "notResolved": "Not Resolved",
+      "falseDetection": "False Detection"
+    }
+  },
+  "alertsForm": {
+    "statusOptions": {
+      "acknowledged": "Acknowledged",
+      "resolved": "Resolved",
+      "escalated": "Escalated",
+      "dismissed": "Dismissed"
+    },
+    "priorityOptions": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    }
+  },
+  "eventsBulkActions": {
+    "selectedItems": "{{count}} events selected",
+    "deleteSelected": "Delete Selected Events",
+    "markAsResolved": "Mark as Resolved",
+    "markAsUnresolved": "Mark as Unresolved",
+    "exportSelected": "Export Selected Events",
+    "batchProcess": "Batch Process Events"
+  },
+  "alertsBulkActions": {
+    "selectedItems": "{{count}} alerts selected",
+    "deleteSelected": "Delete Selected Alerts",
+    "markAsAcknowledged": "Mark as Acknowledged",
+    "markAsResolved": "Mark as Resolved",
+    "escalateSelected": "Escalate Selected",
+    "assignTo": "Assign To",
+    "exportSelected": "Export Selected Alerts"
+  },
+  "eventsToast": {
+    "success": {
+      "created": "Event created successfully",
+      "updated": "Event updated successfully",
+      "deleted": "Event deleted successfully",
+      "bulkDeleted": "{{count}} events deleted successfully",
+      "statusUpdated": "Event status updated successfully",
+      "exported": "{{count}} events exported successfully"
+    },
+    "error": {
+      "createFailed": "Failed to create event",
+      "updateFailed": "Failed to update event",
+      "deleteFailed": "Failed to delete event",
+      "loadFailed": "Failed to load event data",
+      "exportFailed": "Failed to export events"
+    }
+  },
+  "alertsToast": {
+    "success": {
+      "acknowledged": "Alert acknowledged successfully",
+      "resolved": "Alert resolved successfully",
+      "escalated": "Alert escalated successfully",
+      "assigned": "Alert assigned successfully",
+      "deleted": "Alert deleted successfully",
+      "bulkDeleted": "{{count}} alerts deleted successfully",
+      "statusUpdated": "Alert status updated successfully",
+      "exported": "{{count}} alerts exported successfully"
+    },
+    "error": {
+      "acknowledgeFailed": "Failed to acknowledge alert",
+      "resolveFailed": "Failed to resolve alert",
+      "escalateFailed": "Failed to escalate alert",
+      "assignFailed": "Failed to assign alert",
+      "deleteFailed": "Failed to delete alert",
+      "loadFailed": "Failed to load alert data",
+      "exportFailed": "Failed to export alerts"
+    }
+  },
+  "format": {
+    "notAvailable": "N/A",
+    "minutesShort": "{value} min",
+    "secondsShort": "{value} sec",
+    "minutesLong": "{value} minutes",
+    "secondsLong": "{value} seconds"
+  },
+  "settings": {
+    "header": {
+      "title": "Events & Alerts Settings",
+      "description": "Configure event detection and alert notifications"
+    },
+    "eventDetection": {
+      "title": "Event Detection",
+      "motion": {
+        "label": "Motion Detection",
+        "description": "Detect motion in camera feeds and trigger events",
+        "sensitivity": "Sensitivity Level",
+        "minArea": "Minimum Detection Area (%)"
+      },
+      "intrusion": {
+        "label": "Intrusion Detection",
+        "description": "Detect unauthorized access in restricted areas",
+        "zones": "Detection Zones",
+        "configure": "Configure Zones"
+      },
+      "system": {
+        "label": "System Monitoring",
+        "description": "Monitor camera and NVR system health",
+        "cameraOffline": "Camera Offline Detection",
+        "lowDiskSpace": "Low Disk Space Warning",
+        "networkIssues": "Network Issues Detection"
+      },
+      "saveButton": "Save Event Settings"
+    },
+    "notifications": {
+      "title": "Alert Notifications",
+      "email": {
+        "label": "Email Notifications",
+        "description": "Send alert notifications via email",
+        "recipients": "Email Recipients",
+        "placeholder": "Enter email addresses, one per line",
+        "threshold": "Alert Severity Threshold",
+        "options": {
+          "low": "All Alerts (Low and above)",
+          "medium": "Medium and above",
+          "high": "High and above",
+          "critical": "Critical only"
+        }
+      },
+      "sms": {
+        "label": "SMS Notifications",
+        "description": "Send critical alerts via SMS",
+        "numbers": "Phone Numbers",
+        "placeholder": "Enter phone numbers, one per line",
+        "threshold": "SMS Alert Threshold",
+        "options": {
+          "high": "High and above",
+          "critical": "Critical only"
+        }
+      },
+      "push": {
+        "label": "Push Notifications",
+        "description": "Send browser/mobile push notifications",
+        "threshold": "Push Alert Threshold",
+        "sound": "Play notification sound"
+      },
+      "saveButton": "Save Notification Settings"
+    },
+    "advanced": {
+      "title": "Advanced Settings",
+      "eventRetention": {
+        "label": "Event Retention Period (days)",
+        "help": "How long to keep event history"
+      },
+      "autoResolution": {
+        "label": "Auto-resolution Timeout (hours)",
+        "help": "Auto-resolve acknowledged events after timeout"
+      },
+      "saveButton": "Save Advanced Settings"
+    }
+  }
 }

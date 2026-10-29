@@ -121,22 +121,18 @@
                         <span
                           class="symbol-label bg-light-primary text-primary fw-bold"
                         >
-                          {{ member.email?.charAt(0).toUpperCase() || "U" }}
+                          {{ member.name?.charAt(0).toUpperCase() || "U" }}
                         </span>
                       </div>
                       <div>
                         <span class="text-dark fw-bold d-block fs-6">
                           {{
-                            member.email ||
-                            t("components.membership.list.table.unknownUser")
+                            member.name ||
+                            t("components.membership.list.table.unreadableName")
                           }}
                         </span>
                         <span class="text-muted fw-semibold d-block fs-7">
-                          {{
-                            t("components.membership.list.table.rolePrefix", {
-                              role: getRoleLabel(member.role),
-                            })
-                          }}
+                          {{ member.email }}
                         </span>
                       </div>
                     </div>
@@ -274,30 +270,27 @@ interface Props {
 const props = defineProps<Props>();
 
 // Interfaces
-interface InvitedBy {
-  username: string;
+interface MemberUser {
+  uid: string;
   email: string;
-}
-
-interface UpdatedBy {
-  username: string;
-  email: string;
+  first_name?: string;
+  last_name?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 interface Member {
   uid: string;
-  email: string;
-  organization_uid?: string;
-  organization_name?: string;
-  account_uid?: string;
-  account_name?: string;
-  team_uid?: string;
-  team_name?: string;
+  user_uid: string;
+  user?: MemberUser;
+  organization_uid?: string | null;
+  account_uid?: string | null;
+  team_uid?: string | null;
   role: string;
   joined_at: string;
-  invited_by: InvitedBy;
-  updated_at: string;
-  updated_by: UpdatedBy;
+  // Derived from `user` in fetchMembers
+  email: string;
+  name: string;
 }
 
 // Reactive data
@@ -346,11 +339,8 @@ const filteredMembers = computed(() => {
 
   const query = searchQuery.value.toLowerCase();
   return members.value.filter((member) => {
-    const email = member.email || "";
-    const role = member.role || "";
-
-    return (
-      email.toLowerCase().includes(query) || role.toLowerCase().includes(query)
+    return [member.name, member.email, member.role].some((v) =>
+      (v || "").toLowerCase().includes(query)
     );
   });
 });
@@ -434,7 +424,14 @@ const fetchMembers = async () => {
           ? response.data
           : [];
 
-      members.value = data;
+      members.value = data.map((m: Member) => ({
+        ...m,
+        email: m.user?.email ?? "",
+        name: [m.user?.first_name, m.user?.last_name]
+          .map((v) => v?.trim())
+          .filter(Boolean)
+          .join(" "),
+      }));
       console.log("Members loaded:", members.value);
       console.log("First member structure:", members.value[0]);
     } else {
@@ -463,7 +460,7 @@ const deleteMember = async (member: Member) => {
   }
 
   const memberName =
-    member.email || t("components.membership.list.table.unknownUser");
+    member.name || t("components.membership.list.table.unreadableName");
   const confirmMessage = t("components.membership.list.alerts.confirmRemove", {
     member: memberName,
     entity: entityLabelLower.value,

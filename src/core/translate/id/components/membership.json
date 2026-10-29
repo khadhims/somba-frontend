@@ -13,7 +13,7 @@
     "roles": {
       "owner": "Pemilik",
       "admin": "Admin",
-      "member": "Anggota"
+      "viewer": "Pelihat"
     }
   },
   "addEdit": {
@@ -68,6 +68,7 @@
       "empty": "Belum ada anggota",
       "emptySearch": "Tidak ditemukan anggota yang cocok dengan \"{query}\"",
       "rolePrefix": "Peran: {role}",
+      "unreadableName": "Nama member tidak terbaca",
       "unknownUser": "Pengguna Tidak Dikenal",
       "unknownDate": "Tidak diketahui",
       "invalidDate": "Tanggal tidak valid"

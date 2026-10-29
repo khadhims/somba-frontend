@@ -1,39 +1,39 @@
 {
-	"header": {
-		"title": "Tampilan Kamera Langsung",
-		"status": "{count} kamera terhubung",
-		"filters": {
-			"siteLabel": "Situs:",
-			"nvrLabel": "NVR:",
-			"site": {
-				"loading": "Memuat situs...",
-				"none": "Tidak ada situs",
-				"placeholder": "Pilih situs"
-			},
-			"nvr": {
-				"loading": "Memuat NVR...",
-				"requiresSite": "Pilih situs terlebih dahulu",
-				"none": "Tidak ada NVR",
-				"all": "Semua NVR"
-			}
-		}
-	},
-	"grid": {
-		"status": {
-			"online": "Terhubung",
-			"offline": "Tidak Terhubung",
-			"connecting": "Menghubungkan"
-		},
-		"fullscreen": "Layar Penuh",
-		"recordings": "Rekaman",
-		"empty": "Tidak ada kamera",
-		"cameraLimitInfo": "Menampilkan {shown} dari {total} kamera tersedia dalam grid {grid}"
-	},
-	"sidebar": {
-		"cameraCount": "{count} kamera"
-	},
-	"availableCameras": {
-		"title": "Kamera Tersedia",
-		"subtitle": "Drag kamera ke grid untuk mengganti kamera yang sedang ditampilkan"
-	}
+  "header": {
+    "title": "Tampilan Kamera Langsung",
+    "status": "{count} kamera terhubung",
+    "filters": {
+      "siteLabel": "Situs:",
+      "nvrLabel": "NVR:",
+      "site": {
+        "loading": "Memuat situs...",
+        "none": "Tidak ada situs",
+        "placeholder": "Pilih situs"
+      },
+      "nvr": {
+        "loading": "Memuat NVR...",
+        "requiresSite": "Pilih situs terlebih dahulu",
+        "none": "Tidak ada NVR",
+        "all": "Semua NVR"
+      }
+    }
+  },
+  "grid": {
+    "status": {
+      "online": "Terhubung",
+      "offline": "Tidak Terhubung",
+      "connecting": "Menghubungkan"
+    },
+    "fullscreen": "Layar Penuh",
+    "recordings": "Rekaman",
+    "empty": "Tidak ada kamera",
+    "cameraLimitInfo": "Menampilkan {shown} dari {total} kamera tersedia dalam grid {grid}"
+  },
+  "sidebar": {
+    "cameraCount": "{count} kamera"
+  },
+  "availableCameras": {
+    "title": "Kamera Tersedia",
+    "subtitle": "Drag kamera ke grid untuk mengganti kamera yang sedang ditampilkan"
+  }
 }

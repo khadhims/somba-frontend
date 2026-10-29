@@ -1,39 +1,39 @@
 {
-	"header": {
-		"title": "Live Camera Feed",
-		"status": "{count} cameras online",
-		"filters": {
-			"siteLabel": "Site:",
-			"nvrLabel": "NVR:",
-			"site": {
-				"loading": "Loading sites...",
-				"none": "No sites available",
-				"placeholder": "Select Sites"
-			},
-			"nvr": {
-				"loading": "Loading NVRs...",
-				"requiresSite": "Select a site first",
-				"none": "No NVRs available",
-				"all": "All NVRs"
-			}
-		}
-	},
-	"grid": {
-		"status": {
-			"online": "Online",
-			"offline": "Offline",
-			"connecting": "Connecting"
-		},
-		"fullscreen": "Fullscreen",
-		"recordings": "Recordings",
-		"empty": "No cameras found",
-		"cameraLimitInfo": "Showing {shown} of {total} available cameras in {grid} grid"
-	},
-	"sidebar": {
-		"cameraCount": "{count} cameras"
-	},
-	"availableCameras": {
-		"title": "Available Cameras",
-		"subtitle": "Drag cameras to the grid to replace currently displayed cameras"
-	}
+  "header": {
+    "title": "Live Camera Feed",
+    "status": "{count} cameras online",
+    "filters": {
+      "siteLabel": "Site:",
+      "nvrLabel": "NVR:",
+      "site": {
+        "loading": "Loading sites...",
+        "none": "No sites available",
+        "placeholder": "Select Sites"
+      },
+      "nvr": {
+        "loading": "Loading NVRs...",
+        "requiresSite": "Select a site first",
+        "none": "No NVRs available",
+        "all": "All NVRs"
+      }
+    }
+  },
+  "grid": {
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "connecting": "Connecting"
+    },
+    "fullscreen": "Fullscreen",
+    "recordings": "Recordings",
+    "empty": "No cameras found",
+    "cameraLimitInfo": "Showing {shown} of {total} available cameras in {grid} grid"
+  },
+  "sidebar": {
+    "cameraCount": "{count} cameras"
+  },
+  "availableCameras": {
+    "title": "Available Cameras",
+    "subtitle": "Drag cameras to the grid to replace currently displayed cameras"
+  }
 }

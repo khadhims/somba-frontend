@@ -225,7 +225,7 @@
         </template>
 
         <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end flex-shrink-0">
+          <div class="d-flex justify-content-start shrink-0">
             <button
               class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
               @click="showOrganizationMembers(row)"

@@ -133,7 +133,7 @@ export default defineComponent({
 
       submitButton.value?.removeAttribute("data-kt-indicator");
       // eslint-disable-next-line
-        submitButton.value!.disabled = false;
+      submitButton.value!.disabled = false;
     };
 
     return {

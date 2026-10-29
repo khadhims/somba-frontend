@@ -103,7 +103,7 @@ export default defineComponent({
     const itemsSelect = (value: any) => {
       selectedItems.value = [];
       //eslint-disable-next-line
-      value.forEach((item:any) => {
+      value.forEach((item: any) => {
         if (!selectedItems.value.includes(item)) selectedItems.value.push(item);
       });
     };

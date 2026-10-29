@@ -1,157 +1,157 @@
 {
-	"general": {
-		"lastUpdated": "Terakhir diperbarui",
-		"loadData": "Muat Data",
-		"retry": "Muat Ulang",
-		"loading": "Memuat data aktivitas...",
-		"noData": "Tidak ada data aktivitas",
-		"noDataDescription": "Data aktivitas akan muncul ketika sistem mulai beroperasi",
-		"errorLoading": "Gagal memuat data aktivitas"
-	},
-	"sections": {
-		"dailyProcess": {
-			"title": "Proses Pelaksanaan Harian",
-			"subtitle": "Pantau status aktivitas harian secara real-time"
-		},
-		"systemMonitoring": {
-			"title": "Sistem Monitoring",
-			"subtitle": "Informasi status sistem dan perangkat monitoring"
-		},
-		"navigation": {
-			"title": "Menu Navigasi",
-			"subtitle": "Akses cepat ke semua fitur sistem"
-		},
-		"realTimeReport": {
-			"title": "Laporan Dasbor secara Real Time",
-			"subtitle": "Laporan aktivitas dan monitoring secara real-time",
-			"componentTitle": "Proses",
-			"componentSubtitle": "Live tracking aktivitas harian dengan timeline interaktif"
-		}
-	},
-	"activities": {
-		"preparation": "Persiapan",
-		"cooking": "Masak",
-		"portioning": "Pemorsian",
-		"delivery": "Pengiriman",
-		"collectTray": "Ambil Nampan",
-		"washTray": "Cuci Nampan",
-		"completed": "Selesai",
-		"lastActivity": "Aktivitas terakhir",
-		"lastActivityPrefix": "Aktivitas terakhir:",
-		"noActivityData": "Tidak ada data",
-		"noActivityDataFull": "Aktivitas terakhir: Tidak ada data",
-		"status": {
-			"active": "Status: Aktif - Proses sedang berjalan",
-			"inactive": "Status: Tidak Aktif - Proses telah selesai atau belum dimulai"
-		},
-		"timeAgo": {
-			"minutes": "{minutes} menit yang lalu",
-			"hours": "{hours} jam yang lalu",
-			"days": "{days} hari yang lalu"
-		},
-		"summary": {
-			"title": "Aktivitas",
-			"earliestActive": "Pertama Aktif",
-			"latestActive": "Terakhir Aktif",
-			"noActivity": "Belum ada aktivitas",
-			"empty": "Tidak ada data aktivitas"
-		}
-	},
-	"monitoring": {
-		"totalCameras": {
-			"title": "Total Kamera",
-			"description": "Kamera terpasang"
-		},
-		"activeCameras": {
-			"title": "Kamera Aktif",
-			"description": "Status normal"
-		},
-		"inactiveCameras": {
-			"title": "Kamera Tidak Aktif",
-			"description": "Offline/Error"
-		},
-		"totalSppg": {
-			"title": "Total SPPG",
-			"description": "SPPG Tanah Sereal Bogor"
-		},
-		"distributionLocations": {
-			"title": "Lokasi Distribusi",
-			"description": "Area distribusi aktif"
-		}
-	},
-	"navigation": {
-		"liveView": {
-			"title": "Live View",
-			"description": "Monitor kamera secara real-time"
-		},
-		"events": {
-			"title": "Events",
-			"description": "Kelola event dan notifikasi"
-		},
-		"alerts": {
-			"title": "Alerts",
-			"description": "Sistem Pelanggaran dan alert"
-		},
-		"dailyReport": {
-			"title": "Daily Report",
-			"description": "Laporan harian aktivitas"
-		},
-		"recording": {
-			"title": "Recording & Playback",
-			"description": "Rekaman dan pemutaran ulang"
-		},
-		"monitoringCenter": {
-			"title": "Monitoring Center",
-			"description": "Pusat monitoring sistem"
-		}
-	},
-	"routes": {
-		"liveView": "/apps/live-view",
-		"events": "/apps/events",
-		"alerts": "/apps/alerts",
-		"dailyReport": "/apps/daily-report",
-		"recording": "/apps/recording",
-		"monitoringCenter": "/apps/monitoring-center"
-	},
-	"alerts": {
-		"table": {
-			"violation": "Nama Pelanggaran",
-			"duration": "Durasi Deteksi",
-			"detection": "Jumlah Objek Terdeteksi",
-			"time": "Waktu Mulai Terdeteksi",
-			"status": "Status Pelanggaran",
-			"empty": "Tidak ada data pelanggaran",
-			"loading": "Memuat data pelanggaran..."
-		},
-		"summary": {
-			"title": "Ringkasan Pelanggaran dan Aktivitas Terbaru",
-			"totalToday": {
-				"title": "Total Pelanggaran",
-				"description": "Hari ini"
-			},
-			"unresolvedToday": {
-				"title": "Belum Selesai",
-				"description": "Perlu tindakan"
-			},
-			"resolvedToday": {
-				"title": "Selesai",
-				"description": "Hari ini"
-			}
-		},
-		"status": {
-			"notResolved": "Belum Selesai",
-			"resolved": "Selesai",
-			"falseAlarm": "Alarm Palsu"
-		}
-	},
-	"report": {
-		"title": "Laporan Harian Monitoring",
-		"site": "Lokasi",
-		"date": "Tanggal",
-		"lastData": "Data Terakhir",
-		"generatedBy": "Dibuat oleh Somba Monitoring System",
-		"page": "Halaman",
-		"save": "Download Laporan",
-		"loading": "Memuat Data Laporan..."
-	}
+  "general": {
+    "lastUpdated": "Terakhir diperbarui",
+    "loadData": "Muat Data",
+    "retry": "Muat Ulang",
+    "loading": "Memuat data aktivitas...",
+    "noData": "Tidak ada data aktivitas",
+    "noDataDescription": "Data aktivitas akan muncul ketika sistem mulai beroperasi",
+    "errorLoading": "Gagal memuat data aktivitas"
+  },
+  "sections": {
+    "dailyProcess": {
+      "title": "Proses Pelaksanaan Harian",
+      "subtitle": "Pantau status aktivitas harian secara real-time"
+    },
+    "systemMonitoring": {
+      "title": "Sistem Monitoring",
+      "subtitle": "Informasi status sistem dan perangkat monitoring"
+    },
+    "navigation": {
+      "title": "Menu Navigasi",
+      "subtitle": "Akses cepat ke semua fitur sistem"
+    },
+    "realTimeReport": {
+      "title": "Laporan Dasbor secara Real Time",
+      "subtitle": "Laporan aktivitas dan monitoring secara real-time",
+      "componentTitle": "Proses",
+      "componentSubtitle": "Live tracking aktivitas harian dengan timeline interaktif"
+    }
+  },
+  "activities": {
+    "preparation": "Persiapan",
+    "cooking": "Masak",
+    "portioning": "Pemorsian",
+    "delivery": "Pengiriman",
+    "collectTray": "Ambil Nampan",
+    "washTray": "Cuci Nampan",
+    "completed": "Selesai",
+    "lastActivity": "Aktivitas terakhir",
+    "lastActivityPrefix": "Aktivitas terakhir:",
+    "noActivityData": "Tidak ada data",
+    "noActivityDataFull": "Aktivitas terakhir: Tidak ada data",
+    "status": {
+      "active": "Status: Aktif - Proses sedang berjalan",
+      "inactive": "Status: Tidak Aktif - Proses telah selesai atau belum dimulai"
+    },
+    "timeAgo": {
+      "minutes": "{minutes} menit yang lalu",
+      "hours": "{hours} jam yang lalu",
+      "days": "{days} hari yang lalu"
+    },
+    "summary": {
+      "title": "Aktivitas",
+      "earliestActive": "Pertama Aktif",
+      "latestActive": "Terakhir Aktif",
+      "noActivity": "Belum ada aktivitas",
+      "empty": "Tidak ada data aktivitas"
+    }
+  },
+  "monitoring": {
+    "totalCameras": {
+      "title": "Total Kamera",
+      "description": "Kamera terpasang"
+    },
+    "activeCameras": {
+      "title": "Kamera Aktif",
+      "description": "Status normal"
+    },
+    "inactiveCameras": {
+      "title": "Kamera Tidak Aktif",
+      "description": "Offline/Error"
+    },
+    "totalSppg": {
+      "title": "Total SPPG",
+      "description": "SPPG Tanah Sereal Bogor"
+    },
+    "distributionLocations": {
+      "title": "Lokasi Distribusi",
+      "description": "Area distribusi aktif"
+    }
+  },
+  "navigation": {
+    "liveView": {
+      "title": "Live View",
+      "description": "Monitor kamera secara real-time"
+    },
+    "events": {
+      "title": "Events",
+      "description": "Kelola event dan notifikasi"
+    },
+    "alerts": {
+      "title": "Alerts",
+      "description": "Sistem Pelanggaran dan alert"
+    },
+    "dailyReport": {
+      "title": "Daily Report",
+      "description": "Laporan harian aktivitas"
+    },
+    "recording": {
+      "title": "Recording & Playback",
+      "description": "Rekaman dan pemutaran ulang"
+    },
+    "monitoringCenter": {
+      "title": "Monitoring Center",
+      "description": "Pusat monitoring sistem"
+    }
+  },
+  "routes": {
+    "liveView": "/apps/live-view",
+    "events": "/apps/events",
+    "alerts": "/apps/alerts",
+    "dailyReport": "/apps/daily-report",
+    "recording": "/apps/recording",
+    "monitoringCenter": "/apps/monitoring-center"
+  },
+  "alerts": {
+    "table": {
+      "violation": "Nama Pelanggaran",
+      "duration": "Durasi Deteksi",
+      "detection": "Jumlah Objek Terdeteksi",
+      "time": "Waktu Mulai Terdeteksi",
+      "status": "Status Pelanggaran",
+      "empty": "Tidak ada data pelanggaran",
+      "loading": "Memuat data pelanggaran..."
+    },
+    "summary": {
+      "title": "Ringkasan Pelanggaran dan Aktivitas Terbaru",
+      "totalToday": {
+        "title": "Total Pelanggaran",
+        "description": "Hari ini"
+      },
+      "unresolvedToday": {
+        "title": "Belum Selesai",
+        "description": "Perlu tindakan"
+      },
+      "resolvedToday": {
+        "title": "Selesai",
+        "description": "Hari ini"
+      }
+    },
+    "status": {
+      "notResolved": "Belum Selesai",
+      "resolved": "Selesai",
+      "falseAlarm": "Alarm Palsu"
+    }
+  },
+  "report": {
+    "title": "Laporan Harian Monitoring",
+    "site": "Lokasi",
+    "date": "Tanggal",
+    "lastData": "Data Terakhir",
+    "generatedBy": "Dibuat oleh Somba Monitoring System",
+    "page": "Halaman",
+    "save": "Download Laporan",
+    "loading": "Memuat Data Laporan..."
+  }
 }

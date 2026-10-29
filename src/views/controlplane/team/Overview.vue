@@ -285,7 +285,8 @@
         <template v-slot:created_by="{ row }">
           <span class="text-dark fw-bold d-block fs-6">
             {{
-              row.created_by?.username || t("controlplane.team.common.unknown")
+              `${row.created_by?.first_name} ${row.created_by?.last_name}` ||
+              t("controlplane.team.common.unknown")
             }}
           </span>
           <span class="text-muted fw-semibold text-muted d-block fs-7">
@@ -300,7 +301,7 @@
         </template>
 
         <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end flex-shrink-0">
+          <div class="d-flex justify-content-start shrink-0">
             <button
               class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
               @click="showTeamMembers(row)"

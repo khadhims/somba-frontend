@@ -5,9 +5,13 @@
       <div class="row align-items-center">
         <!-- Left: Title + subtitle (matches Overview layout) -->
         <div class="col-md-4">
-          <h4 class="card-title mb-0">{{ t('controlplane.site.camera.header.title') }}</h4>
+          <h4 class="card-title mb-0">
+            {{ t("controlplane.site.camera.header.title") }}
+          </h4>
           <p class="text-muted mb-0">
-            <span>{{ t('controlplane.site.camera.header.subtitleDefault') }}</span>
+            <span>{{
+              t("controlplane.site.camera.header.subtitleDefault")
+            }}</span>
           </p>
         </div>
 
@@ -24,8 +28,12 @@
                 @change="onHeaderSiteFilterChange"
                 class="form-select form-select-solid w-200px"
               >
-                <option value="">{{ t("controlplane.site.camera.filters.siteAll") }}</option>
-                <option v-for="site in sites" :key="site.uid" :value="site.uid">{{ site.name }}</option>
+                <option value="">
+                  {{ t("controlplane.site.camera.filters.siteAll") }}
+                </option>
+                <option v-for="site in sites" :key="site.uid" :value="site.uid">
+                  {{ site.name }}
+                </option>
               </select>
             </div>
           </div>
@@ -48,12 +56,14 @@
       <div class="card-toolbar">
         <!--begin::Items per page-->
         <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{ t('controlplane.site.camera.toolbar.itemsLabel') }}</label>
-          <select 
-            class="form-select form-select-sm w-auto" 
+          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{
+            t("controlplane.site.camera.toolbar.itemsLabel")
+          }}</label>
+          <select
+            class="form-select form-select-sm w-auto"
             v-model.number="perPage"
             @change="onPerPageChange"
-            >
+          >
             <option :value="1">1</option>
             <option :value="5">5</option>
             <option :value="10">10</option>
@@ -73,17 +83,19 @@
             type="text"
             v-model="searchQuery"
             class="form-control form-control-solid w-250px ps-12"
-            :placeholder="t('controlplane.site.camera.toolbar.searchPlaceholder')"
+            :placeholder="
+              t('controlplane.site.camera.toolbar.searchPlaceholder')
+            "
           />
         </div>
         <!--end::Search-->
 
-        <button 
-          @click.prevent="showCameraForm = true" 
+        <button
+          @click.prevent="showCameraForm = true"
           class="btn btn-sm btn-light-primary"
         >
           <i class="ki-duotone ki-plus fs-2 me-1"></i>
-          {{ t('controlplane.site.camera.toolbar.addButton') }}
+          {{ t("controlplane.site.camera.toolbar.addButton") }}
         </button>
       </div>
       <!--end::Card toolbar-->
@@ -110,7 +122,9 @@
         <template v-slot:name="{ row }">
           <div class="d-flex align-items-center">
             <div class="symbol symbol-45px me-5">
-              <span class="symbol-label bg-light-success text-success fw-bold fs-3">
+              <span
+                class="symbol-label bg-light-success text-success fw-bold fs-3"
+              >
                 {{ getInitial(row.name) }}
               </span>
             </div>
@@ -118,9 +132,11 @@
               <span class="text-dark fw-bold text-hover-primary fs-6">{{
                 row.name
               }}</span>
-              <span class="text-muted fw-semibold text-muted d-block fs-7 text-truncate" style="max-width: 280px">{{
-                row.cameraUrl
-              }}</span>
+              <span
+                class="text-muted fw-semibold text-muted d-block fs-7 text-truncate"
+                style="max-width: 280px"
+                >{{ row.cameraUrl }}</span
+              >
             </div>
           </div>
         </template>
@@ -152,21 +168,27 @@
         </template>
 
         <template v-slot:cameraUrl="{ row }">
-          <span class="text-dark fw-semibold d-block fs-7 text-truncate" style="max-width: 220px" :title="row.cameraUrl">
+          <span
+            class="text-dark fw-semibold d-block fs-7 text-truncate"
+            style="max-width: 220px"
+            :title="row.cameraUrl"
+          >
             {{ row.cameraUrl || "-" }}
           </span>
         </template>
 
         <template v-slot:status="{ row }">
           <span
-            :class="`badge badge-light-${statusBadgeVariant(row.status)} fs-7 fw-bold`"
+            :class="`badge badge-light-${statusBadgeVariant(
+              row.status
+            )} fs-7 fw-bold`"
           >
             {{ resolveStatusLabel(row.status) }}
           </span>
         </template>
 
         <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end flex-shrink-0">
+          <div class="d-flex justify-content-end shrink-0">
             <button
               class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
               @click="viewCamera(row)"
@@ -229,15 +251,12 @@
   <!-- Camera Form Modal -->
   <Teleport to="body">
     <Transition name="modal-fade">
-      <div 
-        v-if="showCameraForm" 
+      <div
+        v-if="showCameraForm"
         class="camera-form-modal-overlay"
         @click="closeForm"
       >
-        <div 
-          class="camera-form-modal-container"
-          @click.stop
-        >
+        <div class="camera-form-modal-container" @click.stop>
           <!-- Modal Header -->
           <div class="camera-form-modal-header">
             <h3 class="camera-form-modal-title">
@@ -279,7 +298,11 @@
                     required
                   >
                     <option value="">
-                      {{ t("controlplane.site.camera.form.fields.site.placeholder") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.site.placeholder"
+                        )
+                      }}
                     </option>
                     <option
                       v-for="site in sites"
@@ -305,13 +328,13 @@
                     type="text"
                     v-model="cameraForm.room"
                     class="form-control form-control-solid"
-                    :placeholder="t('controlplane.site.camera.form.fields.room.placeholder')"
+                    :placeholder="
+                      t('controlplane.site.camera.form.fields.room.placeholder')
+                    "
                   />
                   <!--end::Input-->
                 </div>
                 <!--end::Col-->
-
-               
               </div>
               <!--end::Row-->
 
@@ -329,7 +352,9 @@
                     type="text"
                     v-model="cameraForm.name"
                     class="form-control form-control-solid"
-                    :placeholder="t('controlplane.site.camera.form.fields.name.placeholder')"
+                    :placeholder="
+                      t('controlplane.site.camera.form.fields.name.placeholder')
+                    "
                     required
                   />
                   <!--end::Input-->
@@ -340,7 +365,9 @@
                 <div class="col-md-6">
                   <!--begin::Label-->
                   <label class="required fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.camera.form.fields.cameraUrl.label") }}
+                    {{
+                      t("controlplane.site.camera.form.fields.cameraUrl.label")
+                    }}
                   </label>
                   <!--end::Label-->
                   <!--begin::Input-->
@@ -349,7 +376,11 @@
                     v-model="cameraForm.cameraUrl"
                     class="form-control form-control-solid"
                     :class="{ 'is-invalid': cameraUrlError }"
-                    :placeholder="t('controlplane.site.camera.form.fields.cameraUrl.placeholder')"
+                    :placeholder="
+                      t(
+                        'controlplane.site.camera.form.fields.cameraUrl.placeholder'
+                      )
+                    "
                     autocomplete="off"
                     required
                     @input="cameraUrlError = ''"
@@ -358,6 +389,82 @@
                     {{ cameraUrlError }}
                   </div>
                   <!--end::Input-->
+                </div>
+                <!--end::Col-->
+              </div>
+              <!--end::Row-->
+
+              <!--begin::Row-->
+              <div class="row mb-7">
+                <!--begin::Col-->
+                <div class="col-md-6">
+                  <!--begin::Label-->
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{
+                      t("controlplane.site.camera.form.fields.rtspUrl.label")
+                    }}
+                  </label>
+                  <!--end::Label-->
+                  <!--begin::Input-->
+                  <input
+                    type="text"
+                    v-model="cameraForm.rtspUrl"
+                    class="form-control form-control-solid"
+                    :placeholder="
+                      t(
+                        'controlplane.site.camera.form.fields.rtspUrl.placeholder'
+                      )
+                    "
+                    autocomplete="off"
+                    required
+                  />
+                  <!--end::Input-->
+                </div>
+                <!--end::Col-->
+
+                <!--begin::Col-->
+                <div class="col-md-6">
+                  <!--begin::Label-->
+                  <label class="required fw-semibold fs-6 mb-2">
+                    {{
+                      t("controlplane.site.camera.form.fields.activity.label")
+                    }}
+                  </label>
+                  <!--end::Label-->
+                  <!--begin::Input-->
+                  <input
+                    type="text"
+                    v-model="cameraForm.activity"
+                    class="form-control form-control-solid"
+                    :placeholder="
+                      t(
+                        'controlplane.site.camera.form.fields.activity.placeholder'
+                      )
+                    "
+                    required
+                  />
+                  <!--end::Input-->
+                </div>
+                <!--end::Col-->
+              </div>
+              <!--end::Row-->
+
+              <!--begin::Row-->
+              <div class="row mb-7">
+                <!--begin::Col-->
+                <div class="col-md-12 form-check form-switch">
+                  <input
+                    type="checkbox"
+                    v-model="cameraForm.alert"
+                    class="form-check-input"
+                    id="cameraAlertSwitch"
+                  />
+                  <label
+                    class="form-check-label fw-semibold fs-6"
+                    for="cameraAlertSwitch"
+                  >
+                    {{ t("controlplane.site.camera.form.fields.alert.label") }}
+                  </label>
                 </div>
                 <!--end::Col-->
               </div>
@@ -378,25 +485,53 @@
                     class="form-select form-select-solid"
                   >
                     <option value="">
-                      {{ t("controlplane.site.camera.form.fields.brand.placeholder") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.brand.placeholder"
+                        )
+                      }}
                     </option>
                     <option value="Hikvision">
-                      {{ t("controlplane.site.camera.form.fields.brand.options.hikvision") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.brand.options.hikvision"
+                        )
+                      }}
                     </option>
                     <option value="Dahua">
-                      {{ t("controlplane.site.camera.form.fields.brand.options.dahua") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.brand.options.dahua"
+                        )
+                      }}
                     </option>
                     <option value="Uniview">
-                      {{ t("controlplane.site.camera.form.fields.brand.options.uniview") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.brand.options.uniview"
+                        )
+                      }}
                     </option>
                     <option value="Tiandy">
-                      {{ t("controlplane.site.camera.form.fields.brand.options.tiandy") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.brand.options.tiandy"
+                        )
+                      }}
                     </option>
                     <option value="Axis">
-                      {{ t("controlplane.site.camera.form.fields.brand.options.axis") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.brand.options.axis"
+                        )
+                      }}
                     </option>
                     <option value="Other">
-                      {{ t("controlplane.site.camera.form.fields.brand.options.other") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.brand.options.other"
+                        )
+                      }}
                     </option>
                   </select>
                   <!--end::Select-->
@@ -415,7 +550,11 @@
                     type="text"
                     v-model="cameraForm.model"
                     class="form-control form-control-solid"
-                    :placeholder="t('controlplane.site.camera.form.fields.model.placeholder')"
+                    :placeholder="
+                      t(
+                        'controlplane.site.camera.form.fields.model.placeholder'
+                      )
+                    "
                     required
                   />
                   <!--end::Input-->
@@ -439,19 +578,39 @@
                     class="form-select form-select-solid"
                   >
                     <option value="Dome">
-                      {{ t("controlplane.site.camera.form.fields.type.options.dome") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.type.options.dome"
+                        )
+                      }}
                     </option>
                     <option value="Bullet">
-                      {{ t("controlplane.site.camera.form.fields.type.options.bullet") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.type.options.bullet"
+                        )
+                      }}
                     </option>
                     <option value="PTZ">
-                      {{ t("controlplane.site.camera.form.fields.type.options.ptz") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.type.options.ptz"
+                        )
+                      }}
                     </option>
                     <option value="Fisheye">
-                      {{ t("controlplane.site.camera.form.fields.type.options.fisheye") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.type.options.fisheye"
+                        )
+                      }}
                     </option>
                     <option value="Turret">
-                      {{ t("controlplane.site.camera.form.fields.type.options.turret") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.type.options.turret"
+                        )
+                      }}
                     </option>
                   </select>
                   <!--end::Select-->
@@ -462,7 +621,9 @@
                 <div class="col-md-6">
                   <!--begin::Label-->
                   <label class="fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.camera.form.fields.resolution.label") }}
+                    {{
+                      t("controlplane.site.camera.form.fields.resolution.label")
+                    }}
                   </label>
                   <!--end::Label-->
                   <!--begin::Select-->
@@ -471,19 +632,39 @@
                     class="form-select form-select-solid"
                   >
                     <option value="1080P (2MP)">
-                      {{ t("controlplane.site.camera.form.fields.resolution.options.1080p") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.resolution.options.1080p"
+                        )
+                      }}
                     </option>
                     <option value="4MP">
-                      {{ t("controlplane.site.camera.form.fields.resolution.options.4mp") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.resolution.options.4mp"
+                        )
+                      }}
                     </option>
                     <option value="5MP">
-                      {{ t("controlplane.site.camera.form.fields.resolution.options.5mp") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.resolution.options.5mp"
+                        )
+                      }}
                     </option>
                     <option value="4K (8MP)">
-                      {{ t("controlplane.site.camera.form.fields.resolution.options.4k") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.resolution.options.4k"
+                        )
+                      }}
                     </option>
                     <option value="12MP">
-                      {{ t("controlplane.site.camera.form.fields.resolution.options.12mp") }}
+                      {{
+                        t(
+                          "controlplane.site.camera.form.fields.resolution.options.12mp"
+                        )
+                      }}
                     </option>
                   </select>
                   <!--end::Select-->
@@ -498,7 +679,9 @@
                 <div class="col-md-12">
                   <!--begin::Label-->
                   <label class="fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.camera.form.fields.location.label") }}
+                    {{
+                      t("controlplane.site.camera.form.fields.location.label")
+                    }}
                   </label>
                   <!--end::Label-->
                   <!--begin::Input-->
@@ -506,7 +689,11 @@
                     type="text"
                     v-model="cameraForm.location"
                     class="form-control form-control-solid"
-                    :placeholder="t('controlplane.site.camera.form.fields.location.placeholder')"
+                    :placeholder="
+                      t(
+                        'controlplane.site.camera.form.fields.location.placeholder'
+                      )
+                    "
                   />
                   <!--end::Input-->
                 </div>
@@ -520,7 +707,11 @@
                 <div class="col-md-12">
                   <!--begin::Label-->
                   <label class="fw-semibold fs-6 mb-2">
-                    {{ t("controlplane.site.camera.form.fields.description.label") }}
+                    {{
+                      t(
+                        "controlplane.site.camera.form.fields.description.label"
+                      )
+                    }}
                   </label>
                   <!--end::Label-->
                   <!--begin::Input-->
@@ -528,7 +719,11 @@
                     v-model="cameraForm.description"
                     class="form-control form-control-solid"
                     rows="3"
-                    :placeholder="t('controlplane.site.camera.form.fields.description.placeholder')"
+                    :placeholder="
+                      t(
+                        'controlplane.site.camera.form.fields.description.placeholder'
+                      )
+                    "
                   ></textarea>
                   <!--end::Input-->
                 </div>
@@ -579,8 +774,8 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
-import Pagination from '@/components/common/Pagination.vue';
-import ApiService from '@/core/services/ApiService';
+import Pagination from "@/components/common/Pagination.vue";
+import ApiService from "@/core/services/ApiService";
 import CameraPlaybackModal from "@/components/CameraPlaybackModal.vue";
 
 // Interfaces
@@ -596,6 +791,9 @@ interface Camera {
   room: string;
   name: string;
   cameraUrl: string;
+  rtspUrl: string;
+  activity: string;
+  alert: boolean;
   brand: string;
   model?: string;
   type: string;
@@ -604,7 +802,6 @@ interface Camera {
   description?: string;
   status: "online" | "offline";
   createdAt: string;
-  public_endpoint_url?: string;
 }
 
 interface CameraForm {
@@ -614,6 +811,9 @@ interface CameraForm {
   room: string;
   name: string;
   cameraUrl: string;
+  rtspUrl: string;
+  activity: string;
+  alert: boolean;
   brand: string;
   model?: string;
   type: string;
@@ -645,7 +845,9 @@ const currentPage = ref<number>(1);
 const perPage = ref<number>(10);
 const totalItems = ref<number>(0);
 const totalPages = ref<number>(0);
-const playbackModal = ref<InstanceType<typeof CameraPlaybackModal> | null>(null);
+const playbackModal = ref<InstanceType<typeof CameraPlaybackModal> | null>(
+  null
+);
 const cameraUrlError = ref("");
 
 const cameraForm = ref<CameraForm>({
@@ -654,6 +856,9 @@ const cameraForm = ref<CameraForm>({
   room: "",
   name: "",
   cameraUrl: "",
+  rtspUrl: "",
+  activity: "",
+  alert: false,
   brand: "",
   model: "",
   type: "Dome",
@@ -663,12 +868,12 @@ const cameraForm = ref<CameraForm>({
 });
 
 const resolveCameraUrl = (camera: {
-  public_endpoint_url?: string;
+  stream_url?: string;
   ipAddress?: string;
   ip_address?: string;
   cameraUrl?: string;
 }): string =>
-  camera.public_endpoint_url ||
+  camera.stream_url ||
   camera.cameraUrl ||
   camera.ipAddress ||
   camera.ip_address ||
@@ -815,7 +1020,10 @@ const resolveRoomName = (camera: {
   camera_config?: { room?: string };
 }): string => {
   if (camera.room?.trim()) return camera.room.trim();
-  if (typeof camera.camera_config?.room === "string" && camera.camera_config.room.trim()) {
+  if (
+    typeof camera.camera_config?.room === "string" &&
+    camera.camera_config.room.trim()
+  ) {
     return camera.camera_config.room.trim();
   }
   return "";
@@ -831,7 +1039,7 @@ const onSiteChange = () => {};
 
 const onHeaderSiteFilterChange = () => {
   currentPage.value = 1;
-  localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || "");
+  localStorage.setItem("lastSelectedSite", selectedSiteFilter.value || "");
   // Load cameras for the new selected site
   if (selectedSiteFilter.value) {
     loadCameras();
@@ -881,11 +1089,19 @@ const loadCameras = async () => {
       return;
     }
 
-    const resp = await ApiService.query(`sites/${selectedSiteFilter.value}/cameras`, {});
-    
+    const resp = await ApiService.query(
+      `sites/${selectedSiteFilter.value}/cameras`,
+      {}
+    );
+
     if (resp && resp.data) {
-      const siteCameras = resp.data.data && Array.isArray(resp.data.data) ? resp.data.data : Array.isArray(resp.data) ? resp.data : [];
-      
+      const siteCameras =
+        resp.data.data && Array.isArray(resp.data.data)
+          ? resp.data.data
+          : Array.isArray(resp.data)
+          ? resp.data
+          : [];
+
       cameras.value = siteCameras.map((camera: any) => {
         const cameraUrl = resolveCameraUrl(camera);
 
@@ -895,6 +1111,9 @@ const loadCameras = async () => {
           siteId: camera.site_uid || selectedSiteFilter.value,
           name: camera.name || "",
           cameraUrl,
+          rtspUrl: camera.rtsp_url || "",
+          activity: camera.activity || "",
+          alert: !!camera.alert,
           brand: camera.brand || "",
           model: camera.model || "",
           type: camera.cam_type || camera.type || "Dome",
@@ -902,10 +1121,12 @@ const loadCameras = async () => {
           location: camera.location || "",
           description: camera.description || "",
           status: normalizeStatusKey(
-            typeof camera.status !== "undefined" ? camera.status : camera.is_active
+            typeof camera.status !== "undefined"
+              ? camera.status
+              : camera.is_active
           ),
-          createdAt: camera.created_at || new Date().toISOString().split("T")[0],
-          public_endpoint_url: cameraUrl,
+          createdAt:
+            camera.created_at || new Date().toISOString().split("T")[0],
           room: resolveRoomName(camera),
         };
       });
@@ -946,20 +1167,23 @@ const saveCamera = async () => {
       deny_labels: [],
       min_score: 0.3,
       zone_test: "center",
-      iou_threshold: 0.1
+      iou_threshold: 0.1,
     };
 
     // Build payload according to API specification
     const payload = {
       name: cameraForm.value.name,
       model: cameraForm.value.model || "",
-      public_endpoint_url: trimmedCameraUrl,
+      rtsp_url: cameraForm.value.rtspUrl.trim(),
+      stream_url: trimmedCameraUrl,
       brand: cameraForm.value.brand,
       cam_type: cameraForm.value.type,
       cam_resolution: cameraForm.value.resolution,
       location: cameraForm.value.location || "",
       description: cameraForm.value.description || "",
       room: cameraForm.value.room.trim() || undefined,
+      activity: cameraForm.value.activity.trim(),
+      alert: cameraForm.value.alert,
       camera_config: defaultCameraConfig,
     };
 
@@ -967,9 +1191,17 @@ const saveCamera = async () => {
       // PATCH for update using sites/{site_uid}/cameras/{camera_uid}
       // Prefer an explicit UID if available, fallback to numeric id
       const cameraUid = cameraForm.value.uid || cameraForm.value.id;
-      console.log('Updating camera with UID:', cameraUid, 'on site:', cameraForm.value.siteId);
-      await ApiService.patch(`sites/${cameraForm.value.siteId}/cameras/${cameraUid}`, payload);
-      
+      console.log(
+        "Updating camera with UID:",
+        cameraUid,
+        "on site:",
+        cameraForm.value.siteId
+      );
+      await ApiService.patch(
+        `sites/${cameraForm.value.siteId}/cameras/${cameraUid}`,
+        payload
+      );
+
       // Update existing camera in local state
       const index = cameras.value.findIndex(
         (c) => (c.uid || c.id) === (cameraForm.value.uid || cameraForm.value.id)
@@ -981,16 +1213,18 @@ const saveCamera = async () => {
           siteId: cameraForm.value.siteId,
           room: cameraForm.value.room.trim(),
           cameraUrl: trimmedCameraUrl,
-          public_endpoint_url: trimmedCameraUrl,
         };
       }
     } else {
       // POST for create new camera using sites/{site_uid}/cameras
-      const resp = await ApiService.post(`sites/${cameraForm.value.siteId}/cameras`, payload);
-      
+      const resp = await ApiService.post(
+        `sites/${cameraForm.value.siteId}/cameras`,
+        payload
+      );
+
       // Get the created camera data from response
       const createdCamera = resp?.data?.data || resp?.data;
-      
+
       // Add new camera to local state
       const newCamera: Camera = {
         id: createdCamera?.uid || createdCamera?.id || Date.now(),
@@ -998,6 +1232,9 @@ const saveCamera = async () => {
         room: cameraForm.value.room.trim(),
         name: cameraForm.value.name,
         cameraUrl: trimmedCameraUrl,
+        rtspUrl: cameraForm.value.rtspUrl.trim(),
+        activity: cameraForm.value.activity.trim(),
+        alert: cameraForm.value.alert,
         brand: cameraForm.value.brand,
         model: cameraForm.value.model,
         type: cameraForm.value.type,
@@ -1006,7 +1243,6 @@ const saveCamera = async () => {
         description: cameraForm.value.description,
         status: "online",
         createdAt: new Date().toISOString().split("T")[0],
-        public_endpoint_url: trimmedCameraUrl,
       };
       cameras.value.unshift(newCamera);
     }
@@ -1021,16 +1257,24 @@ const saveCamera = async () => {
 
 const editCamera = async (camera: Camera) => {
   isLoading.value = true;
-  
+
   try {
     // Use camera.uid if available, otherwise camera.id
     const cameraUid = camera.uid || camera.id;
-    console.log('Fetching camera details for UID:', cameraUid, 'from site:', camera.siteId);
-    
+    console.log(
+      "Fetching camera details for UID:",
+      cameraUid,
+      "from site:",
+      camera.siteId
+    );
+
     // GET camera details using sites/{site_uid}/cameras/{camera_uid}
-    const resp = await ApiService.query(`sites/${camera.siteId}/cameras/${cameraUid}`, {});
-    console.log('API Response:', resp);
-    
+    const resp = await ApiService.query(
+      `sites/${camera.siteId}/cameras/${cameraUid}`,
+      {}
+    );
+    console.log("API Response:", resp);
+
     if (resp && resp.data) {
       // Handle different response structures
       let cameraData;
@@ -1041,11 +1285,15 @@ const editCamera = async (camera: Camera) => {
       } else {
         cameraData = resp.data;
       }
-      
-      console.log('Parsed camera data:', cameraData);
-      
+
+      console.log("Parsed camera data:", cameraData);
+
       // Only use API data if it's actually camera data (not a list)
-      if (cameraData && typeof cameraData === 'object' && !Array.isArray(cameraData)) {
+      if (
+        cameraData &&
+        typeof cameraData === "object" &&
+        !Array.isArray(cameraData)
+      ) {
         // Map the API response to form values
         cameraForm.value = {
           uid: cameraData.uid || cameraData.id || camera.id,
@@ -1054,15 +1302,23 @@ const editCamera = async (camera: Camera) => {
           room: resolveRoomName({ ...camera, ...cameraData }),
           name: cameraData.name || camera.name,
           cameraUrl: resolveCameraUrl({ ...camera, ...cameraData }),
+          rtspUrl: cameraData.rtsp_url || camera.rtspUrl || "",
+          activity: cameraData.activity || camera.activity || "",
+          alert: !!(cameraData.alert ?? camera.alert),
           brand: cameraData.brand || camera.brand,
           model: cameraData.model || camera.model || "",
           type: cameraData.cam_type || cameraData.type || camera.type,
-          resolution: cameraData.cam_resolution || cameraData.resolution || camera.resolution,
+          resolution:
+            cameraData.cam_resolution ||
+            cameraData.resolution ||
+            camera.resolution,
           location: cameraData.location || camera.location || "",
           description: cameraData.description || camera.description || "",
         };
       } else {
-        console.warn('API returned unexpected data structure, using local camera data');
+        console.warn(
+          "API returned unexpected data structure, using local camera data"
+        );
         cameraForm.value = {
           uid: camera.uid,
           id: camera.id,
@@ -1070,6 +1326,9 @@ const editCamera = async (camera: Camera) => {
           room: camera.room,
           name: camera.name,
           cameraUrl: camera.cameraUrl,
+          rtspUrl: camera.rtspUrl,
+          activity: camera.activity,
+          alert: camera.alert,
           brand: camera.brand,
           model: camera.model || "",
           type: camera.type,
@@ -1079,7 +1338,7 @@ const editCamera = async (camera: Camera) => {
         };
       }
     } else {
-      console.warn('No data received from API, using local camera data');
+      console.warn("No data received from API, using local camera data");
       cameraForm.value = {
         uid: camera.uid,
         id: camera.id,
@@ -1087,6 +1346,9 @@ const editCamera = async (camera: Camera) => {
         room: camera.room,
         name: camera.name,
         cameraUrl: camera.cameraUrl,
+        rtspUrl: camera.rtspUrl,
+        activity: camera.activity,
+        alert: camera.alert,
         brand: camera.brand,
         model: camera.model || "",
         type: camera.type,
@@ -1095,12 +1357,12 @@ const editCamera = async (camera: Camera) => {
         description: camera.description || "",
       };
     }
-    
+
     isEdit.value = true;
     showCameraForm.value = true;
   } catch (error) {
-    console.error('Error fetching camera details:', error);
-    
+    console.error("Error fetching camera details:", error);
+
     // Fallback to local camera data if API call fails
     cameraForm.value = {
       id: camera.id,
@@ -1108,6 +1370,9 @@ const editCamera = async (camera: Camera) => {
       room: camera.room,
       name: camera.name,
       cameraUrl: camera.cameraUrl,
+      rtspUrl: camera.rtspUrl,
+      activity: camera.activity,
+      alert: camera.alert,
       brand: camera.brand,
       model: camera.model || "",
       type: camera.type,
@@ -1124,15 +1389,16 @@ const editCamera = async (camera: Camera) => {
 };
 
 const deleteCamera = async (camera: Camera) => {
-  if (!confirm(t("controlplane.site.camera.notifications.deleteConfirm"))) return;
+  if (!confirm(t("controlplane.site.camera.notifications.deleteConfirm")))
+    return;
 
   isLoading.value = true;
 
   try {
     // Use camera UID for DELETE API call
     const cameraUid = camera.uid || camera.id;
-    console.log('Deleting camera UID:', cameraUid, 'from site:', camera.siteId);
-    
+    console.log("Deleting camera UID:", cameraUid, "from site:", camera.siteId);
+
     // DELETE using sites/{site_uid}/cameras/{camera_uid}
     await ApiService.delete(`sites/${camera.siteId}/cameras/${cameraUid}`);
 
@@ -1157,9 +1423,9 @@ const viewCamera = (camera: Camera) => {
     recording: false,
     site_uid: camera.siteId,
     public_endpoint_url: streamUrl,
-    model: camera.model
+    model: camera.model,
   };
-  
+
   if (playbackModal.value) {
     playbackModal.value.openModal(cameraData);
   }
@@ -1174,6 +1440,9 @@ const closeForm = () => {
     room: "",
     name: "",
     cameraUrl: "",
+    rtspUrl: "",
+    activity: "",
+    alert: false,
     brand: "",
     model: "",
     type: "Dome",
@@ -1188,9 +1457,14 @@ onMounted(async () => {
   try {
     await loadSites();
 
-    const siteFromRoute = (route.query.siteId as string) || (route.query.id as string);
-    selectedSiteFilter.value = siteFromRoute || localStorage.getItem('lastSelectedSite') as string || (sites.value[0] && sites.value[0].uid) || "";
-    localStorage.setItem('lastSelectedSite', selectedSiteFilter.value || "");
+    const siteFromRoute =
+      (route.query.siteId as string) || (route.query.id as string);
+    selectedSiteFilter.value =
+      siteFromRoute ||
+      (localStorage.getItem("lastSelectedSite") as string) ||
+      (sites.value[0] && sites.value[0].uid) ||
+      "";
+    localStorage.setItem("lastSelectedSite", selectedSiteFilter.value || "");
 
     if (route.query.siteId && typeof route.query.siteId === "string") {
       cameraForm.value.siteId = route.query.siteId;
@@ -1208,22 +1482,25 @@ onMounted(async () => {
     }
 
     // Open add camera modal if query param present
-    if (route.query.addCamera === '1') {
+    if (route.query.addCamera === "1") {
       showCameraForm.value = true;
       isEdit.value = false;
     }
   } catch (error) {
-    console.error('Error initializing camera management:', error);
+    console.error("Error initializing camera management:", error);
   }
 });
 
 // Watch for changes to addCamera query param to open modal dynamically
-watch(() => route.query.addCamera, (val) => {
-  if (val === '1') {
-    showCameraForm.value = true;
-    isEdit.value = false;
+watch(
+  () => route.query.addCamera,
+  (val) => {
+    if (val === "1") {
+      showCameraForm.value = true;
+      isEdit.value = false;
+    }
   }
-});
+);
 </script>
 
 <style scoped>

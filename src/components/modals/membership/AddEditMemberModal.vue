@@ -203,7 +203,7 @@ const entityLabelLower = computed(() =>
 const roleOptions = computed(() => [
   { value: "OWNER", label: t("components.membership.common.roles.owner") },
   { value: "ADMIN", label: t("components.membership.common.roles.admin") },
-  { value: "MEMBER", label: t("components.membership.common.roles.member") },
+  { value: "VIEWER", label: t("components.membership.common.roles.viewer") },
 ]);
 
 const form = reactive({

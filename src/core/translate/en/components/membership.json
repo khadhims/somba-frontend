@@ -13,7 +13,7 @@
     "roles": {
       "owner": "Owner",
       "admin": "Admin",
-      "member": "Member"
+      "viewer": "Viewer"
     }
   },
   "addEdit": {
@@ -68,6 +68,7 @@
       "empty": "No members found",
       "emptySearch": "No members found matching \"{query}\"",
       "rolePrefix": "Role: {role}",
+      "unreadableName": "Member name could not be read",
       "unknownUser": "Unknown User",
       "unknownDate": "Unknown",
       "invalidDate": "Invalid date"

@@ -21,7 +21,7 @@
       class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
       data-kt-menu="true"
     >
-      <template v-for="(item, i) in MainMenuConfig" :key="i">
+      <template v-for="(item, i) in menu" :key="i">
         <div v-if="item.heading" class="menu-item">
           <div class="menu-content pt-8 pb-2">
             <span class="menu-section text-muted text-uppercase fs-8 ls-1">
@@ -161,12 +161,32 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
+import router from "@/router";
 import { version } from "@/core/helpers/system";
 import { asideMenuIcons } from "@/layouts/default-layout/config/helper";
 import MainMenuConfig from "@/layouts/default-layout/config/MainMenuConfig";
+import type { MenuItem } from "@/layouts/default-layout/config/types";
+
+// Hides menu entries whose matching router route is flagged `meta.disabled`,
+// and drops group/section entries left with no children after filtering.
+function pruneDisabled(items: MenuItem[]): MenuItem[] {
+  return items
+    .map((item) => {
+      const children = item.pages ?? item.sub;
+      if (!children) return item;
+      const pruned = pruneDisabled(children);
+      return item.pages ? { ...item, pages: pruned } : { ...item, sub: pruned };
+    })
+    .filter((item) => {
+      if (item.pages) return item.pages.length > 0;
+      if (item.sub) return item.sub.length > 0;
+      if (item.route) return !router.resolve(item.route).meta?.disabled;
+      return true;
+    });
+}
 
 export default defineComponent({
   name: "kt-menu",
@@ -212,9 +232,11 @@ export default defineComponent({
       return route.path.indexOf(match) !== -1;
     };
 
+    const menu = computed(() => pruneDisabled(MainMenuConfig));
+
     return {
       hasActiveChildren,
-      MainMenuConfig,
+      menu,
       asideMenuIcons,
       version,
       translate,
