@@ -211,8 +211,8 @@
     <!--end::Recording Settings-->
 
     <!--begin::Storage Settings-->
-    <div class="col-xl-6">
-      <div class="card">
+    <div>
+      <div :class="cardClass">
         <div class="p-6 pb-0">
           <h3
             class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100"

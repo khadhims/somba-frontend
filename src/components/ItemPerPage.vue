@@ -76,7 +76,7 @@ const availableOptions = computed(() => {
 })
 
 const selectClasses = computed(() => {
-  const classes = [formInputClass, 'w-auto']
+  const classes = [formInputClass, 'w-auto', 'min-w-20']
   if (props.size === 'sm') classes.push('py-1 text-xs')
   if (props.size === 'lg') classes.push('py-3 text-base')
   return classes.join(' ')
@@ -103,9 +103,3 @@ if (!props.options.includes(props.modelValue) && !props.customOptions?.some(opt 
   emit('update:modelValue', firstOption)
 }
 </script>
-
-<style scoped>
-select {
-  min-width: 80px;
-}
-</style>

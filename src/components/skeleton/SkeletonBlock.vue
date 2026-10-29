@@ -1,5 +1,8 @@
 <template>
-  <div class="skeleton" :style="styleObject"></div>
+  <div
+    class="relative block overflow-hidden bg-[#e9edf3] after:absolute after:inset-0 after:[transform:translateX(-100%)] after:animate-[shimmer_1.2s_infinite] after:bg-[linear-gradient(90deg,rgba(255,255,255,0)_0,rgba(255,255,255,0.6)_50%,rgba(255,255,255,0)_100%)] after:content-[''] dark:bg-[#1f2937]"
+    :style="styleObject"
+  ></div>
 </template>
 
 <script setup lang="ts">
@@ -23,33 +26,6 @@ const styleObject = computed(() => ({
 </script>
 
 <style scoped>
-.skeleton {
-  display: block;
-  position: relative;
-  overflow: hidden;
-  background: #e9edf3;
-}
-
-[data-bs-theme="dark"] .skeleton,
-.dark .skeleton,
-.app-dark .skeleton {
-  background: #1f2937;
-}
-
-.skeleton::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  transform: translateX(-100%);
-  background-image: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0,
-    rgba(255, 255, 255, 0.6) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  animation: shimmer 1.2s infinite;
-}
-
 @keyframes shimmer {
   100% {
     transform: translateX(100%);

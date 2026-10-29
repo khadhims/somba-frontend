@@ -113,7 +113,7 @@
                 v-model="tempDateFrom"
                 size="sm"
                 :clearable="true"
-                style="width: 100%; min-width: 140px"
+                class="w-full min-w-[140px]"
               />
             </div>
             <div class="flex items-center">
@@ -126,7 +126,7 @@
                 v-model="tempDateTo"
                 size="sm"
                 :clearable="true"
-                style="width: 100%; min-width: 140px"
+                class="w-full min-w-[140px]"
               />
             </div>
           </div>

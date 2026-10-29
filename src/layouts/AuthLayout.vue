@@ -1,7 +1,7 @@
 <template>
   <!--begin::Authentication Layout -->
   <div
-    class="flex min-h-screen flex-col items-center justify-center auth-layout-bg"
+    class="auth-layout-bg flex min-h-screen flex-col items-center justify-center bg-[#0f172a] bg-[radial-gradient(at_0%_0%,hsla(253,16%,7%,1)_0,transparent_50%),radial-gradient(at_50%_0%,hsla(225,39%,30%,1)_0,transparent_50%),radial-gradient(at_100%_0%,hsla(339,49%,30%,1)_0,transparent_50%)]"
   >
     <!--begin::Content-->
     <div class="flex w-full items-center justify-center p-10">
@@ -34,17 +34,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-.auth-layout-bg {
-  background-color: #0f172a; /* Dark background */
-  background-image: radial-gradient(
-      at 0% 0%,
-      hsla(253, 16%, 7%, 1) 0,
-      transparent 50%
-    ),
-    radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
-    radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
-  min-height: 100vh;
-}
-</style>

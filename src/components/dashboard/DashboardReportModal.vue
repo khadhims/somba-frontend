@@ -1,23 +1,38 @@
 <template>
-  <div v-if="show" class="modal-overlay" @click.self="$emit('close')">
-    <div class="modal-container">
+  <div
+    v-if="show"
+    class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
+    @click.self="$emit('close')"
+  >
+    <div
+      class="flex h-[90vh] w-[90%] max-w-[800px] flex-col rounded-lg bg-white max-[768px]:h-[95vh] max-[768px]:w-[95%] max-[768px]:max-w-none max-[480px]:h-screen max-[480px]:w-full max-[480px]:rounded-none"
+    >
       <!-- Modal Header -->
-      <div class="modal-header">
-        <h3 class="modal-title">Preview Laporan</h3>
-        <button class="close-btn" @click="$emit('close')">&times;</button>
+      <div
+        class="flex items-center justify-between border-b border-[#ddd] p-4"
+      >
+        <h3 class="m-0 text-xl">Preview Laporan</h3>
+        <button
+          class="cursor-pointer border-none bg-transparent text-2xl"
+          @click="$emit('close')"
+        >
+          &times;
+        </button>
       </div>
 
       <!-- Modal Body (Preview Area) -->
-      <div class="modal-body">
+      <div
+        class="flex flex-1 flex-col items-center gap-5 overflow-y-auto bg-gray-100 p-5"
+      >
         <div
           v-for="(pageAlerts, pageIndex) in paginatedAlerts"
           :key="pageIndex"
-          class="report-content mb-4 position-relative"
+          class="report-content relative mb-4"
         >
           <!-- Report Header (Only on first page) -->
           <template v-if="pageIndex === 0">
             <header class="report-header">
-              <div class="header-left">
+              <div>
                 <img
                   src="/logo-somba.png"
                   alt="Logo Somba"
@@ -34,22 +49,16 @@
             <!-- Meta Info Section -->
             <section class="meta-section">
               <div class="meta-item">
-                <span class="meta-label"
-                  >{{ t("dashboard.report.site") }}:</span
-                >
-                <span class="meta-value">{{ siteName || "-" }}</span>
+                <span>{{ t("dashboard.report.site") }}:</span>
+                <span>{{ siteName || "-" }}</span>
               </div>
               <div class="meta-item">
-                <span class="meta-label"
-                  >{{ t("dashboard.report.date") }}:</span
-                >
-                <span class="meta-value">{{ date || "-" }}</span>
+                <span>{{ t("dashboard.report.date") }}:</span>
+                <span>{{ date || "-" }}</span>
               </div>
               <div class="meta-item">
-                <span class="meta-label"
-                  >{{ t("dashboard.report.lastData") }}:</span
-                >
-                <span class="meta-value">{{ lastUpdated || "-" }}</span>
+                <span>{{ t("dashboard.report.lastData") }}:</span>
+                <span>{{ lastUpdated || "-" }}</span>
               </div>
             </section>
 
@@ -77,7 +86,7 @@
           </template>
 
           <!-- Spacer for subsequent pages to match header height roughly if needed, or just table -->
-          <div v-else class="h-50px"></div>
+          <div v-else class="h-[50px]"></div>
 
           <!-- Data Table -->
           <section class="table-section">
@@ -87,19 +96,19 @@
             <table class="report-table">
               <thead>
                 <tr>
-                  <th class="text-center" style="width: 25%">
+                  <th class="w-1/4 text-center">
                     {{ t("dashboard.alerts.table.violation") }}
                   </th>
-                  <th class="text-center" style="width: 15%">
+                  <th class="w-[15%] text-center">
                     {{ t("dashboard.alerts.table.duration") }}
                   </th>
-                  <th class="text-center" style="width: 10%">
+                  <th class="w-[10%] text-center">
                     {{ t("dashboard.alerts.table.detection") }}
                   </th>
-                  <th class="text-center" style="width: 15%">
+                  <th class="w-[15%] text-center">
                     {{ t("dashboard.alerts.table.time") }}
                   </th>
-                  <th class="text-center" style="width: 15%">
+                  <th class="w-[15%] text-center">
                     {{ t("dashboard.alerts.table.status") }}
                   </th>
                 </tr>
@@ -130,12 +139,8 @@
                   <td class="text-center">
                     <span
                       :class="[
-                        'badge',
+                        'inline-flex rounded-full px-3 py-2 text-xs font-bold',
                         statusBadge(item.status),
-                        'py-2',
-                        'px-3',
-                        'font-bold',
-                        'text-xs',
                       ]"
                     >
                       {{ statusLabel(item.status) }}
@@ -154,7 +159,7 @@
           <!-- Footer -->
           <footer class="report-footer">
             <small>{{ t("dashboard.report.generatedBy") }}</small>
-            <small class="page-number"
+            <small
               >{{ t("dashboard.report.page") }} {{ pageIndex + 1 }} of
               {{ paginatedAlerts.length }}</small
             >
@@ -163,10 +168,13 @@
       </div>
 
       <!-- Modal Footer (Actions) -->
-      <div class="modal-footer">
-        <button class="btn btn-secondary" @click="$emit('close')">Batal</button>
+      <div class="flex justify-end gap-2.5 border-t border-[#ddd] p-4">
+        <button :class="secondaryButtonClass" @click="$emit('close')">
+          Batal
+        </button>
         <button
-          class="btn btn-primary"
+          class="inline-flex items-center gap-2"
+          :class="primaryButtonClass"
           @click="downloadPdf"
           :disabled="isDownloading"
         >
@@ -187,6 +195,11 @@ import { ref, type PropType, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import {
+  badgeVariantClass,
+  primaryButtonClass,
+  secondaryButtonClass,
+} from "@/core/helpers/badge";
 
 const { t } = useI18n();
 
@@ -249,12 +262,13 @@ const formatTime = (isoString: string | undefined) => {
 };
 
 const statusBadge = (status: string | undefined) => {
-  if (!status) return "badge-light-secondary";
+  if (!status) return badgeVariantClass("secondary");
   const s = normalizeKey(status);
-  if (s === "resolved" || s === "completed") return "badge-light-success";
-  if (s === "notresolved") return "badge-light-danger";
-  if (s === "falsealarm") return "badge-light-info";
-  return "badge-light-secondary";
+  if (s === "resolved" || s === "completed")
+    return badgeVariantClass("success");
+  if (s === "notresolved") return badgeVariantClass("danger");
+  if (s === "falsealarm") return badgeVariantClass("info");
+  return badgeVariantClass("secondary");
 };
 
 const normalizeKey = (v?: string) =>
@@ -575,79 +589,6 @@ const downloadPdf = () => {
 </script>
 
 <style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-.modal-container {
-  background: white;
-  width: 90%;
-  max-width: 800px;
-  height: 90vh;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-}
-.modal-header {
-  padding: 16px;
-  border-bottom: 1px solid #ddd;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.modal-title {
-  margin: 0;
-  font-size: 1.25rem;
-}
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-.modal-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-  background: #f3f4f6;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-.modal-footer {
-  padding: 16px;
-  border-top: 1px solid #ddd;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-.btn {
-  padding: 8px 16px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-}
-.btn-secondary {
-  background: #e5e7eb;
-  color: #374151;
-}
-.btn-primary {
-  background: #1e1e2d;
-  color: white;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .report-content {
   background: white;
   width: 210mm;
@@ -668,44 +609,6 @@ const downloadPdf = () => {
   font-size: 10px;
   color: #666;
 }
-/* Badge Styles mimicking Dashboard */
-.badge {
-  display: inline-block;
-  padding: 0.35em 0.65em;
-  font-size: 0.75em;
-  font-weight: 700;
-  line-height: 1;
-  color: #fff;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: 0.475rem;
-}
-.badge-light-success {
-  color: #50cd89;
-  background-color: #e8fff3;
-}
-.badge-light-danger {
-  color: #f1416c;
-  background-color: #fff5f8;
-}
-.badge-light-info {
-  color: #7239ea;
-  background-color: #f8f5ff;
-}
-.badge-light-secondary {
-  color: #7e8299;
-  background-color: #f5f8fa;
-}
-.btn-primary {
-  background: #2563eb;
-  color: white;
-}
-.btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
 /* Report Styles (Preview) */
 .report-content {
   background: white;
@@ -855,11 +758,6 @@ const downloadPdf = () => {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .modal-container {
-    width: 95%;
-    max-width: none;
-    height: 95vh;
-  }
 
   .report-content {
     padding: 15px;
@@ -904,11 +802,6 @@ const downloadPdf = () => {
 }
 
 @media (max-width: 480px) {
-  .modal-container {
-    width: 100%;
-    height: 100vh;
-    border-radius: 0;
-  }
 
   .report-content {
     padding: 10px;

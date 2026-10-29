@@ -72,9 +72,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style>
-#app {
-  display: contents;
-}
-</style>

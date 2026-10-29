@@ -39,10 +39,12 @@
             @drop="onDrop($event, index)"
           >
             <div
-              class="camera-card overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700"
+              class="cursor-move overflow-hidden rounded-lg border border-gray-200 transition-all duration-200 dark:border-gray-700"
               :class="{
-                dragging: isDragging && draggedCamera?.uid === camera.uid,
-                'drag-over': dragOverIndex === index && draggedCamera?.uid !== camera.uid,
+                'scale-95 opacity-50':
+                  isDragging && draggedCamera?.uid === camera.uid,
+                'border-2 border-dashed border-[#3699FF] bg-[rgba(54,153,255,0.1)]':
+                  dragOverIndex === index && draggedCamera?.uid !== camera.uid,
               }"
               draggable="true"
               @dragstart="onDragStart($event, camera, index)"
@@ -51,20 +53,22 @@
               <div class="relative">
                 <!-- Drag handle overlay -->
                 <div class="absolute top-2 right-2 z-10">
-                  <i class="ki-duotone ki-menu fs-4 drop-shadow cursor-move text-white">
+                  <i
+                    class="ki-duotone ki-menu cursor-move text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] fs-4"
+                  >
                     <span class="path1"></span>
                     <span class="path2"></span>
                   </i>
                 </div>
 
                 <div
-                  class="camera-feed-container relative overflow-hidden rounded bg-black"
+                  class="relative overflow-hidden rounded bg-black"
                   :style="{ height: gridView === '1x1' ? '520px' : '200px' }"
                 >
                   <video
                     v-if="camera.public_endpoint_url"
                     :id="`video-${camera.uid}`"
-                    class="camera-video"
+                    class="h-full w-full object-cover"
                     playsinline
                     muted
                     autoplay
@@ -81,8 +85,7 @@
 
                   <!-- Info Overlay -->
                   <div
-                    class="absolute bottom-0 left-0 w-full p-3"
-                    style="background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent)"
+                    class="absolute bottom-0 left-0 w-full bg-[linear-gradient(to_top,rgba(0,0,0,0.8),transparent)] p-3"
                   >
                     <div class="text-sm font-bold text-white">{{ camera.room }}</div>
                     <div class="flex items-center text-xs text-gray-400">
@@ -126,10 +129,13 @@
           <div
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
           >
-            <i class="bi" :class="isSiteSelectionOpen ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+            <i
+              class="fas"
+              :class="isSiteSelectionOpen ? 'fa-chevron-up' : 'fa-chevron-down'"
+            ></i>
           </div>
         </button>
-        <div class="overflow-auto p-0" style="max-height: 80vh">
+        <div class="max-h-[80vh] overflow-auto p-0">
           <!-- Site List (Dropdown) -->
           <div v-if="isSiteSelectionOpen">
             <!-- Search Input -->
@@ -167,8 +173,8 @@
             <li
               v-for="cam in siteCameras"
               :key="cam.uid"
-              class="sidebar-camera-item flex cursor-grab items-center justify-between border-b border-gray-100 px-4 py-3 last:border-b-0 dark:border-gray-800"
-              :class="{ dragging: draggedCamera?.uid === cam.uid }"
+              class="flex cursor-grab items-center justify-between border-b border-gray-100 px-4 py-3 transition-colors duration-200 last:border-b-0 hover:bg-[#f5f8fa] active:cursor-grabbing dark:border-gray-800"
+              :class="{ 'opacity-50': draggedCamera?.uid === cam.uid }"
               draggable="true"
               @dragstart="onDragStartFromSidebar($event, cam)"
               @dragend="onDragEnd"
@@ -958,51 +964,3 @@ onMounted(async () => {
   await fetchSites();
 });
 </script>
-
-<style scoped>
-.camera-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.camera-card {
-  transition: all 0.2s ease;
-  cursor: move;
-}
-
-.camera-card.dragging {
-  opacity: 0.5;
-  transform: scale(0.95);
-}
-
-.camera-card.drag-over {
-  border: 2px dashed #3699FF;
-  background-color: rgba(54, 153, 255, 0.1);
-}
-
-.sidebar-camera-item {
-  transition: background-color 0.2s ease;
-}
-
-.sidebar-camera-item:hover,
-.sidebar-camera-item.hover-bg-light:hover {
-  background-color: #f5f8fa !important;
-}
-
-.sidebar-camera-item.dragging {
-  opacity: 0.5;
-}
-
-.cursor-grab {
-  cursor: grab;
-}
-
-.cursor-grab:active {
-  cursor: grabbing;
-}
-
-.drop-shadow {
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-}
-</style>

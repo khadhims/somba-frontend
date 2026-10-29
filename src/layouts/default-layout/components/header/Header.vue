@@ -9,7 +9,7 @@
         <img
           alt="Logo"
           :src="getAssetPath('logo-somba-3.png')"
-          style="height: 44px"
+          class="h-11"
         />
       </router-link>
       <!--end::Logo-->
@@ -51,7 +51,7 @@
     <div
       class="flex flex-1 items-stretch"
       :class="{
-        'container-fluid': headerWidthFluid,
+        'px-4': headerWidthFluid,
         'mx-auto max-w-[1320px] px-4': !headerWidthFluid,
       }"
     >

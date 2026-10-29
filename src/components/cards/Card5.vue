@@ -11,14 +11,18 @@
   >
     <!--begin::Card-->
     <div
-      class="card5-root relative h-full rounded-lg bg-white dark:bg-gray-900"
+      class="relative z-[1] h-full rounded-lg border border-[#e4e6ef] bg-white dark:bg-gray-900"
       :title="title"
     >
       <!-- Status dot indicator di pojok kanan atas (hanya tampil jika hideStatus = false) -->
       <div v-if="!hideStatus" class="absolute right-0 top-0 m-2">
         <div
-          class="status-dot"
-          :class="currentlyActive ? 'status-active' : 'status-inactive'"
+          class="h-2.5 w-2.5 cursor-help rounded-full border-2 border-white shadow-[0_2px_4px_rgba(0,0,0,0.15)]"
+          :class="
+            currentlyActive
+              ? 'animate-[pulse_2s_infinite_ease-in-out] bg-[#4caf50]'
+              : 'animate-none bg-[#9e9e9e]'
+          "
           :title="
             currentlyActive
               ? 'Status: Aktif - Proses sedang berjalan'
@@ -29,19 +33,17 @@
 
       <!--begin::Card body-->
       <div
-        class="flex flex-col items-center justify-center p-4"
-        style="min-width: 140px"
+        class="flex min-w-[140px] flex-col items-center justify-center p-4"
       >
         <!--begin::Icon-->
         <div class="mb-3">
           <div
-            class="icon-wrap flex h-[50px] w-[50px] items-center justify-center overflow-hidden rounded-full"
-            :style="{ backgroundColor: bgColor || '#2196f3', border: 'none' }"
+            class="flex h-[50px] w-[50px] items-center justify-center overflow-hidden rounded-full border-none transition-all duration-200 ease-in-out [backface-visibility:hidden] [transform:translateZ(0)]"
+            :style="{ backgroundColor: bgColor || '#2196f3' }"
           >
             <i
               :class="[icon || 'fas fa-clipboard-list']"
-              class="card-icon"
-              style="font-size: 20px"
+              class="text-[20px] text-[#1a1a1a] opacity-100 antialiased dark:text-white"
             ></i>
           </div>
         </div>
@@ -166,36 +168,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.card5-root {
-  border: 1px solid #e4e6ef;
-  z-index: 1;
-}
-
-.icon-wrap {
-  transition: all 0.2s ease-in-out;
-}
-
-/* Status dot indicator styles */
-.status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-  cursor: help;
-  animation: pulse 2s infinite ease-in-out;
-}
-
-.status-active {
-  background-color: #4caf50; /* Green for active */
-}
-
-.status-inactive {
-  background-color: #9e9e9e; /* Gray for inactive */
-  animation: none; /* No pulse for inactive */
-}
-
-/* Pulse animation for active status */
 @keyframes pulse {
   0% {
     box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
@@ -206,26 +178,5 @@ export default defineComponent({
   100% {
     box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
   }
-}
-
-/* Dynamic icon colors based on theme */
-.card-icon {
-  color: #1a1a1a !important; /* Dark color for light theme */
-  opacity: 1 !important;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-/* Dark theme icon colors */
-:global([data-bs-theme="dark"]) .card-icon {
-  color: #ffffff !important; /* White color for dark theme */
-}
-
-.icon-wrap {
-  border: none !important;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  transform: translateZ(0);
 }
 </style>

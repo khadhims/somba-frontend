@@ -93,7 +93,7 @@
         id="kt_drawer_chat_messenger_body"
       >
         <!--begin::Messages-->
-        <div ref="messagesRef" data-kt-element="messages">
+        <div ref="messagesRef">
           <template v-for="(item, index) in messages" :key="index">
             <MessageIn
               ref="messagesInRef"
@@ -124,7 +124,6 @@
         <!--begin::Input-->
         <input
           class="mb-3 w-full border-0 border-b border-transparent bg-transparent px-0 py-2 text-sm focus:border-gray-300 focus:outline-none focus:ring-0 dark:text-gray-100"
-          data-kt-element="input"
           placeholder="Type a message"
           v-model="newMessageText"
           @keydown.enter="addNewMessage"
@@ -164,7 +163,6 @@
             @click="addNewMessage"
             class="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-active"
             type="button"
-            data-kt-element="send"
           >
             Send
           </button>

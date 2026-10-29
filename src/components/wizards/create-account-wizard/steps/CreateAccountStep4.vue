@@ -24,7 +24,7 @@
 
       <div class="w-full">
         <!--begin::Input group-->
-        <div class="mb-7 flex flex-col fv-row">
+        <div class="mb-7 flex flex-col">
           <!--begin::Label-->
           <label class="mb-2 flex items-center text-sm font-medium">
             <span class="after:content-['*'] after:ml-0.5 after:text-danger"
@@ -45,14 +45,14 @@
             name="nameOnCard"
           />
           <ErrorMessage
-            class="fv-plugins-message-container invalid-feedback"
+            class="mt-1 block text-sm text-danger"
             name="nameOnCard"
           />
         </div>
         <!--end::Input group-->
 
         <!--begin::Input group-->
-        <div class="mb-7 flex flex-col fv-row">
+        <div class="mb-7 flex flex-col">
           <!--begin::Label-->
           <label
             class="mb-2 text-sm font-medium after:content-['*'] after:ml-0.5 after:text-danger"
@@ -70,7 +70,7 @@
               name="cardNumber"
             />
             <ErrorMessage
-              class="fv-plugins-message-container invalid-feedback"
+              class="mt-1 block text-sm text-danger"
               name="cardNumber"
             />
             <!--end::Input-->
@@ -104,7 +104,7 @@
         <!--begin::Input group-->
         <div class="grid grid-cols-1 gap-4 mb-10 md:grid-cols-12">
           <!--begin::Col-->
-          <div class="md:col-span-8 fv-row">
+          <div class="md:col-span-8">
             <!--begin::Label-->
             <label
               class="mb-2 block text-sm font-medium after:content-['*'] after:ml-0.5 after:text-danger"
@@ -113,7 +113,7 @@
             <!--end::Label-->
 
             <!--begin::Row-->
-            <div class="grid grid-cols-2 gap-4 fv-row">
+            <div class="grid grid-cols-2 gap-4">
               <!--begin::Col-->
               <div>
                 <Field
@@ -130,7 +130,7 @@
                   ></option>
                 </Field>
                 <ErrorMessage
-                  class="fv-plugins-message-container invalid-feedback"
+                  class="mt-1 block text-sm text-danger"
                   name="cardExpiryMonth"
                 />
               </div>
@@ -152,7 +152,7 @@
                   ></option>
                 </Field>
                 <ErrorMessage
-                  class="fv-plugins-message-container invalid-feedback"
+                  class="mt-1 block text-sm text-danger"
                   name="cardExpiryYear"
                 />
               </div>
@@ -163,7 +163,7 @@
           <!--end::Col-->
 
           <!--begin::Col-->
-          <div class="md:col-span-4 fv-row">
+          <div class="md:col-span-4">
             <!--begin::Label-->
             <label class="mb-2 flex items-center text-sm font-medium">
               <span class="after:content-['*'] after:ml-0.5 after:text-danger"
@@ -189,7 +189,7 @@
                 name="cardCvv"
               />
               <ErrorMessage
-                class="fv-plugins-message-container invalid-feedback"
+                class="mt-1 block text-sm text-danger"
                 name="cardCvv"
               />
               <!--end::Input-->

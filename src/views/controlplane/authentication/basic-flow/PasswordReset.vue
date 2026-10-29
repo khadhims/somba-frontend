@@ -3,7 +3,7 @@
   <div class="lg:w-[500px] p-10">
     <!--begin::Form-->
     <VForm
-      class="password-reset-form w-full"
+      class="w-full"
       @submit="onSubmitForgotPassword"
       id="kt_login_password_reset_form"
       :validation-schema="forgotPassword"
@@ -15,7 +15,7 @@
         <!--end::Title-->
 
         <!--begin::Link-->
-        <div class="text-lg font-semibold" style="color: rgba(255,255,255,0.75)">
+        <div class="text-lg font-semibold text-white/75">
           Enter your email to reset your password.
         </div>
         <!--end::Link-->
@@ -23,7 +23,7 @@
       <!--begin::Heading-->
 
       <!--begin::Input group-->
-      <div class="fv-row mb-10">
+      <div class="mb-10">
         <label class="mb-2 block text-sm font-bold text-white">Email</label>
         <Field
           class="custom-input w-full"
@@ -32,8 +32,8 @@
           name="email"
           autocomplete="off"
         />
-        <div class="fv-plugins-message-container">
-          <div class="fv-help-block">
+        <div>
+          <div class="mt-1 text-sm text-danger">
             <ErrorMessage name="email" />
           </div>
         </div>

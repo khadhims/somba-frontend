@@ -122,7 +122,7 @@
               <!--begin::Row-->
               <div class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6">
                 <!--begin::Col-->
-                <div class="lg:col-span-6 fv-row">
+                <div class="lg:col-span-6">
                   <Field
                     type="text"
                     name="fname"
@@ -130,8 +130,8 @@
                     placeholder="First name"
                     v-model="profileDetails.name"
                   />
-                  <div class="fv-plugins-message-container">
-                    <div class="fv-help-block">
+                  <div>
+                    <div class="mt-1 text-sm text-danger">
                       <ErrorMessage name="fname" />
                     </div>
                   </div>
@@ -139,7 +139,7 @@
                 <!--end::Col-->
 
                 <!--begin::Col-->
-                <div class="lg:col-span-6 fv-row">
+                <div class="lg:col-span-6">
                   <Field
                     type="text"
                     name="lname"
@@ -147,8 +147,8 @@
                     placeholder="Last name"
                     v-model="profileDetails.surname"
                   />
-                  <div class="fv-plugins-message-container">
-                    <div class="fv-help-block">
+                  <div>
+                    <div class="mt-1 text-sm text-danger">
                       <ErrorMessage name="lname" />
                     </div>
                   </div>
@@ -173,7 +173,7 @@
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="lg:col-span-8 fv-row">
+            <div class="lg:col-span-8">
               <Field
                 type="text"
                 name="company"
@@ -181,8 +181,8 @@
                 placeholder="Company name"
                 v-model="profileDetails.company"
               />
-              <div class="fv-plugins-message-container">
-                <div class="fv-help-block">
+              <div>
+                <div class="mt-1 text-sm text-danger">
                   <ErrorMessage name="company" />
                 </div>
               </div>
@@ -209,7 +209,7 @@
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="lg:col-span-8 fv-row">
+            <div class="lg:col-span-8">
               <Field
                 type="tel"
                 name="phone"
@@ -217,8 +217,8 @@
                 placeholder="Phone number"
                 v-model="profileDetails.contactPhone"
               />
-              <div class="fv-plugins-message-container">
-                <div class="fv-help-block">
+              <div>
+                <div class="mt-1 text-sm text-danger">
                   <ErrorMessage name="phone" />
                 </div>
               </div>
@@ -238,7 +238,7 @@
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="lg:col-span-8 fv-row">
+            <div class="lg:col-span-8">
               <Field
                 type="text"
                 name="website"
@@ -246,8 +246,8 @@
                 placeholder="Company website"
                 v-model="profileDetails.companySite"
               />
-              <div class="fv-plugins-message-container">
-                <div class="fv-help-block">
+              <div>
+                <div class="mt-1 text-sm text-danger">
                   <ErrorMessage name="website" />
                 </div>
               </div>
@@ -274,7 +274,7 @@
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="lg:col-span-8 fv-row">
+            <div class="lg:col-span-8">
               <Field
                 as="select"
                 name="country"
@@ -539,8 +539,8 @@
                 <option value="ZM">Zambia</option>
                 <option value="ZW">Zimbabwe</option>
               </Field>
-              <div class="fv-plugins-message-container">
-                <div class="fv-help-block">
+              <div>
+                <div class="mt-1 text-sm text-danger">
                   <ErrorMessage name="country" />
                 </div>
               </div>
@@ -561,7 +561,7 @@
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="lg:col-span-8 fv-row">
+            <div class="lg:col-span-8">
               <!--begin::Input-->
               <Field
                 as="select"
@@ -616,8 +616,8 @@
                 <option value="zh-cn">简体中文 - Simplified Chinese</option>
                 <option value="zh-tw">繁體中文 - Traditional Chinese</option>
               </Field>
-              <div class="fv-plugins-message-container">
-                <div class="fv-help-block">
+              <div>
+                <div class="mt-1 text-sm text-danger">
                   <ErrorMessage name="language" />
                 </div>
               </div>
@@ -646,456 +646,183 @@
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="lg:col-span-8 fv-row">
+            <div class="lg:col-span-8">
               <Field
                 as="select"
                 name="timezone"
                 :class="formInputClass"
                 v-model="profileDetails.timezone"
               >
-                <option
-                  data-bs-offset="-39600"
-                  value="International Date Line West"
-                >
+                <option value="International Date Line West">
                   (GMT-11:00) International Date Line West
                 </option>
-                <option data-bs-offset="-39600" value="Midway Island">
-                  (GMT-11:00) Midway Island
-                </option>
-                <option data-bs-offset="-39600" value="Samoa">
-                  (GMT-11:00) Samoa
-                </option>
-                <option data-bs-offset="-36000" value="Hawaii">
-                  (GMT-10:00) Hawaii
-                </option>
-                <option data-bs-offset="-28800" value="Alaska">
-                  (GMT-08:00) Alaska
-                </option>
-                <option
-                  data-bs-offset="-25200"
-                  value="Pacific Time (US &amp; Canada)"
-                >
+                <option value="Midway Island">(GMT-11:00) Midway Island</option>
+                <option value="Samoa">(GMT-11:00) Samoa</option>
+                <option value="Hawaii">(GMT-10:00) Hawaii</option>
+                <option value="Alaska">(GMT-08:00) Alaska</option>
+                <option value="Pacific Time (US &amp; Canada)">
                   (GMT-07:00) Pacific Time (US &amp; Canada)
                 </option>
-                <option data-bs-offset="-25200" value="Tijuana">
-                  (GMT-07:00) Tijuana
-                </option>
-                <option data-bs-offset="-25200" value="Arizona">
-                  (GMT-07:00) Arizona
-                </option>
-                <option
-                  data-bs-offset="-21600"
-                  value="Mountain Time (US &amp; Canada)"
-                >
+                <option value="Tijuana">(GMT-07:00) Tijuana</option>
+                <option value="Arizona">(GMT-07:00) Arizona</option>
+                <option value="Mountain Time (US &amp; Canada)">
                   (GMT-06:00) Mountain Time (US &amp; Canada)
                 </option>
-                <option data-bs-offset="-21600" value="Chihuahua">
-                  (GMT-06:00) Chihuahua
-                </option>
-                <option data-bs-offset="-21600" value="Mazatlan">
-                  (GMT-06:00) Mazatlan
-                </option>
-                <option data-bs-offset="-21600" value="Saskatchewan">
-                  (GMT-06:00) Saskatchewan
-                </option>
-                <option data-bs-offset="-21600" value="Central America">
+                <option value="Chihuahua">(GMT-06:00) Chihuahua</option>
+                <option value="Mazatlan">(GMT-06:00) Mazatlan</option>
+                <option value="Saskatchewan">(GMT-06:00) Saskatchewan</option>
+                <option value="Central America">
                   (GMT-06:00) Central America
                 </option>
-                <option
-                  data-bs-offset="-18000"
-                  value="Central Time (US &amp; Canada)"
-                >
+                <option value="Central Time (US &amp; Canada)">
                   (GMT-05:00) Central Time (US &amp; Canada)
                 </option>
-                <option data-bs-offset="-18000" value="Guadalajara">
-                  (GMT-05:00) Guadalajara
-                </option>
-                <option data-bs-offset="-18000" value="Mexico City">
-                  (GMT-05:00) Mexico City
-                </option>
-                <option data-bs-offset="-18000" value="Monterrey">
-                  (GMT-05:00) Monterrey
-                </option>
-                <option data-bs-offset="-18000" value="Bogota">
-                  (GMT-05:00) Bogota
-                </option>
-                <option data-bs-offset="-18000" value="Lima">
-                  (GMT-05:00) Lima
-                </option>
-                <option data-bs-offset="-18000" value="Quito">
-                  (GMT-05:00) Quito
-                </option>
-                <option
-                  data-bs-offset="-14400"
-                  value="Eastern Time (US &amp; Canada)"
-                >
+                <option value="Guadalajara">(GMT-05:00) Guadalajara</option>
+                <option value="Mexico City">(GMT-05:00) Mexico City</option>
+                <option value="Monterrey">(GMT-05:00) Monterrey</option>
+                <option value="Bogota">(GMT-05:00) Bogota</option>
+                <option value="Lima">(GMT-05:00) Lima</option>
+                <option value="Quito">(GMT-05:00) Quito</option>
+                <option value="Eastern Time (US &amp; Canada)">
                   (GMT-04:00) Eastern Time (US &amp; Canada)
                 </option>
-                <option data-bs-offset="-14400" value="Indiana (East)">
+                <option value="Indiana (East)">
                   (GMT-04:00) Indiana (East)
                 </option>
-                <option data-bs-offset="-14400" value="Caracas">
-                  (GMT-04:00) Caracas
-                </option>
-                <option data-bs-offset="-14400" value="La Paz">
-                  (GMT-04:00) La Paz
-                </option>
-                <option data-bs-offset="-14400" value="Georgetown">
-                  (GMT-04:00) Georgetown
-                </option>
-                <option data-bs-offset="-10800" value="Atlantic Time (Canada)">
+                <option value="Caracas">(GMT-04:00) Caracas</option>
+                <option value="La Paz">(GMT-04:00) La Paz</option>
+                <option value="Georgetown">(GMT-04:00) Georgetown</option>
+                <option value="Atlantic Time (Canada)">
                   (GMT-03:00) Atlantic Time (Canada)
                 </option>
-                <option data-bs-offset="-10800" value="Santiago">
-                  (GMT-03:00) Santiago
-                </option>
-                <option data-bs-offset="-10800" value="Brasilia">
-                  (GMT-03:00) Brasilia
-                </option>
-                <option data-bs-offset="-10800" value="Buenos Aires">
-                  (GMT-03:00) Buenos Aires
-                </option>
-                <option data-bs-offset="-9000" value="Newfoundland">
-                  (GMT-02:30) Newfoundland
-                </option>
-                <option data-bs-offset="-7200" value="Greenland">
-                  (GMT-02:00) Greenland
-                </option>
-                <option data-bs-offset="-7200" value="Mid-Atlantic">
-                  (GMT-02:00) Mid-Atlantic
-                </option>
-                <option data-bs-offset="-3600" value="Cape Verde Is.">
+                <option value="Santiago">(GMT-03:00) Santiago</option>
+                <option value="Brasilia">(GMT-03:00) Brasilia</option>
+                <option value="Buenos Aires">(GMT-03:00) Buenos Aires</option>
+                <option value="Newfoundland">(GMT-02:30) Newfoundland</option>
+                <option value="Greenland">(GMT-02:00) Greenland</option>
+                <option value="Mid-Atlantic">(GMT-02:00) Mid-Atlantic</option>
+                <option value="Cape Verde Is.">
                   (GMT-01:00) Cape Verde Is.
                 </option>
-                <option data-bs-offset="0" value="Azores">(GMT) Azores</option>
-                <option data-bs-offset="0" value="Monrovia">
-                  (GMT) Monrovia
-                </option>
-                <option data-bs-offset="0" value="UTC">(GMT) UTC</option>
-                <option data-bs-offset="3600" value="Dublin">
-                  (GMT+01:00) Dublin
-                </option>
-                <option data-bs-offset="3600" value="Edinburgh">
-                  (GMT+01:00) Edinburgh
-                </option>
-                <option data-bs-offset="3600" value="Lisbon">
-                  (GMT+01:00) Lisbon
-                </option>
-                <option data-bs-offset="3600" value="London">
-                  (GMT+01:00) London
-                </option>
-                <option data-bs-offset="3600" value="Casablanca">
-                  (GMT+01:00) Casablanca
-                </option>
-                <option data-bs-offset="3600" value="West Central Africa">
+                <option value="Azores">(GMT) Azores</option>
+                <option value="Monrovia">(GMT) Monrovia</option>
+                <option value="UTC">(GMT) UTC</option>
+                <option value="Dublin">(GMT+01:00) Dublin</option>
+                <option value="Edinburgh">(GMT+01:00) Edinburgh</option>
+                <option value="Lisbon">(GMT+01:00) Lisbon</option>
+                <option value="London">(GMT+01:00) London</option>
+                <option value="Casablanca">(GMT+01:00) Casablanca</option>
+                <option value="West Central Africa">
                   (GMT+01:00) West Central Africa
                 </option>
-                <option data-bs-offset="7200" value="Belgrade">
-                  (GMT+02:00) Belgrade
-                </option>
-                <option data-bs-offset="7200" value="Bratislava">
-                  (GMT+02:00) Bratislava
-                </option>
-                <option data-bs-offset="7200" value="Budapest">
-                  (GMT+02:00) Budapest
-                </option>
-                <option data-bs-offset="7200" value="Ljubljana">
-                  (GMT+02:00) Ljubljana
-                </option>
-                <option data-bs-offset="7200" value="Prague">
-                  (GMT+02:00) Prague
-                </option>
-                <option data-bs-offset="7200" value="Sarajevo">
-                  (GMT+02:00) Sarajevo
-                </option>
-                <option data-bs-offset="7200" value="Skopje">
-                  (GMT+02:00) Skopje
-                </option>
-                <option data-bs-offset="7200" value="Warsaw">
-                  (GMT+02:00) Warsaw
-                </option>
-                <option data-bs-offset="7200" value="Zagreb">
-                  (GMT+02:00) Zagreb
-                </option>
-                <option data-bs-offset="7200" value="Brussels">
-                  (GMT+02:00) Brussels
-                </option>
-                <option data-bs-offset="7200" value="Copenhagen">
-                  (GMT+02:00) Copenhagen
-                </option>
-                <option data-bs-offset="7200" value="Madrid">
-                  (GMT+02:00) Madrid
-                </option>
-                <option data-bs-offset="7200" value="Paris">
-                  (GMT+02:00) Paris
-                </option>
-                <option data-bs-offset="7200" value="Amsterdam">
-                  (GMT+02:00) Amsterdam
-                </option>
-                <option data-bs-offset="7200" value="Berlin">
-                  (GMT+02:00) Berlin
-                </option>
-                <option data-bs-offset="7200" value="Bern">
-                  (GMT+02:00) Bern
-                </option>
-                <option data-bs-offset="7200" value="Rome">
-                  (GMT+02:00) Rome
-                </option>
-                <option data-bs-offset="7200" value="Stockholm">
-                  (GMT+02:00) Stockholm
-                </option>
-                <option data-bs-offset="7200" value="Vienna">
-                  (GMT+02:00) Vienna
-                </option>
-                <option data-bs-offset="7200" value="Cairo">
-                  (GMT+02:00) Cairo
-                </option>
-                <option data-bs-offset="7200" value="Harare">
-                  (GMT+02:00) Harare
-                </option>
-                <option data-bs-offset="7200" value="Pretoria">
-                  (GMT+02:00) Pretoria
-                </option>
-                <option data-bs-offset="10800" value="Bucharest">
-                  (GMT+03:00) Bucharest
-                </option>
-                <option data-bs-offset="10800" value="Helsinki">
-                  (GMT+03:00) Helsinki
-                </option>
-                <option data-bs-offset="10800" value="Kiev">
-                  (GMT+03:00) Kiev
-                </option>
-                <option data-bs-offset="10800" value="Kyiv">
-                  (GMT+03:00) Kyiv
-                </option>
-                <option data-bs-offset="10800" value="Riga">
-                  (GMT+03:00) Riga
-                </option>
-                <option data-bs-offset="10800" value="Sofia">
-                  (GMT+03:00) Sofia
-                </option>
-                <option data-bs-offset="10800" value="Tallinn">
-                  (GMT+03:00) Tallinn
-                </option>
-                <option data-bs-offset="10800" value="Vilnius">
-                  (GMT+03:00) Vilnius
-                </option>
-                <option data-bs-offset="10800" value="Athens">
-                  (GMT+03:00) Athens
-                </option>
-                <option data-bs-offset="10800" value="Istanbul">
-                  (GMT+03:00) Istanbul
-                </option>
-                <option data-bs-offset="10800" value="Minsk">
-                  (GMT+03:00) Minsk
-                </option>
-                <option data-bs-offset="10800" value="Jerusalem">
-                  (GMT+03:00) Jerusalem
-                </option>
-                <option data-bs-offset="10800" value="Moscow">
-                  (GMT+03:00) Moscow
-                </option>
-                <option data-bs-offset="10800" value="St. Petersburg">
+                <option value="Belgrade">(GMT+02:00) Belgrade</option>
+                <option value="Bratislava">(GMT+02:00) Bratislava</option>
+                <option value="Budapest">(GMT+02:00) Budapest</option>
+                <option value="Ljubljana">(GMT+02:00) Ljubljana</option>
+                <option value="Prague">(GMT+02:00) Prague</option>
+                <option value="Sarajevo">(GMT+02:00) Sarajevo</option>
+                <option value="Skopje">(GMT+02:00) Skopje</option>
+                <option value="Warsaw">(GMT+02:00) Warsaw</option>
+                <option value="Zagreb">(GMT+02:00) Zagreb</option>
+                <option value="Brussels">(GMT+02:00) Brussels</option>
+                <option value="Copenhagen">(GMT+02:00) Copenhagen</option>
+                <option value="Madrid">(GMT+02:00) Madrid</option>
+                <option value="Paris">(GMT+02:00) Paris</option>
+                <option value="Amsterdam">(GMT+02:00) Amsterdam</option>
+                <option value="Berlin">(GMT+02:00) Berlin</option>
+                <option value="Bern">(GMT+02:00) Bern</option>
+                <option value="Rome">(GMT+02:00) Rome</option>
+                <option value="Stockholm">(GMT+02:00) Stockholm</option>
+                <option value="Vienna">(GMT+02:00) Vienna</option>
+                <option value="Cairo">(GMT+02:00) Cairo</option>
+                <option value="Harare">(GMT+02:00) Harare</option>
+                <option value="Pretoria">(GMT+02:00) Pretoria</option>
+                <option value="Bucharest">(GMT+03:00) Bucharest</option>
+                <option value="Helsinki">(GMT+03:00) Helsinki</option>
+                <option value="Kiev">(GMT+03:00) Kiev</option>
+                <option value="Kyiv">(GMT+03:00) Kyiv</option>
+                <option value="Riga">(GMT+03:00) Riga</option>
+                <option value="Sofia">(GMT+03:00) Sofia</option>
+                <option value="Tallinn">(GMT+03:00) Tallinn</option>
+                <option value="Vilnius">(GMT+03:00) Vilnius</option>
+                <option value="Athens">(GMT+03:00) Athens</option>
+                <option value="Istanbul">(GMT+03:00) Istanbul</option>
+                <option value="Minsk">(GMT+03:00) Minsk</option>
+                <option value="Jerusalem">(GMT+03:00) Jerusalem</option>
+                <option value="Moscow">(GMT+03:00) Moscow</option>
+                <option value="St. Petersburg">
                   (GMT+03:00) St. Petersburg
                 </option>
-                <option data-bs-offset="10800" value="Volgograd">
-                  (GMT+03:00) Volgograd
-                </option>
-                <option data-bs-offset="10800" value="Kuwait">
-                  (GMT+03:00) Kuwait
-                </option>
-                <option data-bs-offset="10800" value="Riyadh">
-                  (GMT+03:00) Riyadh
-                </option>
-                <option data-bs-offset="10800" value="Nairobi">
-                  (GMT+03:00) Nairobi
-                </option>
-                <option data-bs-offset="10800" value="Baghdad">
-                  (GMT+03:00) Baghdad
-                </option>
-                <option data-bs-offset="14400" value="Abu Dhabi">
-                  (GMT+04:00) Abu Dhabi
-                </option>
-                <option data-bs-offset="14400" value="Muscat">
-                  (GMT+04:00) Muscat
-                </option>
-                <option data-bs-offset="14400" value="Baku">
-                  (GMT+04:00) Baku
-                </option>
-                <option data-bs-offset="14400" value="Tbilisi">
-                  (GMT+04:00) Tbilisi
-                </option>
-                <option data-bs-offset="14400" value="Yerevan">
-                  (GMT+04:00) Yerevan
-                </option>
-                <option data-bs-offset="16200" value="Tehran">
-                  (GMT+04:30) Tehran
-                </option>
-                <option data-bs-offset="16200" value="Kabul">
-                  (GMT+04:30) Kabul
-                </option>
-                <option data-bs-offset="18000" value="Ekaterinburg">
-                  (GMT+05:00) Ekaterinburg
-                </option>
-                <option data-bs-offset="18000" value="Islamabad">
-                  (GMT+05:00) Islamabad
-                </option>
-                <option data-bs-offset="18000" value="Karachi">
-                  (GMT+05:00) Karachi
-                </option>
-                <option data-bs-offset="18000" value="Tashkent">
-                  (GMT+05:00) Tashkent
-                </option>
-                <option data-bs-offset="19800" value="Chennai">
-                  (GMT+05:30) Chennai
-                </option>
-                <option data-bs-offset="19800" value="Kolkata">
-                  (GMT+05:30) Kolkata
-                </option>
-                <option data-bs-offset="19800" value="Mumbai">
-                  (GMT+05:30) Mumbai
-                </option>
-                <option data-bs-offset="19800" value="New Delhi">
-                  (GMT+05:30) New Delhi
-                </option>
-                <option data-bs-offset="19800" value="Sri Jayawardenepura">
+                <option value="Volgograd">(GMT+03:00) Volgograd</option>
+                <option value="Kuwait">(GMT+03:00) Kuwait</option>
+                <option value="Riyadh">(GMT+03:00) Riyadh</option>
+                <option value="Nairobi">(GMT+03:00) Nairobi</option>
+                <option value="Baghdad">(GMT+03:00) Baghdad</option>
+                <option value="Abu Dhabi">(GMT+04:00) Abu Dhabi</option>
+                <option value="Muscat">(GMT+04:00) Muscat</option>
+                <option value="Baku">(GMT+04:00) Baku</option>
+                <option value="Tbilisi">(GMT+04:00) Tbilisi</option>
+                <option value="Yerevan">(GMT+04:00) Yerevan</option>
+                <option value="Tehran">(GMT+04:30) Tehran</option>
+                <option value="Kabul">(GMT+04:30) Kabul</option>
+                <option value="Ekaterinburg">(GMT+05:00) Ekaterinburg</option>
+                <option value="Islamabad">(GMT+05:00) Islamabad</option>
+                <option value="Karachi">(GMT+05:00) Karachi</option>
+                <option value="Tashkent">(GMT+05:00) Tashkent</option>
+                <option value="Chennai">(GMT+05:30) Chennai</option>
+                <option value="Kolkata">(GMT+05:30) Kolkata</option>
+                <option value="Mumbai">(GMT+05:30) Mumbai</option>
+                <option value="New Delhi">(GMT+05:30) New Delhi</option>
+                <option value="Sri Jayawardenepura">
                   (GMT+05:30) Sri Jayawardenepura
                 </option>
-                <option data-bs-offset="20700" value="Kathmandu">
-                  (GMT+05:45) Kathmandu
-                </option>
-                <option data-bs-offset="21600" value="Astana">
-                  (GMT+06:00) Astana
-                </option>
-                <option data-bs-offset="21600" value="Dhaka">
-                  (GMT+06:00) Dhaka
-                </option>
-                <option data-bs-offset="21600" value="Almaty">
-                  (GMT+06:00) Almaty
-                </option>
-                <option data-bs-offset="21600" value="Urumqi">
-                  (GMT+06:00) Urumqi
-                </option>
-                <option data-bs-offset="23400" value="Rangoon">
-                  (GMT+06:30) Rangoon
-                </option>
-                <option data-bs-offset="25200" value="Novosibirsk">
-                  (GMT+07:00) Novosibirsk
-                </option>
-                <option data-bs-offset="25200" value="Bangkok">
-                  (GMT+07:00) Bangkok
-                </option>
-                <option data-bs-offset="25200" value="Hanoi">
-                  (GMT+07:00) Hanoi
-                </option>
-                <option data-bs-offset="25200" value="Jakarta">
-                  (GMT+07:00) Jakarta
-                </option>
-                <option data-bs-offset="25200" value="Krasnoyarsk">
-                  (GMT+07:00) Krasnoyarsk
-                </option>
-                <option data-bs-offset="28800" value="Beijing">
-                  (GMT+08:00) Beijing
-                </option>
-                <option data-bs-offset="28800" value="Chongqing">
-                  (GMT+08:00) Chongqing
-                </option>
-                <option data-bs-offset="28800" value="Hong Kong">
-                  (GMT+08:00) Hong Kong
-                </option>
-                <option data-bs-offset="28800" value="Kuala Lumpur">
-                  (GMT+08:00) Kuala Lumpur
-                </option>
-                <option data-bs-offset="28800" value="Singapore">
-                  (GMT+08:00) Singapore
-                </option>
-                <option data-bs-offset="28800" value="Taipei">
-                  (GMT+08:00) Taipei
-                </option>
-                <option data-bs-offset="28800" value="Perth">
-                  (GMT+08:00) Perth
-                </option>
-                <option data-bs-offset="28800" value="Irkutsk">
-                  (GMT+08:00) Irkutsk
-                </option>
-                <option data-bs-offset="28800" value="Ulaan Bataar">
-                  (GMT+08:00) Ulaan Bataar
-                </option>
-                <option data-bs-offset="32400" value="Seoul">
-                  (GMT+09:00) Seoul
-                </option>
-                <option data-bs-offset="32400" value="Osaka">
-                  (GMT+09:00) Osaka
-                </option>
-                <option data-bs-offset="32400" value="Sapporo">
-                  (GMT+09:00) Sapporo
-                </option>
-                <option data-bs-offset="32400" value="Tokyo">
-                  (GMT+09:00) Tokyo
-                </option>
-                <option data-bs-offset="32400" value="Yakutsk">
-                  (GMT+09:00) Yakutsk
-                </option>
-                <option data-bs-offset="34200" value="Darwin">
-                  (GMT+09:30) Darwin
-                </option>
-                <option data-bs-offset="34200" value="Adelaide">
-                  (GMT+09:30) Adelaide
-                </option>
-                <option data-bs-offset="36000" value="Canberra">
-                  (GMT+10:00) Canberra
-                </option>
-                <option data-bs-offset="36000" value="Melbourne">
-                  (GMT+10:00) Melbourne
-                </option>
-                <option data-bs-offset="36000" value="Sydney">
-                  (GMT+10:00) Sydney
-                </option>
-                <option data-bs-offset="36000" value="Brisbane">
-                  (GMT+10:00) Brisbane
-                </option>
-                <option data-bs-offset="36000" value="Hobart">
-                  (GMT+10:00) Hobart
-                </option>
-                <option data-bs-offset="36000" value="Vladivostok">
-                  (GMT+10:00) Vladivostok
-                </option>
-                <option data-bs-offset="36000" value="Guam">
-                  (GMT+10:00) Guam
-                </option>
-                <option data-bs-offset="36000" value="Port Moresby">
-                  (GMT+10:00) Port Moresby
-                </option>
-                <option data-bs-offset="36000" value="Solomon Is.">
-                  (GMT+10:00) Solomon Is.
-                </option>
-                <option data-bs-offset="39600" value="Magadan">
-                  (GMT+11:00) Magadan
-                </option>
-                <option data-bs-offset="39600" value="New Caledonia">
-                  (GMT+11:00) New Caledonia
-                </option>
-                <option data-bs-offset="43200" value="Fiji">
-                  (GMT+12:00) Fiji
-                </option>
-                <option data-bs-offset="43200" value="Kamchatka">
-                  (GMT+12:00) Kamchatka
-                </option>
-                <option data-bs-offset="43200" value="Marshall Is.">
-                  (GMT+12:00) Marshall Is.
-                </option>
-                <option data-bs-offset="43200" value="Auckland">
-                  (GMT+12:00) Auckland
-                </option>
-                <option data-bs-offset="43200" value="Wellington">
-                  (GMT+12:00) Wellington
-                </option>
-                <option data-bs-offset="46800" value="Nuku'alofa">
-                  (GMT+13:00) Nuku'alofa
-                </option>
+                <option value="Kathmandu">(GMT+05:45) Kathmandu</option>
+                <option value="Astana">(GMT+06:00) Astana</option>
+                <option value="Dhaka">(GMT+06:00) Dhaka</option>
+                <option value="Almaty">(GMT+06:00) Almaty</option>
+                <option value="Urumqi">(GMT+06:00) Urumqi</option>
+                <option value="Rangoon">(GMT+06:30) Rangoon</option>
+                <option value="Novosibirsk">(GMT+07:00) Novosibirsk</option>
+                <option value="Bangkok">(GMT+07:00) Bangkok</option>
+                <option value="Hanoi">(GMT+07:00) Hanoi</option>
+                <option value="Jakarta">(GMT+07:00) Jakarta</option>
+                <option value="Krasnoyarsk">(GMT+07:00) Krasnoyarsk</option>
+                <option value="Beijing">(GMT+08:00) Beijing</option>
+                <option value="Chongqing">(GMT+08:00) Chongqing</option>
+                <option value="Hong Kong">(GMT+08:00) Hong Kong</option>
+                <option value="Kuala Lumpur">(GMT+08:00) Kuala Lumpur</option>
+                <option value="Singapore">(GMT+08:00) Singapore</option>
+                <option value="Taipei">(GMT+08:00) Taipei</option>
+                <option value="Perth">(GMT+08:00) Perth</option>
+                <option value="Irkutsk">(GMT+08:00) Irkutsk</option>
+                <option value="Ulaan Bataar">(GMT+08:00) Ulaan Bataar</option>
+                <option value="Seoul">(GMT+09:00) Seoul</option>
+                <option value="Osaka">(GMT+09:00) Osaka</option>
+                <option value="Sapporo">(GMT+09:00) Sapporo</option>
+                <option value="Tokyo">(GMT+09:00) Tokyo</option>
+                <option value="Yakutsk">(GMT+09:00) Yakutsk</option>
+                <option value="Darwin">(GMT+09:30) Darwin</option>
+                <option value="Adelaide">(GMT+09:30) Adelaide</option>
+                <option value="Canberra">(GMT+10:00) Canberra</option>
+                <option value="Melbourne">(GMT+10:00) Melbourne</option>
+                <option value="Sydney">(GMT+10:00) Sydney</option>
+                <option value="Brisbane">(GMT+10:00) Brisbane</option>
+                <option value="Hobart">(GMT+10:00) Hobart</option>
+                <option value="Vladivostok">(GMT+10:00) Vladivostok</option>
+                <option value="Guam">(GMT+10:00) Guam</option>
+                <option value="Port Moresby">(GMT+10:00) Port Moresby</option>
+                <option value="Solomon Is.">(GMT+10:00) Solomon Is.</option>
+                <option value="Magadan">(GMT+11:00) Magadan</option>
+                <option value="New Caledonia">(GMT+11:00) New Caledonia</option>
+                <option value="Fiji">(GMT+12:00) Fiji</option>
+                <option value="Kamchatka">(GMT+12:00) Kamchatka</option>
+                <option value="Marshall Is.">(GMT+12:00) Marshall Is.</option>
+                <option value="Auckland">(GMT+12:00) Auckland</option>
+                <option value="Wellington">(GMT+12:00) Wellington</option>
+                <option value="Nuku'alofa">(GMT+13:00) Nuku'alofa</option>
               </Field>
-              <div class="fv-plugins-message-container">
-                <div class="fv-help-block">
+              <div>
+                <div class="mt-1 text-sm text-danger">
                   <ErrorMessage name="timezone" />
                 </div>
               </div>
@@ -1116,31 +843,23 @@
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="lg:col-span-8 fv-row">
+            <div class="lg:col-span-8">
               <Field
                 as="select"
                 name="currency"
                 :class="formInputClass"
                 v-model="profileDetails.currency"
               >
-                <option value="USD"><b>USD</b>&#160;-&#160;USA dollar</option>
-                <option value="GBP">
-                  <b>GBP</b>&#160;-&#160;British pound
-                </option>
-                <option value="AUD">
-                  <b>AUD</b>&#160;-&#160;Australian dollar
-                </option>
-                <option value="JPY"><b>JPY</b>&#160;-&#160;Japanese yen</option>
-                <option value="SEK">
-                  <b>SEK</b>&#160;-&#160;Swedish krona
-                </option>
-                <option value="CAD">
-                  <b>CAD</b>&#160;-&#160;Canadian dollar
-                </option>
-                <option value="CHF"><b>CHF</b>&#160;-&#160;Swiss franc</option>
+                <option value="USD">USD&#160;-&#160;USA dollar</option>
+                <option value="GBP">GBP&#160;-&#160;British pound</option>
+                <option value="AUD">AUD&#160;-&#160;Australian dollar</option>
+                <option value="JPY">JPY&#160;-&#160;Japanese yen</option>
+                <option value="SEK">SEK&#160;-&#160;Swedish krona</option>
+                <option value="CAD">CAD&#160;-&#160;Canadian dollar</option>
+                <option value="CHF">CHF&#160;-&#160;Swiss franc</option>
               </Field>
-              <div class="fv-plugins-message-container">
-                <div class="fv-help-block">
+              <div>
+                <div class="mt-1 text-sm text-danger">
                   <ErrorMessage name="currency" />
                 </div>
               </div>
@@ -1160,7 +879,7 @@
             <!--end::Label-->
 
             <!--begin::Col-->
-            <div class="lg:col-span-8 fv-row">
+            <div class="lg:col-span-8">
               <!--begin::Options-->
               <div class="flex items-center mt-3">
                 <!--begin::Option-->
@@ -1203,7 +922,7 @@
 
             <!--begin::Label-->
             <div class="lg:col-span-8 flex items-center">
-              <div class="fv-row">
+              <div>
                 <label class="inline-flex cursor-pointer items-center">
                   <input
                     type="checkbox"
@@ -1299,7 +1018,7 @@
                 class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6"
               >
                 <div class="lg:col-span-6 mb-4 lg:mb-0">
-                  <div class="fv-row mb-0">
+                  <div class="mb-0">
                     <label for="emailaddress" class="mb-3 text-sm font-bold"
                       >Enter New Email Address</label
                     >
@@ -1311,15 +1030,15 @@
                       name="emailaddress"
                       value="support@keenthemes.com"
                     />
-                    <div class="fv-plugins-message-container">
-                      <div class="fv-help-block">
+                    <div>
+                      <div class="mt-1 text-sm text-danger">
                         <ErrorMessage name="emailaddress" />
                       </div>
                     </div>
                   </div>
                 </div>
                 <div class="lg:col-span-6">
-                  <div class="fv-row mb-0">
+                  <div class="mb-0">
                     <label
                       for="confirmemailpassword"
                       class="mb-3 text-sm font-bold"
@@ -1331,8 +1050,8 @@
                       name="confirmemailpassword"
                       id="confirmemailpassword"
                     />
-                    <div class="fv-plugins-message-container">
-                      <div class="fv-help-block">
+                    <div>
+                      <div class="mt-1 text-sm text-danger">
                         <ErrorMessage name="confirmemailpassword" />
                       </div>
                     </div>
@@ -1412,7 +1131,7 @@
                 class="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-6 lg:items-start mb-6"
               >
                 <div class="lg:col-span-4">
-                  <div class="fv-row mb-0">
+                  <div class="mb-0">
                     <label for="currentpassword" class="mb-3 text-sm font-bold"
                       >Current Password</label
                     >
@@ -1422,15 +1141,15 @@
                       name="currentpassword"
                       id="currentpassword"
                     />
-                    <div class="fv-plugins-message-container">
-                      <div class="fv-help-block">
+                    <div>
+                      <div class="mt-1 text-sm text-danger">
                         <ErrorMessage name="currentpassword" />
                       </div>
                     </div>
                   </div>
                 </div>
                 <div class="lg:col-span-4">
-                  <div class="fv-row mb-0">
+                  <div class="mb-0">
                     <label for="newpassword" class="mb-3 text-sm font-bold"
                       >New Password</label
                     >
@@ -1440,15 +1159,15 @@
                       name="newpassword"
                       id="newpassword"
                     />
-                    <div class="fv-plugins-message-container">
-                      <div class="fv-help-block">
+                    <div>
+                      <div class="mt-1 text-sm text-danger">
                         <ErrorMessage name="newpassword" />
                       </div>
                     </div>
                   </div>
                 </div>
                 <div class="lg:col-span-4">
-                  <div class="fv-row mb-0">
+                  <div class="mb-0">
                     <label for="confirmpassword" class="mb-3 text-sm font-bold"
                       >Confirm New Password</label
                     >
@@ -1458,8 +1177,8 @@
                       name="confirmpassword"
                       id="confirmpassword"
                     />
-                    <div class="fv-plugins-message-container">
-                      <div class="fv-help-block">
+                    <div>
+                      <div class="mt-1 text-sm text-danger">
                         <ErrorMessage name="confirmpassword" />
                       </div>
                     </div>
@@ -2264,7 +1983,7 @@
           </div>
 
           <!--begin::Form input row-->
-          <div class="flex items-center fv-row">
+          <div class="flex items-center">
             <input
               name="deactivate"
               class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"

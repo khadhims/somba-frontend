@@ -24,7 +24,6 @@
       <!--begin::Text-->
       <div
         class="rounded bg-info-light p-5 text-left font-semibold text-gray-900 lg:max-w-[400px]"
-        data-kt-element="message-text"
       >
         {{ text }}
       </div>

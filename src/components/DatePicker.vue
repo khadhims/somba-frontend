@@ -1,5 +1,5 @@
 <template>
-  <div class="date-picker-container">
+  <div class="relative">
     <label v-if="label" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ label }}</label>
     <div class="flex h-[31px]">
       <span class="flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-100 px-2 text-sm dark:border-gray-700 dark:bg-gray-800">
@@ -159,9 +159,3 @@ defineExpose({
   clear: clearDate
 })
 </script>
-
-<style scoped>
-.date-picker-container {
-  position: relative;
-}
-</style>

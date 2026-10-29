@@ -3,7 +3,7 @@
   <div v-show="active">
     <div class="w-full">
       <!--begin::Input group-->
-      <div class="fv-row">
+      <div>
         <!--begin::Label-->
         <label class="mb-4 flex items-center text-base font-semibold">
           <span class="after:content-['*'] after:ml-0.5 after:text-danger"
@@ -159,7 +159,7 @@
         <!--end::Option-->
 
         <ErrorMessage
-          class="fv-plugins-message-container invalid-feedback"
+          class="mt-1 block text-sm text-danger"
           name="framework"
         />
       </div>

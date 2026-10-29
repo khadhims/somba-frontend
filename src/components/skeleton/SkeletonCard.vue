@@ -1,5 +1,7 @@
 <template>
-  <div class="skeleton-card rounded-lg border-0">
+  <div
+    class="rounded-lg border-0 bg-[rgba(245,247,250,0.6)] dark:bg-[rgba(30,41,59,0.6)]"
+  >
     <div class="flex items-center justify-between p-3">
       <div class="flex items-center gap-3">
         <div class="overflow-hidden rounded-[10px]">
@@ -33,13 +35,3 @@ const titleWidth = computed(() => (props.compact ? 120 : 160));
 const badgeWidth = computed(() => (props.compact ? 60 : 80));
 const lineWidth = (n: number) => (props.compact ? (n % 2 ? 90 : 140) : (n % 2 ? 110 : 180));
 </script>
-
-<style scoped>
-.skeleton-card {
-  background: rgba(245, 247, 250, 0.6);
-}
-
-:global([data-bs-theme="dark"]) .skeleton-card {
-  background: rgba(30, 41, 59, 0.6);
-}
-</style>

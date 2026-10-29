@@ -14,10 +14,7 @@
     <div class="my-2 flex">
       <!--begin::Search-->
       <div class="relative mr-4 flex items-center">
-        <KTIcon
-          icon-name="magnifier"
-          icon-class="fs-3 position-absolute ms-3"
-        />
+        <KTIcon icon-name="magnifier" icon-class="fs-3 absolute ms-3" />
         <input
           type="text"
           id="kt_filter_search"

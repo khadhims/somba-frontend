@@ -31,7 +31,7 @@
       <!--begin::Modal body-->
       <div class="max-h-[70vh] overflow-y-auto p-6 lg:p-10">
         <!--begin::Input group-->
-        <div class="fv-row mb-7">
+        <div class="mb-7">
           <!--begin::Label-->
           <label class="mb-2 block text-sm font-semibold after:content-['*'] after:ml-0.5 after:text-danger">{{ t('controlplane.site.modals.form.name.label') }}</label>
           <!--end::Label-->
@@ -44,8 +44,8 @@
             name="name"
           />
           <!--end::Input-->
-          <div v-if="errors.name" class="fv-plugins-message-container">
-            <div class="fv-help-block">
+          <div v-if="errors.name">
+            <div class="mt-1 text-sm text-danger">
               <span role="alert">{{ errors.name }}</span>
             </div>
           </div>
@@ -53,7 +53,7 @@
         <!--end::Input group-->
 
         <!--begin::Input group-->
-        <div class="fv-row mb-7">
+        <div class="mb-7">
           <!--begin::Label-->
           <label class="mb-2 block text-sm font-semibold">{{ t('controlplane.site.modals.form.description.label') }}</label>
           <!--end::Label-->

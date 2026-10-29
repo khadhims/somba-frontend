@@ -18,7 +18,7 @@
         </svg>
         <KTIcon
           icon-name="wrench"
-          icon-class="fs-2x fs-lg-3x text-primary position-absolute"
+          icon-class="fs-2x fs-lg-3x text-primary absolute"
         />
       </div>
       <!--end::Icon-->

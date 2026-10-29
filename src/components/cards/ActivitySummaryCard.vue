@@ -1,6 +1,8 @@
 <template>
-  <div class="activity-summary-card-wrapper">
-    <div class="activity-summary-card h-full rounded-lg bg-white dark:bg-gray-900">
+  <div>
+    <div
+      class="h-full rounded-lg border border-[#e4e6ef] bg-white dark:bg-gray-900"
+    >
       <div class="p-4">
         <!-- Icon and Title -->
         <div class="flex items-center mb-3">
@@ -10,7 +12,7 @@
           >
             <i
               :class="icon || 'fas fa-tasks'"
-              class="fs-2 activity-icon"
+              class="fs-2 text-[#1a1a1a] opacity-100 dark:text-white"
             ></i>
           </div>
           <div class="flex-1">
@@ -19,9 +21,9 @@
         </div>
 
         <!-- Time Information -->
-        <div class="activity-times">
+        <div class="border-t border-dashed border-[#e4e6ef] pt-3">
           <!-- Earliest Active -->
-          <div class="time-row mb-2">
+          <div class="mb-2 py-1">
             <div class="flex items-center justify-between">
               <span class="text-xs text-gray-500">{{ t('dashboard.activities.summary.earliestActive') || 'Pertama Aktif' }}</span>
               <span class="text-xs font-semibold text-gray-900 dark:text-gray-100">
@@ -31,7 +33,7 @@
           </div>
 
           <!-- Latest Active -->
-          <div class="time-row">
+          <div class="py-1">
             <div class="flex items-center justify-between">
               <span class="text-xs text-gray-500">{{ t('dashboard.activities.summary.latestActive') || 'Terakhir Aktif' }}</span>
               <span class="text-xs font-semibold text-gray-900 dark:text-gray-100">
@@ -76,27 +78,3 @@ const latestActiveFormatted = computed(() => {
   return formatDateTimeGMT8(props.latestActive, 'HH:mm:ss');
 });
 </script>
-
-<style scoped>
-.activity-summary-card {
-  border: 1px solid #e4e6ef;
-}
-
-.activity-icon {
-  color: #1a1a1a !important;
-  opacity: 1 !important;
-}
-
-:global([data-bs-theme="dark"]) .activity-icon {
-  color: #ffffff !important;
-}
-
-.time-row {
-  padding: 0.25rem 0;
-}
-
-.activity-times {
-  border-top: 1px dashed #e4e6ef;
-  padding-top: 0.75rem;
-}
-</style>

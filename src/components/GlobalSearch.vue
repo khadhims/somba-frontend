@@ -1,108 +1,131 @@
 <template>
   <Teleport to="body">
-    <Transition name="search-modal">
+    <Transition
+      enter-active-class="transition-opacity duration-200 ease-out [&>div]:transition-all [&>div]:duration-200 [&>div]:ease-out"
+      leave-active-class="transition-opacity duration-200 ease-out [&>div]:transition-all [&>div]:duration-200 [&>div]:ease-out"
+      enter-from-class="opacity-0 [&>div]:-translate-y-5 [&>div]:scale-95 [&>div]:opacity-0"
+      leave-to-class="opacity-0 [&>div]:-translate-y-5 [&>div]:scale-95 [&>div]:opacity-0"
+    >
       <div 
         v-if="isOpen" 
-        class="global-search-overlay"
+        class="fixed inset-0 z-[10000] flex items-start justify-center bg-black/50 pt-[15vh] backdrop-blur-[4px]"
         @click="closeSearch"
       >
         <div 
-          class="global-search-container"
+          class="flex max-h-[70vh] w-full max-w-[640px] flex-col overflow-hidden rounded-xl bg-white shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)]"
           @click.stop
         >
           <!-- Search Input -->
-          <div class="search-header">
+          <div class="flex items-center border-b border-gray-200 px-5 py-4">
             <i class="fas fa-magnifying-glass mr-3 text-lg text-gray-500"></i>
             <input
               ref="searchInput"
               v-model="searchQuery"
               type="text"
-              class="search-input"
+              class="flex-1 border-none bg-transparent text-base text-gray-800 outline-none placeholder:text-gray-400"
               placeholder="Search for cameras, sites, teams, accounts, events, alerts..."
               @keydown.esc="closeSearch"
               @keydown.down.prevent="navigateDown"
               @keydown.up.prevent="navigateUp"
               @keydown.enter.prevent="selectItem"
             />
-            <kbd class="search-kbd">ESC</kbd>
+            <kbd
+              class="rounded border border-gray-300 bg-gray-100 px-2 py-1 font-mono text-xs font-semibold text-gray-500"
+              >ESC</kbd
+            >
           </div>
 
           <!-- Search Results -->
-          <div class="search-results" v-if="searchQuery.trim()">
+          <div
+            v-if="searchQuery.trim()"
+            class="flex-1 overflow-y-auto p-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-[3px] [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb:hover]:bg-gray-400 [&::-webkit-scrollbar-track]:bg-transparent"
+          >
             <!-- Cameras -->
-            <div v-if="filteredCameras.length > 0" class="result-section">
-              <div class="result-section-title">
+            <div v-if="filteredCameras.length > 0" class="mb-4 last:mb-0">
+              <div
+                class="flex items-center px-3 py-2 text-xs font-semibold tracking-[0.05em] text-gray-500 uppercase"
+              >
                 <i class="fas fa-video mr-2"></i>Cameras
               </div>
               <div
                 v-for="(camera, index) in filteredCameras"
                 :key="`camera-${camera.uid}`"
-                class="result-item"
-                :class="{ 'active': selectedIndex === getCameraIndex(index) }"
+                class="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-3 transition-all duration-150 hover:bg-gray-100"
+                :class="{ 'bg-gray-100': selectedIndex === getCameraIndex(index) }"
                 @click="navigateToCamera(camera)"
                 @mouseenter="selectedIndex = getCameraIndex(index)"
               >
-                <div class="result-icon bg-primary-light">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-light text-lg">
                   <i class="fas fa-video text-primary"></i>
                 </div>
-                <div class="result-content">
-                  <div class="result-title">{{ camera.name }}</div>
-                  <div class="result-subtitle">{{ camera.site_name }} - {{ camera.room }}</div>
+                <div class="min-w-0 flex-1">
+                  <div class="truncate text-sm font-semibold text-gray-800">{{ camera.name }}</div>
+                  <div class="truncate text-xs text-gray-500">{{ camera.site_name }} - {{ camera.room }}</div>
                 </div>
                 <i class="fas fa-turn-down text-gray-400"></i>
               </div>
             </div>
 
             <!-- Sites -->
-            <div v-if="filteredSites.length > 0" class="result-section">
-              <div class="result-section-title">
+            <div v-if="filteredSites.length > 0" class="mb-4 last:mb-0">
+              <div
+                class="flex items-center px-3 py-2 text-xs font-semibold tracking-[0.05em] text-gray-500 uppercase"
+              >
                 <i class="fas fa-location-dot mr-2"></i>Sites
               </div>
               <div
                 v-for="(site, index) in filteredSites"
                 :key="`site-${site.uid}`"
-                class="result-item"
-                :class="{ 'active': selectedIndex === getSiteIndex(index) }"
+                class="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-3 transition-all duration-150 hover:bg-gray-100"
+                :class="{ 'bg-gray-100': selectedIndex === getSiteIndex(index) }"
                 @click="navigateToSite(site)"
                 @mouseenter="selectedIndex = getSiteIndex(index)"
               >
-                <div class="result-icon bg-success-light">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-success-light text-lg">
                   <i class="fas fa-location-dot text-success"></i>
                 </div>
-                <div class="result-content">
-                  <div class="result-title">{{ site.name }}</div>
-                  <div class="result-subtitle">Site</div>
+                <div class="min-w-0 flex-1">
+                  <div class="truncate text-sm font-semibold text-gray-800">{{ site.name }}</div>
+                  <div class="truncate text-xs text-gray-500">Site</div>
                 </div>
                 <i class="fas fa-turn-down text-gray-400"></i>
               </div>
             </div>
 
             <!-- Quick Actions -->
-            <div v-if="filteredActions.length > 0" class="result-section">
-              <div class="result-section-title">
+            <div v-if="filteredActions.length > 0" class="mb-4 last:mb-0">
+              <div
+                class="flex items-center px-3 py-2 text-xs font-semibold tracking-[0.05em] text-gray-500 uppercase"
+              >
                 <i class="fas fa-bolt mr-2"></i>Quick Actions
               </div>
               <div
                 v-for="(action, index) in filteredActions"
                 :key="`action-${action.id}`"
-                class="result-item"
-                :class="{ 'active': selectedIndex === getActionIndex(index) }"
+                class="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-3 transition-all duration-150 hover:bg-gray-100"
+                :class="{ 'bg-gray-100': selectedIndex === getActionIndex(index) }"
                 @click="executeAction(action)"
                 @mouseenter="selectedIndex = getActionIndex(index)"
               >
-                <div class="result-icon" :class="action.iconBg">
+                <div
+                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-lg"
+                  :class="action.iconBg"
+                >
                   <i :class="[action.icon, action.iconColor]"></i>
                 </div>
-                <div class="result-content">
-                  <div class="result-title">{{ action.title }}</div>
-                  <div class="result-subtitle">{{ action.description }}</div>
+                <div class="min-w-0 flex-1">
+                  <div class="truncate text-sm font-semibold text-gray-800">{{ action.title }}</div>
+                  <div class="truncate text-xs text-gray-500">{{ action.description }}</div>
                 </div>
                 <i class="fas fa-turn-down text-gray-400"></i>
               </div>
             </div>
 
             <!-- No Results -->
-            <div v-if="totalResults === 0" class="no-results">
+            <div
+              v-if="totalResults === 0"
+              class="flex flex-col items-center justify-center px-6 py-12 text-center"
+            >
               <i class="fas fa-magnifying-glass mb-3 text-4xl text-gray-400"></i>
               <div class="font-bold text-gray-600">No results found</div>
               <div class="text-xs text-gray-500">Try searching for something else</div>
@@ -110,25 +133,33 @@
           </div>
 
           <!-- Recent Searches / Quick Links -->
-          <div class="search-results" v-else>
-            <div class="result-section">
-              <div class="result-section-title">
+          <div
+            v-else
+            class="flex-1 overflow-y-auto p-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-[3px] [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb:hover]:bg-gray-400 [&::-webkit-scrollbar-track]:bg-transparent"
+          >
+            <div class="mb-4 last:mb-0">
+              <div
+                class="flex items-center px-3 py-2 text-xs font-semibold tracking-[0.05em] text-gray-500 uppercase"
+              >
                 <i class="fas fa-clock-rotate-left mr-2"></i>Quick Links
               </div>
               <div
                 v-for="(link, index) in quickLinks"
                 :key="`link-${link.id}`"
-                class="result-item"
-                :class="{ 'active': selectedIndex === index }"
+                class="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-3 transition-all duration-150 hover:bg-gray-100"
+                :class="{ 'bg-gray-100': selectedIndex === index }"
                 @click="navigateTo(link.path)"
                 @mouseenter="selectedIndex = index"
               >
-                <div class="result-icon" :class="link.iconBg">
+                <div
+                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-lg"
+                  :class="link.iconBg"
+                >
                   <i :class="[link.icon, link.iconColor]"></i>
                 </div>
-                <div class="result-content">
-                  <div class="result-title">{{ link.title }}</div>
-                  <div class="result-subtitle">{{ link.description }}</div>
+                <div class="min-w-0 flex-1">
+                  <div class="truncate text-sm font-semibold text-gray-800">{{ link.title }}</div>
+                  <div class="truncate text-xs text-gray-500">{{ link.description }}</div>
                 </div>
                 <i class="fas fa-turn-down text-gray-400"></i>
               </div>
@@ -136,15 +167,19 @@
           </div>
 
           <!-- Footer -->
-          <div class="search-footer">
-            <div class="search-footer-item">
-              <kbd>↑</kbd><kbd>↓</kbd> Navigate
+          <div class="flex items-center gap-4 border-t border-gray-200 bg-gray-50 px-5 py-3">
+            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+              <kbd class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[11px] font-semibold text-gray-700 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">↑</kbd
+              ><kbd class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[11px] font-semibold text-gray-700 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">↓</kbd>
+              Navigate
             </div>
-            <div class="search-footer-item">
-              <kbd>↵</kbd> Select
+            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+              <kbd class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[11px] font-semibold text-gray-700 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">↵</kbd>
+              Select
             </div>
-            <div class="search-footer-item">
-              <kbd>ESC</kbd> Close
+            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+              <kbd class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[11px] font-semibold text-gray-700 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">ESC</kbd>
+              Close
             </div>
           </div>
         </div>
@@ -506,218 +541,3 @@ defineExpose({
   closeSearch
 });
 </script>
-
-<style scoped>
-.global-search-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  z-index: 10000;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 15vh;
-}
-
-.global-search-container {
-  width: 100%;
-  max-width: 640px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  max-height: 70vh;
-}
-
-.search-header {
-  display: flex;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.search-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 16px;
-  color: #1f2937;
-  background: transparent;
-}
-
-.search-input::placeholder {
-  color: #9ca3af;
-}
-
-.search-kbd {
-  padding: 4px 8px;
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #6b7280;
-  font-family: monospace;
-}
-
-.search-results {
-  flex: 1;
-  overflow-y: auto;
-  padding: 8px;
-}
-
-.result-section {
-  margin-bottom: 16px;
-}
-
-.result-section:last-child {
-  margin-bottom: 0;
-}
-
-.result-section-title {
-  padding: 8px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  display: flex;
-  align-items: center;
-}
-
-.result-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  gap: 12px;
-}
-
-.result-item:hover,
-.result-item.active {
-  background: #f3f4f6;
-}
-
-.result-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 18px;
-}
-
-.result-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.result-title {
-  font-weight: 600;
-  color: #1f2937;
-  font-size: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.result-subtitle {
-  font-size: 12px;
-  color: #6b7280;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.no-results {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
-  text-align: center;
-}
-
-.search-footer {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 12px 20px;
-  border-top: 1px solid #e5e7eb;
-  background: #f9fafb;
-}
-
-.search-footer-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.search-footer kbd {
-  padding: 2px 6px;
-  background: white;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #374151;
-  font-family: monospace;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-/* Animations */
-.search-modal-enter-active,
-.search-modal-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.search-modal-enter-active .global-search-container,
-.search-modal-leave-active .global-search-container {
-  transition: all 0.2s ease;
-}
-
-.search-modal-enter-from,
-.search-modal-leave-to {
-  opacity: 0;
-}
-
-.search-modal-enter-from .global-search-container {
-  transform: scale(0.95) translateY(-20px);
-  opacity: 0;
-}
-
-.search-modal-leave-to .global-search-container {
-  transform: scale(0.95) translateY(-20px);
-  opacity: 0;
-}
-
-/* Scrollbar styling */
-.search-results::-webkit-scrollbar {
-  width: 6px;
-}
-
-.search-results::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.search-results::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 3px;
-}
-
-.search-results::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
-}
-</style>

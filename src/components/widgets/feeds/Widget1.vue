@@ -89,13 +89,13 @@
             <span
               class="flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"
             >
-              <i class="flaticon2-clip-symbol"></i>
+              <i class="fas fa-paperclip"></i>
             </span>
 
             <span
               class="flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"
             >
-              <i class="flaticon2-pin"></i>
+              <i class="fas fa-thumbtack"></i>
             </span>
           </div>
         </div>

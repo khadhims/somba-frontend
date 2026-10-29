@@ -1,22 +1,30 @@
 <template>
   <Teleport to="body">
-    <Transition name="modal-fade">
+    <Transition
+      enter-active-class="transition-opacity duration-300 ease-out [&>div]:transition-all [&>div]:duration-300 [&>div]:ease-out"
+      leave-active-class="transition-opacity duration-300 ease-out [&>div]:transition-all [&>div]:duration-300 [&>div]:ease-out"
+      enter-from-class="opacity-0 [&>div]:-translate-y-5 [&>div]:scale-90 [&>div]:opacity-0"
+      leave-to-class="opacity-0 [&>div]:-translate-y-5 [&>div]:scale-90 [&>div]:opacity-0"
+    >
       <div 
         v-if="isOpen" 
-        class="camera-modal-overlay"
+        class="fixed inset-0 z-[10001] flex items-center justify-center bg-black/85 p-5 backdrop-blur-[4px]"
         @click="closeModal"
       >
         <div 
-          class="camera-modal-container"
+          class="flex max-h-[90vh] w-full max-w-[1200px] flex-col overflow-hidden rounded-xl bg-[#1e1e2d] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]"
           @click.stop
         >
           <!-- Modal Header -->
-          <div class="camera-modal-header">
-            <div class="camera-info">
-              <h3 class="camera-title">{{ camera?.room || 'Camera' }}</h3>
-              <p class="camera-subtitle">{{ camera?.name }}</p>
+          <div class="flex items-center justify-between border-b border-white/10 bg-[#1a1a27] px-6 py-5">
+            <div class="flex-1">
+              <h3 class="m-0 text-xl font-semibold text-white">{{ camera?.room || 'Camera' }}</h3>
+              <p class="mt-1 mb-0 text-sm text-[#a1a5b7]">{{ camera?.name }}</p>
             </div>
-            <button class="btn-close-modal" @click="closeModal">
+            <button
+              class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border-none bg-white/10 text-white transition-all duration-200 hover:bg-white/20"
+              @click="closeModal"
+            >
               <i class="ki-duotone ki-cross fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
@@ -25,11 +33,11 @@
           </div>
 
           <!-- Video Player -->
-          <div class="camera-modal-body">
-            <div class="video-container">
+          <div class="relative min-h-[400px] flex-1 bg-black p-0">
+            <div class="relative flex h-full w-full items-center justify-center bg-black">
               <video
                 ref="videoPlayer"
-                class="hls-video-player"
+                class="h-full max-h-[calc(90vh-160px)] w-full bg-black object-contain"
                 controls
                 autoplay
                 playsinline
@@ -37,7 +45,10 @@
               ></video>
               
               <!-- Loading Spinner -->
-              <div v-if="isLoading" class="video-loading">
+              <div
+                v-if="isLoading"
+                class="absolute top-1/2 left-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center"
+              >
                 <div
                   class="h-10 w-10 animate-spin rounded-full border-4 border-white/30 border-t-white"
                   role="status"
@@ -47,7 +58,10 @@
               </div>
 
               <!-- Error State -->
-              <div v-if="hasError" class="video-error">
+              <div
+                v-if="hasError"
+                class="absolute top-1/2 left-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center"
+              >
                 <i class="ki-duotone ki-information fs-1 text-warning mb-3">
                   <span class="path1"></span>
                   <span class="path2"></span>
@@ -69,7 +83,7 @@
           </div>
 
           <!-- Modal Footer -->
-          <div class="camera-modal-footer">
+          <div class="flex items-center justify-between border-t border-white/10 bg-[#1a1a27] px-6 py-4">
             <div class="flex items-center gap-3">
               <span v-if="camera?.model" class="inline-flex rounded px-2 py-1 text-xs font-semibold bg-info-light text-info">
                 {{ camera.model }}
@@ -315,150 +329,3 @@ defineExpose({
   closeModal
 });
 </script>
-
-<style scoped>
-.camera-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(4px);
-  z-index: 10001;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.camera-modal-container {
-  width: 100%;
-  max-width: 1200px;
-  background: #1e1e2d;
-  border-radius: 12px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  max-height: 90vh;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-}
-
-.camera-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: #1a1a27;
-}
-
-.camera-info {
-  flex: 1;
-}
-
-.camera-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: white;
-}
-
-.camera-subtitle {
-  margin: 4px 0 0 0;
-  font-size: 14px;
-  color: #a1a5b7;
-}
-
-.btn-close-modal {
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-
-.btn-close-modal:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.camera-modal-body {
-  flex: 1;
-  padding: 0;
-  background: #000;
-  position: relative;
-  min-height: 400px;
-}
-
-.video-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hls-video-player {
-  width: 100%;
-  height: 100%;
-  max-height: calc(90vh - 160px);
-  object-fit: contain;
-  background: #000;
-}
-
-.video-loading,
-.video-error {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-}
-
-.camera-modal-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  background: #1a1a27;
-}
-
-/* Animations */
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-fade-enter-active .camera-modal-container,
-.modal-fade-leave-active .camera-modal-container {
-  transition: all 0.3s ease;
-}
-
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-  opacity: 0;
-}
-
-.modal-fade-enter-from .camera-modal-container {
-  transform: scale(0.9) translateY(-20px);
-  opacity: 0;
-}
-
-.modal-fade-leave-to .camera-modal-container {
-  transform: scale(0.9) translateY(-20px);
-  opacity: 0;
-}
-</style>

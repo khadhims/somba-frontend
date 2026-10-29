@@ -38,9 +38,8 @@
 
         <div class="mx-3 h-2 w-full rounded bg-white/50">
           <div
-            class="h-2 rounded bg-white"
+            class="h-2 w-[72%] rounded bg-white"
             role="progressbar"
-            style="width: 72%"
             aria-valuenow="50"
             aria-valuemin="0"
             aria-valuemax="100"

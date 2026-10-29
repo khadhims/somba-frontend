@@ -3,7 +3,7 @@
   <div v-show="active">
     <div class="w-full">
       <!--begin::Input group-->
-      <div class="fv-row mb-10">
+      <div class="mb-10">
         <!--begin::Label-->
         <label class="mb-2 flex items-center text-base font-semibold">
           <span class="after:content-['*'] after:ml-0.5 after:text-danger"
@@ -25,7 +25,7 @@
           placeholder=""
         />
         <ErrorMessage
-          class="fv-plugins-message-container invalid-feedback"
+          class="mt-1 block text-sm text-danger"
           name="appName"
         />
         <!--end::Input-->
@@ -33,7 +33,7 @@
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="fv-row">
+      <div>
         <!--begin::Label-->
         <label class="mb-4 flex items-center text-base font-semibold">
           <span class="after:content-['*'] after:ml-0.5 after:text-danger"
@@ -49,7 +49,7 @@
         <!--end::Label-->
 
         <!--begin:Options-->
-        <div class="fv-row">
+        <div>
           <!--begin:Option-->
           <label class="mb-5 flex cursor-pointer items-center justify-between">
             <!--begin:Label-->
@@ -161,7 +161,7 @@
           </label>
           <!--end::Option-->
           <ErrorMessage
-            class="fv-plugins-message-container invalid-feedback"
+            class="mt-1 block text-sm text-danger"
             name="category"
           />
         </div>

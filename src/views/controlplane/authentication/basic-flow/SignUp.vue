@@ -3,7 +3,7 @@
   <div class="lg:w-[500px] p-10" ref="signupWrapper">
     <!--begin::Form-->
     <VForm
-      class="signup-form w-full"
+      class="w-full"
       novalidate
       @submit="onSubmitRegister"
       id="kt_login_signup_form"
@@ -16,7 +16,7 @@
         <!--end::Title-->
 
         <!--begin::Link-->
-        <div class="text-lg font-semibold" style="color: rgba(255,255,255,0.75)">
+        <div class="text-lg font-semibold text-white/75">
           Already have an account?
 
           <router-link to="/sign-in" class="text-primary font-bold hover:underline">
@@ -47,7 +47,7 @@
       <!--end::Separator-->
 
       <!--begin::Input group-->
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 fv-row mb-7">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-7">
         <!--begin::Col-->
         <div>
           <label class="mb-2 block text-sm font-bold text-white">First Name</label>
@@ -58,8 +58,8 @@
             name="first_name"
             autocomplete="off"
           />
-          <div class="fv-plugins-message-container">
-            <div class="fv-help-block">
+          <div>
+            <div class="mt-1 text-sm text-danger">
               <ErrorMessage name="first_name" />
             </div>
           </div>
@@ -76,8 +76,8 @@
             name="last_name"
             autocomplete="off"
           />
-          <div class="fv-plugins-message-container">
-            <div class="fv-help-block">
+          <div>
+            <div class="mt-1 text-sm text-danger">
               <ErrorMessage name="last_name" />
             </div>
           </div>
@@ -87,7 +87,7 @@
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="fv-row mb-7">
+      <div class="mb-7">
         <label class="mb-2 block text-sm font-bold text-white">Email</label>
         <Field
           class="custom-input w-full"
@@ -96,8 +96,8 @@
           name="email"
           autocomplete="off"
         />
-        <div class="fv-plugins-message-container">
-          <div class="fv-help-block">
+        <div>
+          <div class="mt-1 text-sm text-danger">
             <ErrorMessage name="email" />
             <div v-if="serverError" class="text-danger mt-1">
               {{ serverError }}
@@ -108,7 +108,7 @@
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="mb-10 fv-row">
+      <div class="mb-10">
         <!--begin::Wrapper-->
         <div class="mb-1">
           <!--begin::Label-->
@@ -125,8 +125,8 @@
               autocomplete="off"
               @input="handlePasswordInput"
             />
-            <div class="fv-plugins-message-container">
-              <div class="fv-help-block">
+            <div>
+              <div class="mt-1 text-sm text-danger">
                 <ErrorMessage name="password" />
               </div>
             </div>
@@ -153,7 +153,7 @@
       <!--end::Input group--->
 
       <!--begin::Input group-->
-      <div class="fv-row mb-5">
+      <div class="mb-5">
         <label class="mb-2 block text-sm font-bold text-white">Confirm Password</label>
         <Field
           class="custom-input w-full"
@@ -162,8 +162,8 @@
           name="password_confirmation"
           autocomplete="off"
         />
-        <div class="fv-plugins-message-container">
-          <div class="fv-help-block">
+        <div>
+          <div class="mt-1 text-sm text-danger">
             <ErrorMessage name="password_confirmation" />
           </div>
         </div>
@@ -171,7 +171,7 @@
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="fv-row mb-10">
+      <div class="mb-10">
         <label class="flex cursor-pointer items-start gap-2">
           <Field
             class="mt-0.5 h-4 w-4 cursor-pointer rounded border-gray-300 accent-primary dark:border-gray-600"

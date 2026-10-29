@@ -463,7 +463,7 @@
         <div class="sm:col-span-2" v-if="selectedReport.catatan">
           <div class="rounded-lg bg-info-light p-4">
             <label class="mb-2 block font-semibold text-gray-700">Catatan</label>
-            <p class="m-0 text-gray-800" style="white-space: pre-wrap">{{ selectedReport.catatan }}</p>
+            <p class="m-0 whitespace-pre-wrap text-gray-800">{{ selectedReport.catatan }}</p>
           </div>
         </div>
       </div>

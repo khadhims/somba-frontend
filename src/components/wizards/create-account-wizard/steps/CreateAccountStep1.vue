@@ -30,7 +30,7 @@
       <!--end::Heading-->
 
       <!--begin::Input group-->
-      <div class="fv-row">
+      <div>
         <!--begin::Row-->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <!--begin::Col-->
@@ -100,7 +100,7 @@
 
           <ErrorMessage
             name="accountType"
-            class="fv-plugins-message-container invalid-feedback"
+            class="mt-1 block text-sm text-danger"
           ></ErrorMessage>
         </div>
         <!--end::Row-->

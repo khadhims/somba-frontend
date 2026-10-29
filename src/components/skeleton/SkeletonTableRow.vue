@@ -22,7 +22,3 @@ const props = defineProps({
 
 const blockWidth = (i: number) => (props.dense ? 80 : i % 2 ? 120 : 160);
 </script>
-
-<style scoped>
-/* table row skeleton adjusts with theme via SkeletonBlock */
-</style>

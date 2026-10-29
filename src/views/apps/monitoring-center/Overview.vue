@@ -171,7 +171,7 @@
           </div>
         </div>
         <div class="p-6">
-          <div class="chart-container" style="height: 300px">
+          <div class="relative h-[300px]">
             <div
               class="flex h-full items-center justify-center rounded bg-gray-100 dark:bg-gray-800"
             >
@@ -211,16 +211,18 @@
             }}
           </h3>
         </div>
-        <div class="overflow-y-auto p-6" style="max-height: 350px">
-          <div class="timeline">
+        <div class="max-h-[350px] overflow-y-auto p-6">
+          <div class="relative">
             <div
               v-for="activity in recentActivities"
               :key="activity.id"
-              class="timeline-item"
+              class="group relative mb-5 flex items-center"
             >
-              <div class="timeline-line w-10"></div>
               <div
-                class="timeline-icon flex h-10 w-10 items-center justify-center rounded-full"
+                class="absolute top-1/2 left-5 z-[1] h-10 w-[2px] bg-[#e4e6ef] group-last:hidden"
+              ></div>
+              <div
+                class="relative z-[2] flex h-10 w-10 items-center justify-center rounded-full"
               >
                 <div
                   class="flex h-full w-full items-center justify-center rounded-full"
@@ -232,7 +234,7 @@
                   ></i>
                 </div>
               </div>
-              <div class="timeline-content ml-3">
+              <div class="ml-3">
                 <div class="mb-1">
                   <span class="font-bold text-gray-800">{{
                     activity.title
@@ -939,39 +941,3 @@ onMounted(() => {
   fetchActivities();
 });
 </script>
-
-<style scoped>
-.timeline {
-  position: relative;
-}
-
-.timeline-item {
-  position: relative;
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.timeline-line {
-  position: absolute;
-  top: 50%;
-  left: 20px;
-  width: 2px;
-  height: 40px;
-  background-color: #e4e6ef;
-  z-index: 1;
-}
-
-.timeline-item:last-child .timeline-line {
-  display: none;
-}
-
-.timeline-icon {
-  position: relative;
-  z-index: 2;
-}
-
-.chart-container {
-  position: relative;
-}
-</style>

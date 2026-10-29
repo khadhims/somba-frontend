@@ -44,12 +44,11 @@
 
       <!-- Right Side: Login Form -->
       <div class="card-form-section">
-        <div class="form-header">
+        <div>
           <h3 class="form-title">ACCESS CONTROL</h3>
         </div>
 
         <VForm
-          class="login-form"
           id="kt_login_signin_form"
           @submit="onSubmitLogin"
           :validation-schema="login"
@@ -69,8 +68,8 @@
                 placeholder="name@example.com"
               />
             </div>
-            <div class="fv-plugins-message-container">
-              <div class="fv-help-block">
+            <div>
+              <div class="mt-1 text-sm text-danger">
                 <ErrorMessage name="username" />
               </div>
             </div>
@@ -93,8 +92,8 @@
                 placeholder="••••••••"
               />
             </div>
-            <div class="fv-plugins-message-container">
-              <div class="fv-help-block">
+            <div>
+              <div class="mt-1 text-sm text-danger">
                 <ErrorMessage name="password" />
               </div>
             </div>
@@ -117,7 +116,7 @@
           </button>
 
           <!-- Social Login -->
-          <div class="social-login text-center">
+          <div class="text-center">
             <div class="divider"><span>OR CONNECT WITH</span></div>
             <div class="social-icons">
               <a href="#" class="social-icon google"><i class="fab fa-google"></i></a>

@@ -21,7 +21,7 @@
       <!--end::Heading-->
 
       <!--begin::Input group-->
-      <div class="mb-10 fv-row">
+      <div class="mb-10">
         <!--begin::Label-->
         <label class="mb-3 flex items-center text-sm font-medium">
           Specify Team Size
@@ -127,7 +127,7 @@
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="mb-10 fv-row">
+      <div class="mb-10">
         <!--begin::Label-->
         <label class="mb-3 block text-sm font-medium">Team Account Name</label>
         <!--end::Label-->
@@ -136,14 +136,14 @@
         <Field type="text" :class="formInputClass" name="accountName" />
         <ErrorMessage
           name="accountName"
-          class="fv-plugins-message-container invalid-feedback"
+          class="mt-1 block text-sm text-danger"
         ></ErrorMessage>
         <!--end::Input-->
       </div>
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="mb-0 fv-row">
+      <div class="mb-0">
         <!--begin::Label-->
         <label class="mb-5 flex items-center text-sm font-medium">
           Select Account Plan

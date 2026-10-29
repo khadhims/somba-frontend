@@ -23,7 +23,7 @@
       <!--end::Heading-->
 
       <!--begin::Input group-->
-      <div class="fv-row mb-10">
+      <div class="mb-10">
         <!--begin::Label-->
         <label
           class="mb-2 block text-sm font-medium after:content-['*'] after:ml-0.5 after:text-danger"
@@ -39,14 +39,14 @@
         />
         <ErrorMessage
           name="businessName"
-          class="fv-plugins-message-container invalid-feedback"
+          class="mt-1 block text-sm text-danger"
         ></ErrorMessage>
         <!--end::Input-->
       </div>
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="fv-row mb-10">
+      <div class="mb-10">
         <!--begin::Label-->
         <label class="mb-2 flex items-center text-sm font-medium">
           <span class="after:content-['*'] after:ml-0.5 after:text-danger"
@@ -64,7 +64,7 @@
         <!--end::Input-->
         <ErrorMessage
           name="businessDescriptor"
-          class="fv-plugins-message-container invalid-feedback"
+          class="mt-1 block text-sm text-danger"
         ></ErrorMessage>
 
         <!--begin::Hint-->
@@ -76,7 +76,7 @@
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="fv-row mb-10">
+      <div class="mb-10">
         <!--begin::Label-->
         <label
           class="mb-2 block text-sm font-medium after:content-['*'] after:ml-0.5 after:text-danger"
@@ -97,13 +97,13 @@
         <!--end::Input-->
         <ErrorMessage
           name="businessType"
-          class="fv-plugins-message-container invalid-feedback"
+          class="mt-1 block text-sm text-danger"
         ></ErrorMessage>
       </div>
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="fv-row mb-10">
+      <div class="mb-10">
         <!--end::Label-->
         <label class="mb-2 block text-sm font-medium"
           >Business Description</label
@@ -122,7 +122,7 @@
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="fv-row mb-0">
+      <div class="mb-0">
         <!--begin::Label-->
         <label
           class="text-sm font-medium after:content-['*'] after:ml-0.5 after:text-danger"
@@ -139,7 +139,7 @@
         <!--end::Input-->
         <ErrorMessage
           name="businessEmail"
-          class="fv-plugins-message-container invalid-feedback"
+          class="mt-1 block text-sm text-danger"
         ></ErrorMessage>
       </div>
       <!--end::Input group-->

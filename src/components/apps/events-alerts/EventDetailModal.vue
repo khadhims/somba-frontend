@@ -46,7 +46,12 @@
           <div class="lg:col-span-5">
             <div class="h-full rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
               <div class="relative mb-3">
-                <transition name="fade">
+                <transition
+                  enter-active-class="transition-opacity duration-300"
+                  leave-active-class="transition-opacity duration-300"
+                  enter-from-class="opacity-0"
+                  leave-to-class="opacity-0"
+                >
                   <img
                     v-if="currentImage"
                     :key="currentImage"
@@ -140,7 +145,7 @@
 
               <div v-if="event.activities && event.activities.length">
                 <h6
-                  class="section-title mb-3 font-semibold text-gray-900 dark:text-gray-100"
+                  class="mb-3 font-semibold text-gray-900 dark:text-gray-100"
                 >
                   {{
                     t("appsEventsAlerts.eventsModals.details.activities") ||
@@ -462,14 +467,3 @@ const statusLabel = (status: string) => {
   return status || "-";
 };
 </script>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>

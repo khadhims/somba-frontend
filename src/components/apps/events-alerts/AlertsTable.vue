@@ -178,5 +178,3 @@ const handleImageError = (e: Event) => {
   }
 };
 </script>
-
-<style scoped></style>

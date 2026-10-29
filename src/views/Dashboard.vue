@@ -1,16 +1,16 @@
 <template>
-  <div class="app-root flex flex-col" id="kt_app_root">
+  <div class="flex flex-col" id="kt_app_root">
     <!-- App page -->
-    <div class="app-page flex flex-1 flex-col" id="kt_app_page">
+    <div class="flex flex-1 flex-col" id="kt_app_page">
       <!-- App main -->
-      <div class="app-main flex flex-1 flex-col" id="kt_app_main">
+      <div class="flex flex-1 flex-col" id="kt_app_main">
         <!-- Content wrapper -->
         <div class="flex flex-1 flex-col">
           <!-- Content -->
-          <div id="kt_app_content" class="app-content flex-1">
+          <div id="kt_app_content" class="flex-1">
             <div
               id="kt_app_content_container"
-              class="app-container mx-auto max-w-[1320px]"
+              class="mx-auto max-w-[1320px]"
             >
               <!-- Main Dashboard Card - Gabungan 3 Section -->
               <div class="mb-3">
@@ -19,7 +19,7 @@
                 >
                   <!-- Section 1: Proses Pelaksanaan Harian -->
                   <div
-                    class="dashboard-section-header flex flex-col items-start justify-between gap-3 border-b-0 p-4 pt-3 pb-3 md:flex-row md:items-center"
+                    class="flex flex-col items-start justify-between gap-3 border-b-0 p-4 pt-3 pb-3 md:flex-row md:items-center"
                   >
                     <div class="flex-1">
                       <div class="flex flex-col gap-2">
@@ -283,7 +283,7 @@
                                 v-else
                                 v-for="alert in recentAlerts"
                                 :key="alert.event_id"
-                                class="alert-row cursor-pointer border-b border-gray-100 last:border-b-0 dark:border-gray-800"
+                                class="cursor-pointer border-b border-gray-100 last:border-b-0 [&>td]:align-middle dark:border-gray-800"
                                 @click="openAlertDetail(alert)"
                               >
                                 <td class="py-3">
@@ -1631,33 +1631,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/*
- * This block used to be ~800 lines: a pre-Swiper hand-rolled carousel
- * system nothing in the template uses anymore, Bootstrap-grid remnants
- * (.col-xxl-4, .row, .container-fluid, ...) matching zero live classes,
- * a `[data-bs-theme="dark"], .dark, .app-dark` triple-selector on every
- * dark-mode rule where only the first ever matches anything, and - the
- * one genuine bug - a `.text-primary { color: #3b82f6 !important }`
- * override that made this page's dark-mode blue not match the rest of
- * the app's real --color-primary token. Rewritten down to only the rules
- * that target classes actually present in this template, using the
- * app's real design tokens via CSS var() instead of hardcoded hex, and a
- * single [data-bs-theme="dark"] selector (the only one that ever
- * matched). Also dropped the .dashboard-main-card gradient/border, which
- * was overriding the plain bg-white every other card in the app uses -
- * this page's main card was inconsistent with the rest of the app.
- */
-
-/* Alert table rows: vertical-centering isn't a Tailwind per-cell prop
-   worth adding to 5 <td>s - hover/cursor are handled by Tailwind classes
-   directly on the <tr>. */
-.alert-row td {
-  vertical-align: middle;
-}
-
-/* Swiper carousels (live-activity + activity-summary): padding-bottom
-   reserves room for the pagination dots, and bullet colors are pulled
-   from the app's real tokens instead of hardcoded hex. */
 .activities-carousel-wrapper,
 .activities-summary-carousel-wrapper {
   position: relative;

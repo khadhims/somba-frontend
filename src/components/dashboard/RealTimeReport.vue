@@ -3245,11 +3245,10 @@ defineExpose({
                 ]"
               >
                 <div
-                  class="mr-2 rounded-full"
+                  class="mr-2 h-2 w-2 rounded-full"
                   :class="
                     isStatusSelected('active') ? 'bg-white' : 'bg-primary'
                   "
-                  style="width: 8px; height: 8px"
                 ></div>
                 <span class="font-medium">Aktif</span>
               </button>
@@ -3263,11 +3262,10 @@ defineExpose({
                 ]"
               >
                 <div
-                  class="mr-2 rounded-full"
+                  class="mr-2 h-2 w-2 rounded-full"
                   :class="
                     isStatusSelected('completed') ? 'bg-white' : 'bg-success'
                   "
-                  style="width: 8px; height: 8px"
                 ></div>
                 <span class="font-medium">Selesai</span>
               </button>
@@ -3281,11 +3279,10 @@ defineExpose({
                 ]"
               >
                 <div
-                  class="mr-2 rounded-full"
+                  class="mr-2 h-2 w-2 rounded-full"
                   :class="
                     isStatusSelected('scheduled') ? 'bg-white' : 'bg-secondary'
                   "
-                  style="width: 8px; height: 8px"
                 ></div>
                 <span class="font-medium">Terjadwal</span>
               </button>
@@ -3303,7 +3300,7 @@ defineExpose({
               <span class="text-xs font-bold text-gray-700 dark:text-gray-300"
                 >Tanggal:</span
               >
-              <div style="width: 160px">
+              <div class="w-[160px]">
                 <DatePicker
                   v-model="selectedDateValue"
                   label=""
@@ -3331,16 +3328,17 @@ defineExpose({
               <span class="text-xs font-bold text-gray-700 dark:text-gray-300"
                 >Kontrol:</span
               >
-              <select
-                v-model="playSpeed"
-                :class="[formInputClass, 'py-1 text-xs w-auto']"
-                :disabled="isPlaying"
-                style="width: 140px; height: 30px"
-              >
-                <option :value="1000">Cepat (1s)</option>
-                <option :value="2000">Normal (2s)</option>
-                <option :value="3000">Lambat (3s)</option>
-              </select>
+              <div class="w-[140px]">
+                <select
+                  v-model="playSpeed"
+                  :class="[formInputClass, 'h-[30px] py-1 text-xs']"
+                  :disabled="isPlaying"
+                >
+                  <option :value="1000">Cepat (1s)</option>
+                  <option :value="2000">Normal (2s)</option>
+                  <option :value="3000">Lambat (3s)</option>
+                </select>
+              </div>
               <button
                 @click="toggleAutoPlay"
                 :class="[
@@ -3372,12 +3370,10 @@ defineExpose({
       <!-- Auto-play indicator -->
       <div
         v-if="isPlaying"
-        class="absolute right-0 top-0 z-10 inline-flex items-center rounded-md bg-danger px-3 py-1.5 text-sm font-semibold text-white"
-        style="margin: 1rem"
+        class="absolute right-0 top-0 z-10 m-4 inline-flex items-center rounded-md bg-danger px-3 py-1.5 text-sm font-semibold text-white"
       >
         <div
           class="mr-2 h-2 w-2 animate-pulse rounded-full bg-danger"
-          style="width: 8px; height: 8px"
         ></div>
         AUTO PLAY AKTIF
       </div>
@@ -3399,8 +3395,7 @@ defineExpose({
       <!-- Loading State -->
       <div
         v-if="isLoading"
-        class="flex flex-col items-center justify-center text-center"
-        style="height: 400px"
+        class="flex h-[400px] flex-col items-center justify-center text-center"
       >
         <div
           class="mb-4 h-10 w-10 animate-spin rounded-full border-4 border-primary/30 border-t-primary"
@@ -3413,8 +3408,7 @@ defineExpose({
       <!-- Empty State -->
       <div
         v-else-if="!isLoading && apiData.length === 0"
-        class="flex flex-col items-center justify-center rounded border border-dashed border-gray-300 bg-white text-center dark:bg-gray-900"
-        style="height: 400px"
+        class="flex h-[400px] flex-col items-center justify-center rounded border border-dashed border-gray-300 bg-white text-center dark:bg-gray-900"
       >
         <div
           class="mb-4 flex h-[60px] w-[60px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800"
@@ -3453,8 +3447,7 @@ defineExpose({
       >
         <div
           id="process-tracking-chart"
-          class="w-full"
-          style="height: 400px"
+          class="h-[400px] w-full"
         ></div>
       </div>
     </div>
@@ -3465,12 +3458,11 @@ defineExpose({
     <!-- Detail Modal -->
     <div
       v-if="showDetailModal"
-      class="fixed inset-0 z-[2000] flex items-center justify-center backdrop-blur-sm"
+      class="fixed inset-0 z-[2000] flex items-center justify-center bg-black/60 backdrop-blur-sm"
       tabindex="-1"
-      style="background-color: rgba(0, 0, 0, 0.6)"
       @click.self="closeDetailModal"
     >
-      <div class="w-full" style="max-width: 960px">
+      <div class="w-full max-w-[960px]">
         <div
           class="flex max-h-[85vh] w-full flex-col overflow-hidden rounded-lg bg-white shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] dark:bg-gray-900"
         >
@@ -3575,7 +3567,7 @@ defineExpose({
                         Dokumentasi Visual
                       </h5>
 
-                      <div class="relative flex justify-center">
+                      <div class="group relative flex justify-center">
                         <img
                           :src="currentDetailImage"
                           class="h-auto max-w-full cursor-pointer rounded border border-gray-200 shadow-sm transition-transform hover:scale-[1.02] dark:border-gray-700"
@@ -3585,7 +3577,6 @@ defineExpose({
                               `Rekaman ${modalDetailData.name}`
                             )
                           "
-                          style="max-width: 100%; height: auto"
                           @error="
                             $event.target.style.display = 'none';
                             $event.target.nextElementSibling.style.display =
@@ -3642,7 +3633,7 @@ defineExpose({
 
                         <!-- Hover Overlay -->
                         <div
-                          class="absolute left-0 top-0 flex h-full w-full items-end justify-center bg-black/50 pb-3 opacity-0 hover-overlay"
+                          class="invisible absolute left-0 top-0 z-[5] flex h-full w-full items-end justify-center rounded-[inherit] bg-black/50 pb-3 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100 pointer-coarse:visible pointer-coarse:opacity-80"
                         >
                           <div class="flex">
                             <button
@@ -3801,16 +3792,14 @@ defineExpose({
     <!-- Image Modal -->
     <div
       v-if="showImageModal"
-      class="fixed inset-0 z-[2100] flex items-center justify-center backdrop-blur-sm"
-      style="background-color: rgba(0, 0, 0, 0.95)"
+      class="fixed inset-0 z-[2100] flex items-center justify-center bg-black/95 backdrop-blur-sm"
       @click.self="closeImageModal"
     >
       <div class="flex h-full w-full items-center justify-center p-3">
         <div class="relative flex h-full w-full items-center justify-center">
           <button
             @click="closeImageModal"
-            class="absolute right-0 top-0 m-3 flex items-center justify-center rounded-full bg-white opacity-75 transition-opacity hover:opacity-100"
-            style="z-index: 10; width: 40px; height: 40px"
+            class="absolute right-0 top-0 z-10 m-3 flex h-10 w-10 items-center justify-center rounded-full bg-white opacity-75 transition-opacity hover:opacity-100"
           >
             <i class="ki-duotone ki-cross fs-3">
               <span class="path1"></span>
@@ -3820,40 +3809,10 @@ defineExpose({
           <img
             :src="modalImageSrc"
             :alt="modalImageAlt"
-            class="h-auto max-w-full rounded shadow-lg"
-            style="max-height: 95vh; max-width: 95vw; object-fit: contain"
+            class="h-auto max-h-[95vh] max-w-[95vw] rounded object-contain shadow-lg"
           />
         </div>
       </div>
     </div>
   </teleport>
 </template>
-
-<style scoped>
-/* Hover effects - reveals the image action-button overlay on hover/touch */
-.hover-overlay {
-  transition: all 0.3s ease;
-  opacity: 0;
-  visibility: hidden;
-  z-index: 5;
-  border-radius: inherit;
-}
-
-.hover-overlay:hover,
-.hover-overlay.active {
-  opacity: 1 !important;
-  visibility: visible;
-}
-
-*:hover > .hover-overlay {
-  opacity: 1;
-  visibility: visible;
-}
-
-@media (hover: none) and (pointer: coarse) {
-  .hover-overlay {
-    opacity: 0.8;
-    visibility: visible;
-  }
-}
-</style>

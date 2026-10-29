@@ -106,7 +106,7 @@
                 v-model="tempDateFrom"
                 size="sm"
                 :clearable="true"
-                style="width: 100%; min-width: 140px"
+                class="w-full min-w-[140px]"
               />
             </div>
             <div class="flex items-center">
@@ -120,7 +120,7 @@
                 v-model="tempDateTo"
                 size="sm"
                 :clearable="true"
-                style="width: 100%; min-width: 140px"
+                class="w-full min-w-[140px]"
               />
             </div>
           </div>
@@ -934,7 +934,7 @@ const handleImageError = (event: Event) => {
   const parent = target.parentElement;
   if (parent) {
     parent.innerHTML = `
-      <div class="flex items-center justify-center rounded bg-gray-100" style="width: 60px; height: 60px;">
+      <div class="flex h-[60px] w-[60px] items-center justify-center rounded bg-gray-100">
         <i class="ki-duotone ki-picture fs-2x text-gray-400">
           <span class="path1"></span>
           <span class="path2"></span>

@@ -28,7 +28,7 @@
             v-model="selectedOrganizationId"
             @change="switchOrganization"
             :disabled="loadingOrganizations"
-            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 [&>option:disabled]:cursor-not-allowed [&>option:disabled]:text-gray-500"
           >
             <option value="" disabled>
               {{
@@ -59,7 +59,7 @@
             v-model="selectedAccountId"
             @change="switchAccount"
             :disabled="loadingAccounts || !selectedOrganizationId || accounts.length === 0"
-            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 [&>option:disabled]:cursor-not-allowed [&>option:disabled]:text-gray-500"
           >
             <option value="" disabled>
               <span v-if="!selectedOrganizationId">{{ t("controlplane.site.filters.accountRequiresOrganization") }}</span>
@@ -89,7 +89,7 @@
             v-model="selectedTeamIdFilter"
             @change="switchTeam"
             :disabled="loadingTeams || !selectedAccountId || teams.length === 0"
-            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+            class="w-[200px] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 [&>option:disabled]:cursor-not-allowed [&>option:disabled]:text-gray-500"
           >
             <option value="" disabled>
               <span v-if="!selectedAccountId">{{ t("controlplane.site.filters.teamRequiresAccount") }}</span>
@@ -1004,15 +1004,3 @@ const deleteSite = async (site: Site) => {
 };
 
 </script>
-
-<style scoped>
-/* Show prohibition cursor on disabled options in the account dropdown.
-   Was targeting the old Bootstrap `.form-select` class and an undefined
-   `--bs-gray-500` var (dead since the Tailwind migration) - the selects
-   here are plain Tailwind-utility elements now, so scope on the bare
-   tag/pseudo instead and use the real Tailwind v4 color token. */
-select option:disabled {
-  color: var(--color-gray-500);
-  cursor: not-allowed;
-}
-</style>

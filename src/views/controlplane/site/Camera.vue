@@ -1,14 +1,16 @@
 <template>
   <!--begin::Camera Filters-->
-  <div class="card mb-5">
-    <div class="card-body py-4">
-      <div class="row align-items-center">
+  <div class="mb-5" :class="cardClass">
+    <div class="p-6">
+      <div class="grid grid-cols-1 items-center gap-4 md:grid-cols-12">
         <!-- Left: Title + subtitle (matches Overview layout) -->
-        <div class="col-md-4">
-          <h4 class="card-title mb-0">
+        <div class="md:col-span-4">
+          <h4
+            class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100"
+          >
             {{ t("controlplane.site.camera.header.title") }}
           </h4>
-          <p class="text-muted mb-0">
+          <p class="m-0 text-gray-500">
             <span>{{
               t("controlplane.site.camera.header.subtitleDefault")
             }}</span>
@@ -16,25 +18,33 @@
         </div>
 
         <!-- Right: Filters -->
-        <div class="col-md-8">
-          <div class="d-flex justify-content-end align-items-center flex-wrap">
+        <div class="md:col-span-8">
+          <div class="flex flex-wrap items-center justify-end gap-4">
             <!-- Site Filter -->
-            <div class="me-4 d-flex align-items-center">
-              <label class="form-label me-3 mb-0 fw-semibold">
+            <div class="flex items-center">
+              <label
+                class="mr-3 mb-0 shrink-0 text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
                 {{ t("controlplane.site.camera.filters.siteLabel") }}
               </label>
-              <select
-                v-model="selectedSiteFilter"
-                @change="onHeaderSiteFilterChange"
-                class="form-select form-select-solid w-200px"
-              >
-                <option value="">
-                  {{ t("controlplane.site.camera.filters.siteAll") }}
-                </option>
-                <option v-for="site in sites" :key="site.uid" :value="site.uid">
-                  {{ site.name }}
-                </option>
-              </select>
+              <div class="w-[200px]">
+                <select
+                  v-model="selectedSiteFilter"
+                  @change="onHeaderSiteFilterChange"
+                  :class="formInputClass"
+                >
+                  <option value="">
+                    {{ t("controlplane.site.camera.filters.siteAll") }}
+                  </option>
+                  <option
+                    v-for="site in sites"
+                    :key="site.uid"
+                    :value="site.uid"
+                  >
+                    {{ site.name }}
+                  </option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -43,46 +53,49 @@
   </div>
 
   <!--begin::Camera List-->
-  <div class="card">
+  <div :class="cardClass">
     <!--begin::Card header-->
-    <div class="card-header border-0 pt-5">
+    <div class="flex flex-wrap items-center justify-between gap-4 p-6 pb-0">
       <!--begin::Card title-->
-      <div class="card-title">
-        <h3 class="fw-bold m-0">{{ t("controlplane.site.camera.title") }}</h3>
-      </div>
+      <h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {{ t("controlplane.site.camera.title") }}
+      </h3>
       <!--end::Card title-->
 
       <!--begin::Card toolbar-->
-      <div class="card-toolbar">
+      <div class="flex flex-wrap items-center gap-4">
         <!--begin::Items per page-->
-        <div class="d-flex align-items-center me-5">
-          <label class="form-label fs-6 fw-semibold text-gray-700 me-2 mb-0">{{
-            t("controlplane.site.camera.toolbar.itemsLabel")
-          }}</label>
-          <select
-            class="form-select form-select-sm w-auto"
-            v-model.number="perPage"
-            @change="onPerPageChange"
+        <div class="flex items-center gap-2">
+          <label
+            class="mb-0 shrink-0 text-sm font-semibold text-gray-700 dark:text-gray-300"
+            >{{ t("controlplane.site.camera.toolbar.itemsLabel") }}</label
           >
-            <option :value="1">1</option>
-            <option :value="5">5</option>
-            <option :value="10">10</option>
-            <option :value="25">25</option>
-            <option :value="50">50</option>
-          </select>
+          <div class="w-20">
+            <select
+              :class="formInputClass"
+              v-model.number="perPage"
+              @change="onPerPageChange"
+            >
+              <option :value="1">1</option>
+              <option :value="5">5</option>
+              <option :value="10">10</option>
+              <option :value="25">25</option>
+              <option :value="50">50</option>
+            </select>
+          </div>
         </div>
         <!--end::Items per page-->
 
         <!--begin::Search-->
-        <div class="d-flex align-items-center position-relative my-1 me-5">
-          <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+        <div class="relative flex w-[250px] items-center">
+          <i class="ki-duotone ki-magnifier fs-3 absolute left-4 text-gray-500">
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
           <input
             type="text"
             v-model="searchQuery"
-            class="form-control form-control-solid w-250px ps-12"
+            :class="[formInputClass, 'pl-12']"
             :placeholder="
               t('controlplane.site.camera.toolbar.searchPlaceholder')
             "
@@ -92,9 +105,9 @@
 
         <button
           @click.prevent="showCameraForm = true"
-          class="btn btn-sm btn-light-primary"
+          :class="lightButtonClass"
         >
-          <i class="ki-duotone ki-plus fs-2 me-1"></i>
+          <i class="ki-duotone ki-plus fs-2 mr-1"></i>
           {{ t("controlplane.site.camera.toolbar.addButton") }}
         </button>
       </div>
@@ -103,7 +116,7 @@
     <!--begin::Card header-->
 
     <!--begin::Card body-->
-    <div class="card-body py-3">
+    <div class="p-6 pt-3">
       <!-- Form is now in modal below, not inline -->
 
       <!--begin::Table-->
@@ -120,21 +133,19 @@
         :empty-table-text="t('controlplane.site.camera.table.empty')"
       >
         <template v-slot:name="{ row }">
-          <div class="d-flex align-items-center">
-            <div class="symbol symbol-45px me-5">
-              <span
-                class="symbol-label bg-light-success text-success fw-bold fs-3"
-              >
-                {{ getInitial(row.name) }}
-              </span>
+          <div class="flex items-center">
+            <div
+              class="mr-5 flex h-[45px] w-[45px] shrink-0 items-center justify-center rounded-full bg-success-light text-base font-bold text-success"
+            >
+              {{ getInitial(row.name) }}
             </div>
-            <div class="d-flex justify-content-start flex-column">
-              <span class="text-dark fw-bold text-hover-primary fs-6">{{
-                row.name
-              }}</span>
+            <div class="flex min-w-0 flex-col">
               <span
-                class="text-muted fw-semibold text-muted d-block fs-7 text-truncate"
-                style="max-width: 280px"
+                class="truncate text-sm font-bold text-gray-900 hover:text-primary dark:text-gray-100"
+                >{{ row.name }}</span
+              >
+              <span
+                class="block max-w-[280px] truncate text-xs font-semibold text-gray-500"
                 >{{ row.cameraUrl }}</span
               >
             </div>
@@ -143,13 +154,14 @@
 
         <template v-slot:location="{ row }">
           <div>
-            <span class="text-dark fw-bold d-block fs-6">{{
-              getSiteName(row.siteId)
-            }}</span>
-            <span class="text-muted fw-semibold d-block fs-7">{{
+            <span
+              class="block text-sm font-bold text-gray-900 dark:text-gray-100"
+              >{{ getSiteName(row.siteId) }}</span
+            >
+            <span class="block text-xs font-semibold text-gray-500">{{
               row.room || "-"
             }}</span>
-            <span class="text-muted fw-semibold d-block fs-8">{{
+            <span class="block text-[11px] font-semibold text-gray-500">{{
               row.location
             }}</span>
           </div>
@@ -157,20 +169,26 @@
 
         <template v-slot:specs="{ row }">
           <div>
-            <span class="badge badge-light-info fs-7 fw-bold mb-1">{{
-              row.brand
-            }}</span
+            <span
+              :class="[
+                'mb-1 inline-flex rounded-full px-2 py-0.5 text-xs font-bold',
+                badgeVariantClass('info'),
+              ]"
+              >{{ row.brand }}</span
             ><br />
-            <span class="badge badge-light-warning fs-7 fw-bold">{{
-              row.resolution
-            }}</span>
+            <span
+              :class="[
+                'inline-flex rounded-full px-2 py-0.5 text-xs font-bold',
+                badgeVariantClass('warning'),
+              ]"
+              >{{ row.resolution }}</span
+            >
           </div>
         </template>
 
         <template v-slot:cameraUrl="{ row }">
           <span
-            class="text-dark fw-semibold d-block fs-7 text-truncate"
-            style="max-width: 220px"
+            class="block max-w-[220px] truncate text-xs font-semibold text-gray-900 dark:text-gray-100"
             :title="row.cameraUrl"
           >
             {{ row.cameraUrl || "-" }}
@@ -179,41 +197,42 @@
 
         <template v-slot:status="{ row }">
           <span
-            :class="`badge badge-light-${statusBadgeVariant(
-              row.status
-            )} fs-7 fw-bold`"
+            :class="[
+              'inline-flex rounded-full px-2 py-0.5 text-xs font-bold',
+              statusBadgeClass(row.status),
+            ]"
           >
             {{ resolveStatusLabel(row.status) }}
           </span>
         </template>
 
         <template v-slot:actions="{ row }">
-          <div class="d-flex justify-content-end shrink-0">
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1"
-              @click="viewCamera(row)"
+          <div class="flex shrink-0 items-center justify-end gap-1">
+            <RowActionButton
+              variant="success"
               :title="t('controlplane.site.camera.actions.view')"
+              @click="viewCamera(row)"
             >
               <i class="ki-duotone ki-eye fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
                 <span class="path3"></span>
               </i>
-            </button>
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-              @click="editCamera(row)"
+            </RowActionButton>
+            <RowActionButton
+              variant="primary"
               :title="t('controlplane.site.camera.actions.edit')"
+              @click="editCamera(row)"
             >
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-            </button>
-            <button
-              class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
-              @click="deleteCamera(row)"
+            </RowActionButton>
+            <RowActionButton
+              variant="danger"
               :title="t('controlplane.site.camera.actions.delete')"
+              @click="deleteCamera(row)"
             >
               <i class="ki-duotone ki-trash fs-2">
                 <span class="path1"></span>
@@ -222,14 +241,14 @@
                 <span class="path4"></span>
                 <span class="path5"></span>
               </i>
-            </button>
+            </RowActionButton>
           </div>
         </template>
       </KTDataTable>
       <!--end::Table-->
 
       <!--begin::Pagination-->
-      <div class="d-flex justify-content-end align-items-center mt-4">
+      <div class="mt-4 flex items-center justify-end">
         <Pagination
           :page="currentPage"
           :per-page="perPage"
@@ -250,16 +269,26 @@
 
   <!-- Camera Form Modal -->
   <Teleport to="body">
-    <Transition name="modal-fade">
+    <Transition
+      enter-active-class="transition-opacity duration-300 ease-out [&>div]:transition-all [&>div]:duration-300 [&>div]:ease-out"
+      leave-active-class="transition-opacity duration-300 ease-out [&>div]:transition-all [&>div]:duration-300 [&>div]:ease-out"
+      enter-from-class="opacity-0 [&>div]:-translate-y-5 [&>div]:scale-95 [&>div]:opacity-0"
+      leave-to-class="opacity-0 [&>div]:-translate-y-5 [&>div]:scale-95 [&>div]:opacity-0"
+    >
       <div
         v-if="showCameraForm"
-        class="camera-form-modal-overlay"
+        class="fixed inset-0 z-[10001] flex items-center justify-center overflow-y-auto bg-black/60 p-5 backdrop-blur-[4px]"
         @click="closeForm"
       >
-        <div class="camera-form-modal-container" @click.stop>
+        <div
+          class="m-auto flex max-h-[90vh] w-full max-w-[900px] flex-col overflow-hidden rounded-xl bg-white shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]"
+          @click.stop
+        >
           <!-- Modal Header -->
-          <div class="camera-form-modal-header">
-            <h3 class="camera-form-modal-title">
+          <div
+            class="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-5"
+          >
+            <h3 class="m-0 text-lg font-semibold text-gray-800">
               {{
                 isEdit
                   ? t("controlplane.site.camera.form.titleEdit")
@@ -268,7 +297,7 @@
             </h3>
             <button
               type="button"
-              class="btn btn-sm btn-icon btn-active-light-primary"
+              class="rounded-md p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary dark:hover:bg-gray-800"
               @click="closeForm"
             >
               <i class="ki-duotone ki-cross fs-2">
@@ -279,14 +308,18 @@
           </div>
 
           <!-- Modal Body -->
-          <div class="camera-form-modal-body">
-            <form @submit.prevent="saveCamera" class="form">
+          <div
+            class="flex-1 overflow-y-auto bg-white p-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-[3px] [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb:hover]:bg-gray-400 [&::-webkit-scrollbar-track]:bg-transparent"
+          >
+            <form @submit.prevent="saveCamera" class="space-y-6">
               <!--begin::Row-->
-              <div class="row mb-7">
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <!--begin::Col-->
-                <div class="col-md-6">
+                <div>
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
+                  <label
+                    class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300"
+                  >
                     {{ t("controlplane.site.camera.form.fields.site.label") }}
                   </label>
                   <!--end::Label-->
@@ -294,7 +327,7 @@
                   <select
                     v-model="cameraForm.siteId"
                     @change="onSiteChange"
-                    class="form-select form-select-solid"
+                    :class="formInputClass"
                     required
                   >
                     <option value="">
@@ -317,9 +350,11 @@
                 <!--end::Col-->
 
                 <!--begin::Col-->
-                <div class="col-md-6">
+                <div>
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
+                  <label
+                    class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                  >
                     {{ t("controlplane.site.camera.form.fields.room.label") }}
                   </label>
                   <!--end::Label-->
@@ -327,7 +362,7 @@
                   <input
                     type="text"
                     v-model="cameraForm.room"
-                    class="form-control form-control-solid"
+                    :class="formInputClass"
                     :placeholder="
                       t('controlplane.site.camera.form.fields.room.placeholder')
                     "
@@ -339,11 +374,13 @@
               <!--end::Row-->
 
               <!--begin::Row-->
-              <div class="row mb-7">
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <!--begin::Col-->
-                <div class="col-md-6">
+                <div>
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
+                  <label
+                    class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300"
+                  >
                     {{ t("controlplane.site.camera.form.fields.name.label") }}
                   </label>
                   <!--end::Label-->
@@ -351,7 +388,7 @@
                   <input
                     type="text"
                     v-model="cameraForm.name"
-                    class="form-control form-control-solid"
+                    :class="formInputClass"
                     :placeholder="
                       t('controlplane.site.camera.form.fields.name.placeholder')
                     "
@@ -362,9 +399,11 @@
                 <!--end::Col-->
 
                 <!--begin::Col-->
-                <div class="col-md-6">
+                <div>
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
+                  <label
+                    class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300"
+                  >
                     {{
                       t("controlplane.site.camera.form.fields.cameraUrl.label")
                     }}
@@ -374,8 +413,12 @@
                   <input
                     type="url"
                     v-model="cameraForm.cameraUrl"
-                    class="form-control form-control-solid"
-                    :class="{ 'is-invalid': cameraUrlError }"
+                    :class="[
+                      formInputClass,
+                      cameraUrlError
+                        ? 'border-danger focus:border-danger focus:ring-danger/30'
+                        : '',
+                    ]"
                     :placeholder="
                       t(
                         'controlplane.site.camera.form.fields.cameraUrl.placeholder'
@@ -385,7 +428,7 @@
                     required
                     @input="cameraUrlError = ''"
                   />
-                  <div v-if="cameraUrlError" class="invalid-feedback d-block">
+                  <div v-if="cameraUrlError" class="mt-1 text-sm text-danger">
                     {{ cameraUrlError }}
                   </div>
                   <!--end::Input-->
@@ -395,11 +438,13 @@
               <!--end::Row-->
 
               <!--begin::Row-->
-              <div class="row mb-7">
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <!--begin::Col-->
-                <div class="col-md-6">
+                <div>
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
+                  <label
+                    class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300"
+                  >
                     {{
                       t("controlplane.site.camera.form.fields.rtspUrl.label")
                     }}
@@ -409,7 +454,7 @@
                   <input
                     type="text"
                     v-model="cameraForm.rtspUrl"
-                    class="form-control form-control-solid"
+                    :class="formInputClass"
                     :placeholder="
                       t(
                         'controlplane.site.camera.form.fields.rtspUrl.placeholder'
@@ -423,9 +468,11 @@
                 <!--end::Col-->
 
                 <!--begin::Col-->
-                <div class="col-md-6">
+                <div>
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
+                  <label
+                    class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300"
+                  >
                     {{
                       t("controlplane.site.camera.form.fields.activity.label")
                     }}
@@ -435,7 +482,7 @@
                   <input
                     type="text"
                     v-model="cameraForm.activity"
-                    class="form-control form-control-solid"
+                    :class="formInputClass"
                     :placeholder="
                       t(
                         'controlplane.site.camera.form.fields.activity.placeholder'
@@ -450,40 +497,30 @@
               <!--end::Row-->
 
               <!--begin::Row-->
-              <div class="row mb-7">
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <!--begin::Col-->
-                <div class="col-md-12 form-check form-switch">
-                  <input
-                    type="checkbox"
-                    v-model="cameraForm.alert"
-                    class="form-check-input"
-                    id="cameraAlertSwitch"
-                  />
-                  <label
-                    class="form-check-label fw-semibold fs-6"
-                    for="cameraAlertSwitch"
-                  >
+                <div class="md:col-span-2">
+                  <ToggleSwitch v-model="cameraForm.alert">
                     {{ t("controlplane.site.camera.form.fields.alert.label") }}
-                  </label>
+                  </ToggleSwitch>
                 </div>
                 <!--end::Col-->
               </div>
               <!--end::Row-->
 
               <!--begin::Row-->
-              <div class="row mb-7">
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <!--begin::Col-->
-                <div class="col-md-6">
+                <div>
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
+                  <label
+                    class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                  >
                     {{ t("controlplane.site.camera.form.fields.brand.label") }}
                   </label>
                   <!--end::Label-->
                   <!--begin::Select-->
-                  <select
-                    v-model="cameraForm.brand"
-                    class="form-select form-select-solid"
-                  >
+                  <select v-model="cameraForm.brand" :class="formInputClass">
                     <option value="">
                       {{
                         t(
@@ -539,9 +576,11 @@
                 <!--end::Col-->
 
                 <!--begin::Col-->
-                <div class="col-md-6">
+                <div>
                   <!--begin::Label-->
-                  <label class="required fw-semibold fs-6 mb-2">
+                  <label
+                    class="mb-2 block text-sm font-semibold text-gray-700 after:ml-0.5 after:text-danger after:content-['*'] dark:text-gray-300"
+                  >
                     {{ t("controlplane.site.camera.form.fields.model.label") }}
                   </label>
                   <!--end::Label-->
@@ -549,7 +588,7 @@
                   <input
                     type="text"
                     v-model="cameraForm.model"
-                    class="form-control form-control-solid"
+                    :class="formInputClass"
                     :placeholder="
                       t(
                         'controlplane.site.camera.form.fields.model.placeholder'
@@ -564,19 +603,18 @@
               <!--end::Row-->
 
               <!--begin::Row-->
-              <div class="row mb-7">
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <!--begin::Col-->
-                <div class="col-md-6">
+                <div>
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
+                  <label
+                    class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                  >
                     {{ t("controlplane.site.camera.form.fields.type.label") }}
                   </label>
                   <!--end::Label-->
                   <!--begin::Select-->
-                  <select
-                    v-model="cameraForm.type"
-                    class="form-select form-select-solid"
-                  >
+                  <select v-model="cameraForm.type" :class="formInputClass">
                     <option value="Dome">
                       {{
                         t(
@@ -618,9 +656,11 @@
                 <!--end::Col-->
 
                 <!--begin::Col-->
-                <div class="col-md-6">
+                <div>
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
+                  <label
+                    class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                  >
                     {{
                       t("controlplane.site.camera.form.fields.resolution.label")
                     }}
@@ -629,7 +669,7 @@
                   <!--begin::Select-->
                   <select
                     v-model="cameraForm.resolution"
-                    class="form-select form-select-solid"
+                    :class="formInputClass"
                   >
                     <option value="1080P (2MP)">
                       {{
@@ -674,11 +714,13 @@
               <!--end::Row-->
 
               <!--begin::Row-->
-              <div class="row mb-7">
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <!--begin::Col-->
-                <div class="col-md-12">
+                <div class="md:col-span-2">
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
+                  <label
+                    class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                  >
                     {{
                       t("controlplane.site.camera.form.fields.location.label")
                     }}
@@ -688,7 +730,7 @@
                   <input
                     type="text"
                     v-model="cameraForm.location"
-                    class="form-control form-control-solid"
+                    :class="formInputClass"
                     :placeholder="
                       t(
                         'controlplane.site.camera.form.fields.location.placeholder'
@@ -702,11 +744,13 @@
               <!--end::Row-->
 
               <!--begin::Row-->
-              <div class="row mb-7">
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <!--begin::Col-->
-                <div class="col-md-12">
+                <div class="md:col-span-2">
                   <!--begin::Label-->
-                  <label class="fw-semibold fs-6 mb-2">
+                  <label
+                    class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                  >
                     {{
                       t(
                         "controlplane.site.camera.form.fields.description.label"
@@ -717,7 +761,7 @@
                   <!--begin::Input-->
                   <textarea
                     v-model="cameraForm.description"
-                    class="form-control form-control-solid"
+                    :class="formInputClass"
                     rows="3"
                     :placeholder="
                       t(
@@ -732,26 +776,26 @@
               <!--end::Row-->
 
               <!--begin::Actions-->
-              <div class="text-center pt-3">
+              <div class="flex justify-center gap-3 pt-3">
                 <button
                   type="button"
-                  class="btn btn-light me-3"
+                  :class="secondaryButtonClass"
                   @click="closeForm"
                 >
                   {{ t("controlplane.site.camera.form.actions.cancel") }}
                 </button>
                 <button
                   type="submit"
-                  class="btn btn-primary"
+                  :class="primaryButtonClass"
                   :disabled="isLoading"
                 >
-                  <span v-if="isLoading" class="indicator-progress">
+                  <span v-if="isLoading">
                     {{ t("controlplane.site.camera.form.actions.loading") }}
                     <span
-                      class="spinner-border spinner-border-sm align-middle ms-2"
+                      class="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white align-middle"
                     ></span>
                   </span>
-                  <span v-else class="indicator-label">
+                  <span v-else>
                     {{
                       isEdit
                         ? t("controlplane.site.camera.form.actions.update")
@@ -775,8 +819,19 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import KTDataTable from "@/components/kt-datatable/KTDataTable.vue";
 import Pagination from "@/components/common/Pagination.vue";
+import RowActionButton from "@/components/common/RowActionButton.vue";
+import ToggleSwitch from "@/components/common/ToggleSwitch.vue";
 import ApiService from "@/core/services/ApiService";
 import CameraPlaybackModal from "@/components/CameraPlaybackModal.vue";
+import {
+  cardClass,
+  formInputClass,
+  lightButtonClass,
+  primaryButtonClass,
+  secondaryButtonClass,
+  badgeVariantClass,
+  type BadgeVariant,
+} from "@/core/helpers/badge";
 
 // Interfaces
 interface Site {
@@ -1005,6 +1060,9 @@ const normalizeStatusKey = (status?: unknown): "online" | "offline" => {
 
 const statusBadgeVariant = (status?: unknown): string =>
   normalizeStatusKey(status) === "online" ? "success" : "danger";
+
+const statusBadgeClass = (status?: unknown): string =>
+  badgeVariantClass(statusBadgeVariant(status) as BadgeVariant);
 
 const resolveStatusLabel = (status?: unknown): string =>
   t(`controlplane.site.camera.status.${normalizeStatusKey(status)}`);
@@ -1502,102 +1560,3 @@ watch(
   }
 );
 </script>
-
-<style scoped>
-/* Camera Form Modal Styles */
-.camera-form-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  z-index: 10001;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.camera-form-modal-container {
-  width: 100%;
-  max-width: 900px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  max-height: 90vh;
-  margin: auto;
-}
-
-.camera-form-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
-}
-
-.camera-form-modal-title {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.camera-form-modal-body {
-  flex: 1;
-  padding: 24px;
-  overflow-y: auto;
-  background: white;
-}
-
-/* Modal Animations */
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-fade-enter-active .camera-form-modal-container,
-.modal-fade-leave-active .camera-form-modal-container {
-  transition: all 0.3s ease;
-}
-
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-  opacity: 0;
-}
-
-.modal-fade-enter-from .camera-form-modal-container {
-  transform: scale(0.95) translateY(-20px);
-  opacity: 0;
-}
-
-.modal-fade-leave-to .camera-form-modal-container {
-  transform: scale(0.95) translateY(-20px);
-  opacity: 0;
-}
-
-/* Scrollbar styling */
-.camera-form-modal-body::-webkit-scrollbar {
-  width: 6px;
-}
-
-.camera-form-modal-body::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.camera-form-modal-body::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 3px;
-}
-
-.camera-form-modal-body::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
-}
-</style>

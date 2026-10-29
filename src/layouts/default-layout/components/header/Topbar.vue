@@ -94,8 +94,8 @@
           class="flex h-[35px] w-[35px] items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"
           @click="themeDropdown.toggle"
         >
-          <KTIcon icon-name="night-day" icon-class="theme-light-show fs-2" />
-          <KTIcon icon-name="moon" icon-class="theme-dark-show fs-2" />
+          <KTIcon icon-name="night-day" icon-class="fs-2 dark:hidden" />
+          <KTIcon icon-name="moon" icon-class="hidden fs-2 dark:block" />
         </button>
         <div
           v-show="themeDropdown.isOpen.value"
